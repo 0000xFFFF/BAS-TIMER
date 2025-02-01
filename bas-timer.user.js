@@ -59,8 +59,8 @@ const cont_css = `
     gap: 1px;
     width: 400px;
     height: 200px;
-    top: 200px;
-    left: 20px;
+    top: 500px;
+    left: 40px;
     position: fixed;
     border-top: 2px double rgb(224, 224, 224);
     border-left: 2px double rgb(224, 224, 224);
