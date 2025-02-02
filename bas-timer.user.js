@@ -7,7 +7,6 @@
 // @match        http://192.168.1.250:9001/*
 // ==/UserScript==
 
-
 // GET http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1&_=1738365399411    == OFF
 // GET http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1&_=1738365399419    == ON
 
@@ -58,7 +57,6 @@ const cont_css = `
     flex-direction: column;
     gap: 1px;
     width: 400px;
-    height: 200px;
     top: 500px;
     left: 40px;
     position: fixed;
@@ -113,6 +111,12 @@ const btn_css = `
     cursor: pointer;
 `
 
+const btn_container_css = `
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+`
+
 function appendTimer() {
     if (document.body) {
         const cont = document.createElement("div");
@@ -144,17 +148,41 @@ function appendTimer() {
         cont_head.appendChild(title);
         cont_head.appendChild(btn_close);
 
+        // Create flex container for label and input
+        const inputContainer = document.createElement("div");
+        inputContainer.style = "display: flex; align-items: center; gap: 10px;";
+
+        const label = document.createElement("span");
+        label.style = text_css;
+        label.innerHTML = "Seconds:";
+
         const txt_input = document.createElement('input');
         txt_input.setAttribute('type', 'text');
         txt_input.setAttribute('id', 'myInputId');
         txt_input.setAttribute('placeholder', 'wait for X seconds.');
         txt_input.style = txt_input_css;
-        txt_input.value = 15 * 60;
+
+        // Load saved value
+        const savedValue = localStorage.getItem('basTimerValue');
+        txt_input.value = savedValue ? savedValue : 15 * 60;
+
+        // Save value when changed
+        txt_input.addEventListener('input', function() {
+            localStorage.setItem('basTimerValue', txt_input.value);
+        });
+
+
+        inputContainer.appendChild(label);
+        inputContainer.appendChild(txt_input);
 
         let isGoing = true;
-
         const label_begin = "Begin Countdown";
         const label_stop  = "Stop Countdown";
+        const label_dots = "...";
+
+        const txt_status = document.createElement("div");
+        txt_status.style = text_css;
+        txt_status.innerHTML = label_dots;
 
         const txt_begin = document.createElement("button");
         txt_begin.style = btn_css;
@@ -184,17 +212,34 @@ function appendTimer() {
                 clearInterval(countdown);
                 isGoing = !isGoing;
                 txt_begin.innerHTML = label_begin;
+                txt_status.innerHTML = label_dots;
             }
         }
+        
+        // Create button container
+        const btn_container = document.createElement("div");
+        btn_container.style = btn_container_css;
 
-        const txt_status = document.createElement("div");
-        txt_status.style = text_css;
-        txt_status.innerHTML = "...";
+        const createButton = (label, seconds) => {
+            const btn = document.createElement("button");
+            btn.style = btn_css;
+            btn.innerHTML = label;
+            btn.onclick = function () {
+                txt_input.value = seconds;
+                localStorage.setItem('basTimerValue', txt_input.value);
+            };
+            return btn;
+        };
 
-        cont_body.appendChild(txt_input);
+        btn_container.appendChild(createButton("15 min", 15 * 60));
+        btn_container.appendChild(createButton("30 min", 30 * 60));
+        btn_container.appendChild(createButton("45 min", 45 * 60));
+        btn_container.appendChild(createButton("1 hour", 60 * 60));
+
+        cont_body.appendChild(inputContainer);
+        cont_body.appendChild(btn_container);
         cont_body.appendChild(txt_begin);
         cont_body.appendChild(txt_status);
-
 
         document.body.appendChild(cont);
 
@@ -203,4 +248,3 @@ function appendTimer() {
     }
 }
 appendTimer();
-
