@@ -169,6 +169,7 @@ function appendTimer() {
         // Save value when changed
         txt_input.addEventListener('input', function() {
             localStorage.setItem('basTimerValue', txt_input.value);
+            updateButtonStyles();
         });
 
 
@@ -215,26 +216,44 @@ function appendTimer() {
                 txt_status.innerHTML = label_dots;
             }
         }
-        
+
+
+
         // Create button container
         const btn_container = document.createElement("div");
         btn_container.style = btn_container_css;
 
-        const createButton = (label, seconds) => {
-            const btn = document.createElement("button");
-            btn.style = btn_css;
-            btn.innerHTML = label;
-            btn.onclick = function () {
+        function createTimeButton(label, seconds) {
+            const button = document.createElement("button");
+            button.style = btn_css;
+            button.innerHTML = label;
+            button.onclick = function () {
                 txt_input.value = seconds;
                 localStorage.setItem('basTimerValue', txt_input.value);
-            };
-            return btn;
-        };
+                updateButtonStyles();
+            }
+            button.dataset.seconds = seconds;
+            return button;
+        }
 
-        btn_container.appendChild(createButton("15 min", 15 * 60));
-        btn_container.appendChild(createButton("30 min", 30 * 60));
-        btn_container.appendChild(createButton("45 min", 45 * 60));
-        btn_container.appendChild(createButton("1 hour", 60 * 60));
+        const btn_15min = createTimeButton("15 min", 15 * 60);
+        const btn_30min = createTimeButton("30 min", 30 * 60);
+        const btn_45min = createTimeButton("45 min", 45 * 60);
+        const btn_1hour = createTimeButton("1 hour", 60 * 60);
+
+        btn_container.appendChild(btn_15min);
+        btn_container.appendChild(btn_30min);
+        btn_container.appendChild(btn_45min);
+        btn_container.appendChild(btn_1hour);
+
+        function updateButtonStyles() {
+            const buttons = [btn_15min, btn_30min, btn_45min, btn_1hour];
+            buttons.forEach(btn => {
+                btn.style.backgroundColor = parseInt(txt_input.value) === parseInt(btn.dataset.seconds) ? 'rgb(128, 255, 128)' : '';
+            });
+        }
+
+        updateButtonStyles();
 
         cont_body.appendChild(inputContainer);
         cont_body.appendChild(btn_container);
