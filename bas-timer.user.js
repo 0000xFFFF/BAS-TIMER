@@ -7,8 +7,11 @@
 // @match        http://192.168.1.250:9001/*
 // ==/UserScript==
 
-// GET http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1&_=1738365399411    == OFF
-// GET http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1&_=1738365399419    == ON
+
+
+const url_off = "http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1"
+const url_on  = "http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1"
+const url_vars = "http://192.168.1.250:9001/isc/get_var_js.aspx?sw1=&sw4=&sw3=&sw2=&mod_rada=&mod_rada=&__Time=&__Date=&mod_rezim=&mod_rezim=&mod_rezim=&mod_rada=&mod_rada=&kom2=&red2=&mraz2=&glavni_on=&Tzadata=&Taktualno=&deltaT=&Tspv=&mraz=&rucni_komf=&rucni_red=&mod_rada=&mod_rada=&grejanje_off=&grejanje_off=&glavni_on=&kom1=&red1=&mod_rezim=&Alarm_tank=&Alarm_solar=&&SESSIONID=-1"
 
 function dragSetup(head, cont) {
     let initialX;
@@ -176,7 +179,7 @@ function appendTimer() {
         inputContainer.appendChild(label);
         inputContainer.appendChild(txt_input);
 
-        let isGoing = true;
+        let running = false;
         const label_begin = "Begin Countdown";
         const label_stop  = "Stop Countdown";
         const label_dots = "...";
@@ -188,34 +191,64 @@ function appendTimer() {
         const txt_begin = document.createElement("button");
         txt_begin.style = btn_css;
         txt_begin.innerHTML = label_begin;
-        txt_begin.onclick = function () {
-            if (isGoing) {
-                isGoing = !isGoing;
-                txt_begin.innerHTML = label_stop;
-                let totalSeconds = parseInt(txt_input.value); // Convert the value to an integer
-                countdown = setInterval(() => {
-                    txt_status.innerHTML = `Time left: ${totalSeconds} seconds`;
-                    if(--totalSeconds < 0) {
-                        clearInterval(countdown);
-                        txt_status.innerHTML = "Countdown ended! Turning off heating.";
-                        isGoing = !isGoing;
 
-                        // TURN HEATING OFF
+        function timer_stop() {
+            running = false;
+            clearInterval(countdown);
 
-                        // TODO: GET http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1
-                        const url = "http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1";
-                        fetch(url);
-
-                        txt_begin.innerHTML = label_begin;
-                    }
-                }, 1000); // Run the block every second (1000ms)
-            } else {
-                clearInterval(countdown);
-                isGoing = !isGoing;
-                txt_begin.innerHTML = label_begin;
-                txt_status.innerHTML = label_dots;
-            }
+            txt_begin.innerHTML = label_begin;
+            txt_status.innerHTML = label_dots;
         }
+
+        function timer_start() {
+            running = true;
+            txt_begin.innerHTML = label_stop;
+            let totalSeconds = parseInt(txt_input.value); // Convert the value to an integer
+            countdown = setInterval(() => {
+                txt_status.innerHTML = `Time left: ${totalSeconds} seconds`;
+                if(--totalSeconds < 0) {
+                    timer_stop();
+                    txt_status.innerHTML = "Countdown ended! Turning off heating.";
+
+                    // TURN HEATING OFF
+                    fetch(url_off);
+                }
+            }, 1000); // Run the block every second (1000ms)
+        }
+
+        function timer_switch () {
+            if (running) { timer_stop(); } else { timer_start(); }
+        }
+
+        txt_begin.onclick = timer_switch;
+
+
+        setInterval(async () => {
+            try {
+                const response = await fetch(url_vars); // Fetch the data
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const json = await response.json(); // Parse JSON
+
+                console.log(json.Tzadata.value);
+
+                if (json.Tzadata.value == 29) {
+                    if (!running) {
+                        timer_start();
+                    }
+                }
+                else {
+                    if (running) {
+                        timer_stop();
+                    }
+                }
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+
+        }, 10000);
 
 
 
