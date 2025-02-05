@@ -146,7 +146,7 @@ function appendTimer() {
         const btn_close = document.createElement("button");
         btn_close.style = btn_css;
         btn_close.innerHTML = "X";
-        btn_close.onclick = function () { cont.remove(); }
+
 
         cont_head.appendChild(title);
         cont_head.appendChild(btn_close);
@@ -165,9 +165,10 @@ function appendTimer() {
         txt_input.setAttribute('placeholder', 'wait for X seconds.');
         txt_input.style = txt_input_css;
 
+
         // Load saved value
         const savedValue = localStorage.getItem('basTimerValue');
-        txt_input.value = savedValue ? savedValue : 15 * 60;
+        txt_input.value = savedValue ? savedValue : 30 * 60;
 
         // Save value when changed
         txt_input.addEventListener('input', function() {
@@ -188,22 +189,23 @@ function appendTimer() {
         txt_status.style = text_css;
         txt_status.innerHTML = label_dots;
 
-        const txt_begin = document.createElement("button");
-        txt_begin.style = btn_css;
-        txt_begin.innerHTML = label_begin;
+        const btn_begin = document.createElement("button");
+        btn_begin.style = btn_css;
+        btn_begin.innerHTML = label_begin;
+
 
         function timer_stop() {
             running = false;
             clearInterval(countdown);
 
-            txt_begin.innerHTML = label_begin;
+            btn_begin.innerHTML = label_begin;
             txt_status.innerHTML = label_dots;
         }
 
         function timer_start() {
             running = true;
-            txt_begin.innerHTML = label_stop;
-            let totalSeconds = parseInt(txt_input.value); // Convert the value to an integer
+            btn_begin.innerHTML = label_stop;
+            let totalSeconds = parseInt(txt_input.value) || 100; // Convert the value to an integer
             countdown = setInterval(() => {
                 txt_status.innerHTML = `Time left: ${totalSeconds} seconds`;
                 if(--totalSeconds < 0) {
@@ -220,37 +222,7 @@ function appendTimer() {
             if (running) { timer_stop(); } else { timer_start(); }
         }
 
-        txt_begin.onclick = timer_switch;
-
-
-        setInterval(async () => {
-            try {
-                const response = await fetch(url_vars); // Fetch the data
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const json = await response.json(); // Parse JSON
-
-                console.log(json.Tzadata.value);
-
-                if (json.Tzadata.value == 29) {
-                    if (!running) {
-                        timer_start();
-                    }
-                }
-                else {
-                    if (running) {
-                        timer_stop();
-                    }
-                }
-
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-
-        }, 10000);
-
-
+        btn_begin.onclick = timer_switch;
 
         // Create button container
         const btn_container = document.createElement("div");
@@ -290,10 +262,50 @@ function appendTimer() {
 
         cont_body.appendChild(inputContainer);
         cont_body.appendChild(btn_container);
-        cont_body.appendChild(txt_begin);
+        //cont_body.appendChild(btn_begin);
         cont_body.appendChild(txt_status);
 
         document.body.appendChild(cont);
+
+        function autostart_off() {
+            clearInterval(autostart);
+        }
+
+        function autostart_on() {
+            autostart = setInterval(async () => {
+                try {
+                    const response = await fetch(url_vars); // Fetch the data
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    const json = await response.json(); // Parse JSON
+
+                    console.log(json.Tzadata.value);
+
+                    if (json.Tzadata.value == 29) {
+                        if (!running) {
+                            timer_start();
+                        }
+                    }
+                    else {
+                        if (running) {
+                            timer_stop();
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+
+            }, 10000);
+        }
+
+        autostart_on();
+
+        btn_close.onclick = function () {
+            cont.remove();
+            autostart_off();
+        }
 
     } else {
         setTimeout(appendTimer, 100);
