@@ -35,6 +35,7 @@ const setting_lastseen_Tmin_            = "lastseen_Tmin";            var settin
 const setting_lastseen_Tmax_            = "lastseen_Tmax";            var setting_lastseen_Tmax            = setting(setting_lastseen_Tmax_,            null);
 const setting_lastseen_Tmid_            = "lastseen_Tmid";            var setting_lastseen_Tmid            = setting(setting_lastseen_Tmid_,            null);
 const setting_lastseen_TminIsLT_        = "lastseen_TminIsLT";        var setting_lastseen_TminIsLT        = setting(setting_lastseen_TminIsLT_,        null);
+const setting_lastseen_TmidIsGE_        = "lastseen_TmidIsGE";        var setting_lastseen_TmidIsGE        = setting(setting_lastseen_TmidIsGE_,        null);
 
 const URLS = {
     OFF:     "http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1",
@@ -494,17 +495,20 @@ pinger = setInterval(async () => {
             log(`[i] Tmin: ${Tmin} < ${setting_lowbound4gas} = ${setting_lastseen_TminIsLT}`)
         }
 
-        if (setting_autogas) {
-            if (RezimRadaPumpe4 == 0 && TminIsLT) {
-                log("[>] GAS ON (set RezimRadaPumpe4=3)");
-                fetch(URLS.GAS_ON);
-            }
+        if (setting_lastseen_TmidIsGE != TmidIsGE) {
+            setting_lastseen_TmidIsGE = TmidIsGE;
+            GM_setValue(setting_lastseen_TmidIsGE_, setting_lastseen_TmidIsGE)
+            log(`[i] Tmid: ${Tmid} >= ${setting_higbound4gas} = ${setting_lastseen_TmidIsGE}`)
+        }
 
-            if (RezimRadaPumpe4 == 3 && TmidIsGE) {
-                log(`[i] Tmid: ${Tmid} >= ${setting_higbound4gas} = ${TmidIsGE}`)
-                log("[>] GAS OFF (set RezimRadaPumpe4=0)");
-                fetch(URLS.GAS_OFF);
-            }
+        if (setting_autogas && RezimRadaPumpe4 == 0 && TminIsLT) {
+            log("[>] GAS ON (set RezimRadaPumpe4=3)");
+            fetch(URLS.GAS_ON);
+        }
+
+        if (setting_autogas && RezimRadaPumpe4 == 3 && TmidIsGE) {
+            log("[>] GAS OFF (set RezimRadaPumpe4=0)");
+            fetch(URLS.GAS_OFF);
         }
 
         if (setting_autotimer) {
