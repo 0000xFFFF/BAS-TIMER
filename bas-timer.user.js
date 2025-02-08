@@ -7,8 +7,6 @@
 // @match        http://192.168.1.250:9001/*
 // ==/UserScript==
 
-
-
 const url_off = "http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1"
 const url_on  = "http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1"
 const url_vars = "http://192.168.1.250:9001/isc/get_var_js.aspx?sw1=&sw4=&sw3=&sw2=&mod_rada=&mod_rada=&__Time=&__Date=&mod_rezim=&mod_rezim=&mod_rezim=&mod_rada=&mod_rada=&kom2=&red2=&mraz2=&glavni_on=&Tzadata=&Taktualno=&deltaT=&Tspv=&mraz=&rucni_komf=&rucni_red=&mod_rada=&mod_rada=&grejanje_off=&grejanje_off=&glavni_on=&kom1=&red1=&mod_rezim=&Alarm_tank=&Alarm_solar=&&SESSIONID=-1"
@@ -241,10 +239,10 @@ function appendTimer() {
             return button;
         }
 
-        const btn_15min = createTimeButton("15 min", 15 * 60);
-        const btn_30min = createTimeButton("30 min", 30 * 60);
-        const btn_45min = createTimeButton("45 min", 45 * 60);
-        const btn_1hour = createTimeButton("1 hour", 60 * 60);
+        const btn_15min = createTimeButton("5 min",   5 * 60);
+        const btn_30min = createTimeButton("10 min", 10 * 60);
+        const btn_45min = createTimeButton("15 min", 15 * 60);
+        const btn_1hour = createTimeButton("20 min", 20 * 60);
 
         btn_container.appendChild(btn_15min);
         btn_container.appendChild(btn_30min);
