@@ -16,14 +16,18 @@ function setting(name, def) {
     return value;
 }
 
+// static
 const setting_countdownsec_ = "countdownsec";  var setting_countdownsec = setting(setting_countdownsec_, "900");
-const setting_pinger_       = "pinger";        var setting_pinger       = setting(setting_pinger_,       true);
 const setting_pingms_       = "pingms";        var setting_pingms       = setting(setting_pingms_,       "5000");
-const setting_autotimer_    = "autotimer";     var setting_autotimer    = setting(setting_autotimer_,    true);
-const setting_autogas_      = "autogas";       var setting_autogas      = setting(setting_autogas_,      true);
 const setting_lowbound4gas_ = "bound4gas_low"; var setting_lowbound4gas = setting(setting_lowbound4gas_, 57);
 const setting_higbound4gas_ = "bound4gas_hig"; var setting_higbound4gas = setting(setting_higbound4gas_, 60);
 
+// dynamic
+const setting_pinger_       = "pinger";        var setting_pinger       = setting(setting_pinger_,       true);
+const setting_autotimer_    = "autotimer";     var setting_autotimer    = setting(setting_autotimer_,    true);
+const setting_autogas_      = "autogas";       var setting_autogas      = setting(setting_autogas_,      true);
+
+// ultra dynamic
 const setting_lastseen_mod_rada_        = "lastseen_mod_rada";        var setting_lastseen_mod_rada        = setting(setting_lastseen_mod_rada_,        null);
 const setting_lastseen_Tzadata_         = "lastseen_Tzadata";         var setting_lastseen_Tzadata         = setting(setting_lastseen_Tzadata_,         null);
 const setting_lastseen_RezimRadaPumpe4_ = "lastseen_RezimRadaPumpe4"; var setting_lastseen_RezimRadaPumpe4 = setting(setting_lastseen_RezimRadaPumpe4_, null);
@@ -301,6 +305,10 @@ const cbAutoGas   = createCheckbox("autogas",   setting_autogas_,   setting_auto
 if (setting_pinger) {
     pinger = setInterval(async () => {
 
+        setting_pinger    = GM_getValue(setting_pinger_, setting_pinger);
+        setting_autotimer = GM_getValue(setting_autotimer_, setting_autotimer);
+        setting_autogas   = GM_getValue(setting_autogas_, setting_autogas);
+
         if (!setting_pinger) { return; }
 
         try {
@@ -316,7 +324,11 @@ if (setting_pinger) {
             const Tmid = (json.Tmin.value + json.Tmax.value) / 2;
             const aboveBound = Tmid > setting_lowbound4gas;
 
-            currents.innerHTML = `mod_rada.......: ${mod_rada}<br>`
+            currents.innerHTML = `date & time....: ${time()}<br>`
+                               + `pinger.........: ${setting_pinger}<br>`
+                               + `autotimer......: ${setting_autotimer}<br>`
+                               + `autogas........: ${setting_autogas}<br>`
+                               + `mod_rada.......: ${mod_rada}<br>`
                                + `Tzadata........: ${Tzadata}<br>`
                                + `RezimRadaPumpe4: ${RezimRadaPumpe4}<br>`
                                + `Tmin...........: ${Tmin}<br>`
