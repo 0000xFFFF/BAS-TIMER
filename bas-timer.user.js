@@ -28,13 +28,13 @@ const setting_autotimer_    = "autotimer";     var setting_autotimer    = settin
 const setting_autogas_      = "autogas";       var setting_autogas      = setting(setting_autogas_,      true);
 
 // ultra dynamic
-const setting_lastseen_mod_rada_         = "lastseen_mod_rada";         var setting_lastseen_mod_rada         = setting(setting_lastseen_mod_rada_,         null);
-const setting_lastseen_Tzadata_          = "lastseen_Tzadata";          var setting_lastseen_Tzadata          = setting(setting_lastseen_Tzadata_,          null);
-const setting_lastseen_RezimRadaPumpe4_  = "lastseen_RezimRadaPumpe4";  var setting_lastseen_RezimRadaPumpe4  = setting(setting_lastseen_RezimRadaPumpe4_,  null);
-const setting_lastseen_Tmin_             = "lastseen_Tmin";             var setting_lastseen_Tmin             = setting(setting_lastseen_Tmin_,             null);
-const setting_lastseen_Tmax_             = "lastseen_Tmax";             var setting_lastseen_Tmax             = setting(setting_lastseen_Tmax_,             null);
-const setting_lastseen_Tmid_             = "lastseen_Tmid";             var setting_lastseen_Tmid             = setting(setting_lastseen_Tmid_,             null);
-const setting_lastseen_TminIsBelowBound_ = "lastseen_TminIsBelowBound"; var setting_lastseen_TminIsBelowBound = setting(setting_lastseen_TminIsBelowBound_, null);
+const setting_lastseen_mod_rada_        = "lastseen_mod_rada";        var setting_lastseen_mod_rada        = setting(setting_lastseen_mod_rada_,        null);
+const setting_lastseen_Tzadata_         = "lastseen_Tzadata";         var setting_lastseen_Tzadata         = setting(setting_lastseen_Tzadata_,         null);
+const setting_lastseen_RezimRadaPumpe4_ = "lastseen_RezimRadaPumpe4"; var setting_lastseen_RezimRadaPumpe4 = setting(setting_lastseen_RezimRadaPumpe4_, null);
+const setting_lastseen_Tmin_            = "lastseen_Tmin";            var setting_lastseen_Tmin            = setting(setting_lastseen_Tmin_,            null);
+const setting_lastseen_Tmax_            = "lastseen_Tmax";            var setting_lastseen_Tmax            = setting(setting_lastseen_Tmax_,            null);
+const setting_lastseen_Tmid_            = "lastseen_Tmid";            var setting_lastseen_Tmid            = setting(setting_lastseen_Tmid_,            null);
+const setting_lastseen_TminIsLT_        = "lastseen_TminIsLT";        var setting_lastseen_TminIsLT        = setting(setting_lastseen_TminIsLT_,        null);
 
 const URLS = {
     OFF:     "http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1",
@@ -153,7 +153,7 @@ GM_addStyle(`
 #currents {
     color: blue;
     padding: 5px;
-    font-size: 20px;
+    font-size: 17px;
     width: 530px;
     height: 300px;
     border-top: 2px double rgb(224, 224, 224);
@@ -322,7 +322,8 @@ if (setting_pinger) {
             const Tmin = json.Tmin.value;
             const Tmax = json.Tmax.value;
             const Tmid = (json.Tmin.value + json.Tmax.value) / 2;
-            const TminIsBelowBound = Tmin < setting_lowbound4gas;
+            const TminIsLT = Tmin < setting_lowbound4gas;
+            const TmidIsGE = Tmid >= setting_higbound4gas;
 
             currents.innerHTML = `date & time....: ${time()}<br>`
                                + `pinger.........: ${setting_pinger}<br>`
@@ -334,7 +335,8 @@ if (setting_pinger) {
                                + `Tmin...........: ${Tmin}<br>`
                                + `Tmax...........: ${Tmax}<br>`
                                + `Tmid...........: ${Tmid}<br>`
-                               + `Tmid<${setting_lowbound4gas}........: ${TminIsBelowBound}<br>`;
+                               + `Tmin<${setting_lowbound4gas}........: ${TminIsLT}<br>`
+                               + `Tmid>=${setting_higbound4gas}.......: ${TmidIsGE}<br>`;
 
             console.log(json);
 
@@ -371,24 +373,21 @@ if (setting_pinger) {
                 GM_setValue(setting_lastseen_Tmid_, setting_lastseen_Tmid)
             }
 
-            if (setting_lastseen_TminIsBelowBound != TminIsBelowBound) {
-                setting_lastseen_TminIsBelowBound = TminIsBelowBound;
-                GM_setValue(setting_lastseen_TminIsBelowBound_, setting_lastseen_TminIsBelowBound)
-                log(`[i] Tmin: ${Tmin} < ${setting_lowbound4gas} = ${setting_lastseen_TminIsBelowBound}`)
+            if (setting_lastseen_TminIsLT != TminIsLT) {
+                setting_lastseen_TminIsLT = TminIsLT;
+                GM_setValue(setting_lastseen_TminIsLT_, setting_lastseen_TminIsLT)
+                log(`[i] Tmin: ${Tmin} < ${setting_lowbound4gas} = ${setting_lastseen_TminIsLT}`)
 
-                if (setting_autogas && RezimRadaPumpe4 == 0 && setting_lastseen_TminIsBelowBound) {
+                if (setting_autogas && RezimRadaPumpe4 == 0 && setting_lastseen_TminIsLT) {
                     log("[>] GAS ON (set RezimRadaPumpe4=3)");
                     fetch(URLS.GAS_ON);
                 }
             }
 
-            if (setting_autogas) {
-                const aboveHigh = Tmid >= setting_higbound4gas;
-                if (RezimRadaPumpe4 == 3 && aboveHigh) {
-                    log(`[i] Tmid: ${Tmid} >= ${setting_higbound4gas} = ${aboveHigh}`)
-                    log("[>] GAS OFF (set RezimRadaPumpe4=0)");
-                    fetch(URLS.GAS_OFF);
-                }
+            if (setting_autogas && RezimRadaPumpe4 == 3 && TmidIsGE) {
+                log(`[i] Tmid: ${Tmid} >= ${setting_higbound4gas} = ${TmidIsGE}`)
+                log("[>] GAS OFF (set RezimRadaPumpe4=0)");
+                fetch(URLS.GAS_OFF);
             }
 
 
