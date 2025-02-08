@@ -48,6 +48,7 @@ const URLS = {
 GM_addStyle(`
 
 #mainCont {
+    font-family: monospace;
     display: flex;
     flex-direction: row;
     padding: 10px;
@@ -165,7 +166,6 @@ GM_addStyle(`
     color: #eee;
     padding: 5px;
     font-size: 24px;
-    font-family: serif;
     width: 620px;
     height: 500px;
     border-top: 2px double rgb(224, 224, 224);
@@ -531,4 +531,3 @@ function appendTimer() {
     document.body.appendChild(maincont);
 }
 appendTimer();
-
