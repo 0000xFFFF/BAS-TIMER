@@ -439,7 +439,7 @@ pinger = setInterval(async () => {
         colorIt(`pinger`                        , `${setting_pinger}`   , (setting_pinger));
         colorIt(`autotimer`                     , `${setting_autotimer}`, (setting_autotimer));
         colorIt(`autogas`                       , `${setting_autogas}`  , (setting_autogas));
-        colorIt(`Tzadata`                       , `${Tzadata} °C`       , (getColor(Tzadata)));
+        colorIt(`Tzadata`                       , `${Tzadata} °C`       , (Tzadata));
         colorIt(`Tmax`                          , `${Tmax} °C`          , (getColor(Tmax)));
         colorIt(`Tmid`                          , `${Tmid} °C`          , (getColor(Tmid)));
         colorIt(`Tmin`                          , `${Tmin} °C`          , (getColor(Tmin)));
@@ -531,3 +531,4 @@ function appendTimer() {
     document.body.appendChild(maincont);
 }
 appendTimer();
+
