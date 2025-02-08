@@ -50,17 +50,19 @@ GM_addStyle(`
 #mainCont {
     display: flex;
     flex-direction: row;
+    padding: 10px;
+    gap: 10px;
 }
 
 #bt_cont {
-    margin: 20px;
     display: flex;
     color: blue;
     font-size: 20px;
     background: rgb(192, 192, 192);
     flex-direction: column;
     gap: 1px;
-    width: 600px;
+    width: 720px;
+    height: 900px;
     border-top: 2px double rgb(224, 224, 224);
     border-left: 2px double rgb(224, 224, 224);
     border-right: 2px double black;
@@ -137,11 +139,12 @@ GM_addStyle(`
 }
 
 #logs {
+    box-sizing: border-box;
     color: blue;
     padding: 5px;
     font-size: 20px;
-    width: calc(90vw - 400px);
-    height: 80vh;
+    width: calc(90vw - 600px);
+    height: 900px;
     border-top: 2px double rgb(224, 224, 224);
     border-left: 2px double rgb(224, 224, 224);
     border-right: 2px double black;
@@ -150,17 +153,57 @@ GM_addStyle(`
     font-family: monospace;
 }
 
+#currents_cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 2px;
+}
+
 #currents {
-    color: blue;
+    font-weight: bolder;
+    color: #eee;
     padding: 5px;
-    font-size: 17px;
-    width: 530px;
-    height: 300px;
+    font-size: 20px;
+    width: 620px;
+    height: 500px;
     border-top: 2px double rgb(224, 224, 224);
     border-left: 2px double rgb(224, 224, 224);
     border-right: 2px double black;
     border-bottom: 2px double black;
     font-family: monospace;
+    background: #808080;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    letter-spacing: 1px;
+}
+
+#currents_canvas {
+    border-top: 2px double rgb(224, 224, 224);
+    border-left: 2px double rgb(224, 224, 224);
+    border-right: 2px double black;
+    border-bottom: 2px double black;
+    width: 60px;
+    height: 510px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding-right: 2px;
+}
+th {
+    background-color: #f2f2f2;
+}
+
+.currents_label {
+    text-align: right;
+    padding-right: 10px;
+}
+
+.currents_text {
+    text-align: left;
 }
 
 `);
@@ -271,7 +314,19 @@ const timeOptions = [5, 8, 10, 15, 20, 25].map(min => {
 updateButtonStyles();
 
 const status = createElement("div", { innerHTML: "...", className: "bt_text" });
+const currents_cont = createElement("div", { id: "currents_cont" });
 const currents = createElement("div", { id: "currents" });
+
+const currents_table = createElement("table");
+const currents_thead = createElement("thead");
+const currents_thead_var = createElement("tr", { innerHTML: "VAR" });
+const currents_thead_val = createElement("tr", { innerHTML: "VALUE" });
+currents_thead.append(currents_thead_var, currents_thead_val);
+const currents_tbody = createElement("tbody");
+currents_table.append(currents_thead, currents_tbody);
+
+const canvas = createElement("canvas", { id: "currents_canvas" });
+currents_cont.append(currents, canvas);
 
 let running = false, countdown;
 
@@ -302,112 +357,170 @@ function toggleTimer() { running ? stopTimer() : startTimer(); }
 const cbAutoTimer = createCheckbox("autotimer", setting_autotimer_, setting_autotimer, `Auto Timer`);
 const cbAutoGas   = createCheckbox("autogas",   setting_autogas_,   setting_autogas,   `Auto Gas`);
 
-if (setting_pinger) {
-    pinger = setInterval(async () => {
+//let MIN_TEMP = Infinity;
+//let MAX_TEMP = -Infinity;
 
-        setting_pinger    = GM_getValue(setting_pinger_, setting_pinger);
-        setting_autotimer = GM_getValue(setting_autotimer_, setting_autotimer);
-        setting_autogas   = GM_getValue(setting_autogas_, setting_autogas);
+let MIN_TEMP = setting_lowbound4gas;
+let MAX_TEMP = setting_higbound4gas;
 
-        if (!setting_pinger) { return; }
+// Helper function to interpolate colors
+function getColor(temp) {
 
-        try {
-            const response = await fetch(URLS.VARS); // Fetch the data
-            if (!response.ok) { throw new Error(`HTTP error! Status: ${response.status}`); }
-            const json = await response.json(); // Parse JSON
+    MIN_TEMP = Math.min(MIN_TEMP, temp);
+    MAX_TEMP = Math.max(MAX_TEMP, temp);
 
-            const mod_rada = json.mod_rada.value;
-            const Tzadata = json.Tzadata.value;
-            const RezimRadaPumpe4 = json.RezimRadaPumpe4.value;
-            const Tmin = json.Tmin.value;
-            const Tmax = json.Tmax.value;
-            const Tmid = (json.Tmin.value + json.Tmax.value) / 2;
-            const TminIsLT = Tmin < setting_lowbound4gas;
-            const TmidIsGE = Tmid >= setting_higbound4gas;
+    // Prevent division by zero if all temps are the same
+    if (MIN_TEMP === MAX_TEMP) {
+        MIN_TEMP -= 1;
+        MAX_TEMP += 1;
+    }
 
-            currents.innerHTML = `date & time....: ${time()}<br>`
-                               + `pinger.........: ${setting_pinger}<br>`
-                               + `autotimer......: ${setting_autotimer}<br>`
-                               + `autogas........: ${setting_autogas}<br>`
-                               + `mod_rada.......: ${mod_rada}<br>`
-                               + `Tzadata........: ${Tzadata}<br>`
-                               + `RezimRadaPumpe4: ${RezimRadaPumpe4}<br>`
-                               + `Tmin...........: ${Tmin}<br>`
-                               + `Tmax...........: ${Tmax}<br>`
-                               + `Tmid...........: ${Tmid}<br>`
-                               + `Tmin<${setting_lowbound4gas}........: ${TminIsLT}<br>`
-                               + `Tmid>=${setting_higbound4gas}.......: ${TmidIsGE}<br>`;
-
-            console.log(json);
-
-            if (setting_lastseen_mod_rada != mod_rada) {
-                setting_lastseen_mod_rada = mod_rada;
-                GM_setValue(setting_lastseen_mod_rada_, setting_lastseen_mod_rada)
-                log(`[i] mod_rada = ${setting_lastseen_mod_rada}`)
-            }
-
-            if (setting_lastseen_Tzadata != Tzadata) {
-                setting_lastseen_Tzadata = Tzadata;
-                GM_setValue(setting_lastseen_Tzadata_, setting_lastseen_Tzadata)
-                log(`[i] Tzadata = ${setting_lastseen_Tzadata}`)
-            }
-
-            if (setting_lastseen_RezimRadaPumpe4 != RezimRadaPumpe4) {
-                setting_lastseen_RezimRadaPumpe4 = RezimRadaPumpe4;
-                GM_setValue(setting_lastseen_RezimRadaPumpe4_, setting_lastseen_RezimRadaPumpe4)
-                log(`[i] RezimRadaPumpe4 = ${setting_lastseen_RezimRadaPumpe4}`)
-            }
-
-            if (setting_lastseen_Tmin != Tmin) {
-                setting_lastseen_Tmin = Tmin;
-                GM_setValue(setting_lastseen_Tmin_, setting_lastseen_Tmin)
-            }
-
-            if (setting_lastseen_Tmax != Tmax) {
-                setting_lastseen_Tmax = Tmax;
-                GM_setValue(setting_lastseen_Tmax_, setting_lastseen_Tmax)
-            }
-
-            if (setting_lastseen_Tmid != Tmid) {
-                setting_lastseen_Tmid = Tmid;
-                GM_setValue(setting_lastseen_Tmid_, setting_lastseen_Tmid)
-            }
-
-            if (setting_lastseen_TminIsLT != TminIsLT) {
-                setting_lastseen_TminIsLT = TminIsLT;
-                GM_setValue(setting_lastseen_TminIsLT_, setting_lastseen_TminIsLT)
-                log(`[i] Tmin: ${Tmin} < ${setting_lowbound4gas} = ${setting_lastseen_TminIsLT}`)
-
-                if (setting_autogas && RezimRadaPumpe4 == 0 && setting_lastseen_TminIsLT) {
-                    log("[>] GAS ON (set RezimRadaPumpe4=3)");
-                    fetch(URLS.GAS_ON);
-                }
-            }
-
-            if (setting_autogas && RezimRadaPumpe4 == 3 && TmidIsGE) {
-                log(`[i] Tmid: ${Tmid} >= ${setting_higbound4gas} = ${TmidIsGE}`)
-                log("[>] GAS OFF (set RezimRadaPumpe4=0)");
-                fetch(URLS.GAS_OFF);
-            }
-
-
-            if (setting_autotimer) {
-                if (mod_rada == 1) { if (!running) { startTimer(); } }
-                else { if (running) { stopTimer(); } }
-            }
-
-        }
-        catch (error) { console.error("Error fetching data:", error); }
-
-    }, setting_pingms);
+    const normalizedTemp = (temp - MIN_TEMP) / (MAX_TEMP - MIN_TEMP);
+    const r = Math.min(255, Math.max(0, normalizedTemp * 255));
+    const b = Math.min(255, Math.max(0, 255 - normalizedTemp * 255));
+    return `rgb(${r}, 0, ${b})`;
 }
+
+function drawTemperatureGradient(temp1, temp2, temp3) {
+
+    const ctx = canvas.getContext("2d");
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, getColor(temp3)); // Top (max temp)
+    gradient.addColorStop(0.5, getColor(temp2)); // Middle (mid temp)
+    gradient.addColorStop(1, getColor(temp1)); // Bottom (min temp)
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+
+pinger = setInterval(async () => {
+
+    setting_pinger    = GM_getValue(setting_pinger_, setting_pinger);
+    setting_autotimer = GM_getValue(setting_autotimer_, setting_autotimer);
+    setting_autogas   = GM_getValue(setting_autogas_, setting_autogas);
+
+    if (!setting_pinger) { return; }
+
+    try {
+        const response = await fetch(URLS.VARS); // Fetch the data
+        if (!response.ok) { throw new Error(`HTTP error! Status: ${response.status}`); }
+        const json = await response.json(); // Parse JSON
+
+        const mod_rada = json.mod_rada.value;
+        const Tzadata = json.Tzadata.value;
+        const RezimRadaPumpe4 = json.RezimRadaPumpe4.value;
+        const Tmin = json.Tmin.value;
+        const Tmax = json.Tmax.value;
+        const Tmid = (json.Tmin.value + json.Tmax.value) / 2;
+        const TminIsLT = Tmin < setting_lowbound4gas;
+        const TmidIsGE = Tmid >= setting_higbound4gas;
+
+        currents.innerHTML = "";
+
+        function colorIt(label, text, clr) {
+            const COLOR_OFF = "rgb(255, 255, 0)";
+            const COLOR_ON  = "rgb(0, 255, 0)";
+
+            let style = "color: white";
+            if      (typeof clr === 'boolean') { style = `color: ${(clr ? COLOR_ON : COLOR_OFF)}`; }
+            else if (typeof clr === 'string')  { style = `color: ${clr}`; }
+
+            const tr = createElement("tr");
+            const td1 = createElement("td", { className: "currents_label", innerHTML: label });
+            const td2 = createElement("td", { className: "currents_text", innerHTML: text, style: style });
+            tr.append(td1, td2);
+            currents.append(tr);
+        }
+
+        colorIt(`date & time`                   , `${time()}`           , ("white"));
+        colorIt(`pinger`                        , `${setting_pinger}`   , (setting_pinger));
+        colorIt(`autotimer:`                    , `${setting_autotimer}`, (setting_autotimer));
+        colorIt(`autogas`                       , `${setting_autogas}`  , (setting_autogas));
+        colorIt(`Tzadata`                       , `${Tzadata} °C`       , (getColor(Tzadata)));
+        colorIt(`Tmax`                          , `${Tmax} °C`          , (getColor(Tmax)));
+        colorIt(`Tmid`                          , `${Tmid} °C`          , (getColor(Tmid)));
+        colorIt(`Tmin`                          , `${Tmin} °C`          , (getColor(Tmin)));
+        colorIt(`Tmin<${setting_lowbound4gas}`  , `${TminIsLT}`         , (TminIsLT));
+        colorIt(`Tmid>=${setting_higbound4gas}` , `${TmidIsGE}`         , (TmidIsGE));
+        colorIt(`mod_rada`                      , `${mod_rada}`         , (mod_rada == 1));
+        colorIt(`RezimRadaPumpe4`               , `${RezimRadaPumpe4}`  , (RezimRadaPumpe4 == 3));
+        colorIt(`last seen hottest`             , `${MAX_TEMP}`         , (getColor(MAX_TEMP)));
+        colorIt(`last seen coldest`             , `${MIN_TEMP}`         , (getColor(MIN_TEMP)));
+
+
+        console.log(json);
+
+        drawTemperatureGradient(Tmin, Tmid, Tmax);
+
+        if (setting_lastseen_mod_rada != mod_rada) {
+            setting_lastseen_mod_rada = mod_rada;
+            GM_setValue(setting_lastseen_mod_rada_, setting_lastseen_mod_rada)
+            log(`[i] mod_rada = ${setting_lastseen_mod_rada}`)
+        }
+
+        if (setting_lastseen_Tzadata != Tzadata) {
+            setting_lastseen_Tzadata = Tzadata;
+            GM_setValue(setting_lastseen_Tzadata_, setting_lastseen_Tzadata)
+            log(`[i] Tzadata = ${setting_lastseen_Tzadata}`)
+        }
+
+        if (setting_lastseen_RezimRadaPumpe4 != RezimRadaPumpe4) {
+            setting_lastseen_RezimRadaPumpe4 = RezimRadaPumpe4;
+            GM_setValue(setting_lastseen_RezimRadaPumpe4_, setting_lastseen_RezimRadaPumpe4)
+            log(`[i] RezimRadaPumpe4 = ${setting_lastseen_RezimRadaPumpe4}`)
+        }
+
+        if (setting_lastseen_Tmin != Tmin) {
+            setting_lastseen_Tmin = Tmin;
+            GM_setValue(setting_lastseen_Tmin_, setting_lastseen_Tmin)
+        }
+
+        if (setting_lastseen_Tmax != Tmax) {
+            setting_lastseen_Tmax = Tmax;
+            GM_setValue(setting_lastseen_Tmax_, setting_lastseen_Tmax)
+        }
+
+        if (setting_lastseen_Tmid != Tmid) {
+            setting_lastseen_Tmid = Tmid;
+            GM_setValue(setting_lastseen_Tmid_, setting_lastseen_Tmid)
+        }
+
+        if (setting_lastseen_TminIsLT != TminIsLT) {
+            setting_lastseen_TminIsLT = TminIsLT;
+            GM_setValue(setting_lastseen_TminIsLT_, setting_lastseen_TminIsLT)
+            log(`[i] Tmin: ${Tmin} < ${setting_lowbound4gas} = ${setting_lastseen_TminIsLT}`)
+
+            if (setting_autogas && RezimRadaPumpe4 == 0 && setting_lastseen_TminIsLT) {
+                log("[>] GAS ON (set RezimRadaPumpe4=3)");
+                fetch(URLS.GAS_ON);
+            }
+        }
+
+        if (setting_autogas && RezimRadaPumpe4 == 3 && TmidIsGE) {
+            log(`[i] Tmid: ${Tmid} >= ${setting_higbound4gas} = ${TmidIsGE}`)
+            log("[>] GAS OFF (set RezimRadaPumpe4=0)");
+            fetch(URLS.GAS_OFF);
+        }
+
+
+        if (setting_autotimer) {
+            if (mod_rada == 1) { if (!running) { startTimer(); } }
+            else { if (running) { stopTimer(); } }
+        }
+
+    }
+    catch (error) { console.error("Error fetching data:", error); }
+
+}, setting_pingms);
 
 
 const cbPinger = createCheckbox("pinger", setting_pinger_, setting_pinger, `Ping every ${setting_pingms} ms`);
 const startBtn = createElement("button", { innerHTML: "Toggle", className: "bt_button", onclick: toggleTimer });
 
 
-body.append(inputContainer, buttonContainer, startBtn, cbPinger, cbAutoTimer, cbAutoGas, status, currents);
+body.append(inputContainer, buttonContainer, startBtn, cbPinger, cbAutoTimer, cbAutoGas, status, currents_cont);
 container.append(body);
 maincont.append(container);
 maincont.append(logscont);
