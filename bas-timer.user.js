@@ -164,7 +164,7 @@ GM_addStyle(`
     font-weight: bolder;
     color: #eee;
     padding: 5px;
-    font-size: 25px;
+    font-size: 24px;
     font-family: serif;
     width: 620px;
     height: 500px;
