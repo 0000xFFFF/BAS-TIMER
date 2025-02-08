@@ -164,7 +164,8 @@ GM_addStyle(`
     font-weight: bolder;
     color: #eee;
     padding: 5px;
-    font-size: 20px;
+    font-size: 25px;
+    font-family: serif;
     width: 620px;
     height: 500px;
     border-top: 2px double rgb(224, 224, 224);
@@ -436,7 +437,7 @@ pinger = setInterval(async () => {
 
         colorIt(`date & time`                   , `${time()}`           , ("white"));
         colorIt(`pinger`                        , `${setting_pinger}`   , (setting_pinger));
-        colorIt(`autotimer:`                    , `${setting_autotimer}`, (setting_autotimer));
+        colorIt(`autotimer`                     , `${setting_autotimer}`, (setting_autotimer));
         colorIt(`autogas`                       , `${setting_autogas}`  , (setting_autogas));
         colorIt(`Tzadata`                       , `${Tzadata} °C`       , (getColor(Tzadata)));
         colorIt(`Tmax`                          , `${Tmax} °C`          , (getColor(Tmax)));
@@ -444,10 +445,10 @@ pinger = setInterval(async () => {
         colorIt(`Tmin`                          , `${Tmin} °C`          , (getColor(Tmin)));
         colorIt(`Tmin<${setting_lowbound4gas}`  , `${TminIsLT}`         , (TminIsLT));
         colorIt(`Tmid>=${setting_higbound4gas}` , `${TmidIsGE}`         , (TmidIsGE));
-        colorIt(`mod_rada`                      , `${mod_rada}`         , (mod_rada == 1));
-        colorIt(`RezimRadaPumpe4`               , `${RezimRadaPumpe4}`  , (RezimRadaPumpe4 == 3));
-        colorIt(`last seen hottest`             , `${MAX_TEMP}`         , (getColor(MAX_TEMP)));
-        colorIt(`last seen coldest`             , `${MIN_TEMP}`         , (getColor(MIN_TEMP)));
+        colorIt(`Mod Rada`                      , `${mod_rada}`         , (mod_rada == 1));
+        colorIt(`GAS`                           , `${RezimRadaPumpe4}`  , (RezimRadaPumpe4 == 3));
+        colorIt(`hottest`                       , `${MAX_TEMP} °C`      , (getColor(MAX_TEMP)));
+        colorIt(`coldest`                       , `${MIN_TEMP} °C`      , (getColor(MIN_TEMP)));
 
 
         console.log(json);
