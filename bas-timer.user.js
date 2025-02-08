@@ -492,19 +492,20 @@ pinger = setInterval(async () => {
             setting_lastseen_TminIsLT = TminIsLT;
             GM_setValue(setting_lastseen_TminIsLT_, setting_lastseen_TminIsLT)
             log(`[i] Tmin: ${Tmin} < ${setting_lowbound4gas} = ${setting_lastseen_TminIsLT}`)
+        }
 
-            if (setting_autogas && RezimRadaPumpe4 == 0 && setting_lastseen_TminIsLT) {
+        if (setting_autogas) {
+            if (RezimRadaPumpe4 == 0 && TminIsLT) {
                 log("[>] GAS ON (set RezimRadaPumpe4=3)");
                 fetch(URLS.GAS_ON);
             }
-        }
 
-        if (setting_autogas && RezimRadaPumpe4 == 3 && TmidIsGE) {
-            log(`[i] Tmid: ${Tmid} >= ${setting_higbound4gas} = ${TmidIsGE}`)
-            log("[>] GAS OFF (set RezimRadaPumpe4=0)");
-            fetch(URLS.GAS_OFF);
+            if (RezimRadaPumpe4 == 3 && TmidIsGE) {
+                log(`[i] Tmid: ${Tmid} >= ${setting_higbound4gas} = ${TmidIsGE}`)
+                log("[>] GAS OFF (set RezimRadaPumpe4=0)");
+                fetch(URLS.GAS_OFF);
+            }
         }
-
 
         if (setting_autotimer) {
             if (mod_rada == 1) { if (!running) { startTimer(); } }
