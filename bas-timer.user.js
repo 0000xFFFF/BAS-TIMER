@@ -287,7 +287,7 @@ function startTimer() {
         if (secondsLeft < 0) {
             stopTimer();
             status.innerHTML = "Turning off heating.";
-            log("Turning off heating.");
+            log("HEAT OFF (set mod_rada=0)");
             fetch(URLS.OFF);
         }
     }, 1000);
