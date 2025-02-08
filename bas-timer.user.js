@@ -16,13 +16,13 @@ function setting(name, def) {
     return value;
 }
 
-const setting_countdownsec_ = "countdownsec"; var setting_countdownsec = setting(setting_countdownsec_, "900");
-const setting_pinger_       = "pinger";       var setting_pinger       = setting(setting_pinger_,       true);
-const setting_pingms_       = "pingms";       var setting_pingms       = setting(setting_pingms_,       "5000");
-const setting_autotimer_    = "autotimer";    var setting_autotimer    = setting(setting_autotimer_,    true);
-const setting_autogas_      = "autogas";      var setting_autogas      = setting(setting_autogas_,      true);
-const setting_lowbound4gas_ = "lowbound4gas"; var setting_lowbound4gas = setting(setting_lowbound4gas_, 57);
-const setting_higbound4gas_ = "higbound4gas"; var setting_higbound4gas = setting(setting_higbound4gas_, 60);
+const setting_countdownsec_ = "countdownsec";  var setting_countdownsec = setting(setting_countdownsec_, "900");
+const setting_pinger_       = "pinger";        var setting_pinger       = setting(setting_pinger_,       true);
+const setting_pingms_       = "pingms";        var setting_pingms       = setting(setting_pingms_,       "5000");
+const setting_autotimer_    = "autotimer";     var setting_autotimer    = setting(setting_autotimer_,    true);
+const setting_autogas_      = "autogas";       var setting_autogas      = setting(setting_autogas_,      true);
+const setting_lowbound4gas_ = "bound4gas_low"; var setting_lowbound4gas = setting(setting_lowbound4gas_, 57);
+const setting_higbound4gas_ = "bound4gas_hig"; var setting_higbound4gas = setting(setting_higbound4gas_, 60);
 
 const setting_lastseen_mod_rada_        = "lastseen_mod_rada";        var setting_lastseen_mod_rada        = setting(setting_lastseen_mod_rada_,        null);
 const setting_lastseen_Tzadata_         = "lastseen_Tzadata";         var setting_lastseen_Tzadata         = setting(setting_lastseen_Tzadata_,         null);
@@ -275,11 +275,11 @@ function stopTimer() {
     running = false;
     clearInterval(countdown);
     status.innerHTML = "...";
-    log("timer stopped");
+    log("[>] timer stopped");
 }
 
 function startTimer() {
-    log("timer started");
+    log("[>] timer started");
     running = true;
     let secondsLeft = parseInt(input.value) || 100;
     countdown = setInterval(() => {
@@ -287,7 +287,7 @@ function startTimer() {
         if (secondsLeft < 0) {
             stopTimer();
             status.innerHTML = "Turning off heating.";
-            log("HEAT OFF (set mod_rada=0)");
+            log("[>] HEAT OFF (set mod_rada=0)");
             fetch(URLS.OFF);
         }
     }, 1000);
@@ -329,46 +329,43 @@ if (setting_pinger) {
             if (setting_lastseen_mod_rada != mod_rada) {
                 setting_lastseen_mod_rada = mod_rada;
                 GM_setValue(setting_lastseen_mod_rada_, setting_lastseen_mod_rada)
-                log(`mod_rada = ${setting_lastseen_mod_rada}`)
+                log(`[i] mod_rada = ${setting_lastseen_mod_rada}`)
             }
 
             if (setting_lastseen_Tzadata != Tzadata) {
                 setting_lastseen_Tzadata = Tzadata;
                 GM_setValue(setting_lastseen_Tzadata_, setting_lastseen_Tzadata)
-                log(`Tzadata = ${setting_lastseen_Tzadata}`)
+                log(`[i] Tzadata = ${setting_lastseen_Tzadata}`)
             }
 
             if (setting_lastseen_RezimRadaPumpe4 != RezimRadaPumpe4) {
                 setting_lastseen_RezimRadaPumpe4 = RezimRadaPumpe4;
                 GM_setValue(setting_lastseen_RezimRadaPumpe4_, setting_lastseen_RezimRadaPumpe4)
-                log(`RezimRadaPumpe4 = ${setting_lastseen_RezimRadaPumpe4}`)
+                log(`[i] RezimRadaPumpe4 = ${setting_lastseen_RezimRadaPumpe4}`)
             }
 
             if (setting_lastseen_Tmin != Tmin) {
                 setting_lastseen_Tmin = Tmin;
                 GM_setValue(setting_lastseen_Tmin_, setting_lastseen_Tmin)
-                //log(`Tmin: ${setting_lastseen_Tmin}`)
             }
 
             if (setting_lastseen_Tmax != Tmax) {
                 setting_lastseen_Tmax = Tmax;
                 GM_setValue(setting_lastseen_Tmax_, setting_lastseen_Tmax)
-                //log(`Tmax: ${setting_lastseen_Tmax}`)
             }
 
             if (setting_lastseen_Tmid != Tmid) {
                 setting_lastseen_Tmid = Tmid;
                 GM_setValue(setting_lastseen_Tmid_, setting_lastseen_Tmid)
-                //log(`Tmid: ${setting_lastseen_Tmid}`)
             }
 
             if (setting_lastseen_aboveBound != aboveBound) {
                 setting_lastseen_aboveBound = aboveBound;
                 GM_setValue(setting_lastseen_aboveBound_, setting_lastseen_aboveBound)
-                log(`Tmid: ${Tmid} > ${setting_lowbound4gas} = ${setting_lastseen_aboveBound}`)
+                log(`[i] Tmid: ${Tmid} > ${setting_lowbound4gas} = ${setting_lastseen_aboveBound}`)
 
                 if (setting_autogas && RezimRadaPumpe4 == 0 && !setting_lastseen_aboveBound) {
-                    log("GAS ON (set RezimRadaPumpe4=3)");
+                    log("[>] GAS ON (set RezimRadaPumpe4=3)");
                     fetch(URLS.GAS_ON);
                 }
             }
@@ -376,8 +373,8 @@ if (setting_pinger) {
             if (setting_autogas) {
                 const aboveHigh = Tmid >= setting_higbound4gas;
                 if (RezimRadaPumpe4 == 3 && aboveHigh) {
-                    log(`Tmid: ${Tmid} >= ${setting_higbound4gas} = ${aboveHigh}`)
-                    log("GAS OFF (set RezimRadaPumpe4=0)");
+                    log(`[i] Tmid: ${Tmid} >= ${setting_higbound4gas} = ${aboveHigh}`)
+                    log("[>] GAS OFF (set RezimRadaPumpe4=0)");
                     fetch(URLS.GAS_OFF);
                 }
             }
