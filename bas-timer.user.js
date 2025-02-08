@@ -19,7 +19,7 @@ function setting(name, def) {
 // static
 const setting_countdownsec_ = "countdownsec";  var setting_countdownsec = setting(setting_countdownsec_, "900");
 const setting_pingms_       = "pingms";        var setting_pingms       = setting(setting_pingms_,       "5000");
-const setting_lowbound4gas_ = "bound4gas_low"; var setting_lowbound4gas = setting(setting_lowbound4gas_, 57);
+const setting_lowbound4gas_ = "bound4gas_low"; var setting_lowbound4gas = setting(setting_lowbound4gas_, 45);
 const setting_higbound4gas_ = "bound4gas_hig"; var setting_higbound4gas = setting(setting_higbound4gas_, 60);
 
 // dynamic
@@ -28,13 +28,13 @@ const setting_autotimer_    = "autotimer";     var setting_autotimer    = settin
 const setting_autogas_      = "autogas";       var setting_autogas      = setting(setting_autogas_,      true);
 
 // ultra dynamic
-const setting_lastseen_mod_rada_        = "lastseen_mod_rada";        var setting_lastseen_mod_rada        = setting(setting_lastseen_mod_rada_,        null);
-const setting_lastseen_Tzadata_         = "lastseen_Tzadata";         var setting_lastseen_Tzadata         = setting(setting_lastseen_Tzadata_,         null);
-const setting_lastseen_RezimRadaPumpe4_ = "lastseen_RezimRadaPumpe4"; var setting_lastseen_RezimRadaPumpe4 = setting(setting_lastseen_RezimRadaPumpe4_, null);
-const setting_lastseen_Tmin_            = "lastseen_Tmin";            var setting_lastseen_Tmin            = setting(setting_lastseen_Tmin_,            null);
-const setting_lastseen_Tmax_            = "lastseen_Tmax";            var setting_lastseen_Tmax            = setting(setting_lastseen_Tmax_,            null);
-const setting_lastseen_Tmid_            = "lastseen_Tmid";            var setting_lastseen_Tmid            = setting(setting_lastseen_Tmid_,            null);
-const setting_lastseen_aboveBound_      = "lastseen_aboveBound";      var setting_lastseen_aboveBound      = setting(setting_lastseen_aboveBound_,      null);
+const setting_lastseen_mod_rada_         = "lastseen_mod_rada";         var setting_lastseen_mod_rada         = setting(setting_lastseen_mod_rada_,         null);
+const setting_lastseen_Tzadata_          = "lastseen_Tzadata";          var setting_lastseen_Tzadata          = setting(setting_lastseen_Tzadata_,          null);
+const setting_lastseen_RezimRadaPumpe4_  = "lastseen_RezimRadaPumpe4";  var setting_lastseen_RezimRadaPumpe4  = setting(setting_lastseen_RezimRadaPumpe4_,  null);
+const setting_lastseen_Tmin_             = "lastseen_Tmin";             var setting_lastseen_Tmin             = setting(setting_lastseen_Tmin_,             null);
+const setting_lastseen_Tmax_             = "lastseen_Tmax";             var setting_lastseen_Tmax             = setting(setting_lastseen_Tmax_,             null);
+const setting_lastseen_Tmid_             = "lastseen_Tmid";             var setting_lastseen_Tmid             = setting(setting_lastseen_Tmid_,             null);
+const setting_lastseen_TminIsBelowBound_ = "lastseen_TminIsBelowBound"; var setting_lastseen_TminIsBelowBound = setting(setting_lastseen_TminIsBelowBound_, null);
 
 const URLS = {
     OFF:     "http://192.168.1.250:9001/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1",
@@ -250,7 +250,7 @@ function updateButtonStyles() {
 }
 
 const buttonContainer = createElement("div", { id: "btn_cont" });
-const timeOptions = [5, 10, 15, 20, 25].map(min => {
+const timeOptions = [5, 8, 10, 15, 20, 25].map(min => {
     const btn = createElement("button", {
         id: `button_${min}min`,
         innerHTML: `${min} min`,
@@ -299,8 +299,8 @@ function startTimer() {
 
 function toggleTimer() { running ? stopTimer() : startTimer(); }
 
-const cbAutoTimer = createCheckbox("autotimer", setting_autotimer_, setting_autotimer, `Auto Timer (mod_rada = 1 for X s => turn off)`);
-const cbAutoGas   = createCheckbox("autogas",   setting_autogas_,   setting_autogas,   `Auto Gas (${setting_lowbound4gas}*c < Tmid < ${setting_higbound4gas}*c)`);
+const cbAutoTimer = createCheckbox("autotimer", setting_autotimer_, setting_autotimer, `Auto Timer`);
+const cbAutoGas   = createCheckbox("autogas",   setting_autogas_,   setting_autogas,   `Auto Gas`);
 
 if (setting_pinger) {
     pinger = setInterval(async () => {
@@ -322,7 +322,7 @@ if (setting_pinger) {
             const Tmin = json.Tmin.value;
             const Tmax = json.Tmax.value;
             const Tmid = (json.Tmin.value + json.Tmax.value) / 2;
-            const aboveBound = Tmid > setting_lowbound4gas;
+            const TminIsBelowBound = Tmin < setting_lowbound4gas;
 
             currents.innerHTML = `date & time....: ${time()}<br>`
                                + `pinger.........: ${setting_pinger}<br>`
@@ -334,7 +334,7 @@ if (setting_pinger) {
                                + `Tmin...........: ${Tmin}<br>`
                                + `Tmax...........: ${Tmax}<br>`
                                + `Tmid...........: ${Tmid}<br>`
-                               + `Tmid>${setting_lowbound4gas}........: ${aboveBound}<br>`;
+                               + `Tmid<${setting_lowbound4gas}........: ${TminIsBelowBound}<br>`;
 
             console.log(json);
 
@@ -371,12 +371,12 @@ if (setting_pinger) {
                 GM_setValue(setting_lastseen_Tmid_, setting_lastseen_Tmid)
             }
 
-            if (setting_lastseen_aboveBound != aboveBound) {
-                setting_lastseen_aboveBound = aboveBound;
-                GM_setValue(setting_lastseen_aboveBound_, setting_lastseen_aboveBound)
-                log(`[i] Tmid: ${Tmid} > ${setting_lowbound4gas} = ${setting_lastseen_aboveBound}`)
+            if (setting_lastseen_TminIsBelowBound != TminIsBelowBound) {
+                setting_lastseen_TminIsBelowBound = TminIsBelowBound;
+                GM_setValue(setting_lastseen_TminIsBelowBound_, setting_lastseen_TminIsBelowBound)
+                log(`[i] Tmin: ${Tmin} < ${setting_lowbound4gas} = ${setting_lastseen_TminIsBelowBound}`)
 
-                if (setting_autogas && RezimRadaPumpe4 == 0 && !setting_lastseen_aboveBound) {
+                if (setting_autogas && RezimRadaPumpe4 == 0 && setting_lastseen_TminIsBelowBound) {
                     log("[>] GAS ON (set RezimRadaPumpe4=3)");
                     fetch(URLS.GAS_ON);
                 }
