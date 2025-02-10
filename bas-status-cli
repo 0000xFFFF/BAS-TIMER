@@ -110,20 +110,17 @@ def status():
     temps.append(["Active:", dic["Taktualno"]])
     temps.append(["Current:", dic["Tzadata"]])
     temps.append(["Regular:", dic["Tzad_red"]])
-    temps.append(["Comfor:", dic["Tzad_komf"]])
-    temps.append(["Near Circulation Pump:", dic["Tfs"]])
+    temps.append(["Comfort:", dic["Tzad_komf"]])
+    temps.append(["Near Circ. Pump:", dic["Tfs"]])
     temps.append(["Buffer Max:", dic["Tmax"]])
     temps.append(["Buffer Mid:", (dic["Tmax"] + dic["Tmin"]) / 2])
     temps.append(["Buffer Min:", dic["Tmin"]])
     temps.append(["Room:", dic["Tsobna"]])
 
 
-    # Print output as a table
-
     term_cursor_reset()
-    term_show(tabulate(status, headers=["STATUS", "MODE"], colalign=("right",)))
-    term_show("\n" + ("="*40) + "\n")
-    term_show(tabulate(temps, headers=["TEMP.", "*C"], colalign=("right",)))
+    term_show(tabulate(status, tablefmt="fancy_outline", colalign=("right",)))
+    term_show(tabulate(temps, tablefmt="fancy_outline", headers=["TEMP.", "*C"], colalign=("right",)))
 
 
 # exit handler
