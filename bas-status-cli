@@ -51,7 +51,8 @@ def term_show_print(printStr, color=""):
     tl = os.get_terminal_size().lines
     if term_show_count >= (tl - 1):
         return
-    print(f"{color}{printStr}{Style.RESET_ALL}")
+    #print(f"{color}{printStr}{Style.RESET_ALL}")
+    print(f"{printStr}")
     term_show_count += 1
 
 
@@ -73,7 +74,10 @@ def term_show(s, color=""):
             term_show_print(i + str(" " * int(int(tc) - int(il))), color)
 
 
-term_clear()
+
+def timestamp():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 
 def status():
     # Send GET request
@@ -88,48 +92,57 @@ def status():
         if isinstance(value, dict) and "value" in value:
             dic[key] = value["value"]
 
-    output = []
 
-    output.append(["DATUM & VREME", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
-    output.append(["TEMP. SPOLJA:", dic["Tspv"]])
-    output.append(["TEMP. SOLAR:", dic["Tsolar"]])
-    output.append(["TEMP. AKTUALNA:", dic["Taktualno"]])
-    output.append(["TEMP. ZADATA:", dic["Tzadata"]])
-    output.append(["TEMP. REDOVNA:", dic["Tzad_red"]])
-    output.append(["TEMP. KOMFORNA:", dic["Tzad_komf"]])
-    output.append(["TEMP. KOD CIRKULACIONE:", dic["Tfs"]])
-    output.append(["TEMP. MAX:", dic["Tmax"]])
-    output.append(["TEMP. MID:", (dic["Tmax"] + dic["Tmin"]) / 2])
-    output.append(["TEMP. MIN:", dic["Tmin"]])
-    output.append(["TEMP. SOBNA:", dic["Tsobna"]])
-    output.append(["PUMPA CIRKULACIONA:", dic["StatusPumpe3"]])
-    output.append(["PUMPA GAS:", dic["StatusPumpe4"]])
-    output.append(["StatusPumpe5", dic["StatusPumpe5"]])
-    output.append(["StatusPumpe6", dic["StatusPumpe6"]])
-    output.append(["StatusPumpe7", dic["StatusPumpe7"]])
-    output.append(["Mod Rada", dic["mod_rada"]])
-    output.append(["Mod Rezim", dic["mod_rezim"]])
+    status = []
+    status.append(["Date & Time", timestamp()])
+    status.append(["Circulation Pump:", dic["StatusPumpe3"]])
+    status.append(["Gas Pump:", dic["StatusPumpe4"]])
+    status.append(["StatusPumpe5", dic["StatusPumpe5"]])
+    status.append(["StatusPumpe6", dic["StatusPumpe6"]])
+    status.append(["StatusPumpe7", dic["StatusPumpe7"]])
+    status.append(["Mod Rada", dic["mod_rada"]])
+    status.append(["Mod Rezim", dic["mod_rezim"]])
+
+
+    temps = []
+    temps.append(["Outside:", dic["Tspv"]])
+    temps.append(["Solar:", dic["Tsolar"]])
+    temps.append(["Active:", dic["Taktualno"]])
+    temps.append(["Current:", dic["Tzadata"]])
+    temps.append(["Regular:", dic["Tzad_red"]])
+    temps.append(["Comfor:", dic["Tzad_komf"]])
+    temps.append(["Near Circulation Pump:", dic["Tfs"]])
+    temps.append(["Buffer Max:", dic["Tmax"]])
+    temps.append(["Buffer Mid:", (dic["Tmax"] + dic["Tmin"]) / 2])
+    temps.append(["Buffer Min:", dic["Tmin"]])
+    temps.append(["Room:", dic["Tsobna"]])
+
 
     # Print output as a table
-    term_show(tabulate(output, headers=["Variable", "Value"], colalign=("right", "left")))
 
-term_cursor_hide()
+    term_cursor_reset()
+    term_show(tabulate(status, headers=["STATUS", "MODE"], colalign=("right",)))
+    term_show("\n" + ("="*40) + "\n")
+    term_show(tabulate(temps, headers=["TEMP.", "*C"], colalign=("right",)))
+
 
 # exit handler
 @atexit.register
 def signal_handler():
     term_cursor_show()
 
+term_cursor_hide()
+term_clear()
+
 try:
     while running:
-        term_cursor_reset()
 
         try:
             status()
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching data: {e}")
+            print(f"[{timestamp()}] Error fetching data: {e}")
         except json.JSONDecodeError:
-            print("Error decoding JSON response")
+            print(f"[{timestamp()}] Error decoding JSON response")
 
         time.sleep(5)
 except KeyboardInterrupt:
