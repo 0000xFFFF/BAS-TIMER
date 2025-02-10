@@ -136,12 +136,26 @@ try:
 
         try:
             status()
+        except requests.exceptions.Timeout:
+            print(f"[{timestamp()}] The request timed out")
+        except requests.exceptions.ConnectionError:
+            print(f"[{timestamp()}] Failed to establish a connection")
+        except requests.exceptions.HTTPError as e:
+            print(f"[{timestamp()}] HTTP error occurred: {e}")
+        except requests.exceptions.TooManyRedirects:
+            print(f"[{timestamp()}] Too many redirects")
+        except requests.exceptions.URLRequired:
+            print(f"[{timestamp()}] A valid URL is required")
+        except requests.exceptions.ChunkedEncodingError:
+            print(f"[{timestamp()}] Chunked encoding error")
         except requests.exceptions.RequestException as e:
-            print(f"[{timestamp()}] Error fetching data: {e}")
+            print(f"[{timestamp()}] General request exception: {e}")
         except json.JSONDecodeError:
             print(f"[{timestamp()}] Error decoding JSON response")
+        except Exception as e:
+            print(f"[{timestamp()}] Unexpected error: {e}")
 
-        time.sleep(5)
+        time.sleep(10)
 except KeyboardInterrupt:
     print("Quitting...")
     running = False
