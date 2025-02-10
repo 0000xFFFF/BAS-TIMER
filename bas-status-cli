@@ -74,51 +74,58 @@ def term_show(s, color=""):
 
 term_clear()
 
+def status():
+    # Send GET request
+    response = requests.get(url)
+    response.raise_for_status()  # Raise an error for HTTP error codes
+
+    data = response.json()
+
+    # Collect key-value pairs
+    dic = {}
+    for key, value in data.items():
+        if isinstance(value, dict) and "value" in value:
+            dic[key] = value["value"]
+
+    output = []
+
+    output.append(["Date & Time", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+    output.append(["Tspv", dic["Tspv"]])
+    output.append(["Tsolar", dic["Tsolar"]])
+    output.append(["Taktualno", dic["Taktualno"]])
+    output.append(["Tzadata", dic["Tzadata"]])
+    output.append(["Tzad_red", dic["Tzad_red"]])
+    output.append(["Tzad_komf", dic["Tzad_komf"]])
+    output.append(["Tfs", dic["Tfs"]])
+    output.append(["Tmax", dic["Tmax"]])
+    output.append(["Tmid", (dic["Tmax"] + dic["Tmin"]) / 2])
+    output.append(["Tmin", dic["Tmin"]])
+    output.append(["Tsobna", dic["Tsobna"]])
+    output.append(["StatusPumpe3", dic["StatusPumpe3"]])
+    output.append(["StatusPumpe4", dic["StatusPumpe4"]])
+    output.append(["StatusPumpe5", dic["StatusPumpe5"]])
+    output.append(["StatusPumpe6", dic["StatusPumpe6"]])
+    output.append(["StatusPumpe7", dic["StatusPumpe7"]])
+    output.append(["mod_rada", dic["mod_rada"]])
+    output.append(["mod_rezim", dic["mod_rezim"]])
+
+    # Print output as a table
+    term_show(tabulate(output, headers=["Variable", "Value"]))
+
+term_cursor_hide()
+
 while running:
     term_cursor_reset()
 
     try:
-        # Send GET request
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an error for HTTP error codes
-
-        data = response.json()
-
-        # Collect key-value pairs
-        dic = {}
-        for key, value in data.items():
-            if isinstance(value, dict) and "value" in value:
-                dic[key] = value["value"]
-
-        output = []
-
-        output.append(["Date & Time", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
-        output.append(["Tspv", dic["Tspv"]])
-        output.append(["Tsolar", dic["Tsolar"]])
-        output.append(["Taktualno", dic["Taktualno"]])
-        output.append(["Tzadata", dic["Tzadata"]])
-        output.append(["Tzad_red", dic["Tzad_red"]])
-        output.append(["Tzad_komf", dic["Tzad_komf"]])
-        output.append(["Tfs", dic["Tfs"]])
-        output.append(["Tmax", dic["Tmax"]])
-        output.append(["Tmid", (dic["Tmax"] + dic["Tmin"]) / 2])
-        output.append(["Tmin", dic["Tmin"]])
-        output.append(["Tsobna", dic["Tsobna"]])
-        output.append(["StatusPumpe3", dic["StatusPumpe3"]])
-        output.append(["StatusPumpe4", dic["StatusPumpe4"]])
-        output.append(["StatusPumpe5", dic["StatusPumpe5"]])
-        output.append(["StatusPumpe6", dic["StatusPumpe6"]])
-        output.append(["StatusPumpe7", dic["StatusPumpe7"]])
-        output.append(["mod_rada", dic["mod_rada"]])
-        output.append(["mod_rezim", dic["mod_rezim"]])
-
-
-        # Print output as a table
-        term_show(tabulate(output, headers=["Variable", "Value"]))
-
+        status()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data: {e}")
     except json.JSONDecodeError:
         print("Error decoding JSON response")
+    except KeyboardInterrupt:
+        running = False
 
     time.sleep(5)
+
+term_cursor_show()
