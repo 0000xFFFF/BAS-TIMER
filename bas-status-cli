@@ -3,6 +3,7 @@ import requests
 import json
 import time
 import os
+import atexit
 from tabulate import tabulate
 from colorama import Fore, Back, Style
 from datetime import datetime
@@ -114,18 +115,23 @@ def status():
 
 term_cursor_hide()
 
-while running:
-    term_cursor_reset()
+# exit handler
+@atexit.register
+def signal_handler():
+    term_cursor_show()
 
-    try:
-        status()
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching data: {e}")
-    except json.JSONDecodeError:
-        print("Error decoding JSON response")
-    except KeyboardInterrupt:
-        running = False
+try:
+    while running:
+        term_cursor_reset()
 
-    time.sleep(5)
+        try:
+            status()
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching data: {e}")
+        except json.JSONDecodeError:
+            print("Error decoding JSON response")
 
-term_cursor_show()
+        time.sleep(5)
+except KeyboardInterrupt:
+    print("Quitting...")
+    running = False
