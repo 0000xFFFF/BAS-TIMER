@@ -89,7 +89,7 @@ def status():
 
     output = []
 
-    output.append(["Date & Time", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+    output.append(["DATUM & VREME", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
     output.append(["TEMP. SPOLJA:", dic["Tspv"]])
     output.append(["TEMP. SOLAR:", dic["Tsolar"]])
     output.append(["TEMP. AKTUALNA:", dic["Taktualno"]])
@@ -110,7 +110,7 @@ def status():
     output.append(["Mod Rezim", dic["mod_rezim"]])
 
     # Print output as a table
-    term_show(tabulate(output, headers=["Variable", "Value"]))
+    term_show(tabulate(output, headers=["Variable", "Value"], colalign=("right", "left")))
 
 term_cursor_hide()
 
