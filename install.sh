@@ -1,2 +1,2 @@
 #!/bin/bash -x
-sudo ln -sfr cli_status /usr/local/bin/.
+sudo ln -sfr bas-status-cli /usr/local/bin/.
