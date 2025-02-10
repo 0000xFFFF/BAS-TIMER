@@ -120,7 +120,7 @@ def status():
 
     term_cursor_reset()
     term_show(tabulate(status, tablefmt="fancy_outline", colalign=("right",)))
-    term_show(tabulate(temps, tablefmt="fancy_outline", headers=["TEMP.", "*C"], colalign=("right",)))
+    term_show(tabulate(temps, tablefmt="fancy_outline", colalign=("right",)))
 
 
 # exit handler
