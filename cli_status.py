@@ -65,11 +65,32 @@ while running:
         data = response.json()
 
         # Collect key-value pairs
-        output = []
+        dic = {}
         for key, value in data.items():
             if isinstance(value, dict) and "value" in value:
-                output.append([key, value['value']])
+                dic[key] = value['value']
         
+        output = []
+
+        output.append(["Tspv",         dic["Tspv"]])
+        output.append(["Tsolar",       dic["Tsolar"]])
+        output.append(["Taktualno",    dic["Taktualno"]])
+        output.append(["Tzadata",      dic["Tzadata"]])
+        output.append(["Tzad_red",     dic["Tzad_red"]])
+        output.append(["Tzad_komf",    dic["Tzad_komf"]])
+        output.append(["Tfs",          dic["Tfs"]])
+        output.append(["Tmax",         dic["Tmax"]])
+        output.append(["Tmid",         (dic["Tmax"]+dic["Tmin"])/2])
+        output.append(["Tmin",         dic["Tmin"]])
+        output.append(["Tsobna",       dic["Tsobna"]])
+        output.append(["StatusPumpe3", dic["StatusPumpe3"]])
+        output.append(["StatusPumpe4", dic["StatusPumpe4"]])
+        output.append(["StatusPumpe5", dic["StatusPumpe5"]])
+        output.append(["StatusPumpe6", dic["StatusPumpe6"]])
+        output.append(["StatusPumpe7", dic["StatusPumpe7"]])
+        output.append(["mod_rada",     dic["mod_rada"]])
+        output.append(["mod_rezim",    dic["mod_rezim"]])
+
         # Print output as a table
         term_show(tabulate(output, headers=["Variable", "Value"]))
 
