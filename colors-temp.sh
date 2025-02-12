@@ -42,10 +42,12 @@ function contrast_colour {
 
 function print_colour {
     local colour="$1" contrast
+    local text="$colour"
+    [ -n "$2" ] && text="$2"
     contrast=$(contrast_colour "$1")
-    printf "\e[48;5;%sm" "$colour"                # Start block of colour
-    printf "\e[38;5;%sm%3d" "$contrast" "$colour" # In contrast, print number
-    printf "\e[0m "                               # Reset colour
+    printf "\e[48;5;%sm" "$colour"              # Start block of colour
+    printf "\e[38;5;%sm%3d" "$contrast" "$text" # In contrast, print number
+    printf "\e[0m "                             # Reset colour
     echo ""
 }
 
@@ -95,8 +97,9 @@ function temperature_to_colour {
     printf "%s" "${colors[index]}"
 }
 
-for temp in {45..60}; do
-    color=$(temperature_to_colour "$temp")
-    print_colour "$color"
-done
 
+
+for ((temp=MIN_TEMP; temp<=MAX_TEMP; temp++)); do
+    color=$(temperature_to_colour "$temp")
+    print_colour "$color" "$temp"
+done
