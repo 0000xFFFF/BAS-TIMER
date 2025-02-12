@@ -51,7 +51,7 @@ def term_show_print(printStr, color=""):
     tl = os.get_terminal_size().lines
     if term_show_count >= (tl - 1):
         return
-    #print(f"{color}{printStr}{Style.RESET_ALL}")
+    # print(f"{color}{printStr}{Style.RESET_ALL}")
     print(f"{printStr}")
     term_show_count += 1
 
@@ -74,7 +74,6 @@ def term_show(s, color=""):
             term_show_print(i + str(" " * int(int(tc) - int(il))), color)
 
 
-
 def timestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -92,7 +91,6 @@ def status():
         if isinstance(value, dict) and "value" in value:
             dic[key] = value["value"]
 
-
     status = []
     status.append(["Circulation Pump:", int(dic["StatusPumpe3"])])
     status.append(["Gas Pump:", int(dic["StatusPumpe4"])])
@@ -101,7 +99,6 @@ def status():
     status.append(["StatusPumpe7", int(dic["StatusPumpe7"])])
     status.append(["Mod Rada", int(dic["mod_rada"])])
     status.append(["Mod Rezim", int(dic["mod_rezim"])])
-
 
     temps = []
     temps.append(["Outside:", dic["Tspv"]])
@@ -116,7 +113,6 @@ def status():
     temps.append(["Buffer Min:", dic["Tmin"]])
     temps.append(["Room:", dic["Tsobna"]])
 
-
     term_cursor_reset()
     term_show("Date & Time: " + timestamp())
     term_show(tabulate(status, tablefmt="fancy_outline", colalign=("right",)))
@@ -127,6 +123,7 @@ def status():
 @atexit.register
 def signal_handler():
     term_cursor_show()
+
 
 term_cursor_hide()
 term_clear()
