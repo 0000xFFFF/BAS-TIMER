@@ -4,6 +4,7 @@ import json
 import time
 import os
 import atexit
+import subprocess
 from tabulate import tabulate
 from colorama import Fore, Back, Style
 from datetime import datetime
@@ -127,9 +128,25 @@ def term_show(s, color=""):
             term_show_print(i + str(" " * int(int(tc) - int(il))), color)
 
 
+#
+# OTHER INFO
+#
 def timestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+
+def get_local_ips():
+    """Get all IPv4 addresses excluding 127.0.0.1."""
+    try:
+        result = subprocess.run(
+            "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1'",
+            shell=True,
+            capture_output=True,
+            text=True
+        )
+        return result.stdout.strip().replace("\n", " ") if result.stdout else "No IP found"
+    except Exception as e:
+        return f"Error: {e}"
 
 
 # exit handler
@@ -209,7 +226,7 @@ def status():
     temps.append(["Room", Tsobna])
 
     term_cursor_reset()
-    term_show("Date & Time: " + timestamp())
+    term_show(f"{timestamp()} / {get_local_ips()}")
     term_show(tabulate(status, tablefmt="fancy_outline", colalign=("right",)))
     term_show(tabulate(temps, tablefmt="fancy_outline", colalign=("right",)))
 
