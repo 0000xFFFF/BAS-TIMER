@@ -11,12 +11,60 @@ from datetime import datetime
 # url = "http://192.168.1.250:9001/isc/get_var_js.aspx?AUTOT=&Alarm_solar=&Alarm_tank=&EK=&GK=&Jeftina_tarifa=&MANUALPreklopka=&STATE_Preklopka=&Status3PTReg3=&StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&TP=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&__Date=&__Time=&deltaT=&glavni_on=&grejanje_off=&kom=&kom1=&kom2=&mod_rada=&mod_rezim=&mraz=&mraz1=&mraz2=&red=&red1=&red2=&sw1=&sw2=&sw3=&sw4=&rucni_komf=&rucni_red=&SESSIONID=-1"
 url = "http://192.168.1.250:9001/isc/get_var_js.aspx?StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&mod_rada=&mod_rezim=&SESSIONID=-1"
 
-running = True
 
+#
+# COLORING
+#
+TEMP_MIN = 45
+TEMP_MAX = 60
+colors = [51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196]
+
+def contrast_color(color):
+    if color < 16:
+        return 15 if color == 0 else 0
+
+    if color > 231:
+        return 15 if color < 244 else 0
+
+    g = ((color - 16) % 36) // 6
+    return 0 if g > 2 else 15
+
+
+def ctext(color, text):
+    contrast = contrast_color(color)
+    text = text if text is not None else color
+    return f"\033[48;5;{color}m\033[38;5;{contrast}m{text}\033[0m"
+
+
+def temperature_to_color(temp):
+
+    """Map a temperature value to a color."""
+    global TEMP_MIN
+    global TEMP_MAX
+    num_colors = len(colors)
+
+    if temp >= TEMP_MAX:
+        TEMP_MAX = temp
+        return colors[-1]
+    elif temp <= TEMP_MIN:
+        TEMP_MIN = temp
+        return colors[0]
+
+    index = (temp - TEMP_MIN) * (num_colors - 1) // (TEMP_MAX - TEMP_MIN)
+    return colors[int(index)]
+
+
+def temp_to_ctext(temp):
+    color = temperature_to_color(temp)
+    return ctext(color, temp)
+
+
+#
+# DRAWING ON TERMINAL
+#
 term_show_count = 0
 g_tc = os.get_terminal_size().columns
 g_tl = os.get_terminal_size().lines
-
 
 def term_show_count_reset():
     global term_show_count
@@ -78,6 +126,12 @@ def timestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
+
+# exit handler
+@atexit.register
+def signal_handler():
+    term_cursor_show()
+
 def status():
     # Send GET request
     # act like firefox
@@ -134,14 +188,14 @@ def status():
     term_show(tabulate(temps, tablefmt="fancy_outline", colalign=("right",)))
 
 
-# exit handler
-@atexit.register
-def signal_handler():
-    term_cursor_show()
+
 
 
 term_cursor_hide()
 term_clear()
+
+
+running = True
 
 try:
     while running:
