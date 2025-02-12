@@ -20,9 +20,10 @@ def print_colour(colour, text=None):
     print(f"\033[48;5;{colour}m\033[38;5;{contrast}m{text}\033[0m")
 
 
-def temperature_to_colour(temp, min_temp=45, max_temp=60):
+def temperature_to_colour(temp, min_temp=45, max_temp=70):
     """Map a temperature value to a colour."""
-    colors = [51, 45, 39, 33, 27, 21, 226, 220, 214, 208, 202, 196]
+    #colors = [51, 45, 39, 33, 27, 21, 226, 220, 214, 208, 202, 196]
+    colors = [51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 196]
     num_colors = len(colors)
 
     if temp >= max_temp:
@@ -35,6 +36,6 @@ def temperature_to_colour(temp, min_temp=45, max_temp=60):
 
 
 # Print temperature colours
-for temp in range(45, 61):
+for temp in range(45, 70):
     color = temperature_to_colour(temp)
     print_colour(color, temp)
