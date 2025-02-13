@@ -212,8 +212,9 @@ def fetch_info():
     status.append(["󱖫 Regime", ModRezim])
 
     # format tables
-    table1_str = tabulate(temps, tablefmt="fancy_outline", colalign=("right",))
-    table2_str = tabulate(status, tablefmt="fancy_outline", colalign=("right",))
+    fmt = "plain"
+    table1_str = tabulate(temps, tablefmt=fmt, colalign=("right",))
+    table2_str = tabulate(status, tablefmt=fmt, colalign=("right",))
     table1_lines = table1_str.splitlines()
     table2_lines = table2_str.splitlines()
     max_lines = max(len(table1_lines), len(table2_lines))
@@ -230,7 +231,7 @@ def fetch_info():
     print(ctext(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
 
     for line1, line2 in zip(table1_lines, table2_lines):
-        print(f"{line1}{line2}")
+        print(f"{line1}  {line2}")
 
     last_failed = False
 
