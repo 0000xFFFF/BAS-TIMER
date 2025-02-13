@@ -75,15 +75,6 @@ def bool_to_ctext(b):
 #
 # DRAWING ON TERMINAL
 #
-term_show_count = 0
-g_tc = os.get_terminal_size().columns
-g_tl = os.get_terminal_size().lines
-
-def term_show_count_reset():
-    global term_show_count
-    term_show_count = 0
-
-
 def term_clear():
     os.system("clear")
     term_show_count_reset()
@@ -105,34 +96,6 @@ def term_cursor_show():
 def term_blank():
     term_cursor_hide()
     term_clear()
-
-
-def term_show_print(printStr, color=""):
-    global term_show_count
-    tl = os.get_terminal_size().lines
-    if term_show_count >= (tl - 1):
-        return
-    # print(f"{color}{printStr}{Style.RESET_ALL}")
-    print(f"{printStr}")
-    term_show_count += 1
-
-
-def term_show(s, color=""):
-    global g_tc
-    global g_tl
-    strings = s.split("\n")
-    tc = os.get_terminal_size().columns
-    tl = os.get_terminal_size().lines
-    if g_tc != tc or g_tl != tl:
-        g_tc = tc
-        g_tl = tl
-        term_clear()
-    for i in strings:
-        il = len(i)
-        if il > tc:
-            term_show_print(i[:tc], color)
-        else:
-            term_show_print(i + str(" " * int(int(tc) - int(il))), color)
 
 
 #
@@ -160,7 +123,6 @@ def get_local_ips():
 @atexit.register
 def signal_handler():
     term_cursor_show()
-
 
 
 last_failed = False
@@ -268,10 +230,10 @@ def fetch_info():
     if last_failed:
         COLOR_HEAD = COLOR_OFF
 
-    term_show(ctext(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
+    print(ctext(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
 
     for line1, line2 in zip(table1_lines, table2_lines):
-        term_show(f"{line1}{line2}")
+        print(f"{line1}{line2}")
 
     last_failed = False
 
