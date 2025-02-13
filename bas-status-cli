@@ -194,7 +194,7 @@ def status():
     ModRezim     = bool_to_ctext(int(dic["mod_rezim"]))
 
     status = []
-    status.append(["Circulation Pump", StatusPumpe3])
+    status.append(["Circ. Pump", StatusPumpe3])
     status.append(["Gas Pump", StatusPumpe4])
     status.append(["StatusPumpe5", StatusPumpe5])
     status.append(["Heat Pump", StatusPumpe6])
@@ -213,6 +213,8 @@ def status():
     Tmid = temp_to_ctext((dic["Tmax"] + dic["Tmin"]) / 2)
     Tmin = temp_to_ctext(dic["Tmin"])
     Tsobna = temp_to_ctext(dic["Tsobna"])
+    Thottest = temp_to_ctext(TEMP_MAX)
+    Tcoldest = temp_to_ctext(TEMP_MIN)
 
     temps = []
     temps.append(["Outside", Tspv])
@@ -221,11 +223,13 @@ def status():
     temps.append(["Current", Tzadata])
     temps.append(["Regular", Tzad_red])
     temps.append(["Comfort", Tzad_komf])
-    temps.append(["Near Circ. Pump", Tfs])
-    temps.append(["Buffer Max", Tmax])
-    temps.append(["Buffer Mid", Tmid])
-    temps.append(["Buffer Min", Tmin])
+    temps.append(["Circ.", Tfs])
+    temps.append(["Max", Tmax])
+    temps.append(["Mid", Tmid])
+    temps.append(["Min", Tmin])
     temps.append(["Room", Tsobna])
+    temps.append(["Hottest", Thottest])
+    temps.append(["Coldest", Tcoldest])
 
     term_cursor_reset()
     term_show(f"{timestamp()} / {get_local_ips()}")
