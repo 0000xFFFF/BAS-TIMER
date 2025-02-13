@@ -72,17 +72,14 @@ def bool_to_ctext(b):
     else:
         return ctext(COLOR_OFF, f" {b} ")
 
-#
-# DRAWING ON TERMINAL
-#
+
+
 def term_clear():
     os.system("clear")
-    term_show_count_reset()
 
 
 def term_cursor_reset():
     print("\033[0;0H", end="")
-    term_show_count_reset()
 
 
 def term_cursor_hide():
@@ -96,7 +93,6 @@ def term_cursor_show():
 def term_blank():
     term_cursor_hide()
     term_clear()
-
 
 #
 # OTHER INFO
@@ -123,6 +119,7 @@ def get_local_ips():
 @atexit.register
 def signal_handler():
     term_cursor_show()
+
 
 
 last_failed = False
@@ -245,8 +242,11 @@ running = True
 
 try:
     while running:
+
         term_cursor_reset()
         fetch_info()
+
+
         time.sleep(10)
 except KeyboardInterrupt:
     print("Quitting...")
