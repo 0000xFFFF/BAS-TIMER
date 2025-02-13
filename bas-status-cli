@@ -268,7 +268,7 @@ def fetch_info():
     if last_failed:
         COLOR_HEAD = COLOR_OFF
 
-    term_show(ctext(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}\033[0m"))
+    term_show(ctext(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
 
     for line1, line2 in zip(table1_lines, table2_lines):
         term_show(f"{line1}{line2}")
@@ -283,14 +283,8 @@ running = True
 
 try:
     while running:
-
         term_cursor_reset()
-
-
-
         fetch_info()
-
-
         time.sleep(10)
 except KeyboardInterrupt:
     print("Quitting...")
