@@ -31,9 +31,14 @@ env:
   TERM: "alacritty"
 
 font:
-  size: 50
+  size: 42
   normal:
-    family: "ProggyClean Nerd Font Mono"
+    #family: "BigBlueTerm437 Nerd Font Mono"    #    -- many lines
+    #family: "HeavyData Nerd Font"              #    -- funky
+    family: "GohuFont 11 Nerd Font Mono"        # 42 -- 3
+    #family: "GohuFont 14 Nerd Font Mono"       #    -- 2
+    #family: "ProggyClean Nerd Font Mono"       #    -- 1
+    #family: "Departure Mono Nerd Font Mono"    # 38 -- 4
   style: "Regular"
 
 window:
