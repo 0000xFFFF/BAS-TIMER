@@ -57,7 +57,9 @@ def temperature_to_color(temp):
 
 def temp_to_ctext(temp):
     color = temperature_to_color(temp)
-    return ctext(color, temp)
+    pad_float = str(f"{temp:.6f}")
+    pad_def   = f"{pad_float} " + chr(176) + "C"
+    return ctext(color, f"{pad_def:>13}")
 
 def bool_to_ctext(b):
     if b:
@@ -227,9 +229,23 @@ def status():
 
     term_cursor_reset()
     term_show(f"{timestamp()} / {get_local_ips()}")
-    term_show(tabulate(status, tablefmt="fancy_outline", colalign=("right",)))
-    term_show(tabulate(temps, tablefmt="fancy_outline", colalign=("right",)))
 
+    table1_str = tabulate(temps, tablefmt="fancy_outline", colalign=("right",))
+    table2_str = tabulate(status, tablefmt="fancy_outline", colalign=("right",))
+
+    table1_lines = table1_str.splitlines()
+    table2_lines = table2_str.splitlines()
+    max_lines = max(len(table1_lines), len(table2_lines))
+
+    while len(table1_lines) < max_lines:
+        table1_lines.append("")
+
+    while len(table2_lines) < max_lines:
+        table2_lines.append("")
+
+    for line1, line2 in zip(table1_lines, table2_lines):
+        print(f"{line1}{line2}")
+        
 
 term_cursor_hide()
 term_clear()
