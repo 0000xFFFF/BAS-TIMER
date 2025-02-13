@@ -243,11 +243,8 @@ running = True
 
 try:
     while running:
-
         term_cursor_reset()
         fetch_info()
-
-
         time.sleep(10)
 except KeyboardInterrupt:
     print("Quitting...")
