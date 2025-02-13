@@ -20,6 +20,9 @@ TEMP_MIN = 45
 TEMP_MAX = 60
 colors = [51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196]
 
+COLOR_ON  = 40
+COLOR_OFF = 226
+
 def contrast_color(color):
     if color < 16:
         return 15 if color == 0 else 0
@@ -30,6 +33,8 @@ def contrast_color(color):
     g = ((color - 16) % 36) // 6
     return 0 if g > 2 else 15
 
+def cbg(color):
+    return f"\033[48;5;{color}m"
 
 def ctext(color, text):
     contrast = contrast_color(color)
@@ -63,9 +68,9 @@ def temp_to_ctext(temp):
 
 def bool_to_ctext(b):
     if b:
-        return ctext(40, f" {b} ")
+        return ctext(COLOR_ON, f" {b} ")
     else:
-        return ctext(226, f" {b} ")
+        return ctext(COLOR_OFF, f" {b} ")
 
 #
 # DRAWING ON TERMINAL
@@ -156,7 +161,17 @@ def get_local_ips():
 def signal_handler():
     term_cursor_show()
 
-def status():
+output = ""
+def out(string):
+    global output
+    output += f"{string}\n"
+
+last_failed = False
+def fetch_info():
+
+    global output
+    global last_failed
+
     # Send GET request
     # act like firefox
     headers = {
@@ -174,8 +189,14 @@ def status():
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0",
         "X-Requested-With": "XMLHttpRequest",
     }
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()  # Raise an error for HTTP error codes
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise an error for HTTP error codes
+    except Exception as e:
+        last_failed = True
+        return last_status
+
     data = response.json()
 
     # Collect key-value pairs
@@ -184,24 +205,7 @@ def status():
         if isinstance(value, dict) and "value" in value:
             dic[key] = value["value"]
 
-
-    StatusPumpe3 = bool_to_ctext(int(dic["StatusPumpe3"]))
-    StatusPumpe4 = bool_to_ctext(int(dic["StatusPumpe4"]))
-    StatusPumpe5 = bool_to_ctext(int(dic["StatusPumpe5"]))
-    StatusPumpe6 = bool_to_ctext(int(dic["StatusPumpe6"]))
-    StatusPumpe7 = bool_to_ctext(int(dic["StatusPumpe7"]))
-    ModRada      = bool_to_ctext(int(dic["mod_rada"]))
-    ModRezim     = bool_to_ctext(int(dic["mod_rezim"]))
-
-    status = []
-    status.append(["Circ", StatusPumpe3])
-    status.append(["Gas", StatusPumpe4])
-    status.append(["Pump5", StatusPumpe5])
-    status.append(["Heat", StatusPumpe6])
-    status.append(["Pump7", StatusPumpe7])
-    status.append(["Rad", ModRada])
-    status.append(["Rezim", ModRezim])
-
+    # get temps and pump status
     Tspv = temp_to_ctext(dic["Tspv"])
     Tsolar = temp_to_ctext(dic["Tsolar"])
     Taktualno = temp_to_ctext(dic["Taktualno"])
@@ -215,7 +219,6 @@ def status():
     Tsobna = temp_to_ctext(dic["Tsobna"])
     Thottest = temp_to_ctext(TEMP_MAX)
     Tcoldest = temp_to_ctext(TEMP_MIN)
-
     temps = []
     temps.append(["Outside", Tspv])
     temps.append(["Solar", Tsolar])
@@ -231,25 +234,43 @@ def status():
     temps.append(["Hottest", Thottest])
     temps.append(["Coldest", Tcoldest])
 
-    term_cursor_reset()
-    term_show(f"{timestamp()} / {get_local_ips()}")
+    StatusPumpe3 = bool_to_ctext(int(dic["StatusPumpe3"]))
+    StatusPumpe4 = bool_to_ctext(int(dic["StatusPumpe4"]))
+    StatusPumpe5 = bool_to_ctext(int(dic["StatusPumpe5"]))
+    StatusPumpe6 = bool_to_ctext(int(dic["StatusPumpe6"]))
+    StatusPumpe7 = bool_to_ctext(int(dic["StatusPumpe7"]))
+    ModRada      = bool_to_ctext(int(dic["mod_rada"]))
+    ModRezim     = bool_to_ctext(int(dic["mod_rezim"]))
+    status = []
+    status.append(["Circ", StatusPumpe3])
+    status.append(["Gas", StatusPumpe4])
+    status.append(["Pump5", StatusPumpe5])
+    status.append(["Heat", StatusPumpe6])
+    status.append(["Pump7", StatusPumpe7])
+    status.append(["Rad", ModRada])
+    status.append(["Rezim", ModRezim])
 
+    # format tables
     table1_str = tabulate(temps, tablefmt="fancy_outline", colalign=("right",))
     table2_str = tabulate(status, tablefmt="fancy_outline", colalign=("right",))
-
     table1_lines = table1_str.splitlines()
     table2_lines = table2_str.splitlines()
     max_lines = max(len(table1_lines), len(table2_lines))
-
     while len(table1_lines) < max_lines:
         table1_lines.append("")
-
     while len(table2_lines) < max_lines:
         table2_lines.append("")
 
+
+    output = ""
+    out(f"{timestamp()} / {get_local_ips()}\033[0m")
+
     for line1, line2 in zip(table1_lines, table2_lines):
-        print(f"{line1}{line2}")
+        out(f"{line1}{line2}")
+
         
+    last_failed = False
+    return output
 
 term_cursor_hide()
 term_clear()
@@ -260,26 +281,15 @@ running = True
 try:
     while running:
 
-        try:
-            status()
-        except requests.exceptions.Timeout:
-            print(f"[{timestamp()}] The request timed out")
-        except requests.exceptions.ConnectionError:
-            print(f"[{timestamp()}] Failed to establish a connection")
-        except requests.exceptions.HTTPError as e:
-            print(f"[{timestamp()}] HTTP error occurred: {e}")
-        except requests.exceptions.TooManyRedirects:
-            print(f"[{timestamp()}] Too many redirects")
-        except requests.exceptions.URLRequired:
-            print(f"[{timestamp()}] A valid URL is required")
-        except requests.exceptions.ChunkedEncodingError:
-            print(f"[{timestamp()}] Chunked encoding error")
-        except requests.exceptions.RequestException as e:
-            print(f"[{timestamp()}] General request exception: {e}")
-        except json.JSONDecodeError:
-            print(f"[{timestamp()}] Error decoding JSON response")
-        except Exception as e:
-            print(f"[{timestamp()}] Unexpected error: {e}")
+        term_cursor_reset()
+
+        if last_failed:
+            cbg(COLOR_OFF)
+        else:
+            cbg(COLOR_ON)
+
+        term_show(fetch_info())
+
 
         time.sleep(10)
 except KeyboardInterrupt:
