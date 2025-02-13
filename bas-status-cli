@@ -245,7 +245,7 @@ def fetch_info():
     ModRezim     = bool_to_ctext(int(dic["mod_rezim"]))
     status = []
     status.append([" Circ", StatusPumpe3])
-    status.append(["⛽Gas", StatusPumpe4])
+    status.append(["󰙇 Gas", StatusPumpe4])
     status.append([" Pump5", StatusPumpe5])
     status.append(["󱩃 Heat", StatusPumpe6])
     status.append([" Pump7", StatusPumpe7])
