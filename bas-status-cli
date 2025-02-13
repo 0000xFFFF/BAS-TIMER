@@ -63,9 +63,9 @@ def temp_to_ctext(temp):
 
 def bool_to_ctext(b):
     if b:
-        return ctext(40, b)
+        return ctext(40, f" {b} ")
     else:
-        return ctext(226, b)
+        return ctext(226, f" {b} ")
 
 #
 # DRAWING ON TERMINAL
@@ -194,13 +194,13 @@ def status():
     ModRezim     = bool_to_ctext(int(dic["mod_rezim"]))
 
     status = []
-    status.append(["Circ. Pump", StatusPumpe3])
-    status.append(["Gas Pump", StatusPumpe4])
-    status.append(["StatusPumpe5", StatusPumpe5])
-    status.append(["Heat Pump", StatusPumpe6])
-    status.append(["StatusPumpe7", StatusPumpe7])
-    status.append(["Mod Rada", ModRada])
-    status.append(["Mod Rezim", ModRezim])
+    status.append(["Circ", StatusPumpe3])
+    status.append(["Gas", StatusPumpe4])
+    status.append(["Pump5", StatusPumpe5])
+    status.append(["Heat", StatusPumpe6])
+    status.append(["Pump7", StatusPumpe7])
+    status.append(["Rad", ModRada])
+    status.append(["Rezim", ModRezim])
 
     Tspv = temp_to_ctext(dic["Tspv"])
     Tsolar = temp_to_ctext(dic["Tsolar"])
@@ -221,7 +221,7 @@ def status():
     temps.append(["Solar", Tsolar])
     temps.append(["Active", Taktualno])
     temps.append(["Current", Tzadata])
-    temps.append(["Regular", Tzad_red])
+    temps.append(["Reduced", Tzad_red])
     temps.append(["Comfort", Tzad_komf])
     temps.append(["Circ.", Tfs])
     temps.append(["Max", Tmax])
