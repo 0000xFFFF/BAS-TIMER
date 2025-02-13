@@ -33,8 +33,10 @@ def contrast_color(color):
     g = ((color - 16) % 36) // 6
     return 0 if g > 2 else 15
 
+
 def cbg(color):
     return f"\033[48;5;{color}m"
+
 
 def ctext(color, text):
     contrast = contrast_color(color)
@@ -43,8 +45,6 @@ def ctext(color, text):
 
 
 def temperature_to_color(temp):
-
-    """Map a temperature value to a color."""
     global TEMP_MIN
     global TEMP_MAX
     num_colors = len(colors)
@@ -161,16 +161,13 @@ def get_local_ips():
 def signal_handler():
     term_cursor_show()
 
-output = ""
-def out(string):
-    global output
-    output += f"{string}\n"
-
 last_failed = False
+last_data = None
 def fetch_info():
 
     global output
     global last_failed
+    global last_data
 
     # Send GET request
     # act like firefox
@@ -193,11 +190,14 @@ def fetch_info():
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()  # Raise an error for HTTP error codes
+        data = response.json()
+        last_data = data
     except Exception as e:
         last_failed = True
-        return last_status
-
-    data = response.json()
+        data = last_data
+        if last_data is None:
+            print(f"[{timestamp()}] {e}")
+            return
 
     # Collect key-value pairs
     dic = {}
@@ -262,15 +262,16 @@ def fetch_info():
         table2_lines.append("")
 
 
-    output = ""
-    out(f"{timestamp()} / {get_local_ips()}\033[0m")
+    COLOR_HEAD = COLOR_ON
+    if last_failed:
+        COLOR_HEAD = COLOR_OFF
+
+    term_show(ctext(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}\033[0m"))
 
     for line1, line2 in zip(table1_lines, table2_lines):
-        out(f"{line1}{line2}")
+        term_show(f"{line1}{line2}")
 
-        
     last_failed = False
-    return output
 
 term_cursor_hide()
 term_clear()
@@ -283,12 +284,9 @@ try:
 
         term_cursor_reset()
 
-        if last_failed:
-            cbg(COLOR_OFF)
-        else:
-            cbg(COLOR_ON)
 
-        term_show(fetch_info())
+
+        fetch_info()
 
 
         time.sleep(10)
