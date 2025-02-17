@@ -101,9 +101,9 @@ def temperature_to_color(temp):
 
 def temp_to_ctext(temp):
     color = temperature_to_color(temp)
-    pad_float = str(f"{temp:.6f}")
+    pad_float = str(f"{temp:.2f}")
     pad_def   = f"{pad_float} " + chr(176) + "C"
-    return ctext(color, f"{pad_def:>13}")
+    return ctext(color, f"{pad_def:>9}")
 
 def bool_to_ctext(b):
     if b:
@@ -159,20 +159,38 @@ def get_local_ips():
 def signal_handler():
     term_cursor_show()
 
+session = requests.Session()
 
+# Create a prepared request
+def get_prepared():
+    global session
+    req_params["_"] = int(time.time() * 1000)
+    request = requests.Request("GET", req_url, headers=req_headers, params=req_params)
+    prepared = session.prepare_request(request)
+    return prepared
+
+def print_prepared(prepared):
+    print(f"{prepared.method} {prepared.url} HTTP/1.1")
+    for key, value in prepared.headers.items():
+        print(f"{key}: {value}")
+
+    if prepared.body:
+        print("\nRaw Body Bytes:", prepared.body.encode() if isinstance(prepared.body, str) else prepared.body)
 
 last_failed = False
 last_data = None
 def fetch_info():
 
+    global session
     global output
     global last_failed
     global last_data
 
     # Send GET request
     try:
-        req_params["_"] = int(time.time() * 1000)
-
+        prepared = get_prepared()
+        print_prepared(prepared)
+        response = session.send(prepared)
         response = requests.get(req_url, headers=req_headers, params=req_params)
         response.raise_for_status()  # Raise an error for HTTP error codes
         data = response.json()
@@ -267,9 +285,9 @@ running = True
 
 try:
     while running:
-        term_cursor_reset()
+        #term_cursor_reset()
         fetch_info()
-        time.sleep(10)
+        time.sleep(1)
 except KeyboardInterrupt:
     print("Quitting...")
     running = False
