@@ -9,9 +9,48 @@ from tabulate import tabulate
 from colorama import Fore, Back, Style
 from datetime import datetime
 
-# url = "http://192.168.1.250:9001/isc/get_var_js.aspx?AUTOT=&Alarm_solar=&Alarm_tank=&EK=&GK=&Jeftina_tarifa=&MANUALPreklopka=&STATE_Preklopka=&Status3PTReg3=&StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&TP=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&__Date=&__Time=&deltaT=&glavni_on=&grejanje_off=&kom=&kom1=&kom2=&mod_rada=&mod_rezim=&mraz=&mraz1=&mraz2=&red=&red1=&red2=&sw1=&sw2=&sw3=&sw4=&rucni_komf=&rucni_red=&SESSIONID=-1"
-url = "http://192.168.1.250:9001/isc/get_var_js.aspx?StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&mod_rada=&mod_rezim=&SESSIONID=-1"
-
+# act like firefox
+req_headers = {
+        "Accept": "application/json, text/javascript, */*; q=0.01",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "Referer": "http://192.168.1.250:9001/",
+        "Sec-GPC": "1",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0",
+        "X-Requested-With": "XMLHttpRequest",
+}
+req_url = "http://192.168.1.250:9001/isc/get_var_js.aspx"
+req_params = {
+    "StatusPumpe3": "",
+    "StatusPumpe4": "",
+    "StatusPumpe5": "",
+    "StatusPumpe6": "",
+    "StatusPumpe7": "",
+    "Taktualno": "",
+    "Tfs": "",
+    "Tmax": "",
+    "Tmin": "",
+    "Tsobna": "",
+    "Tsolar": "",
+    "Tspv": "",
+    "Tzad_komf": "",
+    "Tzad_mraz": "",
+    "Tzad_red": "",
+    "Tzadata": "",
+    "mod_rada": "",
+    "mod_rezim": "",
+    "__Time": "",
+    "__Date": "",
+    "Jeftina_tarifa": "",  # Add missing parameters
+    "grejanje_off": "",   # Add missing parameters
+    "Alarm_tank": "",     # Add missing parameters
+    "Alarm_solar": "",    # Add missing parameters
+    "STATE_Preklopka": "",# Add missing parameters
+    "SESSIONID": "-1",
+    "_": int(time.time() * 1000)  # Generate 13-digit millisecond timestamp
+}
 
 #
 # COLORING
@@ -131,25 +170,10 @@ def fetch_info():
     global last_data
 
     # Send GET request
-    # act like firefox
-    headers = {
-        "Accept": "application/json, text/javascript, */*; q=0.01",
-        "Accept-Encoding": "gzip, deflate",
-        "Accept-Language": "en-US,en;q=0.5",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
-        "Cookie": "i18next=srb",
-        "DNT": "1",
-        "Host": "192.168.1.250:9001",
-        "Pragma": "no-cache",
-        "Referer": "http://192.168.1.250:9001/",
-        "Sec-GPC": "1",
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0",
-        "X-Requested-With": "XMLHttpRequest",
-    }
-
     try:
-        response = requests.get(url, headers=headers)
+        req_params["_"] = int(time.time() * 1000)
+
+        response = requests.get(req_url, headers=req_headers, params=req_params)
         response.raise_for_status()  # Raise an error for HTTP error codes
         data = response.json()
         last_data = data
