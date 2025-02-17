@@ -189,7 +189,7 @@ def fetch_info():
     # Send GET request
     try:
         prepared = get_prepared()
-        print_prepared(prepared)
+        #print_prepared(prepared)
         response = session.send(prepared)
         response = requests.get(req_url, headers=req_headers, params=req_params)
         response.raise_for_status()  # Raise an error for HTTP error codes
@@ -285,7 +285,7 @@ running = True
 
 try:
     while running:
-        #term_cursor_reset()
+        term_cursor_reset()
         fetch_info()
         time.sleep(1)
 except KeyboardInterrupt:
