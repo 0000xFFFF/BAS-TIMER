@@ -15,9 +15,13 @@ from colors import (
 def data_to_dict(data):
     # Collect key-value pairs
     dic = {}
-    for key, value in data.items():
-        if isinstance(value, dict) and "value" in value:
-            dic[key] = value["value"]
+
+    try:
+        for key, value in data.items():
+            if isinstance(value, dict) and "value" in value:
+                dic[key] = value["value"]
+    except:
+        pass
 
     return dic
 

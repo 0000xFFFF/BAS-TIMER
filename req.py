@@ -100,7 +100,7 @@ def fetch_info(main_session, last_data, last_ret, log_requests):
         data = last_data
         if last_data is None:
             print(f"[{timestamp()}] {e.__class__.__name__}")
-            return ret, None
+            return ret, None, None
 
     dic = process_data(data, ret)
 

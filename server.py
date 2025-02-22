@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 import os
+import sys
 import requests
 import time
+import logging
 import atexit
 from threading import Thread
 
 import eventlet
+
 eventlet.monkey_patch()
 import random
 from flask import Flask, render_template
@@ -15,9 +18,16 @@ from flask_socketio import SocketIO
 from term import term_cursor_hide, term_cursor_reset, term_cursor_show, term_clear
 from req import fetch_info
 
-# change cwd to scripts dir
-os.path.join(os.path.dirname(os.path.realpath(__file__)))
-print(os.getcwd())
+# Suppress Flask logging but keep prints
+log_file = "flask.log"
+
+# Disable Flask default logger
+logging.getLogger("werkzeug").setLevel(logging.ERROR)
+
+# Redirect Flask logs to a file
+flask_log = open(log_file, "a")
+sys.stderr = flask_log  # Redirect errors to log file
+
 
 # exit handler
 @atexit.register
@@ -26,14 +36,17 @@ def signal_handler():
 
 
 running = True
-app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates"))
+app = Flask(
+    __name__,
+    template_folder=os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "templates"
+    ),
+)
 socketio = SocketIO(app, cors_allowed_origins="*")
-
 
 @app.route("/")
 def index():
     return render_template("index.html")
-
 
 
 @socketio.on("connect")
@@ -47,10 +60,9 @@ def worker():
     term_clear()
 
     main_session = requests.Session()
-    log_requests = open("requests.log", "a")
-  # Send fetched data to the frontend
     last_ret = False
     last_data = None
+    log_requests = open("requests.log", "a")
 
     while running:
         term_cursor_reset()
