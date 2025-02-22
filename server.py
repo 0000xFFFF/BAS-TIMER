@@ -38,6 +38,10 @@ def signal_handler():
 running = True
 app = Flask(
     __name__,
+    static_url_path='',
+    static_folder=os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "static"
+    ),
     template_folder=os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "templates"
     ),
@@ -66,7 +70,7 @@ def worker():
         )
 
         # send data to frontend
-        socketio.emit("data_update", dic)
+        socketio.emit("vars", dic)
 
         time.sleep(1)
 

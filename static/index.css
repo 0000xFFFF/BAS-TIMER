@@ -1,0 +1,160 @@
+#mainCont {
+    font-family: monospace;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    gap: 10px;
+}
+
+#bt_cont {
+    display: flex;
+    color: blue;
+    font-size: 20px;
+    background: rgb(192, 192, 192);
+    flex-direction: column;
+    gap: 1px;
+    width: 720px;
+    height: 900px;
+    border-top: 2px double rgb(224, 224, 224);
+    border-left: 2px double rgb(224, 224, 224);
+    border-right: 2px double black;
+    border-bottom: 2px double black;
+}
+
+#bt_cont_head {
+    background-color: silver;
+    border-bottom: 2px double black;
+    padding: 2px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#bt_cont_head_buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 3px;
+}
+
+#bt_cont_body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 10px;
+}
+
+#bt_title {
+    font-weight: bold;
+    text-align: center;
+    padding: 3px;
+}
+
+.bt_text {
+    font-weight: bold;
+}
+
+.bt_input {
+    font-size: 20px;
+    color: rgb(0, 0, 127);
+    font-weight: bold;
+    border-top: 2px double black;
+    border-left: 2px double black;
+    border-right: 2px double rgb(224, 224, 224);
+    border-bottom: 2px double rgb(224, 224, 224);
+}
+
+.bt_button {
+    font-size: 20px;
+    color: rgb(0, 0, 127);
+    font-weight: bold;
+    border-top: 2px double rgb(224, 224, 224);
+    border-left: 2px double rgb(224, 224, 224);
+    border-right: 2px double black;
+    border-bottom: 2px double black;
+    cursor: pointer;
+}
+
+#btn_cont {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+
+#bt_logs {
+    display: block;
+}
+
+.cb_cont {
+    display: flex;
+    justify-content: left;
+    gap: 2px;
+}
+
+#logs {
+    box-sizing: border-box;
+    color: blue;
+    padding: 5px;
+    font-size: 20px;
+    width: calc(90vw - 600px);
+    height: 900px;
+    border-top: 2px double rgb(224, 224, 224);
+    border-left: 2px double rgb(224, 224, 224);
+    border-right: 2px double black;
+    border-bottom: 2px double black;
+    overflow-y: auto;
+    font-family: monospace;
+}
+
+#currents_cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 2px;
+}
+
+#currents {
+    font-weight: bolder;
+    color: #eee;
+    padding: 5px;
+    font-size: 24px;
+    width: 620px;
+    height: 500px;
+    border-top: 2px double rgb(224, 224, 224);
+    border-left: 2px double rgb(224, 224, 224);
+    border-right: 2px double black;
+    border-bottom: 2px double black;
+    font-family: monospace;
+    background: #808080;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    letter-spacing: 1px;
+}
+
+#currents_canvas {
+    border-top: 2px double rgb(224, 224, 224);
+    border-left: 2px double rgb(224, 224, 224);
+    border-right: 2px double black;
+    border-bottom: 2px double black;
+    width: 60px;
+    height: 510px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding-right: 2px;
+}
+th {
+    background-color: #f2f2f2;
+}
+
+.currents_label {
+    text-align: right;
+    padding-right: 10px;
+}
+
+.currents_text {
+    text-align: left;
+}
+

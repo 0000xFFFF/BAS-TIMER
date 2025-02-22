@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAS CTRL SERVER</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link rel="stylesheet" href="/index.css">
+    <script defer type="text/javascript" src="/index.js"></script>
 </head>
 
 <body>
@@ -45,14 +47,6 @@
         </div>
         <div id="logs"></div>
     </div>
-    <script>
-        var socket = io.connect("http://" + document.domain + ":" + location.port);
-
-        // Handle fetched data updates
-        socket.on("currents", function (data) {
-            document.getElementById("data").innerText = JSON.stringify(data, null, 2);
-        });
-    </script>
 </body>
 
 </html>
