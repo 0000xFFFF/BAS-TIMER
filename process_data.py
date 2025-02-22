@@ -4,7 +4,8 @@ from utils import timestamp, get_local_ips
 from colors import ctext, temp_to_ctext, bool_to_ctext
 import colors
 
-def data_to_dict(data):
+
+def process_data(data, last_ret):
     # Collect key-value pairs
     dic = {}
 
@@ -12,13 +13,9 @@ def data_to_dict(data):
         for key, value in data.items():
             if isinstance(value, dict) and "value" in value:
                 dic[key] = value["value"]
-    except:
-        pass
+    except Exception:
+        return dic
 
-    return dic
-
-
-def process_dict(dic, last_ret):
     # get temps and pump status
     Tspv = temp_to_ctext(dic["Tspv"])
     Tsolar = temp_to_ctext(dic["Tsolar"])
@@ -84,9 +81,3 @@ def process_dict(dic, last_ret):
 
     for line1, line2 in zip(table1_lines, table2_lines):
         print(f"{line1}  {line2}")
-
-
-def process_data(data, last_ret):
-    dic = data_to_dict(data)
-    process_dict(dic, last_ret)
-    return dic

@@ -2,7 +2,9 @@ import requests
 import time
 
 from utils import timestamp
-from status import process_data
+from process_data import process_data
+
+GLOBAL_UNIX_COUNTER = int(time.time() * 1000)
 
 # act like firefox
 req_headers = {
@@ -16,42 +18,21 @@ req_headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0",
     "X-Requested-With": "XMLHttpRequest",
 }
-req_url = "http://192.168.1.250/isc/get_var_js.aspx"
-req_params = {
-    "StatusPumpe3": "",
-    "StatusPumpe4": "",
-    "StatusPumpe5": "",
-    "StatusPumpe6": "",
-    "StatusPumpe7": "",
-    "Taktualno": "",
-    "Tfs": "",
-    "Tmax": "",
-    "Tmin": "",
-    "Tsobna": "",
-    "Tsolar": "",
-    "Tspv": "",
-    "Tzad_komf": "",
-    "Tzad_mraz": "",
-    "Tzad_red": "",
-    "Tzadata": "",
-    "mod_rada": "",
-    "mod_rezim": "",
-    "__Time": "",
-    "__Date": "",
-    "Jeftina_tarifa": "",
-    "grejanje_off": "",
-    "Alarm_tank": "",
-    "Alarm_solar": "",
-    "STATE_Preklopka": "",
-    "SESSIONID": "-1",
-    "_": int(time.time() * 1000),  # Generate 13-digit millisecond timestamp
+
+URLS = {
+    "VARS": "http://192.168.1.250/isc/get_var_js.aspx?StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&mod_rada=&mod_rezim=&__Time=&__Date=&Jeftina_tarifa=&grejanje_off=&Alarm_tank=&Alarm_solar=&STATE_Preklopka=&SESSIONID=-1",
+    "OFF": "http://192.168.1.250/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1",
+    "ON": "http://192.168.1.250/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1",
+    "GAS_OFF": "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=0,-1&=&SESSIONID=-1",
+    "GAS_ON": "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1"
 }
 
 
-# Create a prepared request
-def get_prepared(session):
-    req_params["_"] += 1
-    request = requests.Request("GET", req_url, headers=req_headers, params=req_params)
+def prepare(session, url):
+    global GLOBAL_UNIX_COUNTER
+    GLOBAL_UNIX_COUNTER += 1
+    url_with_timestamp = f"{url}&_={timestamp}"
+    request = requests.Request("GET", url_with_timestamp, headers=req_headers)
     prepared = session.prepare_request(request)
     return prepared
 
@@ -62,7 +43,7 @@ def prepared_url(prepared):
 
 last_data = None
 last_ret = False
-def fetch_info(main_session, log_requests):
+def worker(main_session, log_requests):
 
     global last_data
     global last_ret
@@ -70,11 +51,10 @@ def fetch_info(main_session, log_requests):
 
     # Send GET request
     try:
-        prepared = get_prepared(main_session)
+        prepared = prepare(main_session, URLS["VARS"])
         log_requests.write(f"[{timestamp()}] {prepared_url(prepared)} --> ")
         log_requests.flush()
         response = main_session.send(prepared)
-        response = requests.get(req_url, headers=req_headers, params=req_params)
         response.raise_for_status()  # Raise an error for HTTP error codes
         data = response.json()
         last_data = data
@@ -89,4 +69,9 @@ def fetch_info(main_session, log_requests):
             print(f"[{timestamp()}] {e.__class__.__name__}")
             return
 
-    return process_data(data, last_ret)
+    dic = process_data(data, last_ret)
+
+    # TODO: send requests based on processed data
+
+
+    return dic

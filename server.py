@@ -16,7 +16,7 @@ from flask_socketio import SocketIO
 
 
 from term import term_cursor_hide, term_cursor_reset, term_cursor_show, term_clear
-from req import fetch_info
+from worker import worker
 
 # Suppress Flask logging but keep prints
 log_file = "flask.log"
@@ -49,7 +49,7 @@ def index():
     return render_template("index.html")
 
 
-def worker():
+def main_worker():
     global running
     term_cursor_hide()
     term_clear()
@@ -57,7 +57,7 @@ def worker():
     with requests.Session() as main_session, open("requests.log", "a") as log_requests:
         while running:
             term_cursor_reset()
-            dic = fetch_info(main_session, log_requests)
+            dic = worker(main_session, log_requests)
 
             # send data to frontend
             socketio.emit("vars", dic)
@@ -67,7 +67,7 @@ def worker():
 
 if __name__ == "__main__":
 
-    t = Thread(target=worker)
+    t = Thread(target=main_worker)
     t.daemon = True
     t.start()
 
