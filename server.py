@@ -18,6 +18,9 @@ from flask_socketio import SocketIO
 from term import term_cursor_hide, term_cursor_reset, term_cursor_show, term_clear
 from worker import worker
 
+# change cwd to scripts dir
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # Suppress Flask logging but keep prints
 log_file = "flask.log"
 logging.getLogger("werkzeug").setLevel(logging.ERROR)
