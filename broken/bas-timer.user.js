@@ -7,7 +7,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @match        http://192.168.1.250:9001/*
+// @match        http://192.168.1.250/*
 // ==/UserScript==
 
 function setting(name, def) {
