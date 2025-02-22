@@ -198,7 +198,7 @@ def fetch_info():
     try:
         prepared = get_prepared()
         #print_prepared(prepared)
-        log_requests.write(f"[{timestamp()}] {prepared_url(prepared)} -->")
+        log_requests.write(f"[{timestamp()}] {prepared_url(prepared)} --> ")
         log_requests.flush()
         response = session.send(prepared)
         response = requests.get(req_url, headers=req_headers, params=req_params)
