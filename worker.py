@@ -31,7 +31,7 @@ URLS = {
 def prepare(session, url):
     global GLOBAL_UNIX_COUNTER
     GLOBAL_UNIX_COUNTER += 1
-    url_with_timestamp = f"{url}&_={timestamp}"
+    url_with_timestamp = f"{url}&_={GLOBAL_UNIX_COUNTER}"
     request = requests.Request("GET", url_with_timestamp, headers=req_headers)
     prepared = session.prepare_request(request)
     return prepared
@@ -43,7 +43,7 @@ def prepared_url(prepared):
 
 last_data = None
 last_ret = False
-def worker(main_session, log_requests):
+def worker(session, log_requests):
 
     global last_data
     global last_ret
@@ -51,10 +51,10 @@ def worker(main_session, log_requests):
 
     # Send GET request
     try:
-        prepared = prepare(main_session, URLS["VARS"])
+        prepared = prepare(session, URLS["VARS"])
         log_requests.write(f"[{timestamp()}] {prepared_url(prepared)} --> ")
         log_requests.flush()
-        response = main_session.send(prepared)
+        response = session.send(prepared)
         response.raise_for_status()  # Raise an error for HTTP error codes
         data = response.json()
         last_data = data
