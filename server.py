@@ -49,11 +49,6 @@ def index():
     return render_template("index.html")
 
 
-@socketio.on("connect")
-def handle_connect():
-    print("Client connected")
-
-
 def worker():
     global running
     term_cursor_hide()
