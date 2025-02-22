@@ -54,19 +54,15 @@ def worker():
     term_cursor_hide()
     term_clear()
 
-    main_session = requests.Session()
-    log_requests = open("requests.log", "a")
+    with requests.Session() as main_session, open("requests.log", "a") as log_requests:
+        while running:
+            term_cursor_reset()
+            dic = fetch_info(main_session, log_requests)
 
-    while running:
-        term_cursor_reset()
-        dic = fetch_info(main_session, log_requests)
+            # send data to frontend
+            socketio.emit("vars", dic)
 
-        # send data to frontend
-        socketio.emit("vars", dic)
-
-        time.sleep(1)
-
-    log_requests.close()
+            time.sleep(1)
 
 
 if __name__ == "__main__":
