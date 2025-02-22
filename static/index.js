@@ -9,25 +9,22 @@ function time() {
     return `${year}-${month}-${day} ${h}:${m}:${s}`;
 }
 
-//let MIN_TEMP = Infinity;
-//let MAX_TEMP = -Infinity;
-
-let MIN_TEMP = 45;
-let MAX_TEMP = 60;
+let TEMP_MIN = 45;
+let TEMP_MAX = 60;
 
 // Helper function to interpolate colors
 function getColor(temp) {
 
-    MIN_TEMP = Math.min(MIN_TEMP, temp);
-    MAX_TEMP = Math.max(MAX_TEMP, temp);
+    TEMP_MIN = Math.min(TEMP_MIN, temp);
+    TEMP_MAX = Math.max(TEMP_MAX, temp);
 
     // Prevent division by zero if all temps are the same
-    if (MIN_TEMP === MAX_TEMP) {
-        MIN_TEMP -= 1;
-        MAX_TEMP += 1;
+    if (TEMP_MIN === TEMP_MAX) {
+        TEMP_MIN -= 1;
+        TEMP_MAX += 1;
     }
 
-    const normalizedTemp = (temp - MIN_TEMP) / (MAX_TEMP - MIN_TEMP);
+    const normalizedTemp = (temp - TEMP_MIN) / (TEMP_MAX - TEMP_MIN);
     const r = Math.min(255, Math.max(0, normalizedTemp * 255));
     const b = Math.min(255, Math.max(0, 255 - normalizedTemp * 255));
     return `rgb(${r}, 0, ${b})`;
@@ -87,16 +84,16 @@ function process(json) {
 
     currents.innerHTML = "";
 
-    colorIt("Outside 󱇜", Tspv)
-    colorIt("Solar 󱩳", Tsolar)
-    colorIt("Room ", Tsobna)
-    colorIt("Set ", Tzadata)
-    colorIt("Max ", Tmax)
-    colorIt("Mid 󰝹", Tmid)
-    colorIt("Min ", Tmin)
-    colorIt("Circ. ", Tfs)
-    colorIt("Hottest 󰈸", Thottest)
-    colorIt("Coldest ", Tcoldest)
+    colorIt("Outside 󱇜", Tspv, getColor(Tspv))
+    colorIt("Solar 󱩳", Tsolar, getColor(Tsolar))
+    colorIt("Room ", Tsobna, getColor(Tsobna))
+    colorIt("Set ", Tzadata, getColor(Tzadata))
+    colorIt("Max ", Tmax, getColor(Tmax))
+    colorIt("Mid 󰝹", Tmid, getColor(Tmin))
+    colorIt("Min ", Tmin, getColor(Tmin))
+    colorIt("Circ. ", Tfs, getColor(Tfs))
+    colorIt("Hottest 󰈸", Thottest, getColor(Thottest))
+    colorIt("Coldest ", Tcoldest, getColor(Tcoldest))
 
     drawTemperatureGradient(Tmin, Tmid, Tmax);
 }
