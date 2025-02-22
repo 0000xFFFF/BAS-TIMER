@@ -161,6 +161,8 @@ def signal_handler():
 
 session = requests.Session()
 
+log_requests = open("requests.log", "a")
+
 # Create a prepared request
 def get_prepared():
     global session
@@ -189,7 +191,9 @@ def fetch_info():
     # Send GET request
     try:
         prepared = get_prepared()
-        #print_prepared(prepared)
+        print_prepared(prepared)
+        log_requests.write("{prepared}\n")
+        log_requests.flush()
         response = session.send(prepared)
         response = requests.get(req_url, headers=req_headers, params=req_params)
         response.raise_for_status()  # Raise an error for HTTP error codes
@@ -285,9 +289,11 @@ running = True
 
 try:
     while running:
-        term_cursor_reset()
+        #term_cursor_reset()
         fetch_info()
-        time.sleep(3)
+        time.sleep(1)
 except KeyboardInterrupt:
     print("Quitting...")
     running = False
+
+log_requests.close()
