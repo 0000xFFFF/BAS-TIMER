@@ -1,2 +1,2 @@
 #!/bin/bash -x
-sudo ln -sfr bas-status-cli /usr/local/bin/.
+sudo ln -sfr server.py /usr/local/bin/bas-server
