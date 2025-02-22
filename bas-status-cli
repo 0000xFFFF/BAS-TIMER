@@ -171,8 +171,11 @@ def get_prepared():
     prepared = session.prepare_request(request)
     return prepared
 
+def prepared_url(prepared):
+    return f"{prepared.method} {prepared.url} HTTP/1.1"
+
 def print_prepared(prepared):
-    print(f"{prepared.method} {prepared.url} HTTP/1.1")
+    print(prepared_url(prepared))
     for key, value in prepared.headers.items():
         print(f"{key}: {value}")
 
@@ -191,8 +194,8 @@ def fetch_info():
     # Send GET request
     try:
         prepared = get_prepared()
-        print_prepared(prepared)
-        log_requests.write("{prepared}\n")
+        #print_prepared(prepared)
+        log_requests.write(f"{timestamp()}  {prepared_url(prepared)}\n")
         log_requests.flush()
         response = session.send(prepared)
         response = requests.get(req_url, headers=req_headers, params=req_params)
@@ -289,7 +292,7 @@ running = True
 
 try:
     while running:
-        #term_cursor_reset()
+        term_cursor_reset()
         fetch_info()
         time.sleep(1)
 except KeyboardInterrupt:
