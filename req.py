@@ -95,12 +95,12 @@ def fetch_info(main_session, last_data, last_ret, log_requests):
         log_requests.flush()
     except Exception as e:
         ret = False
-        log_requests.write(f"[{timestamp()}] FAILED\n")
+        log_requests.write(f"[{timestamp()}] FAILED ({e})\n")
         log_requests.flush()
         data = last_data
         if last_data is None:
             print(f"[{timestamp()}] {e.__class__.__name__}")
-            return None, False
+            return ret, None
 
     print_status(data, ret)
 
