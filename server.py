@@ -16,7 +16,8 @@ from term import term_cursor_hide, term_cursor_reset, term_cursor_show, term_cle
 from req import fetch_info
 
 # change cwd to scripts dir
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
+os.path.join(os.path.dirname(os.path.realpath(__file__)))
+print(os.getcwd())
 
 # exit handler
 @atexit.register
@@ -25,7 +26,7 @@ def signal_handler():
 
 
 running = True
-app = Flask(__name__)
+app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates"))
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 
