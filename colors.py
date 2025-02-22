@@ -2,7 +2,7 @@ TEMP_MIN = 45
 TEMP_MAX = 60
 TEMP_COLORS = [51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196]
 
-COLOR_ON  = 40
+COLOR_ON = 40
 COLOR_OFF = 226
 
 def contrast_color(color):
@@ -45,12 +45,12 @@ def temperature_to_color(temp):
 def temp_to_ctext(temp):
     color = temperature_to_color(temp)
     pad_float = str(f"{temp:.2f}")
-    pad_def   = f"{pad_float} " + chr(176) + "C"
+    pad_def = f"{pad_float} " + chr(176) + "C"
     return ctext(color, f"{pad_def:>9}")
+
 
 def bool_to_ctext(b):
     if b:
         return ctext(COLOR_ON, f" {b} ")
     else:
         return ctext(COLOR_OFF, f" {b} ")
-

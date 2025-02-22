@@ -1,16 +1,8 @@
 from tabulate import tabulate
 
 from utils import timestamp, get_local_ips
-from colors import (
-    TEMP_MAX,
-    TEMP_MIN,
-    ctext,
-    temp_to_ctext,
-    bool_to_ctext,
-    COLOR_ON,
-    COLOR_OFF,
-)
-
+from colors import ctext, temp_to_ctext, bool_to_ctext
+import colors
 
 def data_to_dict(data):
     # Collect key-value pairs
@@ -33,11 +25,14 @@ def print_color(dic, last_ret):
     Tzadata = temp_to_ctext(dic["Tzadata"])
     Tfs = temp_to_ctext(dic["Tfs"])
     Tmax = temp_to_ctext(dic["Tmax"])
-    Tmid = temp_to_ctext((dic["Tmax"] + dic["Tmin"]) / 2)
+    dic["Tmid"] = (dic["Tmax"] + dic["Tmin"]) / 2
+    Tmid = temp_to_ctext(dic["Tmid"])
     Tmin = temp_to_ctext(dic["Tmin"])
     Tsobna = temp_to_ctext(dic["Tsobna"])
-    Thottest = temp_to_ctext(TEMP_MAX)
-    Tcoldest = temp_to_ctext(TEMP_MIN)
+    dic["Thottest"] = colors.TEMP_MAX
+    Thottest = temp_to_ctext(dic["Thottest"])
+    dic["Tcoldest"] = colors.TEMP_MIN
+    Tcoldest = temp_to_ctext(dic["Tcoldest"])
     temps = []
     temps.append(["Outside 󱇜", Tspv])
     temps.append(["Solar 󱩳", Tsolar])
@@ -78,7 +73,7 @@ def print_color(dic, last_ret):
     while len(table2_lines) < max_lines:
         table2_lines.append("")
 
-    COLOR_HEAD = COLOR_ON if last_ret else COLOR_OFF
+    COLOR_HEAD = colors.COLOR_ON if last_ret else colors.COLOR_OFF
     print(ctext(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
 
     for line1, line2 in zip(table1_lines, table2_lines):

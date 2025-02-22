@@ -19,14 +19,10 @@ from term import term_cursor_hide, term_cursor_reset, term_cursor_show, term_cle
 from req import fetch_info
 
 # Suppress Flask logging but keep prints
-# log_file = "flask.log"
-# 
-# # Disable Flask default logger
-# logging.getLogger("werkzeug").setLevel(logging.ERROR)
-# 
-# # Redirect Flask logs to a file
-# flask_log = open(log_file, "a")
-# sys.stderr = flask_log  # Redirect errors to log file
+log_file = "flask.log"
+logging.getLogger("werkzeug").setLevel(logging.ERROR)
+flask_log = open(log_file, "a")
+sys.stderr = flask_log  # Redirect errors to log file
 
 
 # exit handler
