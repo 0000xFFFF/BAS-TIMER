@@ -3,6 +3,7 @@ from tabulate import tabulate
 from utils import timestamp, get_local_ips
 from colors import ctext, temp_to_ctext, bool_to_ctext
 import colors
+import worker
 
 
 def process_data(data, last_ret):
@@ -51,8 +52,8 @@ def process_data(data, last_ret):
     ModRezim = bool_to_ctext(int(dic["mod_rezim"]))
     dic["TminLT"] = dic["Tmin"] < 45
     TminLT = bool_to_ctext(int(dic["TminLT"]))
-    dic["TmidGT"] = dic["Tmid"] >= 60
-    TmidGT = bool_to_ctext(int(dic["TmidGT"]))
+    dic["TmidGE"] = dic["Tmid"] >= 60
+    TmidGE = bool_to_ctext(int(dic["TmidGE"]))
     status = []
     status.append(["Mode 󱪯", ModRada])
     status.append(["Regime 󱖫", ModRezim])
@@ -62,7 +63,11 @@ def process_data(data, last_ret):
     status.append(["Pump5 ", StatusPumpe5])
     status.append(["Pump7 ", StatusPumpe7])
     status.append(["Min < 45", TminLT])
-    status.append(["Mid >= 60", TmidGT])
+    status.append(["Mid >= 60", TmidGE])
+
+    other = []
+    other.append(["AutoTimer", f"{int(worker.AUTO_TIMER)}/{int(worker.AUTO_TIMER_STARTED)}/{worker.AUTO_TIMER_SECONDS_LEFT} {worker.AUTO_TIMER_STATUS}"])
+    other.append(["AutoGas", f"{int(worker.AUTO_GAS)} {worker.AUTO_GAS_STATUS}"])
 
     # format tables
     fmt = "plain"
@@ -81,3 +86,7 @@ def process_data(data, last_ret):
 
     for line1, line2 in zip(table1_lines, table2_lines):
         print(f"{line1}  {line2}")
+
+    print(tabulate(other, tablefmt=fmt, colalign=("right",)))
+
+    return dic

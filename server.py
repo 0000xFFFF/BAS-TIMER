@@ -22,10 +22,10 @@ from worker import worker
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Suppress Flask logging but keep prints
-log_file = "flask.log"
-logging.getLogger("werkzeug").setLevel(logging.ERROR)
-flask_log = open(log_file, "a")
-sys.stderr = flask_log  # Redirect errors to log file
+#log_file = "flask.log"
+#logging.getLogger("werkzeug").setLevel(logging.ERROR)
+#flask_log = open(log_file, "a")
+#sys.stderr = flask_log  # Redirect errors to log file
 
 
 # exit handler
@@ -65,7 +65,7 @@ def main_worker():
             # send data to frontend
             socketio.emit("vars", dic)
 
-            time.sleep(1)
+            time.sleep(3)
 
 
 if __name__ == "__main__":
