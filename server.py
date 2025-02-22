@@ -43,8 +43,8 @@ def handle_connect():
 
 def worker():
     global running
-    #term_cursor_hide()
-    #term_clear()
+    term_cursor_hide()
+    term_clear()
 
     main_session = requests.Session()
     log_requests = open("requests.log", "a")
@@ -53,7 +53,7 @@ def worker():
     last_data = None
 
     while running:
-        #term_cursor_reset()
+        term_cursor_reset()
         last_ret, last_data, dic = fetch_info(
             main_session, last_ret, last_data, log_requests
         )
