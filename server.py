@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import requests
 import time
 import atexit
@@ -14,6 +15,8 @@ from flask_socketio import SocketIO
 from term import term_cursor_hide, term_cursor_reset, term_cursor_show, term_clear
 from req import fetch_info
 
+# change cwd to scripts dir
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # exit handler
 @atexit.register
