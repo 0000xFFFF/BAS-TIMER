@@ -54,6 +54,8 @@ function createElement(tag, props = {}) {
 }
 
 
+const currents = document.getElementById("currents_tbody");
+
 function colorIt(label, text, clr) {
     const COLOR_OFF = "rgb(255, 255, 0)";
     const COLOR_ON = "rgb(0, 255, 0)";
