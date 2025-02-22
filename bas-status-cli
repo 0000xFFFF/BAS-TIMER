@@ -172,10 +172,13 @@ def get_prepared():
     return prepared
 
 def prepared_url(prepared):
-    return f"{prepared.method} {prepared.url} HTTP/1.1"
+    return f"{prepared.method} {prepared.url}"
+
+def prepared_req(prepared):
+    return f"{prepared_req(prepared)} HTTP/1.1"
 
 def print_prepared(prepared):
-    print(prepared_url(prepared))
+    print(prepared_req(prepared))
     for key, value in prepared.headers.items():
         print(f"{key}: {value}")
 
@@ -195,14 +198,18 @@ def fetch_info():
     try:
         prepared = get_prepared()
         #print_prepared(prepared)
-        log_requests.write(f"{timestamp()}  {prepared_url(prepared)}\n")
+        log_requests.write(f"[{timestamp()}] {prepared_url(prepared)} -->")
         log_requests.flush()
         response = session.send(prepared)
         response = requests.get(req_url, headers=req_headers, params=req_params)
         response.raise_for_status()  # Raise an error for HTTP error codes
         data = response.json()
         last_data = data
+        log_requests.write(f"[{timestamp()}] SUCCESS\n")
+        log_requests.flush()
     except Exception as e:
+        log_requests.write(f"[{timestamp()}] FAILED\n")
+        log_requests.flush()
         last_failed = True
         data = last_data
         if last_data is None:
