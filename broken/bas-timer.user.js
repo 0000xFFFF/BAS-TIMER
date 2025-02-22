@@ -23,9 +23,9 @@ const setting_lowbound4gas_ = "bound4gas_low"; var setting_lowbound4gas = settin
 const setting_higbound4gas_ = "bound4gas_hig"; var setting_higbound4gas = setting(setting_higbound4gas_, 60);
 
 // dynamic
-const setting_pinger_       = "pinger";        var setting_pinger       = setting(setting_pinger_,       true);
-const setting_autotimer_    = "autotimer";     var setting_autotimer    = setting(setting_autotimer_,    true);
-const setting_autogas_      = "autogas";       var setting_autogas      = setting(setting_autogas_,      true);
+const setting_pinger_       = "pinger";        var setting_pinger       = setting(setting_pinger_,       false);
+const setting_autotimer_    = "autotimer";     var setting_autotimer    = setting(setting_autotimer_,    false);
+const setting_autogas_      = "autogas";       var setting_autogas      = setting(setting_autogas_,      false);
 
 // ultra dynamic
 const setting_lastseen_mod_rada_        = "lastseen_mod_rada";        var setting_lastseen_mod_rada        = setting(setting_lastseen_mod_rada_,        null);
@@ -349,7 +349,7 @@ function startTimer() {
             stopTimer();
             status.innerHTML = "Turning off heating.";
             log("[>] HEAT OFF (set mod_rada=0)");
-            fetch(URLS.OFF);
+            //fetch(URLS.OFF);
         }
     }, 1000);
 }
@@ -503,12 +503,12 @@ pinger = setInterval(async () => {
 
         if (setting_autogas && RezimRadaPumpe4 == 0 && TminIsLT) {
             log("[>] GAS ON (set RezimRadaPumpe4=3)");
-            fetch(URLS.GAS_ON);
+            //fetch(URLS.GAS_ON);
         }
 
         if (setting_autogas && RezimRadaPumpe4 == 3 && TmidIsGE) {
             log("[>] GAS OFF (set RezimRadaPumpe4=0)");
-            fetch(URLS.GAS_OFF);
+            //fetch(URLS.GAS_OFF);
         }
 
         if (setting_autotimer) {
