@@ -12,13 +12,17 @@ from colors import (
 )
 
 
-def print_status(data, last_ret):
+def data_to_dict(data):
     # Collect key-value pairs
     dic = {}
     for key, value in data.items():
         if isinstance(value, dict) and "value" in value:
             dic[key] = value["value"]
 
+    return dic
+
+
+def print_color(dic, last_ret):
     # get temps and pump status
     Tspv = temp_to_ctext(dic["Tspv"])
     Tsolar = temp_to_ctext(dic["Tsolar"])
@@ -75,3 +79,9 @@ def print_status(data, last_ret):
 
     for line1, line2 in zip(table1_lines, table2_lines):
         print(f"{line1}  {line2}")
+
+
+def process_data(data, last_ret):
+    dic = data_to_dict(data)
+    print_color(dic, last_ret)
+    return dic

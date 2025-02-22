@@ -2,7 +2,7 @@ import requests
 import time
 
 from utils import timestamp
-from status import print_status
+from status import process_data
 
 # act like firefox
 req_headers = {
@@ -102,6 +102,6 @@ def fetch_info(main_session, last_data, last_ret, log_requests):
             print(f"[{timestamp()}] {e.__class__.__name__}")
             return ret, None
 
-    print_status(data, ret)
+    dic = process_data(data, ret)
 
-    return ret, data
+    return ret, data, dic
