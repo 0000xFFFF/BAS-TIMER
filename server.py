@@ -54,12 +54,12 @@ def index():
 
 def main_worker():
     global running
-    term_cursor_hide()
-    term_clear()
+    #term_cursor_hide()
+    #term_clear()
 
     with requests.Session() as main_session, open("requests.log", "a") as log_requests:
         while running:
-            term_cursor_reset()
+            #term_cursor_reset()
             dic = worker(main_session, log_requests)
 
             # send data to frontend
