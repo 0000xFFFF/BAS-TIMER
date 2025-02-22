@@ -55,15 +55,11 @@ def worker():
     term_clear()
 
     main_session = requests.Session()
-    last_ret = False
-    last_data = None
     log_requests = open("requests.log", "a")
 
     while running:
         term_cursor_reset()
-        last_ret, last_data, dic = fetch_info(
-            main_session, last_ret, last_data, log_requests
-        )
+        dic = fetch_info(main_session, log_requests)
 
         # send data to frontend
         socketio.emit("vars", dic)

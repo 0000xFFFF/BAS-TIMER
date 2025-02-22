@@ -18,7 +18,7 @@ def data_to_dict(data):
     return dic
 
 
-def print_color(dic, last_ret):
+def process_dict(dic, last_ret):
     # get temps and pump status
     Tspv = temp_to_ctext(dic["Tspv"])
     Tsolar = temp_to_ctext(dic["Tsolar"])
@@ -52,6 +52,10 @@ def print_color(dic, last_ret):
     StatusPumpe7 = bool_to_ctext(int(dic["StatusPumpe7"]))
     ModRada = bool_to_ctext(int(dic["mod_rada"]))
     ModRezim = bool_to_ctext(int(dic["mod_rezim"]))
+    dic["TminLT"] = dic["Tmin"] < 45
+    TminLT = bool_to_ctext(int(dic["TminLT"]))
+    dic["TmidGT"] = dic["Tmid"] >= 60
+    TmidGT = bool_to_ctext(int(dic["TmidGT"]))
     status = []
     status.append(["Mode 󱪯", ModRada])
     status.append(["Regime 󱖫", ModRezim])
@@ -60,6 +64,8 @@ def print_color(dic, last_ret):
     status.append(["Circ. ", StatusPumpe3])
     status.append(["Pump5 ", StatusPumpe5])
     status.append(["Pump7 ", StatusPumpe7])
+    status.append(["Min < 45", TminLT])
+    status.append(["Mid >= 60", TmidGT])
 
     # format tables
     fmt = "plain"
@@ -82,5 +88,5 @@ def print_color(dic, last_ret):
 
 def process_data(data, last_ret):
     dic = data_to_dict(data)
-    print_color(dic, last_ret)
+    process_dict(dic, last_ret)
     return dic

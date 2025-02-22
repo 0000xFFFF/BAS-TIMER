@@ -60,30 +60,17 @@ def prepared_url(prepared):
     return f"{prepared.method} {prepared.url}"
 
 
-def prepared_req(prepared):
-    return f"{prepared_req(prepared)} HTTP/1.1"
+last_data = None
+last_ret = False
+def fetch_info(main_session, log_requests):
 
-
-def print_prepared(prepared):
-    print(prepared_req(prepared))
-    for key, value in prepared.headers.items():
-        print(f"{key}: {value}")
-
-    if prepared.body:
-        print(
-            "\nRaw Body Bytes:",
-            prepared.body.encode() if isinstance(prepared.body, str) else prepared.body,
-        )
-
-
-def fetch_info(main_session, last_data, last_ret, log_requests):
-
-    ret = True
+    global last_data
+    global last_ret
+    last_ret = True
 
     # Send GET request
     try:
         prepared = get_prepared(main_session)
-        # print_prepared(prepared)
         log_requests.write(f"[{timestamp()}] {prepared_url(prepared)} --> ")
         log_requests.flush()
         response = main_session.send(prepared)
@@ -94,14 +81,12 @@ def fetch_info(main_session, last_data, last_ret, log_requests):
         log_requests.write(f"[{timestamp()}] SUCCESS\n")
         log_requests.flush()
     except Exception as e:
-        ret = False
+        last_ret = False
         log_requests.write(f"[{timestamp()}] FAILED ({e})\n")
         log_requests.flush()
         data = last_data
         if last_data is None:
             print(f"[{timestamp()}] {e.__class__.__name__}")
-            return ret, None, None
+            return
 
-    dic = process_data(data, ret)
-
-    return ret, data, dic
+    return process_data(data, last_ret)
