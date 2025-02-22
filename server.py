@@ -21,11 +21,14 @@ from worker import worker
 # change cwd to scripts dir
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
+DEBUG = False
+
 # Suppress Flask logging but keep prints
-#log_file = "flask.log"
-#logging.getLogger("werkzeug").setLevel(logging.ERROR)
-#flask_log = open(log_file, "a")
-#sys.stderr = flask_log  # Redirect errors to log file
+if not DEBUG:
+    log_file = "flask.log"
+    logging.getLogger("werkzeug").setLevel(logging.ERROR)
+    flask_log = open(log_file, "a")
+    sys.stderr = flask_log  # Redirect errors to log file
 
 
 # exit handler
@@ -54,12 +57,14 @@ def index():
 
 def main_worker():
     global running
-    #term_cursor_hide()
-    #term_clear()
+    if not DEBUG:
+        term_cursor_hide()
+        term_clear()
 
     with requests.Session() as main_session, open("requests.log", "a") as log_requests:
         while running:
-            #term_cursor_reset()
+            if not DEBUG:
+                term_cursor_reset()
             dic = worker(main_session, log_requests)
 
             # send data to frontend
