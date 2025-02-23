@@ -119,7 +119,13 @@ def action(session, log_requests, dic):
                 AUTO_TIMER_SECONDS,
                 reverse_colors=True
             )
-            AUTO_TIMER_STATUS = f"{tt}"
+            tm = int_to_ctext_fg(
+                AUTO_TIMER_SECONDS,
+                0,
+                AUTO_TIMER_SECONDS,
+                reverse_colors=True
+            )
+            AUTO_TIMER_STATUS = f"{tt}/{tm}"
 
             if AUTO_TIMER_SECONDS_ELAPSED >= AUTO_TIMER_SECONDS:
                 AUTO_TIMER_STARTED = False
