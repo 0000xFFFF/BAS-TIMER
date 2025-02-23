@@ -11,7 +11,7 @@ import eventlet
 
 eventlet.monkey_patch()
 import random
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO
 
 
@@ -66,6 +66,23 @@ def toggle_autotimer():
 def toggle_autogas():
     reqworker.AUTO_GAS = not reqworker.AUTO_GAS  # Toggle value
     return jsonify({"auto_gas": reqworker.AUTO_GAS})
+
+
+@app.route("/get_timer_seconds", methods=["GET"])
+def get_timer_seconds():
+    return jsonify({"AUTO_TIMER_SECONDS": reqworker.AUTO_TIMER_SECONDS})
+
+
+@app.route("/set_timer_seconds", methods=["POST"])
+def set_timer_seconds():
+    data = request.get_json()
+    try:
+        reqworker.AUTO_TIMER_SECONDS = int(data["seconds"])
+        return jsonify(
+            {"success": True, "AUTO_TIMER_SECONDS": reqworker.AUTO_TIMER_SECONDS}
+        )
+    except (KeyError, ValueError):
+        return jsonify({"success": False, "error": "Invalid input"}), 400
 
 
 def main_worker():

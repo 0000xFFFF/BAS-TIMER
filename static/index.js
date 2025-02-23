@@ -1,9 +1,55 @@
+document.addEventListener("DOMContentLoaded", function () {
+    fetch('/get_timer_seconds')
+        .then(response => response.json())
+        .then(data => {
+            const seconds = data.AUTO_TIMER_SECONDS;
+            document.getElementById('txt_input').value = seconds;
+            highlightButton(seconds);
+        })
+        .catch(error => console.error('Error fetching timer seconds:', error));
+});
+
+function setTime(seconds) {
+    document.getElementById('txt_input').value = seconds;
+    highlightButton(seconds);
+    updateServer(seconds);
+}
+
+function handleTextboxChange() {
+    document.querySelectorAll('.btn_time').forEach(btn => btn.classList.remove('on'));
+    let seconds = parseInt(document.getElementById('txt_input').value);
+    if (!isNaN(seconds)) {
+        updateServer(seconds);
+    }
+}
+
+function highlightButton(seconds) {
+    document.querySelectorAll('.btn_time').forEach(btn => {
+        btn.classList.remove('on');
+        if (parseInt(btn.textContent) * 60 === seconds) {
+            btn.classList.add('on');
+        }
+    });
+}
+
+function updateServer(seconds) {
+    fetch('/set_timer_seconds', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ seconds: seconds })
+    })
+    .then(response => response.json())
+    .then(data => console.log('Server updated:', data))
+    .catch(error => console.error('Error:', error));
+}
+
+
 function toggleAutoTimer() {
     fetch('/toggle_autotimer', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('auto_timer').innerText = data.auto_timer ? "ON" : "OFF";
-            document.getElementById('toggleTimerButton').innerText = data.auto_timer ? "Turn OFF" : "Turn ON";
+            const button = document.getElementById('toggleTimerButton');
+            button.classList.toggle('on', data.auto_timer);
         });
 }
 
@@ -11,11 +57,10 @@ function toggleAutoGas() {
     fetch('/toggle_autogas', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('auto_gas').innerText = data.auto_gas ? "ON" : "OFF";
-            document.getElementById('toggleGasButton').innerText = data.auto_gas ? "Turn OFF" : "Turn ON";
+            const button = document.getElementById('toggleGasButton');
+            button.classList.toggle('on', data.auto_gas);
         });
 }
-
 
 
 function time() {
