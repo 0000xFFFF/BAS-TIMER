@@ -1,3 +1,23 @@
+function toggleAutoTimer() {
+    fetch('/toggle_autotimer', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('auto_timer').innerText = data.auto_timer ? "ON" : "OFF";
+            document.getElementById('toggleTimerButton').innerText = data.auto_timer ? "Turn OFF" : "Turn ON";
+        });
+}
+
+function toggleAutoGas() {
+    fetch('/toggle_autogas', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('auto_gas').innerText = data.auto_gas ? "ON" : "OFF";
+            document.getElementById('toggleGasButton').innerText = data.auto_gas ? "Turn OFF" : "Turn ON";
+        });
+}
+
+
+
 function time() {
     let d = new Date();
     let year = d.getFullYear();

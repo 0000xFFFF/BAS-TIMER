@@ -11,7 +11,7 @@ from colors import (
     int_to_ctext_fg,
 )
 import colors
-import worker
+import reqworker
 
 
 def process_data(data, last_ret):
@@ -81,10 +81,10 @@ def process_data(data, last_ret):
     status.append([ctext_fg(208, "Mid >= 60"), TmidGE])
 
     emojis2 = ["   "] * len(temps)
-    if worker.AUTO_TIMER:
-        emojis2[0] = ctext_fg(COLOR_ON, f"󱣽") + bctext_fg(worker.AUTO_TIMER_STARTED, f"󱎫")
+    if reqworker.AUTO_TIMER:
+        emojis2[0] = ctext_fg(COLOR_ON, f"󱣽") + bctext_fg(reqworker.AUTO_TIMER_STARTED, f"󱎫")
     
-    if worker.AUTO_GAS:
+    if reqworker.AUTO_GAS:
         emojis2[3] = ctext_fg(COLOR_ON, f"󱣽")
 
     # format tables
@@ -105,18 +105,18 @@ def process_data(data, last_ret):
     for line1, emoji1, line2, emoji2 in zip(table1_lines, emojis, table2_lines, emojis2):
         print(f"{line1}{emoji1}{line2}{emoji2}")
 
-    ts = worker.AUTO_TIMER_STATUS
+    ts = reqworker.AUTO_TIMER_STATUS
     if ts:
         te = ctext_fg(COLOR_ON, f"󱎫󰐸")
         tt = int_to_ctext_fg(
-            worker.AUTO_TIMER_SECONDS_LEFT,
+            reqworker.AUTO_TIMER_SECONDS_LEFT,
             0,
-            worker.AUTO_TIMER_SECONDS,
+            reqworker.AUTO_TIMER_SECONDS,
             reverse_colors=True
         )
         print(f"{te} {tt} {ts}")
 
-    gs = worker.AUTO_GAS_STATUS
+    gs = reqworker.AUTO_GAS_STATUS
     if gs:
         ge = ctext_fg(COLOR_ON, f"󱣿󰙇")
         print(f"󱣿󰙇 {ge} {gs}")

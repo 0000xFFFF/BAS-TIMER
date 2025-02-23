@@ -11,12 +11,12 @@ import eventlet
 
 eventlet.monkey_patch()
 import random
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_socketio import SocketIO
 
 
 from term import term_cursor_hide, term_cursor_reset, term_cursor_show, term_clear
-from worker import worker
+import reqworker
 
 # change cwd to scripts dir
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -40,19 +40,32 @@ def signal_handler():
 running = True
 app = Flask(
     __name__,
-    static_url_path='',
-    static_folder=os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "static"
-    ),
+    static_url_path="",
+    static_folder=os.path.join(os.path.dirname(os.path.realpath(__file__)), "static"),
     template_folder=os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "templates"
     ),
 )
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template(
+        "index.html", auto_timer=reqworker.AUTO_TIMER, auto_gas=reqworker.AUTO_GAS
+    )
+
+
+@app.route("/toggle_autotimer", methods=["POST"])
+def toggle_autotimer():
+    reqworker.AUTO_TIMER = not reqworker.AUTO_TIMER  # Toggle value
+    return jsonify({"auto_timer": reqworker.AUTO_TIMER})
+
+
+@app.route("/toggle_autogas", methods=["POST"])
+def toggle_autogas():
+    reqworker.AUTO_GAS = not reqworker.AUTO_GAS  # Toggle value
+    return jsonify({"auto_gas": reqworker.AUTO_GAS})
 
 
 def main_worker():
@@ -65,7 +78,7 @@ def main_worker():
         while running:
             if not DEBUG:
                 term_cursor_reset()
-            dic = worker(main_session, log_requests)
+            dic = reqworker.dowork(main_session, log_requests)
 
             # send data to frontend
             socketio.emit("vars", dic)

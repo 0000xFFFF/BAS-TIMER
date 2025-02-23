@@ -127,7 +127,7 @@ last_data = None
 last_ret = False
 
 
-def worker(session, log_requests):
+def dowork(session, log_requests):
 
     global last_data
     global last_ret

@@ -27,27 +27,23 @@
                     <button id="button_20min" class="bt_button">20 min</button>
                     <button id="button_25min" class="bt_button">25 min</button>
                 </div>
-                <button class="bt_button">Toggle</button>
-                <div id="cb_pinger_cont" class="cb_cont">
-                    <input id="cb_pinger" type="checkbox">
-                    <label id="cb_pinger_label">Ping every 5000 ms</label>
-                </div>
-                <div id="cb_autotimer_cont" class="cb_cont">
-                    <input id="cb_autotimer" type="checkbox">
-                    <label id="cb_autotimer_label">Auto Timer</label>
-                </div>
-                <div id="cb_autogas_cont" class="cb_cont">
-                    <input id="cb_autogas" type="checkbox">
-                    <label id="cb_autogas_label">Auto Gas</label>
-                </div>
-                <div class="bt_text">...</div>
+
+                <p>Auto Timer: <span id="auto_timer">{{ auto_timer }}</span></p>
+                <button id="toggleTimerButton" onclick="toggleAutoTimer()">
+                    {{ "Turn OFF" if auto_timer else "Turn ON" }}
+                </button>
+
+                <p>Auto Gas: <span id="auto_gas">{{ auto_gas }}</span></p>
+                <button id="toggleGasButton" onclick="toggleAutoGas()">
+                    {{ "Turn OFF" if auto_gas else "Turn ON" }}
+                </button>
                 <div id="currents_cont">
                     <div id="currents">
-                    <table>
-                        <tbody id="currents_tbody">
-                            
-                        </tbody>
-                    </table>
+                        <table>
+                            <tbody id="currents_tbody">
+
+                            </tbody>
+                        </table>
                     </div>
                     <canvas id="currents_canvas"></canvas>
                 </div>
