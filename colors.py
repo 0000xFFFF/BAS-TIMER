@@ -167,30 +167,30 @@ def bctext_fg(b, text):
 
 def bool_to_ctext_fg(b):
     if b:
-        return ctext_fg(COLOR_ON, f" {b} ")
+        return ctext_fg(COLOR_ON, f"{b}")
     else:
-        return ctext_fg(COLOR_OFF, f" {b} ")
+        return ctext_fg(COLOR_OFF, f"{b}")
 
 
 def bool_to_ctext_bg(b):
     if b:
-        return ctext_bg(COLOR_ON, f" {b} ")
+        return ctext_bg(COLOR_ON, f"{b}")
     else:
-        return ctext_bg(COLOR_OFF, f" {b} ")
+        return ctext_bg(COLOR_OFF, f"{b}")
 
 
 def bool_to_ctext_bg_con(b):
     if b:
-        return ctext_bg_con(COLOR_ON, f" {b} ")
+        return ctext_bg_con(COLOR_ON, f"{b}")
     else:
-        return ctext_bg_con(COLOR_OFF, f" {b} ")
+        return ctext_bg_con(COLOR_OFF, f"{b}")
 
 
 def bool_to_ctext_fg_con(b):
     if b:
-        return ctext_fg_con(COLOR_ON, f" {b} ")
+        return ctext_fg_con(COLOR_ON, f"{b}")
     else:
-        return ctext_fg_con(COLOR_OFF, f" {b} ")
+        return ctext_fg_con(COLOR_OFF, f"{b}")
 
 
 def bool_to_ctext_bi(b):

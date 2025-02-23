@@ -1,15 +1,16 @@
 import requests
 import time
 
-from utils import timestamp
+from utils import timestamp, time_to_str
 from process_data import process_data
+from colors import bool_to_ctext_fg
 
 GLOBAL_UNIX_COUNTER = int(time.time() * 1000)
 
 AUTO_TIMER = True
 AUTO_TIMER_STARTED = False
-AUTO_TIMER_SECONDS = 300 # 15 mins
-AUTO_TIMER_SECONDS_LEFT = AUTO_TIMER_SECONDS
+AUTO_TIMER_SECONDS = 300  # 15 mins
+AUTO_TIMER_SECONDS_ELAPSED = 0
 AUTO_TIMER_STATUS = ""
 AUTO_TIMER_TIME_STARTED = 0
 AUTO_TIMER_TIME_FINISHED = 0
@@ -18,6 +19,11 @@ AUTO_GAS_STATUS = ""
 AUTO_GAS_WE_STARTED = False
 AUTO_GAS_TIME_STARTED = 0
 AUTO_GAS_TIME_FINISHED = 0
+
+HISTORY_MODE = None
+HISTORY_MODE_TIMECHANGED = None
+HISTORY_GAS = None
+HISTORY_GAS_TIMECHANGED = None
 
 # act like firefox
 req_headers = {
@@ -76,7 +82,7 @@ def action(session, log_requests, dic):
     global AUTO_TIMER
     global AUTO_TIMER_STARTED
     global AUTO_TIMER_SECONDS
-    global AUTO_TIMER_SECONDS_LEFT
+    global AUTO_TIMER_SECONDS_ELAPSED
     global AUTO_TIMER_STATUS
     global AUTO_TIMER_TIME_STARTED
     global AUTO_TIMER_TIME_FINISHED
@@ -86,12 +92,28 @@ def action(session, log_requests, dic):
     global AUTO_GAS_TIME_STARTED
     global AUTO_GAS_TIME_FINISHED
 
+    global HISTORY_MODE
+    global HISTORY_MODE_TIMECHANGED
+    global HISTORY_GAS
+    global HISTORY_GAS_TIMECHANGED
+
+    if HISTORY_MODE is None:
+        HISTORY_MODE = dic["mod_rada"]
+        HISTORY_MODE_TIMECHANGED = time.time()
+        AUTO_TIMER_STATUS = (
+            f"saw: {bool_to_ctext_fg(int(HISTORY_MODE))} {time_to_str(HISTORY_MODE_TIMECHANGED)}"
+        )
+
+    if HISTORY_GAS is None:
+        HISTORY_GAS = dic["StatusPumpe4"]
+        HISTORY_GAS_TIMECHANGED = time.time()
+        AUTO_GAS_STATUS = f"saw: {bool_to_ctext_fg(int(HISTORY_GAS))} {time_to_str(HISTORY_GAS_TIMECHANGED)}"
+
     if AUTO_TIMER and int(dic["mod_rada"]):
         if AUTO_TIMER_STARTED:
-            AUTO_TIMER_SECONDS_LEFT -= 1
-            if AUTO_TIMER_SECONDS_LEFT <= 0:
-                AUTO_TIMER_STARTED = 0
-                AUTO_TIMER_SECONDS_LEFT = AUTO_TIMER_SECONDS
+            AUTO_TIMER_SECONDS_ELAPSED = time.time() - HISTORY_MODE_TIMECHANGED
+            if AUTO_TIMER_SECONDS_ELAPSED >= AUTO_TIMER_SECONDS:
+                AUTO_TIMER_STARTED = False
                 AUTO_TIMER_TIME_FINISHED = time.time()
                 elapsed_time = AUTO_TIMER_TIME_FINISHED - AUTO_TIMER_TIME_STARTED
                 formatted_time = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
@@ -100,19 +122,17 @@ def action(session, log_requests, dic):
 
         else:
             AUTO_TIMER_STARTED = True
-            AUTO_TIMER_SECONDS_LEFT = AUTO_TIMER_SECONDS
+            AUTO_TIMER_SECONDS_ELAPSED = AUTO_TIMER_SECONDS
             AUTO_TIMER_TIME_STARTED = time.time()
             AUTO_TIMER_STATUS = f"{timestamp()} 󱫌"
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 0 and dic["TminLT"]:
-
         AUTO_GAS_WE_STARTED = True
         AUTO_GAS_TIME_STARTED = time.time()
         AUTO_GAS_STATUS = f"{timestamp()} "
         send(session, log_requests, URLS["GAS_ON"])
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 3 and dic["TmidGE"]:
-
         if AUTO_GAS_WE_STARTED:
             AUTO_GAS_TIME_FINISHED = time.time()
             elapsed_time = AUTO_GAS_TIME_FINISHED - AUTO_GAS_TIME_STARTED
@@ -146,7 +166,6 @@ def dowork(session, log_requests):
     else:
         data = response.json()
         last_data = data
-
 
     dic = process_data(data, last_ret)
 

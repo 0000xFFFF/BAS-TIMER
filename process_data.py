@@ -1,7 +1,7 @@
 from tabulate import tabulate
 
 from term import term_show
-from utils import timestamp, get_local_ips
+from utils import timestamp, get_local_ips, time_to_str
 from colors import (
     COLOR_ON,
     COLOR_OFF,
@@ -110,7 +110,7 @@ def process_data(data, last_ret):
     if ts:
         te = ctext_fg(COLOR_ON, "󱎫󰐸")
         tt = int_to_ctext_fg(
-            reqworker.AUTO_TIMER_SECONDS_LEFT,
+            reqworker.AUTO_TIMER_SECONDS_ELAPSED,
             0,
             reqworker.AUTO_TIMER_SECONDS,
             reverse_colors=True

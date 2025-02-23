@@ -26,6 +26,10 @@ def timestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
+def time_to_str(t):
+    return datetime.fromtimestamp(t).strftime("%Y-%m-%d %H:%M:%S")
+
+
 def get_local_ips():
     """Get all IPv4 addresses excluding 127.0.0.1."""
     try:
