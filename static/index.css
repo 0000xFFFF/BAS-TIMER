@@ -1,12 +1,14 @@
+@import url('/fonts.css');
+
 * {
     color: rgb(0, 128, 192);
-    font-family: monospace;
+    font-family: 'GohuFont', sans-serif;
 }
 
 body {
     color: rgb(0, 128, 192);
     background-color: silver;
-    font-family: monospace;
+    font-family: "GohuFontMono" monospace;
 }
 
 
@@ -109,8 +111,8 @@ button {
     font-weight: bolder;
     color: #eee;
     padding: 5px;
-    font-size: 24px;
-    width: 620px;
+    font-size: 35px;
+    width: 700px;
     height: 500px;
     border-top: 2px double rgb(224, 224, 224);
     border-left: 2px double rgb(224, 224, 224);
