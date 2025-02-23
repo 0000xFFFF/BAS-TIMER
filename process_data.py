@@ -49,8 +49,9 @@ def process_data(data, last_ret):
     dic["TmidGE"] = dic["Tmid"] >= 60
     TmidGE = bool_to_ctext_fg(int(dic["TmidGE"]))
 
-    emojis = [" "] * len(temps)
-    emojis[5] = bctext_fg(dic["TmidGE"], f"{"󰩐" if dic["TmidGE"] else ""}")
+    emojis = ["   "] * len(temps)
+    if dic["TmidGE"]:
+        emojis[5] = bctext_fg(dic["TmidGE"], " 󰩐 ")
 
     StatusPumpe3 = bool_to_ctext_fg(int(dic["StatusPumpe3"]))
     StatusPumpe4 = bool_to_ctext_fg(int(dic["StatusPumpe4"]))
