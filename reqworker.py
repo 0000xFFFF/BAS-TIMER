@@ -3,7 +3,7 @@ import time
 
 from utils import timestamp, time_to_str
 from process_data import process_data
-from colors import bool_to_ctext_fg
+from colors import bool_to_ctext_fg, int_to_ctext_fg
 
 GLOBAL_UNIX_COUNTER = int(time.time() * 1000)
 
@@ -101,23 +101,32 @@ def action(session, log_requests, dic):
         HISTORY_MODE = dic["mod_rada"]
         HISTORY_MODE_TIMECHANGED = time.time()
         AUTO_TIMER_STATUS = (
-            f"saw: {bool_to_ctext_fg(int(HISTORY_MODE))} {time_to_str(HISTORY_MODE_TIMECHANGED)}"
+            f" {bool_to_ctext_fg(int(HISTORY_MODE))} {time_to_str(HISTORY_MODE_TIMECHANGED)}"
         )
 
     if HISTORY_GAS is None:
         HISTORY_GAS = dic["StatusPumpe4"]
         HISTORY_GAS_TIMECHANGED = time.time()
-        AUTO_GAS_STATUS = f"saw: {bool_to_ctext_fg(int(HISTORY_GAS))} {time_to_str(HISTORY_GAS_TIMECHANGED)}"
+        AUTO_GAS_STATUS = f" {bool_to_ctext_fg(int(HISTORY_GAS))} {time_to_str(HISTORY_GAS_TIMECHANGED)}"
 
     if AUTO_TIMER and int(dic["mod_rada"]):
         if AUTO_TIMER_STARTED:
             AUTO_TIMER_SECONDS_ELAPSED = time.time() - HISTORY_MODE_TIMECHANGED
+
+            tt = int_to_ctext_fg(
+                AUTO_TIMER_SECONDS_ELAPSED,
+                0,
+                AUTO_TIMER_SECONDS,
+                reverse_colors=True
+            )
+            AUTO_TIMER_STATUS = f"{tt}"
+
             if AUTO_TIMER_SECONDS_ELAPSED >= AUTO_TIMER_SECONDS:
                 AUTO_TIMER_STARTED = False
                 AUTO_TIMER_TIME_FINISHED = time.time()
                 elapsed_time = AUTO_TIMER_TIME_FINISHED - AUTO_TIMER_TIME_STARTED
                 formatted_time = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
-                AUTO_TIMER_STATUS = f"󱫓 {formatted_time}"
+                AUTO_TIMER_STATUS = f"󱫓 {formatted_time} 󱪯"
                 send(session, log_requests, URLS["OFF"])
 
         else:
