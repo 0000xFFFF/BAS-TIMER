@@ -11,32 +11,54 @@
 </head>
 
 <body>
-    <div id="mainCont">
-        <div id="bt_cont">
-            <div id="bt_cont_head"><span id="bt_title">Turn Off Heating Timer</span></div>
-            <div id="bt_cont_body">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="bt_text">Seconds:</span>
-                    <input type="text" id="txt_input" class="bt_input">
-                </div>
-                <div id="btn_cont">
-                    <button id="button_5min" class="bt_button">5 min</button>
-                    <button id="button_8min" class="bt_button">8 min</button>
-                    <button id="button_10min" class="bt_button">10 min</button>
-                    <button id="button_15min" class="bt_button">15 min</button>
-                    <button id="button_20min" class="bt_button">20 min</button>
-                    <button id="button_25min" class="bt_button">25 min</button>
+    <div class="c1">
+        <div>
+
+            <div id="settings" class="c1">
+
+                <div>
+                    <div id="settings_time" class="c1">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="bt_text">Seconds:</span>
+                            <input type="text" id="txt_input" class="bt_input">
+                        </div>
+                    </div>
+
+                    <div id="times_cont" class="c1">
+                        <button id="button_5min" class="btn_time">5 min</button>
+                        <button id="button_8min" class="btn_time">8 min</button>
+                        <button id="button_10min" class="btn_time">10 min</button>
+                        <button id="button_15min" class="btn_time">15 min</button>
+                        <button id="button_20min" class="btn_time">20 min</button>
+                        <button id="button_25min" class="btn_time">25 min</button>
+                    </div>
                 </div>
 
-                <p>Auto Timer: <span id="auto_timer">{{ auto_timer }}</span></p>
-                <button id="toggleTimerButton" onclick="toggleAutoTimer()">
-                    {{ "Turn OFF" if auto_timer else "Turn ON" }}
-                </button>
+                <div id="bt_cont" class="c_col">
 
-                <p>Auto Gas: <span id="auto_gas">{{ auto_gas }}</span></p>
-                <button id="toggleGasButton" onclick="toggleAutoGas()">
-                    {{ "Turn OFF" if auto_gas else "Turn ON" }}
-                </button>
+                    <div class="c0">
+                        <div class="c1">
+                            <span>Auto Timer:</span>
+                            <span id="auto_timer">{{ auto_timer }}</span>
+                        </div>
+                        <button id="toggleTimerButton" onclick="toggleAutoTimer()">
+                            {{ "Turn OFF" if auto_timer else "Turn ON" }}
+                        </button>
+                    </div>
+
+                    <div class="c0">
+                        <div class="c1">
+                            <span>Auto Gas:</span>
+                            <span id="auto_gas">{{ auto_gas }}</span>
+                        </div>
+                        <button id="toggleGasButton" onclick="toggleAutoGas()">
+                            {{ "Turn OFF" if auto_gas else "Turn ON" }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
                 <div id="currents_cont">
                     <div id="currents">
                         <table>
@@ -49,7 +71,6 @@
                 </div>
             </div>
         </div>
-        <div id="logs"></div>
     </div>
 </body>
 

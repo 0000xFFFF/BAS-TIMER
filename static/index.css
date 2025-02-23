@@ -1,51 +1,33 @@
-#mainCont {
+* {
+    color: black;
+    background-color: silver;
     font-family: monospace;
+}
+
+
+.c0 {
     display: flex;
     flex-direction: row;
-    padding: 10px;
+    gap: 5px;
+    align-items: center;
+}
+
+.c_col {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
+
+.c1 {
+    display: flex;
     gap: 10px;
-}
-
-#bt_cont {
-    display: flex;
-    color: blue;
-    font-size: 20px;
-    background: rgb(192, 192, 192);
-    flex-direction: column;
-    gap: 1px;
-    width: 720px;
-    height: 900px;
-    border-top: 2px double rgb(224, 224, 224);
-    border-left: 2px double rgb(224, 224, 224);
-    border-right: 2px double black;
-    border-bottom: 2px double black;
-}
-
-#bt_cont_head {
-    background-color: silver;
-    border-bottom: 2px double black;
-    padding: 2px;
-    display: flex;
     justify-content: space-between;
-}
-
-#bt_cont_head_buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 3px;
-}
-
-#bt_cont_body {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 10px;
-}
-
-#bt_title {
-    font-weight: bold;
-    text-align: center;
     padding: 3px;
+}
+
+#settings_time {
+
 }
 
 .bt_text {
@@ -62,8 +44,16 @@
     border-bottom: 2px double rgb(224, 224, 224);
 }
 
-.bt_button {
-    font-size: 20px;
+
+
+
+
+
+
+
+
+.btn_time {
+    font-size: 16px;
     color: rgb(0, 0, 127);
     font-weight: bold;
     border-top: 2px double rgb(224, 224, 224);
@@ -73,21 +63,19 @@
     cursor: pointer;
 }
 
-#btn_cont {
-    display: flex;
-    gap: 10px;
-    justify-content: space-between;
-}
 
 
-#bt_logs {
-    display: block;
-}
 
 .cb_cont {
     display: flex;
-    justify-content: left;
+    gap: 10px;
+    justify-content: space-around;
+}
+
+.cb_cont_sub {
+    display: flex;
     gap: 2px;
+    justify-content: center;
 }
 
 #logs {
@@ -157,3 +145,4 @@ th {
 .currents_text {
     text-align: left;
 }
+
