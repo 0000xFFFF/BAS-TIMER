@@ -131,7 +131,6 @@ def action(session, log_requests, dic):
 
         else:
             AUTO_TIMER_STARTED = True
-            AUTO_TIMER_SECONDS_ELAPSED = AUTO_TIMER_SECONDS
             AUTO_TIMER_TIME_STARTED = time.time()
             AUTO_TIMER_STATUS = f"{timestamp()} 󱫌"
 

@@ -112,7 +112,7 @@ def int_to_color(val, min, max, reverse_colors=False):
 
 def int_to_ctext_fg(val, min, max, reverse_colors=False):
     color = int_to_color(val, min, max, reverse_colors)
-    return ctext_fg(color, val)
+    return ctext_fg(color, f"{val:.2f}")
 
 
 def temperature_to_color(temp):
