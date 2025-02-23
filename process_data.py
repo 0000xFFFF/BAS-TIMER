@@ -65,9 +65,6 @@ def process_data(data, last_ret):
     status.append(["Min < 45", TminLT])
     status.append(["Mid >= 60", TmidGE])
 
-    other = []
-    other.append(["AutoTimer", f"{int(worker.AUTO_TIMER)}/{int(worker.AUTO_TIMER_STARTED)}/{worker.AUTO_TIMER_SECONDS_LEFT} {worker.AUTO_TIMER_STATUS}"])
-    other.append(["AutoGas", f"{int(worker.AUTO_GAS)} {worker.AUTO_GAS_STATUS}"])
 
     # format tables
     fmt = "plain"
@@ -87,6 +84,7 @@ def process_data(data, last_ret):
     for line1, line2 in zip(table1_lines, table2_lines):
         print(f"{line1}  {line2}")
 
-    print(tabulate(other, tablefmt=fmt, colalign=("right",)))
+    print(f"󱎫󰐸 {int(worker.AUTO_TIMER)}/{int(worker.AUTO_TIMER_STARTED)}/{worker.AUTO_TIMER_SECONDS_LEFT} {worker.AUTO_TIMER_STATUS}")
+    print(f"󰙇󱣽 {int(worker.AUTO_GAS)} {worker.AUTO_GAS_STATUS}")
 
     return dic

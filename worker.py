@@ -11,10 +11,13 @@ AUTO_TIMER_STARTED = False
 AUTO_TIMER_SECONDS = 300 # 15 mins
 AUTO_TIMER_SECONDS_LEFT = AUTO_TIMER_SECONDS
 AUTO_TIMER_STATUS = ""
-AUTO_TIMER_TIME_STARTED = time.time()
-AUTO_TIMER_TIME_FINISHED = time.time()
+AUTO_TIMER_TIME_STARTED = None
+AUTO_TIMER_TIME_FINISHED = None
 AUTO_GAS = True
 AUTO_GAS_STATUS = ""
+AUTO_GAS_WE_STARTED = False
+AUTO_GAS_TIME_STARTED = None
+AUTO_GAS_TIME_FINISHED = None
 
 # act like firefox
 req_headers = {
@@ -84,24 +87,36 @@ def action(session, log_requests, dic):
         if AUTO_TIMER_STARTED:
             AUTO_TIMER_SECONDS_LEFT -= 1
             if AUTO_TIMER_SECONDS_LEFT <= 0:
+                AUTO_TIMER_STARTED = 0
+                AUTO_TIMER_SECONDS_LEFT = AUTO_TIMER_SECONDS
                 AUTO_TIMER_TIME_FINISHED = time.time()
                 elapsed_time = AUTO_TIMER_TIME_FINISHED - AUTO_TIMER_TIME_STARTED
                 formatted_time = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
-                AUTO_TIMER_STATUS = f"{timestamp()} took: {formatted_time}"
+                AUTO_TIMER_STATUS = f"󱫓 {formatted_time}"
                 send(session, log_requests, URLS["OFF"])
 
         else:
             AUTO_TIMER_STARTED = True
             AUTO_TIMER_SECONDS_LEFT = AUTO_TIMER_SECONDS
             AUTO_TIMER_TIME_STARTED = time.time()
-            AUTO_TIMER_STATUS = f"{timestamp()} started"
+            AUTO_TIMER_STATUS = f"{timestamp()} 󱫌"
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 0 and dic["TminLT"]:
-        AUTO_GAS_STATUS = f"{timestamp()} ON"
+
+        AUTO_GAS_WE_STARTED = True
+        AUTO_GAS_TIME_STARTED = time.time()
+        AUTO_GAS_STATUS = f"{timestamp()} "
         send(session, log_requests, URLS["GAS_ON"])
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 3 and dic["TmidGE"]:
-        AUTO_GAS_STATUS = f"{timestamp()} OFF"
+
+        if AUTO_GAS_WE_STARTED:
+            AUTO_GAS_TIME_FINISHED = time.time()
+            elapsed_time = AUTO_GAS_TIME_FINISHED - AUTO_GAS_TIME_STARTED
+            formatted_time = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
+            AUTO_GAS_STATUS = f"󱫓 {formatted_time} "
+        else:
+            AUTO_GAS_STATUS = f"{timestamp()} "
         send(session, log_requests, URLS["GAS_OFF"])
 
 
