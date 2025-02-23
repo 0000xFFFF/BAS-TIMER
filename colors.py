@@ -20,10 +20,33 @@ def cbg(color):
     return f"\033[48;5;{color}m"
 
 
-def ctext(color, text):
+# color text fg
+def ctext_fg(color, text):
+    contrast = contrast_color(color)
+    text = text if text is not None else color
+    return f"\033[38;5;{color}m{text}\033[0m"
+
+
+# color text background
+def ctext_bg(color, text):
+    contrast = contrast_color(color)
+    text = text if text is not None else color
+    return f"\033[48;5;{color}m{text}\033[0m"
+
+
+# color text ; contrast background
+def ctext_fg_con(color, text):
+    contrast = contrast_color(color)
+    text = text if text is not None else color
+    return f"\033[48;5;{contrast}m\033[38;5;{color}m{text}\033[0m"
+
+
+# color bg ; contrast text
+def ctext_bg_con(color, text):
     contrast = contrast_color(color)
     text = text if text is not None else color
     return f"\033[48;5;{color}m\033[38;5;{contrast}m{text}\033[0m"
+
 
 
 def temperature_to_color(temp):
@@ -42,15 +65,23 @@ def temperature_to_color(temp):
     return TEMP_COLORS[int(index)]
 
 
-def temp_to_ctext(temp):
+def temp_to_ctext_fg(temp):
     color = temperature_to_color(temp)
     pad_float = str(f"{temp:.2f}")
     pad_def = f"{pad_float} " + chr(176) + "C"
-    return ctext(color, f"{pad_def:>9}")
+    return ctext_fg(color, f"{pad_def:>9}")
 
 
-def bool_to_ctext(b):
+
+def bctext_fg(b, text):
     if b:
-        return ctext(COLOR_ON, f" {b} ")
+        return ctext_fg(COLOR_ON, f"{text}")
     else:
-        return ctext(COLOR_OFF, f" {b} ")
+        return ctext_fg(COLOR_OFF, f"{text}")
+
+
+def bool_to_ctext_fg(b):
+    if b:
+        return ctext_fg(COLOR_ON, f" {b} ")
+    else:
+        return ctext_fg(COLOR_OFF, f" {b} ")

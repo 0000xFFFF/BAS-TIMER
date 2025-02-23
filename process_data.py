@@ -1,7 +1,7 @@
 from tabulate import tabulate
 
 from utils import timestamp, get_local_ips
-from colors import ctext, temp_to_ctext, bool_to_ctext
+from colors import temp_to_ctext_fg, bool_to_ctext_fg, bctext_fg, ctext_bg_con
 import colors
 import worker
 
@@ -18,19 +18,19 @@ def process_data(data, last_ret):
         return dic
 
     # get temps and pump status
-    Tspv = temp_to_ctext(dic["Tspv"])
-    Tsolar = temp_to_ctext(dic["Tsolar"])
-    Tzadata = temp_to_ctext(dic["Tzadata"])
-    Tfs = temp_to_ctext(dic["Tfs"])
-    Tmax = temp_to_ctext(dic["Tmax"])
+    Tspv = temp_to_ctext_fg(dic["Tspv"])
+    Tsolar = temp_to_ctext_fg(dic["Tsolar"])
+    Tzadata = temp_to_ctext_fg(dic["Tzadata"])
+    Tfs = temp_to_ctext_fg(dic["Tfs"])
+    Tmax = temp_to_ctext_fg(dic["Tmax"])
     dic["Tmid"] = (dic["Tmax"] + dic["Tmin"]) / 2
-    Tmid = temp_to_ctext(dic["Tmid"])
-    Tmin = temp_to_ctext(dic["Tmin"])
-    Tsobna = temp_to_ctext(dic["Tsobna"])
+    Tmid = temp_to_ctext_fg(dic["Tmid"])
+    Tmin = temp_to_ctext_fg(dic["Tmin"])
+    Tsobna = temp_to_ctext_fg(dic["Tsobna"])
     dic["Thottest"] = colors.TEMP_MAX
-    Thottest = temp_to_ctext(dic["Thottest"])
+    Thottest = temp_to_ctext_fg(dic["Thottest"])
     dic["Tcoldest"] = colors.TEMP_MIN
-    Tcoldest = temp_to_ctext(dic["Tcoldest"])
+    Tcoldest = temp_to_ctext_fg(dic["Tcoldest"])
     temps = []
     temps.append(["Outside 󱇜", Tspv])
     temps.append(["Solar 󱩳", Tsolar])
@@ -43,17 +43,22 @@ def process_data(data, last_ret):
     temps.append(["Hottest 󰈸", Thottest])
     temps.append(["Coldest ", Tcoldest])
 
-    StatusPumpe3 = bool_to_ctext(int(dic["StatusPumpe3"]))
-    StatusPumpe4 = bool_to_ctext(int(dic["StatusPumpe4"]))
-    StatusPumpe5 = bool_to_ctext(int(dic["StatusPumpe5"]))
-    StatusPumpe6 = bool_to_ctext(int(dic["StatusPumpe6"]))
-    StatusPumpe7 = bool_to_ctext(int(dic["StatusPumpe7"]))
-    ModRada = bool_to_ctext(int(dic["mod_rada"]))
-    ModRezim = bool_to_ctext(int(dic["mod_rezim"]))
+
     dic["TminLT"] = dic["Tmin"] < 45
-    TminLT = bool_to_ctext(int(dic["TminLT"]))
+    TminLT = bool_to_ctext_fg(int(dic["TminLT"]))
     dic["TmidGE"] = dic["Tmid"] >= 60
-    TmidGE = bool_to_ctext(int(dic["TmidGE"]))
+    TmidGE = bool_to_ctext_fg(int(dic["TmidGE"]))
+
+    emojis = [" "] * len(temps)
+    emojis[5] = bctext_fg(dic["TmidGE"], f"{"󰩐" if dic["TmidGE"] else ""}")
+
+    StatusPumpe3 = bool_to_ctext_fg(int(dic["StatusPumpe3"]))
+    StatusPumpe4 = bool_to_ctext_fg(int(dic["StatusPumpe4"]))
+    StatusPumpe5 = bool_to_ctext_fg(int(dic["StatusPumpe5"]))
+    StatusPumpe6 = bool_to_ctext_fg(int(dic["StatusPumpe6"]))
+    StatusPumpe7 = bool_to_ctext_fg(int(dic["StatusPumpe7"]))
+    ModRada = bool_to_ctext_fg(int(dic["mod_rada"]))
+    ModRezim = bool_to_ctext_fg(int(dic["mod_rezim"]))
     status = []
     status.append(["Mode 󱪯", ModRada])
     status.append(["Regime 󱖫", ModRezim])
@@ -79,10 +84,10 @@ def process_data(data, last_ret):
         table2_lines.append("")
 
     COLOR_HEAD = colors.COLOR_ON if last_ret else colors.COLOR_OFF
-    print(ctext(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
+    print(ctext_bg_con(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
 
-    for line1, line2 in zip(table1_lines, table2_lines):
-        print(f"{line1}  {line2}")
+    for line1, emoji, line2 in zip(table1_lines, emojis, table2_lines):
+        print(f"{line1}{emoji}{line2}")
 
     print(f"󱎫󰐸 {int(worker.AUTO_TIMER)}/{int(worker.AUTO_TIMER_STARTED)}/{worker.AUTO_TIMER_SECONDS_LEFT} {worker.AUTO_TIMER_STATUS}")
     print(f"󰙇󱣽 {int(worker.AUTO_GAS)} {worker.AUTO_GAS_STATUS}")
