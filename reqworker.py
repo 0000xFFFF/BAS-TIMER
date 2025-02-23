@@ -97,17 +97,15 @@ def action(session, log_requests, dic):
     global HISTORY_GAS
     global HISTORY_GAS_TIMECHANGED
 
-    if HISTORY_MODE is None:
+    if HISTORY_MODE is None or HISTORY_MODE != dic["mod_rada"]:
         HISTORY_MODE = dic["mod_rada"]
         HISTORY_MODE_TIMECHANGED = time.time()
-        AUTO_TIMER_STATUS = (
-            f" {bool_to_ctext_fg(int(HISTORY_MODE))} {time_to_str(HISTORY_MODE_TIMECHANGED)}"
-        )
+        #AUTO_TIMER_STATUS = f" {bool_to_ctext_fg(int(HISTORY_MODE))} {time_to_str(HISTORY_MODE_TIMECHANGED)}"
 
-    if HISTORY_GAS is None:
+    if HISTORY_GAS is None or HISTORY_GAS != dic["StatusPumpe4"]:
         HISTORY_GAS = dic["StatusPumpe4"]
         HISTORY_GAS_TIMECHANGED = time.time()
-        AUTO_GAS_STATUS = f" {bool_to_ctext_fg(int(HISTORY_GAS))} {time_to_str(HISTORY_GAS_TIMECHANGED)}"
+        #AUTO_GAS_STATUS = f" {bool_to_ctext_fg(int(HISTORY_GAS))} {time_to_str(HISTORY_GAS_TIMECHANGED)}"
 
     if AUTO_TIMER and int(dic["mod_rada"]):
         if AUTO_TIMER_STARTED:
