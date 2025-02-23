@@ -1,7 +1,7 @@
 TEMP_MIN = 45
 TEMP_MAX = 60
 TEMP_COLORS = [
-    51,
+    51,  # COLDEST
     45,
     39,
     38,
@@ -18,7 +18,34 @@ TEMP_COLORS = [
     202,
     124,
     160,
-    196,
+    196,  # HOTTEST
+]
+
+APPEAR_COLORS = [
+    232,  # DARKEST
+    233,
+    234,
+    235,
+    236,
+    237,
+    238,
+    239,
+    240,
+    241,
+    242,
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250,
+    251,
+    252,
+    253,
+    254,
+    255,  # BRIGHTEST
 ]
 
 COLOR_ON = 40
@@ -68,7 +95,7 @@ def ctext_bg_con(color, text):
 
 def int_to_color(val, min, max, reverse_colors=False):
 
-    colors = TEMP_COLORS.copy()
+    colors = APPEAR_COLORS.copy()
     if reverse_colors:
         colors.reverse()
 
@@ -83,9 +110,9 @@ def int_to_color(val, min, max, reverse_colors=False):
     return colors[int(index)]
 
 
-def int_to_ctext_bg_con(val, min, max, reverse_colors=False):
+def int_to_ctext_fg(val, min, max, reverse_colors=False):
     color = int_to_color(val, min, max, reverse_colors)
-    return ctext_bg_con(color, val)
+    return ctext_fg(color, val)
 
 
 def temperature_to_color(temp):
@@ -171,4 +198,3 @@ def bool_to_ctext_bi(b):
         return ctext_bg_con(COLOR_ON, f" {b} ")
     else:
         return ctext_fg(COLOR_OFF, f" {b} ")
-

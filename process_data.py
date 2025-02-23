@@ -8,7 +8,7 @@ from colors import (
     bool_to_ctext_bi,
     bctext_fg,
     ctext_fg,
-    int_to_ctext_bg_con,
+    int_to_ctext_fg,
 )
 import colors
 import worker
@@ -101,11 +101,11 @@ def process_data(data, last_ret):
 
     t1 = bctext_fg(worker.AUTO_TIMER, f"{int(worker.AUTO_TIMER)}")
     t2 = bctext_fg(worker.AUTO_TIMER_STARTED, f"{int(worker.AUTO_TIMER_STARTED)}")
-    t3 = int_to_ctext_bg_con(
+    t3 = int_to_ctext_fg(
         worker.AUTO_TIMER_SECONDS_LEFT,
         0,
         worker.AUTO_TIMER_SECONDS,
-        reverse_colors=True,
+        reverse_colors=True
     )
     ts = worker.AUTO_TIMER_STATUS
     g1 = bctext_fg(worker.AUTO_GAS, int(worker.AUTO_GAS))
