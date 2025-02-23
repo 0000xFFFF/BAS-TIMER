@@ -107,7 +107,7 @@ def process_data(data, last_ret):
 
     ts = reqworker.AUTO_TIMER_STATUS
     if ts:
-        te = ctext_fg(COLOR_ON, f"󱎫󰐸")
+        te = ctext_fg(COLOR_ON, "󱎫󰐸")
         tt = int_to_ctext_fg(
             reqworker.AUTO_TIMER_SECONDS_LEFT,
             0,
@@ -118,8 +118,8 @@ def process_data(data, last_ret):
 
     gs = reqworker.AUTO_GAS_STATUS
     if gs:
-        ge = ctext_fg(COLOR_ON, f"󱣿󰙇")
-        print(f"󱣿󰙇 {ge} {gs}")
+        ge = ctext_fg(COLOR_ON, "󱣿󰙇")
+        print(f"{ge} {gs}")
 
 
     return dic
