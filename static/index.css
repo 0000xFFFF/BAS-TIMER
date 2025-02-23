@@ -71,6 +71,13 @@ button {
 }
 
 
+#canv {
+    background: #808080;
+    border-top: 2px double rgb(224, 224, 224);
+    border-left: 2px double rgb(224, 224, 224);
+    border-right: 2px double black;
+    border-bottom: 2px double black;
+}
 
 
 .cb_cont {
