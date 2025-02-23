@@ -78,6 +78,8 @@ def set_timer_seconds():
     data = request.get_json()
     try:
         reqworker.AUTO_TIMER_SECONDS = int(data["seconds"])
+        reqworker.AUTO_TIMER_SECONDS_LEFT = reqworker.AUTO_TIMER_SECONDS
+        reqworker.AUTO_TIMER_STATUS = "changed"
         return jsonify(
             {"success": True, "AUTO_TIMER_SECONDS": reqworker.AUTO_TIMER_SECONDS}
         )
