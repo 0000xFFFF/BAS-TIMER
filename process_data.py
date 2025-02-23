@@ -111,6 +111,7 @@ def process_data(data, last_ret):
     g1 = bctext_fg(worker.AUTO_GAS, int(worker.AUTO_GAS))
     gs = worker.AUTO_GAS_STATUS
     print(f"󱎫󰐸 {t1}/{t2}/{t3} {ts}")
-    print(f"󰙇󱣽 {g1} {gs}")
+    print(f"󱣿󰙇 {g1} {gs}")
+
 
     return dic
