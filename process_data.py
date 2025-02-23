@@ -52,9 +52,9 @@ def process_data(data, last_ret):
     temps.append([ctext_fg(196 , "Hottest 󰈸"), Thottest])
     temps.append([ctext_fg(51 , "Coldest "), Tcoldest])
 
-    dic["TminLT"] = dic["Tmin"] < 45
+    dic["TminLT"] = int(dic["Tmin"] < 45)
     TminLT = bool_to_ctext_bi(int(dic["TminLT"]))
-    dic["TmidGE"] = dic["Tmid"] >= 60
+    dic["TmidGE"] = int(dic["Tmid"] >= 60)
     TmidGE = bool_to_ctext_bi(int(dic["TmidGE"]))
 
     emojis = ["   "] * len(temps)

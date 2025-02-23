@@ -107,7 +107,7 @@ button {
     gap: 2px;
 }
 
-#currents {
+.currents {
     font-weight: bolder;
     color: #eee;
     padding: 5px;
