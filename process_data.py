@@ -60,7 +60,7 @@ def process_data(data, last_ret):
     if dic["TmidGE"]:
         emojis[5] = ctext_fg(COLOR_ON, "  ")
     if dic["TminLT"]:
-        emojis[4] = ctext_fg(COLOR_OFF, "  ")
+        emojis[6] = ctext_fg(COLOR_OFF, "  ")
 
     StatusPumpe3 = bool_to_ctext_bi(int(dic["StatusPumpe3"]))
     StatusPumpe4 = bool_to_ctext_bi(int(dic["StatusPumpe4"]))
