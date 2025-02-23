@@ -1,9 +1,29 @@
 TEMP_MIN = 45
 TEMP_MAX = 60
-TEMP_COLORS = [51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196]
+TEMP_COLORS = [
+    51,
+    45,
+    39,
+    38,
+    33,
+    32,
+    27,
+    26,
+    21,
+    190,
+    226,
+    220,
+    214,
+    208,
+    202,
+    124,
+    160,
+    196,
+]
 
 COLOR_ON = 40
 COLOR_OFF = 226
+
 
 def contrast_color(color):
     if color < 16:
@@ -22,14 +42,12 @@ def cbg(color):
 
 # color text fg
 def ctext_fg(color, text):
-    contrast = contrast_color(color)
     text = text if text is not None else color
     return f"\033[38;5;{color}m{text}\033[0m"
 
 
 # color text background
 def ctext_bg(color, text):
-    contrast = contrast_color(color)
     text = text if text is not None else color
     return f"\033[48;5;{color}m{text}\033[0m"
 
@@ -48,6 +66,27 @@ def ctext_bg_con(color, text):
     return f"\033[48;5;{color}m\033[38;5;{contrast}m{text}\033[0m"
 
 
+def int_to_color(val, min, max, reverse_colors=False):
+
+    colors = TEMP_COLORS.copy()
+    if reverse_colors:
+        colors.reverse()
+
+    num_colors = len(colors)
+
+    if val >= min:
+        return colors[-1]
+    elif val <= max:
+        return colors[0]
+
+    index = (val - min) * (num_colors - 1) // (max - min)
+    return colors[int(index)]
+
+
+def int_to_ctext_bg_con(val, min, max, reverse_colors=False):
+    color = int_to_color(val, min, max, reverse_colors)
+    return ctext_bg_con(color, val)
+
 
 def temperature_to_color(temp):
     global TEMP_MIN
@@ -65,12 +104,31 @@ def temperature_to_color(temp):
     return TEMP_COLORS[int(index)]
 
 
-def temp_to_ctext_fg(temp):
+def format_temp_color_text(temp):
     color = temperature_to_color(temp)
     pad_float = str(f"{temp:.2f}")
     pad_def = f"{pad_float} " + chr(176) + "C"
-    return ctext_fg(color, f"{pad_def:>9}")
+    return color, f"{pad_def:>9}"
 
+
+def temp_to_ctext_fg(temp):
+    color, text = format_temp_color_text(temp)
+    return ctext_fg(color, text)
+
+
+def temp_to_ctext_bg(temp):
+    color, text = format_temp_color_text(temp)
+    return ctext_bg(color, text)
+
+
+def temp_to_ctext_fg_con(temp):
+    color, text = format_temp_color_text(temp)
+    return ctext_fg_con(color, text)
+
+
+def temp_to_ctext_bg_con(temp):
+    color, text = format_temp_color_text(temp)
+    return ctext_bg_con(color, text)
 
 
 def bctext_fg(b, text):
@@ -85,3 +143,32 @@ def bool_to_ctext_fg(b):
         return ctext_fg(COLOR_ON, f" {b} ")
     else:
         return ctext_fg(COLOR_OFF, f" {b} ")
+
+
+def bool_to_ctext_bg(b):
+    if b:
+        return ctext_bg(COLOR_ON, f" {b} ")
+    else:
+        return ctext_bg(COLOR_OFF, f" {b} ")
+
+
+def bool_to_ctext_bg_con(b):
+    if b:
+        return ctext_bg_con(COLOR_ON, f" {b} ")
+    else:
+        return ctext_bg_con(COLOR_OFF, f" {b} ")
+
+
+def bool_to_ctext_fg_con(b):
+    if b:
+        return ctext_fg_con(COLOR_ON, f" {b} ")
+    else:
+        return ctext_fg_con(COLOR_OFF, f" {b} ")
+
+
+def bool_to_ctext_bi(b):
+    if b:
+        return ctext_bg_con(COLOR_ON, f" {b} ")
+    else:
+        return ctext_fg(COLOR_OFF, f" {b} ")
+
