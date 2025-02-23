@@ -1,5 +1,6 @@
 from tabulate import tabulate
 
+from term import term_show
 from utils import timestamp, get_local_ips
 from colors import (
     COLOR_ON,
@@ -100,10 +101,10 @@ def process_data(data, last_ret):
         table2_lines.append("")
 
     COLOR_HEAD = colors.COLOR_ON if last_ret else colors.COLOR_OFF
-    print(ctext_fg(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
+    term_show(ctext_fg(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
 
     for line1, emoji1, line2, emoji2 in zip(table1_lines, emojis, table2_lines, emojis2):
-        print(f"{line1}{emoji1}{line2}{emoji2}")
+        term_show(f"{line1}{emoji1}{line2}{emoji2}")
 
     ts = reqworker.AUTO_TIMER_STATUS
     if ts:
@@ -114,12 +115,12 @@ def process_data(data, last_ret):
             reqworker.AUTO_TIMER_SECONDS,
             reverse_colors=True
         )
-        print(f"{te} {tt} {ts}")
+        term_show(f"{te} {tt} {ts}")
 
     gs = reqworker.AUTO_GAS_STATUS
     if gs:
         ge = ctext_fg(COLOR_ON, "󱣿󰙇")
-        print(f"{ge} {gs}")
+        term_show(f"{ge} {gs}")
 
 
     return dic
