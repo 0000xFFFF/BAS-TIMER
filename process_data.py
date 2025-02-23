@@ -59,7 +59,6 @@ def process_data(data, last_ret):
     emojis = ["   "] * len(temps)
     if dic["TmidGE"]:
         emojis[5] = ctext_fg(COLOR_ON, "  ")
-
     if dic["TminLT"]:
         emojis[4] = ctext_fg(COLOR_OFF, "  ")
 
@@ -81,6 +80,13 @@ def process_data(data, last_ret):
     status.append([ctext_fg(87, "Min < 45"), TminLT])
     status.append([ctext_fg(208, "Mid >= 60"), TmidGE])
 
+    emojis2 = ["   "] * len(temps)
+    if worker.AUTO_TIMER:
+        emojis2[0] = ctext_fg(COLOR_ON, f"󱣽") + bctext_fg(worker.AUTO_TIMER_STARTED, f"󱎫")
+    
+    if worker.AUTO_GAS:
+        emojis2[3] = ctext_fg(COLOR_ON, f"󱣽")
+
     # format tables
     fmt = "plain"
     table1_str = tabulate(temps, tablefmt=fmt, colalign=("right",))
@@ -96,22 +102,24 @@ def process_data(data, last_ret):
     COLOR_HEAD = colors.COLOR_ON if last_ret else colors.COLOR_OFF
     print(ctext_fg(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
 
-    for line1, emoji, line2 in zip(table1_lines, emojis, table2_lines):
-        print(f"{line1}{emoji}{line2}")
+    for line1, emoji1, line2, emoji2 in zip(table1_lines, emojis, table2_lines, emojis2):
+        print(f"{line1}{emoji1}{line2}{emoji2}")
 
-    t1 = bctext_fg(worker.AUTO_TIMER, f"{int(worker.AUTO_TIMER)}")
-    t2 = bctext_fg(worker.AUTO_TIMER_STARTED, f"{int(worker.AUTO_TIMER_STARTED)}")
-    t3 = int_to_ctext_fg(
-        worker.AUTO_TIMER_SECONDS_LEFT,
-        0,
-        worker.AUTO_TIMER_SECONDS,
-        reverse_colors=True
-    )
     ts = worker.AUTO_TIMER_STATUS
-    g1 = bctext_fg(worker.AUTO_GAS, int(worker.AUTO_GAS))
+    if ts:
+        te = ctext_fg(COLOR_ON, f"󱎫󰐸")
+        tt = int_to_ctext_fg(
+            worker.AUTO_TIMER_SECONDS_LEFT,
+            0,
+            worker.AUTO_TIMER_SECONDS,
+            reverse_colors=True
+        )
+        print(f"{te} {tt} {ts}")
+
     gs = worker.AUTO_GAS_STATUS
-    print(f"󱎫󰐸 {t1}/{t2}/{t3} {ts}")
-    print(f"󱣿󰙇 {g1} {gs}")
+    if gs:
+        ge = ctext_fg(COLOR_ON, f"󱣿󰙇")
+        print(f"󱣿󰙇 {ge} {gs}")
 
 
     return dic
