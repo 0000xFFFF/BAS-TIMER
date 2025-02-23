@@ -40,16 +40,16 @@ def process_data(data, last_ret):
     dic["Tcoldest"] = colors.TEMP_MIN
     Tcoldest = temp_to_ctext_bg_con(dic["Tcoldest"])
     temps = []
-    temps.append(["Outside 󱇜", Tspv])
-    temps.append(["Solar 󱩳", Tsolar])
-    temps.append(["Room ", Tsobna])
-    temps.append(["Set ", Tzadata])
-    temps.append(["Max ", Tmax])
-    temps.append(["Mid 󰝹", Tmid])
-    temps.append(["Min ", Tmin])
-    temps.append(["Circ. ", Tfs])
-    temps.append(["Hottest 󰈸", Thottest])
-    temps.append(["Coldest ", Tcoldest])
+    temps.append([ctext_fg(213, "Outside 󱇜"), Tspv])
+    temps.append([ctext_fg(230, "Solar 󱩳"), Tsolar])
+    temps.append([ctext_fg(40, "Room "), Tsobna])
+    temps.append([ctext_fg(154, "Set "), Tzadata])
+    temps.append([ctext_fg(214, "Max "), Tmax])
+    temps.append([ctext_fg(220, "Mid 󰝹"), Tmid])
+    temps.append([ctext_fg(226, "Min "), Tmin])
+    temps.append([ctext_fg(110 , "Circ. "), Tfs])
+    temps.append([ctext_fg(196 , "Hottest 󰈸"), Thottest])
+    temps.append([ctext_fg(51 , "Coldest "), Tcoldest])
 
     dic["TminLT"] = dic["Tmin"] < 45
     TminLT = bool_to_ctext_bi(int(dic["TminLT"]))
@@ -71,15 +71,15 @@ def process_data(data, last_ret):
     ModRada = bool_to_ctext_bi(int(dic["mod_rada"]))
     ModRezim = bool_to_ctext_bi(int(dic["mod_rezim"]))
     status = []
-    status.append(["Mode 󱪯", ModRada])
-    status.append(["Regime 󱖫", ModRezim])
-    status.append(["Heat 󱩃", StatusPumpe6])
-    status.append(["Gas 󰙇", StatusPumpe4])
-    status.append(["Circ. ", StatusPumpe3])
-    status.append(["Pump5 ", StatusPumpe5])
-    status.append(["Pump7 ", StatusPumpe7])
-    status.append(["Min < 45", TminLT])
-    status.append(["Mid >= 60", TmidGE])
+    status.append([ctext_fg(13, "Mode 󱪯"), ModRada])
+    status.append([ctext_fg(22, "Regime 󱖫"), ModRezim])
+    status.append([ctext_fg(118, "Heat 󱩃"), StatusPumpe6])
+    status.append([ctext_fg(112, "Gas 󰙇"), StatusPumpe4])
+    status.append([ctext_fg(168, "Circ. "), StatusPumpe3])
+    status.append([ctext_fg(242, "Pump5 "), StatusPumpe5])
+    status.append([ctext_fg(242, "Pump7 "), StatusPumpe7])
+    status.append([ctext_fg(87, "Min < 45"), TminLT])
+    status.append([ctext_fg(208, "Mid >= 60"), TmidGE])
 
     # format tables
     fmt = "plain"
