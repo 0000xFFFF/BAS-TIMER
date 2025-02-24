@@ -141,15 +141,16 @@ def remember_vars_get_action(dic):
                 if HISTORY_MODE_TIME_STARTED and HISTORY_MODE_TIME_FINISHED:
                     AUTO_TIMER_STATUS = f"󱫓 {elapsed_str(HISTORY_MODE_TIME_FINISHED, HISTORY_MODE_TIME_STARTED)} 󱪯"
                 else:
-                    AUTO_TIMER_STATUS = f"{timestamp()} 󰙇"
-                return 1
+                    AUTO_TIMER_STATUS = f"{timestamp()} 󱪯"
+                send(URLS["OFF"])
+
         else:
             AUTO_TIMER_STARTED = True
             AUTO_TIMER_STATUS = f"{timestamp()} 󱫌"
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 0 and dic["TminLT"]:
         AUTO_GAS_STATUS = f"{timestamp()} "
-        return 2
+        send(URLS["GAS_ON"])
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 3 and dic["TmidGE"]:
         if HISTORY_GAS_TIME_STARTED and HISTORY_GAS_TIME_FINISHED:
@@ -158,21 +159,6 @@ def remember_vars_get_action(dic):
             )
         else:
             AUTO_GAS_STATUS = f"{timestamp()} 󰙇"
-        return 3
-
-    return 0
-
-def do_action(action):
-    if action == 0:
-        return
-
-    if action == 1:
-        send(URLS["OFF"])
-
-    if action == 2:
-        send(URLS["GAS_ON"])
-
-    if action == 3:
         send(URLS["GAS_OFF"])
 
 
@@ -200,8 +186,7 @@ def make_request():
     dic = process_data_and_draw_ui(data, last_ret, is_request=True)
 
     # send requests based on processed data
-    action = remember_vars_get_action(dic)
-    do_action(action)
+    remember_vars_get_action(dic)
     
     return dic
 
@@ -223,6 +208,4 @@ def do_work():
         request_count = 0
         return make_request()
 
-    dic = process_data_and_draw_ui(last_data, last_ret)
-    remember_vars_get_action(dic)
-    return dic
+    return process_data_and_draw_ui(last_data, last_ret)
