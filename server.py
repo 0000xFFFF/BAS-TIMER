@@ -105,7 +105,7 @@ def main_worker():
 
     while running:
         term_cursor_reset()
-        dic = reqworker.dowork()
+        dic = reqworker.do_work()
 
         # send data to frontend
         socketio.emit("vars", dic)

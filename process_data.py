@@ -46,12 +46,12 @@ def draw_pump_bars(b):
 
 def bool_to_check(b):
     if b:
-        return ctext_bg_con(COLOR_ON, "")
+        return ctext_fg(COLOR_ON, "")
     else:
         return ctext_fg(COLOR_OFF, "")
 
 
-def drawui(data, last_ret, is_request=False):
+def process_data_and_draw_ui(data, last_ret, is_request=False):
     # Collect key-value pairs
     dic = {}
 
@@ -114,8 +114,8 @@ def drawui(data, last_ret, is_request=False):
     status = []
     status.append([ctext_fg(13, "Mode 󱪯"), ModRada])
     status.append([ctext_fg(22, "Regime 󱖫"), ModRezim])
-    status.append([ctext_fg(118, "Heat 󱩃"), StatusPumpe6])
-    status.append([ctext_fg(112, "Gas 󰙇"), StatusPumpe4])
+    status.append([ctext_fg(212, "Heat 󱩃"), StatusPumpe6])
+    status.append([ctext_fg(203, "Gas 󰙇"), StatusPumpe4])
     status.append([ctext_fg(168, "Circ. "), StatusPumpe3])
     status.append([ctext_fg(242, "Pump5 "), StatusPumpe5])
     status.append([ctext_fg(242, "Pump7 "), StatusPumpe7])

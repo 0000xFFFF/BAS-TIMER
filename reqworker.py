@@ -2,7 +2,7 @@ import requests
 import time
 
 from utils import timestamp, time_to_str, elapsed_str
-from process_data import drawui
+from process_data import process_data_and_draw_ui
 from colors import bool_to_ctext_fg, int_to_ctext_fg
 from logger_config import requests_logger, changes_logger
 
@@ -79,7 +79,7 @@ def send(url):
     return response, None
 
 
-def action(dic):
+def remember_vars_get_action(dic):
     global AUTO_TIMER
     global AUTO_TIMER_STARTED
     global AUTO_TIMER_SECONDS
@@ -138,16 +138,18 @@ def action(dic):
 
             if AUTO_TIMER_SECONDS_ELAPSED >= AUTO_TIMER_SECONDS:
                 AUTO_TIMER_STARTED = False
-                AUTO_TIMER_STATUS = f"󱫓 {elapsed_str(HISTORY_MODE_TIME_FINISHED, HISTORY_MODE_TIME_STARTED)} 󱪯"
-                send(URLS["OFF"])
-
+                if HISTORY_MODE_TIME_STARTED and HISTORY_MODE_TIME_FINISHED:
+                    AUTO_TIMER_STATUS = f"󱫓 {elapsed_str(HISTORY_MODE_TIME_FINISHED, HISTORY_MODE_TIME_STARTED)} 󱪯"
+                else:
+                    AUTO_TIMER_STATUS = f"{timestamp()} 󰙇"
+                return 1
         else:
             AUTO_TIMER_STARTED = True
             AUTO_TIMER_STATUS = f"{timestamp()} 󱫌"
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 0 and dic["TminLT"]:
         AUTO_GAS_STATUS = f"{timestamp()} "
-        send(URLS["GAS_ON"])
+        return 2
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 3 and dic["TmidGE"]:
         if HISTORY_GAS_TIME_STARTED and HISTORY_GAS_TIME_FINISHED:
@@ -156,13 +158,28 @@ def action(dic):
             )
         else:
             AUTO_GAS_STATUS = f"{timestamp()} 󰙇"
+        return 3
+
+    return 0
+
+def do_action(action):
+    if action == 0:
+        return
+
+    if action == 1:
+        send(URLS["OFF"])
+
+    if action == 2:
+        send(URLS["GAS_ON"])
+
+    if action == 3:
         send(URLS["GAS_OFF"])
 
 
 last_data = None
 last_ret = False
 
-def req():
+def make_request():
     global last_data
     global last_ret
 
@@ -180,10 +197,10 @@ def req():
         data = response.json()
         last_data = data
 
-    dic = drawui(data, last_ret, is_request=True)
+    dic = process_data_and_draw_ui(data, last_ret, is_request=True)
 
     # send requests based on processed data
-    action(dic)
+    remember_vars_get_action(dic)
     
     return dic
 
@@ -193,7 +210,7 @@ request_count = 0
 
 do_reqest_on_seconds = 3 # on third seconds to request
 do_reqest_on_count = do_reqest_on_seconds / MAIN_WORKER_DRAW_SLEEP
-def dowork():
+def do_work():
 
     global last_data
     global last_ret
@@ -203,6 +220,6 @@ def dowork():
 
     if request_count >= do_reqest_on_count or last_data is None:
         request_count = 0
-        return req()
+        return make_request()
 
-    return drawui(last_data, last_ret)
+    return process_data_and_draw_ui(last_data, last_ret)
