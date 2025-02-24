@@ -1,4 +1,5 @@
 from datetime import datetime
+import time
 import subprocess
 
 
@@ -28,6 +29,10 @@ def timestamp():
 
 def time_to_str(t):
     return datetime.fromtimestamp(t).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def elapsed_str(f, s):
+    return time.strftime("%H:%M:%S", time.gmtime(f - s))
 
 
 def get_local_ips():

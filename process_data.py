@@ -9,6 +9,7 @@ from colors import (
     bool_to_ctext_bi,
     bctext_fg,
     ctext_fg,
+    ctext_bg_con,
     int_to_ctext_fg,
 )
 import colors
@@ -25,6 +26,11 @@ def process_data(data, last_ret):
                 dic[key] = value["value"]
     except Exception:
         return dic
+    
+    # fix main values to int
+    dic["mod_rada"] = int(dic["mod_rada"])
+    dic["StatusPumpe4"] = int(dic["StatusPumpe4"])
+
 
     # get temps and pump status
     Tspv = temp_to_ctext_bg_con(dic["Tspv"])
@@ -83,10 +89,10 @@ def process_data(data, last_ret):
 
     emojis2 = ["   "] * len(temps)
     if reqworker.AUTO_TIMER:
-        emojis2[0] = ctext_fg(COLOR_ON, f"󱣽") + bctext_fg(reqworker.AUTO_TIMER_STARTED, f"󱎫")
+        emojis2[0] = ctext_fg(COLOR_ON, f" 󱣽") + bctext_fg(reqworker.AUTO_TIMER_STARTED, f"󱎫")
     
     if reqworker.AUTO_GAS:
-        emojis2[3] = ctext_fg(COLOR_ON, f"󱣽")
+        emojis2[3] = ctext_fg(COLOR_ON, f" 󱣽")
 
     # format tables
     fmt = "plain"

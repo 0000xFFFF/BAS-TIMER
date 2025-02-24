@@ -1,34 +1,23 @@
 #!/usr/bin/env python
-import os
-import sys
-import requests
-import time
-import logging
-import atexit
-from threading import Thread
 
 import eventlet
 
 eventlet.monkey_patch()
+
+import os
+import sys
+import requests
+import time
+import atexit
+from threading import Thread
+
 import random
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, Response
 from flask_socketio import SocketIO
 
 
 from term import term_cursor_hide, term_cursor_reset, term_cursor_show, term_clear
 import reqworker
-
-# change cwd to scripts dir
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
-
-DEBUG = False
-
-# Suppress Flask logging but keep prints
-if not DEBUG:
-    log_file = "flask.log"
-    logging.getLogger("werkzeug").setLevel(logging.ERROR)
-    flask_log = open(log_file, "a")
-    sys.stderr = flask_log  # Redirect errors to log file
 
 
 # exit handler
@@ -48,12 +37,34 @@ app = Flask(
 )
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+main_session = requests.Session()
+
 
 @app.route("/")
 def index():
     return render_template(
         "index.html", auto_timer=reqworker.AUTO_TIMER, auto_gas=reqworker.AUTO_GAS
     )
+
+
+@app.route("/requests")
+def requests():
+    try:
+        with open("requests.log", "r") as f:
+            content = f.read()
+        return Response(content, mimetype="text/plain")
+    except FileNotFoundError:
+        return "Log file not found.", 404
+
+
+@app.route("/changes")
+def changes():
+    try:
+        with open("changes.log", "r") as f:
+            content = f.read()
+        return Response(content, mimetype="text/plain")
+    except FileNotFoundError:
+        return "Log file not found.", 404
 
 
 @app.route("/toggle_autotimer", methods=["POST"])
@@ -88,20 +99,17 @@ def set_timer_seconds():
 
 def main_worker():
     global running
-    if not DEBUG:
-        term_cursor_hide()
-        term_clear()
+    term_cursor_hide()
+    term_clear()
 
-    with requests.Session() as main_session, open("requests.log", "a") as log_requests:
-        while running:
-            if not DEBUG:
-                term_cursor_reset()
-            dic = reqworker.dowork(main_session, log_requests)
+    while running:
+        term_cursor_reset()
+        dic = reqworker.dowork()
 
-            # send data to frontend
-            socketio.emit("vars", dic)
+        # send data to frontend
+        socketio.emit("vars", dic)
 
-            time.sleep(3)
+        time.sleep(3)
 
 
 if __name__ == "__main__":

@@ -49,7 +49,7 @@ APPEAR_COLORS = [
 ]
 
 COLOR_ON = 40
-COLOR_OFF = 226
+COLOR_OFF = 240
 
 
 def contrast_color(color):
@@ -195,6 +195,6 @@ def bool_to_ctext_fg_con(b):
 
 def bool_to_ctext_bi(b):
     if b:
-        return ctext_bg_con(COLOR_ON, f" {b} ")
+        return ctext_bg_con(COLOR_ON, f"{b}")
     else:
-        return ctext_fg(COLOR_OFF, f" {b} ")
+        return ctext_fg(COLOR_OFF, f"{b}")

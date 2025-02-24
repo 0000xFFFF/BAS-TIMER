@@ -25,7 +25,7 @@ def term_blank():
 
 
 def term_show(text: str):
-    columns = 39  # Max column width
+    columns = 40  # Max column width
 
     clean_len = len(strip_ansi(text))  # Length without escape sequences
 
