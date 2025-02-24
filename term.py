@@ -55,3 +55,18 @@ def term_show(text: str):
     padding = " " * (columns - clean_len)
 
     print(text + padding)
+
+
+class Spinner:
+    def __init__(self, spinner):
+        self.spinner = spinner
+        self.index = 0
+
+    def spin(self):
+        self.index = (self.index + 1) % len(self.spinner)
+
+    def get(self, also_spin=True):
+        ret = self.spinner[self.index]
+        if also_spin:
+            self.spin()
+        return ret
