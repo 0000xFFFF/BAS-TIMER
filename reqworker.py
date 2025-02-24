@@ -2,7 +2,7 @@ import requests
 import time
 
 from utils import timestamp, time_to_str, elapsed_str
-from process_data import process_data
+from process_data import drawui
 from colors import bool_to_ctext_fg, int_to_ctext_fg
 from logger_config import requests_logger, changes_logger
 
@@ -193,7 +193,7 @@ def req():
         data = response.json()
         last_data = data
 
-    dic = process_data(data, last_ret, is_request=True)
+    dic = drawui(data, last_ret, is_request=True)
 
     # send requests based on processed data
     action(dic)
@@ -214,16 +214,8 @@ def dowork():
     last_ret = True
     request_count += 1
 
-    if request_count >= do_reqest_on_count:
+    if request_count >= do_reqest_on_count or last_data is None:
         request_count = 0
         return req()
 
-    else:
-        if last_data is None:
-            return req()
-        else:
-            return process_data(last_data, last_ret)
-
-
-
-    return dic
+    return drawui(last_data, last_ret)

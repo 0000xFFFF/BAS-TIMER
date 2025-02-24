@@ -17,7 +17,7 @@ import reqworker
 
 
 light = 0
-def process_data(data, last_ret, is_request=False):
+def drawui(data, last_ret, is_request=False):
     # Collect key-value pairs
     dic = {}
 
