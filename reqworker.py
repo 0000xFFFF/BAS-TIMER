@@ -120,7 +120,10 @@ def action(dic):
 
             changes_logger.write(f"mod_rada = {dic["mod_rada"]}{e}")
 
-        # AUTO_TIMER_STATUS = f" {bool_to_ctext_fg(int(HISTORY_MODE))} {time_to_str(HISTORY_MODE_TIMECHANGED)}"
+            if AUTO_TIMER_STARTED:
+                AUTO_TIMER_STARTED = False
+                AUTO_TIMER_TIME_FINISHED = time.time()
+                AUTO_TIMER_STATUS = f"{timestamp()} 󰜺"
 
     if HISTORY_GAS is None or HISTORY_GAS != dic["StatusPumpe4"]:
         HISTORY_GAS = dic["StatusPumpe4"]
@@ -139,13 +142,10 @@ def action(dic):
             changes_logger.write(f"StatusPumpe4 = {dic["StatusPumpe4"]}{e}")
 
 
-
-        # AUTO_GAS_STATUS = f" {bool_to_ctext_fg(int(HISTORY_GAS))} {time_to_str(HISTORY_GAS_TIMECHANGED)}"
-
     if AUTO_TIMER and int(dic["mod_rada"]):
         if AUTO_TIMER_STARTED:
             AUTO_TIMER_SECONDS_ELAPSED = time.time() - HISTORY_MODE_TIME_CHANGED
-            AUTO_TIMER_STATUS = f"{AUTO_TIMER_SECONDS_ELAPSED}/{AUTO_TIMER_SECONDS}"
+            AUTO_TIMER_STATUS = f"{AUTO_TIMER_SECONDS_ELAPSED:.2f}/{AUTO_TIMER_SECONDS}"
 
             if AUTO_TIMER_SECONDS_ELAPSED >= AUTO_TIMER_SECONDS:
                 AUTO_TIMER_STARTED = False
