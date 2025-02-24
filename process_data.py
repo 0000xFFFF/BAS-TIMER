@@ -24,6 +24,8 @@ spinner_basic = Spinner(["-", "\\", "|", "/"])
 spinner_lights = Spinner(["󱩎", "󱩏", "󱩐", "󱩑", "󱩒", "󱩓", "󱩔", "󱩕", "󱩖", "󰛨"])
 spinner_check = Spinner(["", "", "󰄬", "", "", "󰄭", "󰸞", "󰡕"])
 spinner_warn = Spinner(["", ""])
+spinner_heat = Spinner(["󰐸", "󰫗"])
+spinner_eye_left = Spinner(["󰛐", "󱣾"])
 
 
 def bool_to_spinner(b):
@@ -31,6 +33,13 @@ def bool_to_spinner(b):
         return ctext_fg_con(COLOR_ON, spinner_bars.get(False))
     else:
         return ctext_fg(COLOR_OFF, "")
+
+
+def bool_to_check(b):
+    if b:
+        return ctext_bg_con(COLOR_ON, "")
+    else:
+        return ctext_fg(COLOR_OFF, "")
 
 
 def drawui(data, last_ret, is_request=False):
@@ -67,17 +76,17 @@ def drawui(data, last_ret, is_request=False):
     temps.append([ctext_fg(230, "Solar 󱩳"), Tsolar])
     temps.append([ctext_fg(76, "Room "), Tsobna])
     temps.append([ctext_fg(154, "Set "), Tzadata])
-    temps.append([ctext_fg(214, "Max "), Tmax])
-    temps.append([ctext_fg(220, "Mid 󰝹"), Tmid])
-    temps.append([ctext_fg(226, "Min "), Tmin])
+    temps.append([ctext_fg(214, "Max "), Tmax])
+    temps.append([ctext_fg(220, "Mid "), Tmid])
+    temps.append([ctext_fg(226, "Min "), Tmin])
     temps.append([ctext_fg(110, "Circ. "), Tfs])
     temps.append([ctext_fg(196, "Hottest 󰈸"), Thottest])
     temps.append([ctext_fg(51, "Coldest "), Tcoldest])
 
     dic["TminLT"] = int(dic["Tmin"] < 45)
-    TminLT = bool_to_spinner(int(dic["TminLT"]))
+    TminLT = bool_to_check(int(dic["TminLT"]))
     dic["TmidGE"] = int(dic["Tmid"] >= 60)
-    TmidGE = bool_to_spinner(int(dic["TmidGE"]))
+    TmidGE = bool_to_check(int(dic["TmidGE"]))
 
     emojis = ["   "] * len(temps)
     if dic["TmidGE"]:
@@ -85,13 +94,13 @@ def drawui(data, last_ret, is_request=False):
     if dic["TminLT"]:
         emojis[6] = ctext_fg(196, f" {spinner_warn.get()} ")
 
+    ModRada = bool_to_check(int(dic["mod_rada"]))
+    ModRezim = ctext_fg(22, int(dic["mod_rezim"]))
     StatusPumpe3 = bool_to_spinner(int(dic["StatusPumpe3"]))
     StatusPumpe4 = bool_to_spinner(int(dic["StatusPumpe4"]))
     StatusPumpe5 = bool_to_spinner(int(dic["StatusPumpe5"]))
     StatusPumpe6 = bool_to_spinner(int(dic["StatusPumpe6"]))
     StatusPumpe7 = bool_to_spinner(int(dic["StatusPumpe7"]))
-    ModRada = bool_to_spinner(int(dic["mod_rada"]))
-    ModRezim = ctext_fg(22, int(dic["mod_rezim"]))
     spinner_bars.spin()
     status = []
     status.append([ctext_fg(13, "Mode 󱪯"), ModRada])
@@ -106,12 +115,16 @@ def drawui(data, last_ret, is_request=False):
 
     emojis2 = ["   "] * len(temps)
     if reqworker.AUTO_TIMER:
-        emojis2[0] = ctext_fg(COLOR_ON, f" 󱣽") + bctext_fg(
-            reqworker.AUTO_TIMER_STARTED, f"󱎫"
-        )
-
+        eye = ctext_fg(COLOR_ON, spinner_eye_left.get(False))
+        clock = ctext_fg(COLOR_OFF, "󱎫")
+        if reqworker.AUTO_TIMER_STARTED:
+            clock = ctext_fg(COLOR_ON, spinner_clock.get())
+        emojis2[0] = f" {eye}{clock}"
     if reqworker.AUTO_GAS:
-        emojis2[3] = ctext_fg(COLOR_ON, f" 󱣽")
+        eye = ctext_fg(COLOR_ON, spinner_eye_left.get(False))
+        emojis2[3] = f" {eye}"
+
+    spinner_eye_left.spin()
 
     # format tables
     fmt = "plain"

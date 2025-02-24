@@ -134,7 +134,7 @@ def temperature_to_color(temp):
 def format_temp_color_text(temp):
     color = temperature_to_color(temp)
     pad_float = str(f"{temp:.2f}")
-    pad_def = f"{pad_float} " + chr(176) + "C"
+    pad_def = f"{pad_float} 󰔄" # + chr(176) + "C"
     return color, f"{pad_def:>9}"
 
 
