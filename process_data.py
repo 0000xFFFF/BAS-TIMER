@@ -117,10 +117,10 @@ def drawui(data, last_ret, is_request=False):
 
     r = " "
     if is_request:
-        r = ""
+        r = ctext_fg(211, "")
 
     COLOR_HEAD = colors.COLOR_ON if last_ret else colors.COLOR_OFF
-    term_show(f" {l} {r} " + ctext_fg(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
+    term_show(f"{l} {r} " + ctext_fg(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
 
     for line1, emoji1, line2, emoji2 in zip(table1_lines, emojis, table2_lines, emojis2):
         term_show(f"{line1}{emoji1}{line2}{emoji2}")
