@@ -1,3 +1,4 @@
+import time
 from tabulate import tabulate
 from term import term_show, Spinner
 from utils import timestamp, get_local_ips, time_to_str
@@ -166,6 +167,12 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
         table1_lines, emojis, table2_lines, emojis2
     ):
         term_show(f"{line1}{emoji1}{line2}{emoji2}")
+
+
+    if reqworker.AUTO_TIMER and int(dic["mod_rada"]):
+        if reqworker.AUTO_TIMER_STARTED:
+            reqworker.AUTO_TIMER_SECONDS_ELAPSED = time.time() - reqworker.HISTORY_MODE_TIME_ON
+            reqworker.AUTO_TIMER_STATUS = f"{reqworker.AUTO_TIMER_SECONDS_ELAPSED:.2f}/{reqworker.AUTO_TIMER_SECONDS}"
 
     ts = reqworker.AUTO_TIMER_STATUS
     if ts:

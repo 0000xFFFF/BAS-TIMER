@@ -18,12 +18,12 @@ AUTO_GAS_STATUS = ""
 
 HISTORY_MODE = None
 HISTORY_MODE_TIME_CHANGED = None
-HISTORY_MODE_TIME_STARTED = None
-HISTORY_MODE_TIME_FINISHED = None
+HISTORY_MODE_TIME_ON = None
+HISTORY_MODE_TIME_OFF = None
 HISTORY_GAS = None
 HISTORY_GAS_TIME_CHANGED = None
-HISTORY_GAS_TIME_STARTED = None
-HISTORY_GAS_TIME_FINISHED = None
+HISTORY_GAS_TIME_ON = None
+HISTORY_GAS_TIME_OFF = None
 
 # act like firefox
 req_headers = {
@@ -79,36 +79,32 @@ def send(url):
     return response, None
 
 
-def remember_vars_get_action(dic):
-    global AUTO_TIMER
-    global AUTO_TIMER_STARTED
-    global AUTO_TIMER_SECONDS
-    global AUTO_TIMER_SECONDS_ELAPSED
-    global AUTO_TIMER_STATUS
-    global AUTO_GAS
-    global AUTO_GAS_STATUS
+def update_history(dic):
 
     global HISTORY_MODE
     global HISTORY_MODE_TIME_CHANGED
-    global HISTORY_MODE_TIME_STARTED
-    global HISTORY_MODE_TIME_FINISHED
+    global HISTORY_MODE_TIME_ON
+    global HISTORY_MODE_TIME_OFF
     global HISTORY_GAS
     global HISTORY_GAS_TIME_CHANGED
-    global HISTORY_GAS_TIME_STARTED
-    global HISTORY_GAS_TIME_FINISHED
+    global HISTORY_GAS_TIME_ON
+    global HISTORY_GAS_TIME_OFF
+
+    global AUTO_TIMER_STARTED
+    global AUTO_TIMER_STATUS
 
     if HISTORY_MODE is None or HISTORY_MODE != dic["mod_rada"]:
         HISTORY_MODE = dic["mod_rada"]
         HISTORY_MODE_TIME_CHANGED = time.time()
 
         if dic["mod_rada"]:
-            HISTORY_MODE_TIME_STARTED = HISTORY_MODE_TIME_CHANGED
+            HISTORY_MODE_TIME_ON = HISTORY_MODE_TIME_CHANGED
             changes_logger.write(f"mod_rada = {dic['mod_rada']}\n")
         else:
-            HISTORY_MODE_TIME_FINISHED = HISTORY_MODE_TIME_CHANGED
+            HISTORY_MODE_TIME_OFF = HISTORY_MODE_TIME_CHANGED
             e = "\n"
-            if HISTORY_MODE_TIME_STARTED and HISTORY_MODE_TIME_FINISHED:
-                e = f" -- {elapsed_str(HISTORY_MODE_TIME_FINISHED, HISTORY_MODE_TIME_STARTED)}\n"
+            if HISTORY_MODE_TIME_ON and HISTORY_MODE_TIME_OFF:
+                e = f" -- {elapsed_str(HISTORY_MODE_TIME_OFF, HISTORY_MODE_TIME_ON)}\n"
 
             changes_logger.write(f"mod_rada = {dic['mod_rada']}{e}")
 
@@ -121,25 +117,35 @@ def remember_vars_get_action(dic):
         HISTORY_GAS_TIME_CHANGED = time.time()
 
         if dic["StatusPumpe4"]:
-            HISTORY_GAS_TIME_STARTED = HISTORY_GAS_TIME_CHANGED
+            HISTORY_GAS_TIME_ON = HISTORY_GAS_TIME_CHANGED
             changes_logger.write(f"StatusPumpe4 = {dic['StatusPumpe4']}\n")
         else:
-            HISTORY_GAS_TIME_FINISHED = HISTORY_GAS_TIME_CHANGED
+            HISTORY_GAS_TIME_OFF = HISTORY_GAS_TIME_CHANGED
             e = "\n"
-            if HISTORY_GAS_TIME_STARTED and HISTORY_GAS_TIME_FINISHED:
-                e = f" -- {elapsed_str(HISTORY_GAS_TIME_FINISHED, HISTORY_GAS_TIME_STARTED)}\n"
+            if HISTORY_GAS_TIME_ON and HISTORY_GAS_TIME_OFF:
+                e = f" -- {elapsed_str(HISTORY_GAS_TIME_OFF, HISTORY_GAS_TIME_ON)}\n"
 
             changes_logger.write(f"StatusPumpe4 = {dic['StatusPumpe4']}{e}")
 
+
+def do_logic_timer(dic):
+    global AUTO_TIMER
+    global AUTO_TIMER_STARTED
+    global AUTO_TIMER_SECONDS
+    global AUTO_TIMER_SECONDS_ELAPSED
+    global AUTO_TIMER_STATUS
+
     if AUTO_TIMER and int(dic["mod_rada"]):
         if AUTO_TIMER_STARTED:
-            AUTO_TIMER_SECONDS_ELAPSED = time.time() - HISTORY_MODE_TIME_STARTED
+            AUTO_TIMER_SECONDS_ELAPSED = time.time() - HISTORY_MODE_TIME_ON
             AUTO_TIMER_STATUS = f"{AUTO_TIMER_SECONDS_ELAPSED:.2f}/{AUTO_TIMER_SECONDS}"
 
             if AUTO_TIMER_SECONDS_ELAPSED >= AUTO_TIMER_SECONDS:
                 AUTO_TIMER_STARTED = False
-                if HISTORY_MODE_TIME_STARTED and HISTORY_MODE_TIME_FINISHED:
-                    AUTO_TIMER_STATUS = f"󱫓 {elapsed_str(HISTORY_MODE_TIME_FINISHED, HISTORY_MODE_TIME_STARTED)} 󱪯"
+                if HISTORY_MODE_TIME_ON:
+                    AUTO_TIMER_STATUS = (
+                        f"󱫓 {elapsed_str(time.time(), HISTORY_MODE_TIME_ON)} 󱪯"
+                    )
                 else:
                     AUTO_TIMER_STATUS = f"{timestamp()} 󱪯"
                 send(URLS["OFF"])
@@ -148,22 +154,34 @@ def remember_vars_get_action(dic):
             AUTO_TIMER_STARTED = True
             AUTO_TIMER_STATUS = f"{timestamp()} 󱫌"
 
+
+def do_logic_gas(dic):
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 0 and dic["TminLT"]:
         AUTO_GAS_STATUS = f"{timestamp()} "
         send(URLS["GAS_ON"])
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 3 and dic["TmidGE"]:
-        if HISTORY_GAS_TIME_STARTED and HISTORY_GAS_TIME_FINISHED:
-            AUTO_GAS_STATUS = (
-                f"󱫓 {elapsed_str(HISTORY_GAS_TIME_FINISHED, HISTORY_GAS_TIME_STARTED)} 󰙇"
-            )
+        if HISTORY_GAS_TIME_ON and HISTORY_GAS_TIME_OFF:
+            AUTO_GAS_STATUS = f"󱫓 {elapsed_str(time.time(), HISTORY_GAS_TIME_ON)} 󰙇"
         else:
             AUTO_GAS_STATUS = f"{timestamp()} 󰙇"
         send(URLS["GAS_OFF"])
 
 
+def remember_vars_do_action(dic):
+    global AUTO_GAS
+    global AUTO_GAS_STATUS
+
+    update_history(dic)
+    do_logic_timer(dic)
+    do_logic_gas(dic)
+
+    return 0
+
+
 last_data = None
 last_ret = False
+
 
 def make_request():
     global last_data
@@ -186,16 +204,19 @@ def make_request():
     dic = process_data_and_draw_ui(data, last_ret, is_request=True)
 
     # send requests based on processed data
-    remember_vars_get_action(dic)
-    
+    remember_vars_do_action(dic)
+
     return dic
 
 
 from server import MAIN_WORKER_DRAW_SLEEP
+
+
+REQUEST_SLEEP = 3  # on third second to request
+do_reqest_on_count = REQUEST_SLEEP / MAIN_WORKER_DRAW_SLEEP
 request_count = 0
 
-do_reqest_on_seconds = 3 # on third seconds to request
-do_reqest_on_count = do_reqest_on_seconds / MAIN_WORKER_DRAW_SLEEP
+
 def do_work():
 
     global last_data
@@ -208,4 +229,5 @@ def do_work():
         request_count = 0
         return make_request()
 
-    return process_data_and_draw_ui(last_data, last_ret)
+    dic = process_data_and_draw_ui(last_data, last_ret)
+    return dic
