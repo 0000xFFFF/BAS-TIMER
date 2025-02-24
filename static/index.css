@@ -2,13 +2,12 @@
 
 * {
     color: #DB2828;
-    font-family: 'GohuFont', sans-serif;
+    font-family: 'GohuFontMono', monospace;
 
 }
 
 body {
-    background-color: silver;
-    font-family: "GohuFontMono" monospace;
+    background-color: white;
     background: #1c1c1c;
     font-size: 30px;
     color: #DB2828;

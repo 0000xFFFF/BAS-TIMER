@@ -163,9 +163,9 @@ function process(json) {
     colorIt(cur1, "Solar 󱩳", Tsolar, getColor(Tsolar));
     colorIt(cur1, "Room ", Tsobna, getColor(Tsobna));
     colorIt(cur1, "Set ", Tzadata, getColor(Tzadata));
-    colorIt(cur1, "Max ", Tmax, getColor(Tmax));
-    colorIt(cur1, "Mid 󰝹", Tmid, getColor(Tmin));
-    colorIt(cur1, "Min ", Tmin, getColor(Tmin));
+    colorIt(cur1, "Max ", Tmax, getColor(Tmax));
+    colorIt(cur1, "Mid ", Tmid, getColor(Tmin));
+    colorIt(cur1, "Min ", Tmin, getColor(Tmin));
     colorIt(cur1, "Circ. ", Tfs, getColor(Tfs));
     colorIt(cur1, "Hottest 󰈸", Thottest, getColor(Thottest));
     colorIt(cur1, "Coldest ", Tcoldest, getColor(Tcoldest));
