@@ -123,7 +123,7 @@ def action(dic):
             if AUTO_TIMER_STARTED:
                 AUTO_TIMER_STARTED = False
                 AUTO_TIMER_TIME_FINISHED = time.time()
-                AUTO_TIMER_STATUS = f"{timestamp()} 󰜺"
+                AUTO_TIMER_STATUS = f"{timestamp()} "
 
     if HISTORY_GAS is None or HISTORY_GAS != dic["StatusPumpe4"]:
         HISTORY_GAS = dic["StatusPumpe4"]
@@ -137,10 +137,11 @@ def action(dic):
             HISTORY_GAS_TIME_FINISHED = HISTORY_GAS_TIME_CHANGED
             e = "\n"
             if HISTORY_GAS_TIME_STARTED and HISTORY_GAS_TIME_FINISHED:
-                changes_logger.write(f" -- {elapsed_str(HISTORY_GAS_TIME_FINISHED, HISTORY_GAS_TIME_STARTED)}\n")
+                changes_logger.write(
+                    f" -- {elapsed_str(HISTORY_GAS_TIME_FINISHED, HISTORY_GAS_TIME_STARTED)}\n"
+                )
 
             changes_logger.write(f"StatusPumpe4 = {dic["StatusPumpe4"]}{e}")
-
 
     if AUTO_TIMER and int(dic["mod_rada"]):
         if AUTO_TIMER_STARTED:
@@ -165,7 +166,9 @@ def action(dic):
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 3 and dic["TmidGE"]:
         if AUTO_GAS_TIME_STARTED and AUTO_GAS_TIME_FINISHED:
-            AUTO_GAS_STATUS = f"󱫓 {elapsed_str(AUTO_GAS_TIME_FINISHED, AUTO_GAS_TIME_STARTED)} 󰙇"
+            AUTO_GAS_STATUS = (
+                f"󱫓 {elapsed_str(AUTO_GAS_TIME_FINISHED, AUTO_GAS_TIME_STARTED)} 󰙇"
+            )
         else:
             AUTO_GAS_STATUS = f"{timestamp()} 󰙇"
         send(URLS["GAS_OFF"])
