@@ -66,9 +66,9 @@ def drawui(data, last_ret, is_request=False):
 
     emojis = ["   "] * len(temps)
     if dic["TmidGE"]:
-        emojis[5] = ctext_fg(COLOR_ON, "  ")
+        emojis[5] = ctext_fg(82, "  ")
     if dic["TminLT"]:
-        emojis[6] = ctext_fg(COLOR_OFF, "  ")
+        emojis[6] = ctext_fg(196, "  ")
 
     StatusPumpe3 = bool_to_ctext_bi(int(dic["StatusPumpe3"]))
     StatusPumpe4 = bool_to_ctext_bi(int(dic["StatusPumpe4"]))
