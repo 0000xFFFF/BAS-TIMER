@@ -123,7 +123,7 @@ def action(dic):
             if AUTO_TIMER_STARTED:
                 AUTO_TIMER_STARTED = False
                 AUTO_TIMER_TIME_FINISHED = time.time()
-                AUTO_TIMER_STATUS = f"{timestamp()} "
+                AUTO_TIMER_STATUS = f"{timestamp()} 󰜺"
 
     if HISTORY_GAS is None or HISTORY_GAS != dic["StatusPumpe4"]:
         HISTORY_GAS = dic["StatusPumpe4"]
