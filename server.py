@@ -109,7 +109,7 @@ def main_worker():
         # send data to frontend
         socketio.emit("vars", dic)
 
-        time.sleep(3)
+        time.sleep(1)
 
 
 if __name__ == "__main__":

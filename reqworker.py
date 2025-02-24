@@ -175,12 +175,9 @@ def action(dic):
 last_data = None
 last_ret = False
 
-
-def dowork():
-
+def req():
     global last_data
     global last_ret
-    last_ret = True
 
     # Send GET request
     response, err = send(URLS["VARS"])
@@ -196,9 +193,34 @@ def dowork():
         data = response.json()
         last_data = data
 
-    dic = process_data(data, last_ret)
+    dic = process_data(data, last_ret, is_request=True)
 
     # send requests based on processed data
     action(dic)
+    
+    return dic
+
+
+request_count = 0
+do_reqest_on_count = 3
+def dowork():
+
+    global last_data
+    global last_ret
+    global request_count
+    last_ret = True
+    request_count += 1
+
+    if request_count >= do_reqest_on_count:
+        request_count = 0
+        return req()
+
+    else:
+        if last_data is None:
+            return req()
+        else:
+            return process_data(last_data, last_ret)
+
+
 
     return dic

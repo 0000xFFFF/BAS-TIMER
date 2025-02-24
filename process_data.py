@@ -16,7 +16,8 @@ import colors
 import reqworker
 
 
-def process_data(data, last_ret):
+light = 0
+def process_data(data, last_ret, is_request=False):
     # Collect key-value pairs
     dic = {}
 
@@ -49,7 +50,7 @@ def process_data(data, last_ret):
     temps = []
     temps.append([ctext_fg(213, "Outside 󱇜"), Tspv])
     temps.append([ctext_fg(230, "Solar 󱩳"), Tsolar])
-    temps.append([ctext_fg(40, "Room "), Tsobna])
+    temps.append([ctext_fg(76, "Room "), Tsobna])
     temps.append([ctext_fg(154, "Set "), Tzadata])
     temps.append([ctext_fg(214, "Max "), Tmax])
     temps.append([ctext_fg(220, "Mid 󰝹"), Tmid])
@@ -106,8 +107,20 @@ def process_data(data, last_ret):
     while len(table2_lines) < max_lines:
         table2_lines.append("")
 
+
+    lights = [ "󱩎", "󱩏", "󱩐", "󱩑", "󱩒", "󱩓", "󱩔", "󱩕", "󱩖", "󰛨" ]
+    global light
+    l = ctext_fg(228, f"{lights[light]}")
+    light += 1
+    if light >= len(lights):
+        light = 0
+
+    r = " "
+    if is_request:
+        r = ""
+
     COLOR_HEAD = colors.COLOR_ON if last_ret else colors.COLOR_OFF
-    term_show(ctext_fg(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
+    term_show(f" {l} {r} " + ctext_fg(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}"))
 
     for line1, emoji1, line2, emoji2 in zip(table1_lines, emojis, table2_lines, emojis2):
         term_show(f"{line1}{emoji1}{line2}{emoji2}")
