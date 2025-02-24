@@ -1,14 +1,17 @@
 @import url('/fonts.css');
 
 * {
-    color: rgb(0, 128, 192);
+    color: #DB2828;
     font-family: 'GohuFont', sans-serif;
+
 }
 
 body {
-    color: rgb(0, 128, 192);
     background-color: silver;
     font-family: "GohuFontMono" monospace;
+    background: #1c1c1c;
+    font-size: 30px;
+    color: #DB2828;
 }
 
 
@@ -22,7 +25,7 @@ body {
 .c_col {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 15px;
     align-items: center;
 }
 
@@ -33,51 +36,85 @@ body {
     padding: 3px;
 }
 
-#settings_time {}
+#settings {
+    margin-bottom: 20px;
+}
+
+#settings_time {
+    margin-bottom: 5px;
+}
 
 .text {
     font-size: 20px;
     font-weight: bold;
+    text-shadow: 3px 3px 0 black;
+}
+
+a {
+    font-weight: bold;
+    text-shadow: 3px 3px 0 black;
 }
 
 .bt_input {
-    background-color: rgb(192, 192, 192);
+    background-color: #200000;
     font-size: 20px;
-    color: rgb(0, 0, 127);
+    color: white;
     font-weight: bold;
-    border-top: 2px double black;
-    border-left: 2px double black;
-    border-right: 2px double rgb(224, 224, 224);
-    border-bottom: 2px double rgb(224, 224, 224);
+    border-top: 2px double #ff0000;
+    border-left: 2px double #ff0000;
+    border-right: 2px double #800000;
+    border-bottom: 2px double #800000;
+    padding: 5px;
 }
 
 
 .on {
-    background-color: rgb(0, 255, 0);
-    color: black;
+    color: green;
+    background-color: #001000;
+    border-top: 2px double #00ff00;
+    border-left: 2px double #00ff00;
+    border-right: 2px double #008000;
+    border-bottom: 2px double #008000;
 }
 
 
 button {
-    font-size: 16px;
-    color: rgb(0, 0, 127);
-    background-color: rgb(192, 192, 192);
+    font-size: 25px;
+    color: #ddd;
+    padding: 7px;
+    border-radius: 2px;
+    background-color: #600000;
     font-weight: bold;
-    border-top: 2px double rgb(224, 224, 224);
-    border-left: 2px double rgb(224, 224, 224);
-    border-right: 2px double black;
-    border-bottom: 2px double black;
+    border-top: 2px double #ff0000;
+    border-left: 2px double #ff0000;
+    border-right: 2px double #800000;
+    border-bottom: 2px double #800000;
     cursor: pointer;
+    box-shadow: 5px 5px 0 black;
+}
+
+button:hover {
+    color: white;
+    transform: scaleX(1.09) scaleY(1.09) translateY(-2px);
+}
+
+
+button:active {
+    transform: translateX(5px) translateY(5px);
+    box-shadow: none;
 }
 
 
 #canv {
-    width: 100px;
     background: #808080;
-    border-top: 2px double rgb(224, 224, 224);
-    border-left: 2px double rgb(224, 224, 224);
-    border-right: 2px double black;
-    border-bottom: 2px double black;
+    border-top: 2px double #ff0000;
+    border-left: 2px double #ff0000;
+    border-right: 2px double #800000;
+    border-bottom: 2px double #800000;
+    width: 60px;
+    height: 510px;
+    box-shadow: 5px 5px 0 black;
+    border-radius: 2px;
 }
 
 
@@ -100,10 +137,10 @@ button {
     font-size: 20px;
     width: calc(90vw - 600px);
     height: 900px;
-    border-top: 2px double rgb(224, 224, 224);
-    border-left: 2px double rgb(224, 224, 224);
-    border-right: 2px double black;
-    border-bottom: 2px double black;
+    border-top: 2px double #ff0000;
+    border-left: 2px double #ff0000;
+    border-right: 2px double #800000;
+    border-bottom: 2px double #800000;
     overflow-y: auto;
     font-family: monospace;
 }
@@ -112,33 +149,24 @@ button {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    gap: 2px;
+    gap: 20px;
 }
 
 .currents {
     font-weight: bolder;
-    color: #eee;
+    color: white;
     padding: 5px;
     font-size: 35px;
     width: 700px;
     height: 500px;
-    border-top: 2px double rgb(224, 224, 224);
-    border-left: 2px double rgb(224, 224, 224);
-    border-right: 2px double black;
-    border-bottom: 2px double black;
+    border-radius: 2px;
+    border-top: 2px double #ff0000;
+    border-left: 2px double #ff0000;
+    border-right: 2px double #800000;
+    border-bottom: 2px double #800000;
     font-family: monospace;
-    background: #808080;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-    letter-spacing: 1px;
-}
-
-#currents_canvas {
-    border-top: 2px double rgb(224, 224, 224);
-    border-left: 2px double rgb(224, 224, 224);
-    border-right: 2px double black;
-    border-bottom: 2px double black;
-    width: 60px;
-    height: 510px;
+    background: #000005;
+    box-shadow: 5px 5px 0 black;
 }
 
 table {
@@ -163,3 +191,5 @@ th {
 .currents_text {
     text-align: left;
 }
+
+
