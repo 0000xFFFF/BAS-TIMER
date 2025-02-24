@@ -200,7 +200,8 @@ def make_request():
     dic = process_data_and_draw_ui(data, last_ret, is_request=True)
 
     # send requests based on processed data
-    remember_vars_get_action(dic)
+    action = remember_vars_get_action(dic)
+    do_action(action)
     
     return dic
 
@@ -222,4 +223,6 @@ def do_work():
         request_count = 0
         return make_request()
 
-    return process_data_and_draw_ui(last_data, last_ret)
+    dic = process_data_and_draw_ui(last_data, last_ret)
+    remember_vars_get_action(dic)
+    return dic
