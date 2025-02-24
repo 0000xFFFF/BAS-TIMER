@@ -111,19 +111,19 @@ def action(dic):
 
         if dic["mod_rada"]:
             HISTORY_MODE_TIME_STARTED = HISTORY_MODE_TIME_CHANGED
-            changes_logger.write(f"mod_rada = {dic["mod_rada"]}\n")
+            changes_logger.write(f"mod_rada = {dic['mod_rada']}\n")
         else:
             HISTORY_MODE_TIME_FINISHED = HISTORY_MODE_TIME_CHANGED
             e = "\n"
             if HISTORY_MODE_TIME_STARTED and HISTORY_MODE_TIME_FINISHED:
                 e = f" -- {elapsed_str(HISTORY_MODE_TIME_FINISHED, HISTORY_MODE_TIME_STARTED)}\n"
 
-            changes_logger.write(f"mod_rada = {dic["mod_rada"]}{e}")
+            changes_logger.write(f"mod_rada = {dic['mod_rada']}{e}")
 
             if AUTO_TIMER_STARTED:
                 AUTO_TIMER_STARTED = False
                 AUTO_TIMER_TIME_FINISHED = time.time()
-                AUTO_TIMER_STAUS = f"{timestamp()} x"
+                AUTO_TIMER_STAUS = f"{timestamp()} 󰜺"
 
     if HISTORY_GAS is None or HISTORY_GAS != dic["StatusPumpe4"]:
         HISTORY_GAS = dic["StatusPumpe4"]
@@ -132,14 +132,14 @@ def action(dic):
         if dic["StatusPumpe4"]:
             HISTORY_GAS_TIME_STARTED = HISTORY_GAS_TIME_CHANGED
             t = time_to_str(HISTORY_GAS_TIME_STARTED)
-            changes_logger.write(f"{t}  StatusPumpe4 = {dic["StatusPumpe4"]}\n")
+            changes_logger.write(f"{t}  StatusPumpe4 = {dic['StatusPumpe4']}\n")
         else:
             HISTORY_GAS_TIME_FINISHED = HISTORY_GAS_TIME_CHANGED
             e = "\n"
             if HISTORY_GAS_TIME_STARTED and HISTORY_GAS_TIME_FINISHED:
                 e = f" -- {elapsed_str(HISTORY_GAS_TIME_FINISHED, HISTORY_GAS_TIME_STARTED)}\n"
 
-            changes_logger.write(f"StatusPumpe4 = {dic["StatusPumpe4"]}{e}")
+            changes_logger.write(f"StatusPumpe4 = {dic['StatusPumpe4']}{e}")
 
     if AUTO_TIMER and int(dic["mod_rada"]):
         if AUTO_TIMER_STARTED:
