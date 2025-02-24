@@ -131,8 +131,7 @@ def action(dic):
 
         if dic["StatusPumpe4"]:
             HISTORY_GAS_TIME_STARTED = HISTORY_GAS_TIME_CHANGED
-            t = time_to_str(HISTORY_GAS_TIME_STARTED)
-            changes_logger.write(f"{t}  StatusPumpe4 = {dic['StatusPumpe4']}\n")
+            changes_logger.write(f"StatusPumpe4 = {dic['StatusPumpe4']}\n")
         else:
             HISTORY_GAS_TIME_FINISHED = HISTORY_GAS_TIME_CHANGED
             e = "\n"
