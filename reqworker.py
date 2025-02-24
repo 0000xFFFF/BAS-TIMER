@@ -13,12 +13,8 @@ AUTO_TIMER_STARTED = False
 AUTO_TIMER_SECONDS = 900  # 15 mins
 AUTO_TIMER_SECONDS_ELAPSED = 0
 AUTO_TIMER_STATUS = ""
-AUTO_TIMER_TIME_STARTED = 0
-AUTO_TIMER_TIME_FINISHED = 0
 AUTO_GAS = True
 AUTO_GAS_STATUS = ""
-AUTO_GAS_TIME_STARTED = 0
-AUTO_GAS_TIME_FINISHED = 0
 
 HISTORY_MODE = None
 HISTORY_MODE_TIME_CHANGED = None
@@ -89,12 +85,8 @@ def action(dic):
     global AUTO_TIMER_SECONDS
     global AUTO_TIMER_SECONDS_ELAPSED
     global AUTO_TIMER_STATUS
-    global AUTO_TIMER_TIME_STARTED
-    global AUTO_TIMER_TIME_FINISHED
     global AUTO_GAS
     global AUTO_GAS_STATUS
-    global AUTO_GAS_TIME_STARTED
-    global AUTO_GAS_TIME_FINISHED
 
     global HISTORY_MODE
     global HISTORY_MODE_TIME_CHANGED
@@ -122,7 +114,6 @@ def action(dic):
 
             if AUTO_TIMER_STARTED:
                 AUTO_TIMER_STARTED = False
-                AUTO_TIMER_TIME_FINISHED = time.time()
                 AUTO_TIMER_STAUS = f"{timestamp()} 󰜺"
 
     if HISTORY_GAS is None or HISTORY_GAS != dic["StatusPumpe4"]:
@@ -142,29 +133,26 @@ def action(dic):
 
     if AUTO_TIMER and int(dic["mod_rada"]):
         if AUTO_TIMER_STARTED:
-            AUTO_TIMER_SECONDS_ELAPSED = time.time() - HISTORY_MODE_TIME_CHANGED
+            AUTO_TIMER_SECONDS_ELAPSED = time.time() - HISTORY_MODE_TIME_STARTED
             AUTO_TIMER_STATUS = f"{AUTO_TIMER_SECONDS_ELAPSED:.2f}/{AUTO_TIMER_SECONDS}"
 
             if AUTO_TIMER_SECONDS_ELAPSED >= AUTO_TIMER_SECONDS:
                 AUTO_TIMER_STARTED = False
-                AUTO_TIMER_TIME_FINISHED = time.time()
-                AUTO_TIMER_STATUS = f"󱫓 {elapsed_str(AUTO_TIMER_TIME_FINISHED, AUTO_TIMER_TIME_STARTED)} 󱪯"
+                AUTO_TIMER_STATUS = f"󱫓 {elapsed_str(HISTORY_MODE_TIME_FINISHED, HISTORY_MODE_TIME_STARTED)} 󱪯"
                 send(URLS["OFF"])
 
         else:
             AUTO_TIMER_STARTED = True
-            AUTO_TIMER_TIME_STARTED = time.time()
             AUTO_TIMER_STATUS = f"{timestamp()} 󱫌"
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 0 and dic["TminLT"]:
-        AUTO_GAS_TIME_STARTED = time.time()
         AUTO_GAS_STATUS = f"{timestamp()} "
         send(URLS["GAS_ON"])
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 3 and dic["TmidGE"]:
-        if AUTO_GAS_TIME_STARTED and AUTO_GAS_TIME_FINISHED:
+        if HISTORY_GAS_TIME_STARTED and HISTORY_GAS_TIME_FINISHED:
             AUTO_GAS_STATUS = (
-                f"󱫓 {elapsed_str(AUTO_GAS_TIME_FINISHED, AUTO_GAS_TIME_STARTED)} 󰙇"
+                f"󱫓 {elapsed_str(HISTORY_GAS_TIME_FINISHED, HISTORY_GAS_TIME_STARTED)} 󰙇"
             )
         else:
             AUTO_GAS_STATUS = f"{timestamp()} 󰙇"
