@@ -26,9 +26,11 @@ spinner_check = Spinner(["", "", "󰄬", "", "", "󰄭", "󰸞", "�
 spinner_warn = Spinner(["", ""])
 spinner_heat = Spinner(["󰐸", "󰫗"])
 spinner_eye_left = Spinner(["󰛐", "󱣾"])
+spinner_eye_right = Spinner(["󰛐", "󱤀"])
+spinner_circle = Spinner(["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"])
 
 
-def bool_to_spinner(b):
+def draw_pump_bars(b):
     if b:
         return ctext_fg_con(COLOR_ON, spinner_bars.get(False))
     else:
@@ -96,11 +98,11 @@ def drawui(data, last_ret, is_request=False):
 
     ModRada = bool_to_check(int(dic["mod_rada"]))
     ModRezim = ctext_fg(22, int(dic["mod_rezim"]))
-    StatusPumpe3 = bool_to_spinner(int(dic["StatusPumpe3"]))
-    StatusPumpe4 = bool_to_spinner(int(dic["StatusPumpe4"]))
-    StatusPumpe5 = bool_to_spinner(int(dic["StatusPumpe5"]))
-    StatusPumpe6 = bool_to_spinner(int(dic["StatusPumpe6"]))
-    StatusPumpe7 = bool_to_spinner(int(dic["StatusPumpe7"]))
+    StatusPumpe3 = draw_pump_bars(int(dic["StatusPumpe3"]))
+    StatusPumpe4 = draw_pump_bars(int(dic["StatusPumpe4"]))
+    StatusPumpe5 = draw_pump_bars(int(dic["StatusPumpe5"]))
+    StatusPumpe6 = draw_pump_bars(int(dic["StatusPumpe6"]))
+    StatusPumpe7 = draw_pump_bars(int(dic["StatusPumpe7"]))
     spinner_bars.spin()
     status = []
     status.append([ctext_fg(13, "Mode 󱪯"), ModRada])
@@ -147,7 +149,7 @@ def drawui(data, last_ret, is_request=False):
 
     COLOR_HEAD = colors.COLOR_ON if last_ret else colors.COLOR_OFF
     term_show(
-        f"{s}{l}{r} " + ctext_fg(COLOR_HEAD, f"{timestamp()} / {get_local_ips()}")
+        f"{s}{l}{r} " + ctext_fg(COLOR_HEAD, f"{timestamp()} {spinner_circle.get()} {get_local_ips()}")
     )
 
     for line1, emoji1, line2, emoji2 in zip(
@@ -157,12 +159,12 @@ def drawui(data, last_ret, is_request=False):
 
     ts = reqworker.AUTO_TIMER_STATUS
     if ts:
-        te = ctext_fg(COLOR_ON, "󱎫󰐸")
+        te = ctext_fg(COLOR_ON, f"{spinner_clock.get()}{spinner_heat.get()}")
         term_show(f"{te} {ts}")
 
     gs = reqworker.AUTO_GAS_STATUS
     if gs:
-        ge = ctext_fg(COLOR_ON, "󱣿󰙇")
+        ge = ctext_fg(COLOR_ON, f"{spinner_eye_right.get()}󰙇")
         term_show(f"{ge} {gs}")
 
     return dic
