@@ -97,6 +97,7 @@ def set_timer_seconds():
         return jsonify({"success": False, "error": "Invalid input"}), 400
 
 
+MAIN_WORKER_DRAW_SLEEP = 0.5
 def main_worker():
     global running
     term_cursor_hide()
@@ -109,7 +110,7 @@ def main_worker():
         # send data to frontend
         socketio.emit("vars", dic)
 
-        time.sleep(1)
+        time.sleep(MAIN_WORKER_DRAW_SLEEP)
 
 
 if __name__ == "__main__":

@@ -201,8 +201,11 @@ def req():
     return dic
 
 
+from server import MAIN_WORKER_DRAW_SLEEP
 request_count = 0
-do_reqest_on_count = 3
+
+do_reqest_on_seconds = 3 # on third seconds to request
+do_reqest_on_count = do_reqest_on_seconds / MAIN_WORKER_DRAW_SLEEP
 def dowork():
 
     global last_data
