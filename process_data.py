@@ -30,6 +30,13 @@ spinner_eye_right = Spinner(["󰛐", "󱤀"])
 spinner_circle = Spinner(["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"])
 
 
+def draw_heat(b):
+    if b:
+        return ctext_fg(COLOR_ON, spinner_heat.get())
+    else:
+        return ctext_fg(COLOR_OFF, "")
+
+
 def draw_pump_bars(b):
     if b:
         return ctext_fg_con(COLOR_ON, spinner_bars.get(False))
@@ -96,7 +103,7 @@ def drawui(data, last_ret, is_request=False):
     if dic["TminLT"]:
         emojis[6] = ctext_fg(196, f" {spinner_warn.get()} ")
 
-    ModRada = bool_to_check(int(dic["mod_rada"]))
+    ModRada = draw_heat(int(dic["mod_rada"]))
     ModRezim = ctext_fg(22, int(dic["mod_rezim"]))
     StatusPumpe3 = draw_pump_bars(int(dic["StatusPumpe3"]))
     StatusPumpe4 = draw_pump_bars(int(dic["StatusPumpe4"]))
@@ -149,7 +156,10 @@ def drawui(data, last_ret, is_request=False):
 
     COLOR_HEAD = colors.COLOR_ON if last_ret else colors.COLOR_OFF
     term_show(
-        f"{s}{l}{r} " + ctext_fg(COLOR_HEAD, f"{timestamp()} {spinner_circle.get()} {get_local_ips()}")
+        f"{s}{l}{r} "
+        + ctext_fg(
+            COLOR_HEAD, f"{timestamp()} {spinner_circle.get()} {get_local_ips()}"
+        )
     )
 
     for line1, emoji1, line2, emoji2 in zip(
@@ -159,7 +169,9 @@ def drawui(data, last_ret, is_request=False):
 
     ts = reqworker.AUTO_TIMER_STATUS
     if ts:
-        te = ctext_fg(COLOR_ON, f"{spinner_clock.get()}{spinner_heat.get()}")
+        te = ctext_fg(COLOR_OFF, "󱎫󱪯")
+        if reqworker.AUTO_TIMER_STARTED:
+            te = ctext_fg(COLOR_ON, f"{spinner_clock.get(False)}{spinner_heat.get(False)}")
         term_show(f"{te} {ts}")
 
     gs = reqworker.AUTO_GAS_STATUS
