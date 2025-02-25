@@ -29,10 +29,12 @@ spinner_lights = Spinner(["󱩎", "󱩏", "󱩐", "󱩑", "󱩒", "󱩓", "󱩔"
 spinner_check = Spinner(["", "", "󰄬", "", "", "󰄭", "󰸞", "󰡕"])
 spinner_warn = Spinner(["", ""])
 spinner_heat = Spinner(["󰐸", "󰫗"])
+spinner_heat_pump = Spinner(["󱩃", "󱩄"])
 spinner_eye_left = Spinner(["󰛐", "󱣾"])
 spinner_eye_right = Spinner(["󰛐", "󱤀"])
 spinner_circle = Spinner(["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"])
-
+spinner_solar = Spinner(["󱩳", "󱩴"])
+spinner_fire = Spinner(["", "", "󰈸", ""])
 
 def draw_heat(b):
     if b:
@@ -68,7 +70,12 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
 
     # fix main values to int
     dic["mod_rada"] = int(dic["mod_rada"])
+    dic["mod_rezim"] = int(dic["mod_rezim"])
+    dic["StatusPumpe3"] = int(dic["StatusPumpe3"])
     dic["StatusPumpe4"] = int(dic["StatusPumpe4"])
+    dic["StatusPumpe5"] = int(dic["StatusPumpe5"])
+    dic["StatusPumpe6"] = int(dic["StatusPumpe6"])
+    dic["StatusPumpe7"] = int(dic["StatusPumpe7"])
 
     # get temps and pump status
     Tspv = temp_to_ctext_bg_con(dic["Tspv"])
@@ -86,7 +93,7 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
     Tcoldest = temp_to_ctext_bg_con(dic["Tcoldest"])
     temps = []
     temps.append([ctext_fg(213, "Outside 󱇜"), Tspv])
-    temps.append([ctext_fg(230, "Solar 󱩳"), Tsolar])
+    temps.append([ctext_fg(230, "Solar "), Tsolar])
     temps.append([ctext_fg(76, "Room "), Tsobna])
     temps.append([ctext_fg(154, "Set "), Tzadata])
     temps.append([ctext_fg(214, "Max "), Tmax])
@@ -107,21 +114,21 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
     if dic["TminLT"]:
         emojis[6] = ctext_fg(196, f" {spinner_warn.get()} ")
 
-    ModRada = draw_heat(int(dic["mod_rada"]))
-    ModRezim = ctext_fg(22, int(dic["mod_rezim"]))
-    StatusPumpe3 = draw_pump_bars(int(dic["StatusPumpe3"]))
-    StatusPumpe4 = draw_pump_bars(int(dic["StatusPumpe4"]))
-    StatusPumpe5 = draw_pump_bars(int(dic["StatusPumpe5"]))
-    StatusPumpe6 = draw_pump_bars(int(dic["StatusPumpe6"]))
-    StatusPumpe7 = draw_pump_bars(int(dic["StatusPumpe7"]))
+    ModRada = draw_heat(dic["mod_rada"])
+    ModRezim = ctext_fg(22, dic["mod_rezim"])
+    StatusPumpe3 = draw_pump_bars(dic["StatusPumpe3"])
+    StatusPumpe4 = draw_pump_bars(dic["StatusPumpe4"])
+    StatusPumpe5 = draw_pump_bars(dic["StatusPumpe5"])
+    StatusPumpe6 = draw_pump_bars(dic["StatusPumpe6"])
+    StatusPumpe7 = draw_pump_bars(dic["StatusPumpe7"])
     status = []
     status.append([ctext_fg(13, "Mode 󱪯"), ModRada])
     status.append([ctext_fg(22, "Regime 󱖫"), ModRezim])
-    status.append([ctext_fg(212, "Heat 󱩃"), StatusPumpe6])
-    status.append([ctext_fg(203, "Gas 󰙇"), StatusPumpe4])
-    status.append([ctext_fg(168, "Circ. "), StatusPumpe3])
+    status.append([ctext_fg(212, f"Heat {spinner_heat_pump.get() if dic['StatusPumpe6'] else '󱩃'}"), StatusPumpe6])
+    status.append([ctext_fg(203, f"Gas {spinner_fire.get() if dic["StatusPumpe4"] else '󰙇'}"), StatusPumpe4])
+    status.append([ctext_fg(168, f"Circ. {spinner_circle.get(False) if dic['StatusPumpe3'] else ''}"), StatusPumpe3])
+    status.append([ctext_fg(224, f"Solar {spinner_solar.get() if dic['StatusPumpe7'] else ''}"), StatusPumpe7])
     status.append([ctext_fg(242, "Pump5 "), StatusPumpe5])
-    status.append([ctext_fg(242, "Pump7 "), StatusPumpe7])
     status.append([ctext_fg(87, "Min < 45"), TminLT])
     status.append([ctext_fg(208, "Mid >= 60"), TmidGE])
 
@@ -160,7 +167,7 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
     term_show(
         f"{s}{l}{r} "
         + ctext_fg(
-            COLOR_HEAD, f"{timestamp()} {spinner_circle.get()} {get_local_ips()}"
+            COLOR_HEAD, f"{timestamp()} {spinner_circle.get(False)} {get_local_ips()}"
         )
     )
 
@@ -194,6 +201,7 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
 
 
     # spin multiple spinners
+    spinner_circle.spin()
     spinner_eye_left.spin()
     spinner_bars.spin()
     spinner_clock.spin()
