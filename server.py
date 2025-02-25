@@ -16,14 +16,14 @@ from flask import Flask, render_template, jsonify, request, Response
 from flask_socketio import SocketIO
 
 
-from term import term_cursor_hide, term_cursor_reset, term_cursor_show, term_clear
+import term
 import reqworker
 
 
 # exit handler
 @atexit.register
 def signal_handler():
-    term_cursor_show()
+    term.term_cursor_show()
 
 
 running = True
@@ -100,15 +100,16 @@ def set_timer_seconds():
 MAIN_WORKER_DRAW_SLEEP = 0.25
 def main_worker():
     global running
-    term_cursor_hide()
-    term_clear()
+    term.term_cursor_hide()
+    term.term_clear()
 
     while running:
-        term_cursor_reset()
+        term.term_cursor_reset()
         dic = reqworker.do_work()
 
         # send data to frontend
         socketio.emit("vars", dic)
+        socketio.emit("term", term.ansi_to_html(term.TERM_OUTPUT_LINES))
 
         time.sleep(MAIN_WORKER_DRAW_SLEEP)
 

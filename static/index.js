@@ -191,3 +191,8 @@ socket.on("vars", function(json) {
     process(json);
 });
 
+
+const term = document.getElementById("term");
+socket.on("term", function(text) {
+    term.innerHTML = text;
+});
