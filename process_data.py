@@ -125,7 +125,7 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
     status.append([ctext_fg(13, "Mode 󱪯"), ModRada])
     status.append([ctext_fg(22, "Regime 󱖫"), ModRezim])
     status.append([ctext_fg(212, f"Heat {spinner_heat_pump.get() if dic['StatusPumpe6'] else '󱩃'}"), StatusPumpe6])
-    status.append([ctext_fg(203, f"Gas {spinner_fire.get() if dic["StatusPumpe4"] else '󰙇'}"), StatusPumpe4])
+    status.append([ctext_fg(203, f"Gas {spinner_fire.get() if dic['StatusPumpe4'] else '󰙇'}"), StatusPumpe4])
     status.append([ctext_fg(168, f"Circ. {spinner_circle.get(False) if dic['StatusPumpe3'] else ''}"), StatusPumpe3])
     status.append([ctext_fg(224, f"Solar {spinner_solar.get() if dic['StatusPumpe7'] else ''}"), StatusPumpe7])
     status.append([ctext_fg(242, "Pump5 "), StatusPumpe5])
