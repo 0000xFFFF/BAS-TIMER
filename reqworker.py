@@ -109,7 +109,7 @@ def update_history(dic):
             if HISTORY_MODE_TIME_ON and HISTORY_MODE_TIME_OFF:
                 elap = elapsed_str(HISTORY_MODE_TIME_OFF, HISTORY_MODE_TIME_ON)
                 e = f" -- {elap}\n"
-                p = f" 󱫐 {elap}\n"
+                p = f" 󱫐 {elap}"
 
             changes_logger.write(f"mod_rada = {dic['mod_rada']}{e}")
             AUTO_TIMER_STATUS = ctext_fg(COLOR_OFF, f" {timestamp()} {p}")
@@ -133,7 +133,7 @@ def update_history(dic):
             if HISTORY_GAS_TIME_ON and HISTORY_GAS_TIME_OFF:
                 elap = elapsed_str(HISTORY_GAS_TIME_OFF, HISTORY_GAS_TIME_ON)
                 e = f" -- {elap}\n"
-                p = f" 󱫐 {elap}\n"
+                p = f" 󱫐 {elap}"
 
             changes_logger.write(f"StatusPumpe4 = {dic['StatusPumpe4']}{e}")
             AUTO_GAS_STATUS = ctext_fg(COLOR_OFF, f" {timestamp()} {p}")
