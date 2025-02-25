@@ -23,7 +23,7 @@
                     <div id="settings_time" class="c1">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span class="text">Seconds:</span>
-                            <input type="text" id="txt_input" class="bt_input" oninput="handleTextboxChange()">
+                            <input type="text" id="txt_input" oninput="handleTextboxChange()">
                         </div>
                     </div>
 
@@ -47,26 +47,9 @@
                 </div>
             </div>
 
-            <div>
-                <div id="currents_cont">
-                    <div class="currents">
-                        <table>
-                            <tbody id="cur1">
-
-                            </tbody>
-                        </table>
-                    </div>
-                    <canvas id="canv"></canvas>
-                    <div class="currents" style="width: auto;">
-                        <table>
-                            <tbody id="cur2">
-
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="currents" id="term">
-                    </div>
-                </div>
+            <div id="status">
+                <div id="term"></div>
+                <canvas id="canv"></canvas>
             </div>
         </div>
     </div>

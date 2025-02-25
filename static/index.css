@@ -1,9 +1,8 @@
 @import url('/fonts.css');
 
 * {
-    color: #DB2828;
+    color: white;
     font-family: 'GohuFontMono', monospace;
-
 }
 
 body {
@@ -44,17 +43,19 @@ body {
 }
 
 .text {
+    color: #DB2828;
     font-size: 20px;
     font-weight: bold;
     text-shadow: 3px 3px 0 black;
 }
 
 a {
+    color: #DB2828;
     font-weight: bold;
     text-shadow: 3px 3px 0 black;
 }
 
-.bt_input {
+#txt_input {
     background-color: #200000;
     font-size: 20px;
     color: white;
@@ -104,60 +105,21 @@ button:active {
 }
 
 
-#canv {
-    background: #808080;
-    border-top: 2px double #ff0000;
-    border-left: 2px double #ff0000;
-    border-right: 2px double #800000;
-    border-bottom: 2px double #800000;
-    width: 60px;
-    height: 510px;
-    box-shadow: 5px 5px 0 black;
-    border-radius: 2px;
-}
 
-
-.cb_cont {
-    display: flex;
-    gap: 10px;
-    justify-content: space-around;
-}
-
-.cb_cont_sub {
-    display: flex;
-    gap: 2px;
-    justify-content: center;
-}
-
-#logs {
-    box-sizing: border-box;
-    color: blue;
-    padding: 5px;
-    font-size: 20px;
-    width: calc(90vw - 600px);
-    height: 900px;
-    border-top: 2px double #ff0000;
-    border-left: 2px double #ff0000;
-    border-right: 2px double #800000;
-    border-bottom: 2px double #800000;
-    overflow-y: auto;
-    font-family: monospace;
-}
-
-#currents_cont {
+#status {
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: 20px;
 }
 
-.currents {
+#term {
     font-weight: bolder;
     color: white;
-    padding: 5px;
-    font-size: 35px;
+    padding: 15px;
+    font-size: 30px;
     width: 700px;
-    height: 500px;
+    height: 550px;
     border-radius: 2px;
     border-top: 2px double #ff0000;
     border-left: 2px double #ff0000;
@@ -168,31 +130,15 @@ button:active {
     box-shadow: 5px 5px 0 black;
 }
 
-table {
-    margin: 20px;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    padding-right: 2px;
-}
-
-th {
-    background-color: #f2f2f2;
-}
-
-.currents_label {
-    text-align: right;
-    padding-right: 40px;
-}
-
-.currents_text {
-    text-align: left;
-}
-
-#term {
-    font-size: 15px;
-    font-family: monospace;
+#canv {
+    background: #808080;
+    border-top: 2px double #ff0000;
+    border-left: 2px double #ff0000;
+    border-right: 2px double #800000;
+    border-bottom: 2px double #800000;
+    width: 60px;
+    height: auto;
+    box-shadow: 5px 5px 0 black;
+    border-radius: 2px;
 }
 

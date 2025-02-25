@@ -63,17 +63,6 @@ function toggleAutoGas() {
 }
 
 
-function time() {
-    let d = new Date();
-    let year = d.getFullYear();
-    let month = (d.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
-    let day = d.getDate().toString().padStart(2, '0');
-    let h = d.getHours().toString().padStart(2, '0');
-    let m = d.getMinutes().toString().padStart(2, '0');
-    let s = d.getSeconds().toString().padStart(2, '0');
-    return `${year}-${month}-${day} ${h}:${m}:${s}`;
-}
-
 let TEMP_MIN = 45;
 let TEMP_MAX = 60;
 
@@ -109,78 +98,11 @@ function drawTemperatureGradient(temp1, temp2, temp3) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-function createElement(tag, props = {}) {
-    const el = document.createElement(tag);
-    Object.assign(el, props);
-    return el;
-}
-
-
-const cur1 = document.getElementById("cur1");
-const cur2 = document.getElementById("cur2");
-
-function colorIt(par, label, text, clr, isbool = false) {
-    const COLOR_OFF = "rgb(255, 255, 0)";
-    const COLOR_ON = "rgb(0, 255, 0)";
-
-    let style = "color: white";
-    if (isbool) { style = `color: ${(!!clr ? COLOR_ON : COLOR_OFF)}`; }
-    else { style = `color: ${clr}`; }
-
-    const tr = createElement("tr");
-    const td1 = createElement("td", { className: "currents_label", innerHTML: label });
-    const td2 = createElement("td", { className: "currents_text", innerHTML: text, style: style });
-    tr.append(td1, td2);
-    par.append(tr);
-}
-
 function process(json) {
-
-
-    const Tspv = json.Tspv;
-    const Tsolar = json.Tsolar;
-    const Tsobna = json.Tsobna;
-    const Tzadata = json.Tzadata;
     const Tmax = json.Tmax;
     const Tmid = json.Tmid;
     const Tmin = json.Tmin;
-    const Tfs = json.Tfs;
-    const Thottest = json.Thottest;
-    const Tcoldest = json.Tcoldest;
-
-    const mod_rada = json.mod_rada;
-    const mod_rezim = json.mod_rezim;
-    const StatusPumpe6 = json.StatusPumpe6;
-    const StatusPumpe4 = json.StatusPumpe4;
-    const StatusPumpe3 = json.StatusPumpe3;
-    const StatusPumpe5 = json.StatusPumpe5;
-    const StatusPumpe7 = json.StatusPumpe7;
-    const TminLT = json.TminLT;
-    const TmidGE = json.TmidGE;
-
-    cur1.innerHTML = "";
-    colorIt(cur1, "Outside 󱇜", Tspv, getColor(Tspv));
-    colorIt(cur1, "Solar 󱩳", Tsolar, getColor(Tsolar));
-    colorIt(cur1, "Room ", Tsobna, getColor(Tsobna));
-    colorIt(cur1, "Set ", Tzadata, getColor(Tzadata));
-    colorIt(cur1, "Max ", Tmax, getColor(Tmax));
-    colorIt(cur1, "Mid ", Tmid, getColor(Tmin));
-    colorIt(cur1, "Min ", Tmin, getColor(Tmin));
-    colorIt(cur1, "Circ. ", Tfs, getColor(Tfs));
-    colorIt(cur1, "Hottest 󰈸", Thottest, getColor(Thottest));
-    colorIt(cur1, "Coldest ", Tcoldest, getColor(Tcoldest));
     drawTemperatureGradient(Tmin, Tmid, Tmax);
-
-    cur2.innerHTML = "";
-    colorIt(cur2, "Mode 󱪯", mod_rada, !!mod_rada, true);
-    colorIt(cur2, "Regime 󱖫", mod_rezim, !!mod_rezim, true);
-    colorIt(cur2, "Heat 󱩃", StatusPumpe6, !!StatusPumpe6, true);
-    colorIt(cur2, "Gas 󰙇", StatusPumpe4, !!StatusPumpe4, true);
-    colorIt(cur2, "Circ. ", StatusPumpe3, !!StatusPumpe3, true);
-    colorIt(cur2, "Pump5 ", StatusPumpe5, !!StatusPumpe5, true);
-    colorIt(cur2, "Pump7 ", StatusPumpe7, !!StatusPumpe7, true);
-    colorIt(cur2, "Min < 45", TminLT, !!TminLT, true);
-    colorIt(cur2, "Mid >= 60", TmidGE, !!TmidGE, true);
 }
 
 var socket = io.connect("http://" + document.domain + ":" + location.port);
