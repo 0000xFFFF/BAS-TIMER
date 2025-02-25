@@ -35,6 +35,7 @@ spinner_eye_right = Spinner(["󰛐", "󱤀"])
 spinner_circle = Spinner(["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"])
 spinner_solar = Spinner(["󱩳", "󱩴"])
 spinner_fire = Spinner(["", "", "󰈸", ""])
+spinner_lightning = Spinner(["󱐌", "󱐋"])
 
 def draw_heat(b):
     if b:
@@ -128,7 +129,7 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
     status.append([ctext_fg(203, f"Gas {spinner_fire.get() if dic['StatusPumpe4'] else '󰙇'}"), StatusPumpe4])
     status.append([ctext_fg(168, f"Circ. {spinner_circle.get(False) if dic['StatusPumpe3'] else ''}"), StatusPumpe3])
     status.append([ctext_fg(224, f"Solar {spinner_solar.get() if dic['StatusPumpe7'] else ''}"), StatusPumpe7])
-    status.append([ctext_fg(242, "Pump5 "), StatusPumpe5])
+    status.append([ctext_fg(78, f"Elec. {spinner_lightning.get() if dic['StatusPumpe5'] else '󰠠'}"), StatusPumpe5])
     status.append([ctext_fg(87, "Min < 45"), TminLT])
     status.append([ctext_fg(208, "Mid >= 60"), TmidGE])
 
