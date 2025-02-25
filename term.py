@@ -131,12 +131,11 @@ def ansi_to_html(text):
         if bold:
             style += "font-weight: bold; "
         
-        return f'</span><span style="{style}">'  # Close previous span and start a new one
+        return f'</span><span style="{style}">' if style else ""
     
+    text = re.sub(r'( )', '&nbsp;', text)  # Preserve spaces where needed
     text = re.sub(r'\033\[(.*?)m', ansi_256_to_css, text)  # Convert ANSI to spans
     text = text.replace("\033[0m", "</span>")  # Properly close spans
     text = text.replace("\n", "</span><br><span>")  # Handle newlines correctly
-    text = text.replace(" ", "&nbsp;")  # Preserve spaces for proper rendering
     
-    return f'<span>{text}</span>'  # Wrap in a parent span for safety
-
+    return f'<span>{text}</span>'
