@@ -3,7 +3,7 @@ import time
 
 from utils import timestamp, time_to_str, elapsed_str
 from process_data import process_data_and_draw_ui
-from colors import bool_to_ctext_fg, int_to_ctext_fg
+from colors import bool_to_ctext_fg, int_to_ctext_fg, ctext_fg, COLOR_ON, COLOR_OFF
 from logger_config import requests_logger, changes_logger
 
 GLOBAL_UNIX_COUNTER = int(time.time() * 1000)
@@ -92,6 +92,7 @@ def update_history(dic):
 
     global AUTO_TIMER_STARTED
     global AUTO_TIMER_STATUS
+    global AUTO_GAS_STATUS
 
     if HISTORY_MODE is None or HISTORY_MODE != dic["mod_rada"]:
         HISTORY_MODE = dic["mod_rada"]
@@ -100,17 +101,22 @@ def update_history(dic):
         if dic["mod_rada"]:
             HISTORY_MODE_TIME_ON = HISTORY_MODE_TIME_CHANGED
             changes_logger.write(f"mod_rada = {dic['mod_rada']}\n")
+            AUTO_TIMER_STATUS = ctext_fg(COLOR_ON, f" {timestamp()} 󰐸")
         else:
             HISTORY_MODE_TIME_OFF = HISTORY_MODE_TIME_CHANGED
             e = "\n"
+            p = ""
             if HISTORY_MODE_TIME_ON and HISTORY_MODE_TIME_OFF:
-                e = f" -- {elapsed_str(HISTORY_MODE_TIME_OFF, HISTORY_MODE_TIME_ON)}\n"
+                elap = elapsed_str(HISTORY_MODE_TIME_OFF, HISTORY_MODE_TIME_ON)
+                e = f" -- {elap}\n"
+                p = f" 󱫐 {elap}\n"
 
             changes_logger.write(f"mod_rada = {dic['mod_rada']}{e}")
+            AUTO_TIMER_STATUS = ctext_fg(COLOR_OFF, f" {timestamp()} {p}")
 
             if AUTO_TIMER_STARTED:
                 AUTO_TIMER_STARTED = False
-                AUTO_TIMER_STAUS = f"{timestamp()} 󰜺"
+                AUTO_TIMER_STAUS = ctext_fg(COLOR_OFF, f"{timestamp()} 󰜺")
 
     if HISTORY_GAS is None or HISTORY_GAS != dic["StatusPumpe4"]:
         HISTORY_GAS = dic["StatusPumpe4"]
@@ -119,13 +125,18 @@ def update_history(dic):
         if dic["StatusPumpe4"]:
             HISTORY_GAS_TIME_ON = HISTORY_GAS_TIME_CHANGED
             changes_logger.write(f"StatusPumpe4 = {dic['StatusPumpe4']}\n")
+            AUTO_GAS_STATUS = ctext_fg(COLOR_ON, f" {timestamp()} ")
         else:
             HISTORY_GAS_TIME_OFF = HISTORY_GAS_TIME_CHANGED
             e = "\n"
+            p = ""
             if HISTORY_GAS_TIME_ON and HISTORY_GAS_TIME_OFF:
-                e = f" -- {elapsed_str(HISTORY_GAS_TIME_OFF, HISTORY_GAS_TIME_ON)}\n"
+                elap = elapsed_str(HISTORY_GAS_TIME_OFF, HISTORY_GAS_TIME_ON)
+                e = f" -- {elap}\n"
+                p = f" 󱫐 {elap}\n"
 
             changes_logger.write(f"StatusPumpe4 = {dic['StatusPumpe4']}{e}")
+            AUTO_GAS_STATUS = ctext_fg(COLOR_OFF, f" {timestamp()} {p}")
 
 
 def do_logic_timer(dic):
@@ -142,29 +153,26 @@ def do_logic_timer(dic):
 
             if AUTO_TIMER_SECONDS_ELAPSED >= AUTO_TIMER_SECONDS:
                 AUTO_TIMER_STARTED = False
+                AUTO_TIMER_STATUS = ctext_fg(COLOR_OFF, f"{timestamp()} 󱪯")
                 if HISTORY_MODE_TIME_ON:
-                    AUTO_TIMER_STATUS = (
-                        f"󱫓 {elapsed_str(time.time(), HISTORY_MODE_TIME_ON)} 󱪯"
-                    )
-                else:
-                    AUTO_TIMER_STATUS = f"{timestamp()} 󱪯"
+                    e = elapsed_str(time.time(), HISTORY_MODE_TIME_ON)
+                    AUTO_TIMER_STATUS = ctext_fg(COLOR_OFF, f"󱫐 {e} 󱪯")
                 send(URLS["OFF"])
 
         else:
             AUTO_TIMER_STARTED = True
-            AUTO_TIMER_STATUS = f"{timestamp()} 󱫌"
+            AUTO_TIMER_STATUS = ctext_fg(COLOR_ON, f"{timestamp()} 󱫌")
 
 
 def do_logic_gas(dic):
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 0 and dic["TminLT"]:
-        AUTO_GAS_STATUS = f"{timestamp()} "
+        AUTO_GAS_STATUS = ctext_fg(COLOR_ON, f"{timestamp()} ")
         send(URLS["GAS_ON"])
 
     if AUTO_GAS and int(dic["StatusPumpe4"]) == 3 and dic["TmidGE"]:
+        AUTO_GAS_STATUS = ctext_fg(COLOR_OFF, f"{timestamp()} 󰙇")
         if HISTORY_GAS_TIME_ON and HISTORY_GAS_TIME_OFF:
-            AUTO_GAS_STATUS = f"󱫓 {elapsed_str(time.time(), HISTORY_GAS_TIME_ON)} 󰙇"
-        else:
-            AUTO_GAS_STATUS = f"{timestamp()} 󰙇"
+            AUTO_GAS_STATUS = ctext_fg(COLOR_OFF, f"󱫐 {elapsed_str(time.time(), HISTORY_GAS_TIME_ON)} 󰙇")
         send(URLS["GAS_OFF"])
 
 

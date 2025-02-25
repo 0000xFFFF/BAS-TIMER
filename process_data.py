@@ -15,8 +15,11 @@ import colors
 import reqworker
 
 
+#spinner_clock = Spinner(
+#    ["🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"]
+#)
 spinner_clock = Spinner(
-    ["🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"]
+    ["", "", "", "", "", "", "", "", "", "", "", ""]
 )
 spinner_bars = Spinner(
     ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃", "▂", "▁"]
@@ -111,7 +114,6 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
     StatusPumpe5 = draw_pump_bars(int(dic["StatusPumpe5"]))
     StatusPumpe6 = draw_pump_bars(int(dic["StatusPumpe6"]))
     StatusPumpe7 = draw_pump_bars(int(dic["StatusPumpe7"]))
-    spinner_bars.spin()
     status = []
     status.append([ctext_fg(13, "Mode 󱪯"), ModRada])
     status.append([ctext_fg(22, "Regime 󱖫"), ModRezim])
@@ -128,13 +130,12 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
         eye = ctext_fg(COLOR_ON, spinner_eye_left.get(False))
         clock = ctext_fg(COLOR_OFF, "󱎫")
         if reqworker.AUTO_TIMER_STARTED:
-            clock = ctext_fg(COLOR_ON, spinner_clock.get())
+            clock = ctext_fg(COLOR_ON, spinner_clock.get(False))
         emojis2[0] = f" {eye}{clock}"
     if reqworker.AUTO_GAS:
         eye = ctext_fg(COLOR_ON, spinner_eye_left.get(False))
         emojis2[3] = f" {eye}"
 
-    spinner_eye_left.spin()
 
     # format tables
     fmt = "plain"
@@ -169,21 +170,32 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
         term_show(f"{line1}{emoji1}{line2}{emoji2}")
 
 
-    if reqworker.AUTO_TIMER and int(dic["mod_rada"]):
+    if reqworker.AUTO_TIMER and dic["mod_rada"]:
         if reqworker.AUTO_TIMER_STARTED:
             reqworker.AUTO_TIMER_SECONDS_ELAPSED = time.time() - reqworker.HISTORY_MODE_TIME_ON
             reqworker.AUTO_TIMER_STATUS = f"{reqworker.AUTO_TIMER_SECONDS_ELAPSED:.2f}/{reqworker.AUTO_TIMER_SECONDS}"
 
-    ts = reqworker.AUTO_TIMER_STATUS
-    if ts:
-        te = ctext_fg(COLOR_OFF, "󱎫󱪯")
-        if reqworker.AUTO_TIMER_STARTED:
-            te = ctext_fg(COLOR_ON, f"{spinner_clock.get(False)}{spinner_heat.get(False)}")
-        term_show(f"{te} {ts}")
+    t_clock = ctext_fg(COLOR_OFF, "󱎫")
+    if reqworker.AUTO_TIMER_STARTED:
+        t_clock = ctext_fg(COLOR_ON, spinner_clock.get(False))
+    t_heat = ctext_fg(COLOR_OFF, "󱪯")
+    if dic["mod_rada"]:
+        t_heat = ctext_fg(COLOR_ON, spinner_heat.get(False))
 
-    gs = reqworker.AUTO_GAS_STATUS
-    if gs:
-        ge = ctext_fg(COLOR_ON, f"{spinner_eye_right.get()}󰙇")
-        term_show(f"{ge} {gs}")
+    term_show(f"{t_clock}{t_heat} {reqworker.AUTO_TIMER_STATUS}")
+
+    g_eye = ctext_fg(COLOR_OFF, f"󰈈")
+    if reqworker.AUTO_GAS:
+        g_eye = ctext_fg(COLOR_ON, f"{spinner_eye_right.get()}")
+    g_gas = ctext_fg(COLOR_OFF, f"󰙇")
+    if dic["StatusPumpe4"]:
+        g_gas = ctext_fg(COLOR_ON, f"")
+    term_show(f"{g_eye}{g_gas} {reqworker.AUTO_GAS_STATUS}")
+
+
+    # spin multiple spinners
+    spinner_eye_left.spin()
+    spinner_bars.spin()
+    spinner_clock.spin()
 
     return dic
