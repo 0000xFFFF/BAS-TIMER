@@ -18,6 +18,7 @@ from flask_socketio import SocketIO
 
 import term
 import reqworker
+import logger_config
 
 
 # exit handler

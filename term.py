@@ -62,7 +62,7 @@ def term_show(text: str):
     output = text + padding + "\n"
     global TERM_OUTPUT_LINES
     TERM_OUTPUT_LINES += output
-    print(output, end='')
+    print(output, end="")
 
 
 class Spinner:
@@ -80,16 +80,26 @@ class Spinner:
         return ret
 
 
-
-
-
-
 def ansi_to_html(text):
     def ansi_256_to_rgb(color_index):
         if color_index < 16:
             basic_colors = [
-                "#000000", "#800000", "#008000", "#808000", "#000080", "#800080", "#008080", "#c0c0c0",
-                "#808080", "#ff0000", "#00ff00", "#ffff00", "#0000ff", "#ff00ff", "#00ffff", "#ffffff"
+                "#000000",
+                "#800000",
+                "#008000",
+                "#808000",
+                "#000080",
+                "#800080",
+                "#008080",
+                "#c0c0c0",
+                "#808080",
+                "#ff0000",
+                "#00ff00",
+                "#ffff00",
+                "#0000ff",
+                "#ff00ff",
+                "#00ffff",
+                "#ffffff",
             ]
             return basic_colors[color_index]
         elif 16 <= color_index <= 231:
@@ -102,14 +112,14 @@ def ansi_to_html(text):
             shade = (color_index - 232) * 10 + 8
             return f"#{shade:02x}{shade:02x}{shade:02x}"
         return "#ffffff"
-    
+
     def ansi_256_to_css(match):
         seq = match.group(1)
         parts = seq.split(";")
         color = ""
         bg_color = ""
         bold = False
-        
+
         i = 0
         while i < len(parts):
             part = int(parts[i])
@@ -122,7 +132,7 @@ def ansi_to_html(text):
                 bg_color = ansi_256_to_rgb(int(parts[i + 2]))
                 i += 2
             i += 1
-        
+
         style = ""
         if color:
             style += f"color: {color}; "
@@ -130,12 +140,12 @@ def ansi_to_html(text):
             style += f"background-color: {bg_color}; "
         if bold:
             style += "font-weight: bold; "
-        
-        return f'</span><span style="{style}">' if style else ""
-    
-    text = re.sub(r'( )', '&nbsp;', text)  # Preserve spaces where needed
-    text = re.sub(r'\033\[(.*?)m', ansi_256_to_css, text)  # Convert ANSI to spans
+
+        return f'<span style="{style}">' if style else ""
+
     text = text.replace("\033[0m", "</span>")  # Properly close spans
+    text = re.sub(r"( )", "&nbsp;", text)  # Preserve spaces where needed
+    text = re.sub(r"\033\[(.*?)m", ansi_256_to_css, text)  # Convert ANSI to spans
     text = text.replace("\n", "</span><br><span>")  # Handle newlines correctly
-    
-    return f'<span>{text}</span>'
+
+    return f"<span>{text}</span>"

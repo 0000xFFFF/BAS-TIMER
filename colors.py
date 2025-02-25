@@ -83,14 +83,14 @@ def ctext_bg(color, text):
 def ctext_fg_con(color, text):
     contrast = contrast_color(color)
     text = text if text is not None else color
-    return f"\033[48;5;{contrast}m\033[38;5;{color}m{text}\033[0m"
+    return f"\033[48;5;{contrast}m\033[38;5;{color}m{text}\033[0m\033[0m"
 
 
 # color bg ; contrast text
 def ctext_bg_con(color, text):
     contrast = contrast_color(color)
     text = text if text is not None else color
-    return f"\033[48;5;{color}m\033[38;5;{contrast}m{text}\033[0m"
+    return f"\033[48;5;{color}m\033[38;5;{contrast}m{text}\033[0m\033[0m"
 
 
 def int_to_color(val, min, max, reverse_colors=False):

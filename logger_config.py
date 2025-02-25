@@ -33,3 +33,4 @@ class CustomLogger:
 # Create separate loggers
 requests_logger = CustomLogger("requests.log")
 changes_logger = CustomLogger("changes.log")
+debug_logger = CustomLogger("debug.log")
