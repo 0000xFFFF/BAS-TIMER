@@ -48,8 +48,8 @@ APPEAR_COLORS = [
     255,  # BRIGHTEST
 ]
 
-COLOR_ON = 40
-COLOR_OFF = 240
+COLOR_ON = 46
+COLOR_OFF = 255
 
 
 def contrast_color(color):

@@ -116,15 +116,15 @@ def process_data_and_draw_ui(data, last_ret, is_request=False):
         emojis[6] = ctext_fg(196, f" {spinner_warn.get()} ")
 
     ModRada = draw_heat(dic["mod_rada"])
-    ModRezim = ctext_fg(22, dic["mod_rezim"])
+    ModRezim = ctext_fg(192, dic["mod_rezim"])
     StatusPumpe3 = draw_pump_bars(dic["StatusPumpe3"])
     StatusPumpe4 = draw_pump_bars(dic["StatusPumpe4"])
     StatusPumpe5 = draw_pump_bars(dic["StatusPumpe5"])
     StatusPumpe6 = draw_pump_bars(dic["StatusPumpe6"])
     StatusPumpe7 = draw_pump_bars(dic["StatusPumpe7"])
     status = []
-    status.append([ctext_fg(13, "Mode 󱪯"), ModRada])
-    status.append([ctext_fg(22, "Regime 󱖫"), ModRezim])
+    status.append([ctext_fg(222, "Mode 󱪯"), ModRada])
+    status.append([ctext_fg(192, "Regime 󱖫"), ModRezim])
     status.append([ctext_fg(212, f"Heat {spinner_heat_pump.get() if dic['StatusPumpe6'] else '󱩃'}"), StatusPumpe6])
     status.append([ctext_fg(203, f"Gas {spinner_fire.get() if dic['StatusPumpe4'] else '󰙇'}"), StatusPumpe4])
     status.append([ctext_fg(168, f"Circ. {spinner_circle.get(False) if dic['StatusPumpe3'] else ''}"), StatusPumpe3])
