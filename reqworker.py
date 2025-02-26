@@ -4,7 +4,7 @@ import time
 from utils import timestamp, time_to_str, elapsed_str
 from process_data import process_data_and_draw_ui
 from colors import bool_to_ctext_fg, int_to_ctext_fg, ctext_fg, COLOR_ON, COLOR_OFF
-from logger_config import requests_logger, changes_logger
+from logger_config import requests_logger, changes_logger, MINIMAL_LOGS
 
 GLOBAL_UNIX_COUNTER = int(time.time() * 1000)
 
@@ -64,16 +64,18 @@ def prepared_url(prepared):
 
 def send(url):
     prepared = prepare(url)
-    requests_logger.write(f"{prepared_url(prepared)} --> ")
 
     try:
+        if not MINIMAL_LOGS:
+            requests_logger.write(f"{prepared_url(prepared)} -- RUNNING...\n")
         import server
-
         response = server.main_session.send(prepared)
         response.raise_for_status()  # Raise an error for HTTP error codes
-        requests_logger.write(f"SUCCESS\n")
+
+        if not MINIMAL_LOGS:
+            requests_logger.write(f"{prepared_url(prepared)} -- SUCCESS\n")
     except Exception as e:
-        requests_logger.write(f"FAILED ({e})\n")
+        requests_logger.write(f"{prepared_url(prepared)} -- FAILED: ({e})\n")
         return None, e
 
     return response, None

@@ -6,15 +6,12 @@ from datetime import datetime
 # change cwd to scripts dir
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-DEBUG = False
+MINIMAL_LOGS = True
 
 # Suppress Flask logging but keep prints
-if not DEBUG:
-    log_file = "flask.log"
-    logging.getLogger("werkzeug").setLevel(logging.ERROR)
-    flask_log = open(log_file, "a")
-    sys.stderr = flask_log  # Redirect errors to log file
-
+logging.getLogger("werkzeug").setLevel(logging.ERROR)
+flask_log = open(os.devnull if MINIMAL_LOGS else "flask.log", "a")
+sys.stderr = flask_log  # Redirect errors to log file
 
 class CustomLogger:
     def __init__(self, log_file):
