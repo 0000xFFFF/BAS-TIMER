@@ -16,14 +16,15 @@ char* weather[] = {
     CTEXT_FG(75, ""),
     CTEXT_FG(81, ""),
     CTEXT_FG(87, "")};
+
 char* temp_to_emoji(double temp) {
-    if (temp > 40) { return weather[0]; }                //  super hot
-    if (temp >= 30 && temp <= 39) { return weather[1]; } //  really hot
-    if (temp >= 25 && temp <= 29) { return weather[2]; } // 󰖨 hot
-    if (temp >= 15 && temp <= 24) { return weather[3]; } //  mild
-    if (temp >= 5 && temp <= 14) { return weather[4]; }  //  cold
-    if (temp >= -5 && temp <= 4) { return weather[5]; }  //  really cold
-    return weather[6];                                   //  super cold
+    if (temp > 40.0) return weather[0];  //  super hot
+    if (temp >= 30.0) return weather[1]; //  really hot
+    if (temp >= 25.0) return weather[2]; // 󰖨 hot
+    if (temp >= 15.0) return weather[3]; //  mild
+    if (temp >= 5.0) return weather[4];  //  cold
+    if (temp >= -5.0) return weather[5]; //  really cold
+    return weather[6];                   //  super cold
 }
 
 char* clock_hours[] = {"", "", "", "", "", "", "", "", "", "", "", ""};
