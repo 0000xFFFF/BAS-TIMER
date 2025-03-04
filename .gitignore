@@ -1,2 +1,4 @@
+server
+bas-server
+test
 *.log
-__pycache__

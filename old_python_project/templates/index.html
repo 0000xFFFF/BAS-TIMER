@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>BAS CTRL SERVER</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link rel="stylesheet" href="/index.css">
+    <script defer type="text/javascript" src="/index.js"></script>
+</head>
+
+<body>
+    <div class="c1">
+        <div>
+            <div id="links">
+                <a href="/requests">requests.log</a>
+                <a href="/changes">changes.log</a>
+            </div>
+            <div id="settings" class="c1">
+                <div>
+                    <div id="settings_time" class="c1">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="text">Seconds:</span>
+                            <input type="text" id="txt_input" oninput="handleTextboxChange()">
+                        </div>
+                    </div>
+
+                    <div id="times_cont" class="c1">
+                        <button id="button_5min" class="btn_time" onclick="setTime(300)">5 min</button>
+                        <button id="button_8min" class="btn_time" onclick="setTime(480)">8 min</button>
+                        <button id="button_10min" class="btn_time" onclick="setTime(600)">10 min</button>
+                        <button id="button_15min" class="btn_time" onclick="setTime(900)">15 min</button>
+                        <button id="button_20min" class="btn_time" onclick="setTime(1200)">20 min</button>
+                        <button id="button_25min" class="btn_time" onclick="setTime(1500)">25 min</button>
+                    </div>
+                </div>
+
+                <div id="bt_cont" class="c_col">
+                    <button id="toggleTimerButton" onclick="toggleAutoTimer()" class="{{ 'on' if auto_timer else '' }}">
+                        Auto Timer
+                    </button>
+                    <button id="toggleGasButton" onclick="toggleAutoGas()" class="{{ 'on' if auto_gas else '' }}">
+                        Auto Gas
+                    </button>
+                </div>
+            </div>
+
+            <div id="status">
+                <div id="term"></div>
+                <canvas id="canv"></canvas>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,51 +1,75 @@
-document.addEventListener("DOMContentLoaded", function() {
-    fetch('/get_timer_seconds')
+const txt_input = document.getElementById('txt_input');
+
+function fetch_state() {
+    fetch("/api/state")
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("toggleTimerButton").classList.toggle("on", data.auto_timer);
+            document.getElementById("toggleGasButton").classList.toggle("on", data.auto_gas);
+        });
+}
+
+function fetch_seconds() {
+
+    fetch('/api/get_timer_seconds')
         .then(response => response.json())
         .then(data => {
             const seconds = data.AUTO_TIMER_SECONDS;
-            document.getElementById('txt_input').value = seconds;
-            highlightButton(seconds);
+            console.log(data);
+            txt_input.value = seconds;
+            colorButtons();
         })
         .catch(error => console.error('Error fetching timer seconds:', error));
+}
+
+function updateTime() {
+    const seconds = txt_input.value;
+
+    fetch('/api/set_timer_seconds', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ seconds: parseInt(seconds) })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Server updated:', data);
+            fetch_seconds();
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+txt_input.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        updateTime();
+    }
 });
 
+
 function setTime(seconds) {
-    document.getElementById('txt_input').value = seconds;
-    highlightButton(seconds);
-    updateServer(seconds);
+    txt_input.value = seconds;
+    updateTime(seconds);
 }
 
-function handleTextboxChange() {
-    document.querySelectorAll('.btn_time').forEach(btn => btn.classList.remove('on'));
-    let seconds = parseInt(document.getElementById('txt_input').value);
-    if (!isNaN(seconds)) {
-        updateServer(seconds);
-    }
-}
 
-function highlightButton(seconds) {
+document.addEventListener("DOMContentLoaded", function() {
+    fetch_seconds();
+    fetch_state();
+});
+
+
+
+function colorButtons() {
     document.querySelectorAll('.btn_time').forEach(btn => {
         btn.classList.remove('on');
-        if (parseInt(btn.textContent) * 60 === seconds) {
+        if (parseInt(btn.textContent) * 60 == parseInt(txt_input.value)) {
             btn.classList.add('on');
         }
     });
 }
 
-function updateServer(seconds) {
-    fetch('/set_timer_seconds', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ seconds: seconds })
-    })
-        .then(response => response.json())
-        .then(data => console.log('Server updated:', data))
-        .catch(error => console.error('Error:', error));
-}
-
-
 function toggleAutoTimer() {
-    fetch('/toggle_autotimer', { method: 'POST' })
+    fetch('/api/toggle_auto_timer', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
             const button = document.getElementById('toggleTimerButton');
@@ -54,7 +78,7 @@ function toggleAutoTimer() {
 }
 
 function toggleAutoGas() {
-    fetch('/toggle_autogas', { method: 'POST' })
+    fetch('/api/toggle_auto_gas', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
             const button = document.getElementById('toggleGasButton');
@@ -84,37 +108,27 @@ function getColor(temp) {
     return `rgb(${r}, 0, ${b})`;
 }
 
-function drawTemperatureGradient(temp1, temp2, temp3) {
+function drawTemperatureGradient(temp_min, temp_max) {
 
     const canvas = document.getElementById("canv");
     const ctx = canvas.getContext("2d");
 
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, getColor(temp3)); // Top (max temp)
-    gradient.addColorStop(0.5, getColor(temp2)); // Middle (mid temp)
-    gradient.addColorStop(1, getColor(temp1)); // Bottom (min temp)
+    gradient.addColorStop(0, getColor(temp_max)); // Top (max temp)
+    gradient.addColorStop(1, getColor(temp_min)); // Bottom (min temp)
 
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-function process(json) {
-    const Tmax = json.Tmax;
-    const Tmid = json.Tmid;
-    const Tmin = json.Tmin;
-    drawTemperatureGradient(Tmin, Tmid, Tmax);
-}
-
-var socket = io.connect("http://" + document.domain + ":" + location.port);
-
-// Handle fetched data updates
-socket.on("vars", function(json) {
-    // document.getElementById("currents").innerText = JSON.stringify(json, null, 2);
-    process(json);
-});
-
-
+// Use raw WebSockets instead of Socket.IO
+const ws = new WebSocket("http://" + document.domain + ":8001/ws");
 const term = document.getElementById("term");
-socket.on("term", function(text) {
-    term.innerHTML = text;
-});
+ws.onopen = function() { console.log("WebSocket connection established"); };
+ws.onmessage = function(event) {
+    const json = JSON.parse(event.data);
+    term.innerHTML = json.term;
+    drawTemperatureGradient(json.Tmin, json.Tmax);
+};
+ws.onerror = function(error) { term.innerHTML += "\nError connecting to server."; };
+ws.onclose = function() { term.innerHTML += "\nConnection to server closed."; };

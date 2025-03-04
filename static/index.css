@@ -117,8 +117,10 @@ button:active {
     color: white;
     padding: 15px;
     font-size: 30px;
-    width: 700px;
-    height: 550px;
+    width: auto;
+    height: auto;
+    min-width: 700px;
+    min-height: 550px;
     border-radius: 2px;
     border-top: 2px double #ff0000;
     border-left: 2px double #ff0000;
