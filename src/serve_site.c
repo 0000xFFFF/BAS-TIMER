@@ -1,6 +1,5 @@
 #include "debug.h"
 #include "mongoose.h"
-#include "reqworker.h"
 
 extern int g_auto_timer;
 extern int g_auto_gas;
