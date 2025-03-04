@@ -1,5 +1,4 @@
 #include "mongoose.h"
-#include <curl/curl.h>
 #include <json-c/json.h>
 
 #include <assert.h>
