@@ -14,9 +14,7 @@ function fetch_seconds() {
     fetch('/api/get_timer_seconds')
         .then(response => response.json())
         .then(data => {
-            const seconds = data.AUTO_TIMER_SECONDS;
-            console.log(data);
-            txt_input.value = seconds;
+            txt_input.value = data.seconds;
             colorButtons();
         })
         .catch(error => console.error('Error fetching timer seconds:', error));

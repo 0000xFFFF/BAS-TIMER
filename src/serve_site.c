@@ -13,7 +13,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data) {
     struct mg_http_message* hm = (struct mg_http_message*)ev_data;
 
     if (mg_match(hm->uri, mg_str("/api/get_timer_seconds"), NULL)) {
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"AUTO_TIMER_SECONDS\": %f}", g_auto_timer_seconds);
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"seconds\": %f}", g_auto_timer_seconds);
         return;
     }
 
@@ -23,7 +23,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data) {
             if (value > 0) { // Validate that it's a positive integer
                 g_auto_timer_seconds = value;
                 snprintf(g_auto_timer_status, 64, "changed to: %.0f", value);
-                mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"AUTO_TIMER_SECONDS\": %f}", g_auto_timer_seconds);
+                mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %f}", g_auto_timer_seconds);
             } else {
                 mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}");
             }
