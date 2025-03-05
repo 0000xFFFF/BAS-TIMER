@@ -119,14 +119,34 @@ function drawTemperatureGradient(temp_min, temp_max) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// Use raw WebSockets instead of Socket.IO
-const ws = new WebSocket("http://" + document.domain + ":8001/ws");
+let ws;
+let reconnectInterval = 1000; // Initial reconnect interval (1s)
 const term = document.getElementById("term");
-ws.onopen = function() { console.log("WebSocket connection established"); };
-ws.onmessage = function(event) {
-    const json = JSON.parse(event.data);
-    term.innerHTML = json.term;
-    drawTemperatureGradient(json.Tmin, json.Tmax);
-};
-ws.onerror = function(error) { term.innerHTML += "\nError connecting to server."; };
-ws.onclose = function() { term.innerHTML += "\nConnection to server closed."; };
+
+function connectWebSocket() {
+    ws = new WebSocket("ws://" + document.domain + ":8001/ws");
+
+    ws.onopen = function () {
+        term.style.backgroundColor = "#000000";
+    };
+
+    ws.onmessage = function (event) {
+        const json = JSON.parse(event.data);
+        term.innerHTML = json.term;
+        drawTemperatureGradient(json.Tmin, json.Tmax);
+    };
+
+    ws.onerror = function () {
+        term.style.backgroundColor = "#600000";
+        setTimeout(connectWebSocket, reconnectInterval);
+    };
+
+    ws.onclose = function () {
+        term.style.backgroundColor = "#400000";
+        setTimeout(connectWebSocket, reconnectInterval);
+    };
+}
+
+// Start WebSocket connection
+connectWebSocket();
+
