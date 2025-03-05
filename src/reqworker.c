@@ -6,7 +6,7 @@
 #include "mongoose.h"
 #include "reqworker.h"
 #include "utils.h"
-#include <json-c/json.h>
+#include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,21 +18,26 @@
 #define URL_GAS_OFF "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=0,-1&=&SESSIONID=-1"
 #define URL_GAS_ON "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1"
 
-// The very first web page in history. You can replace it from command line
 static const char* s_url = NULL;
-static const uint64_t s_timeout_ms = 1500; // Connect timeout in milliseconds
+static const uint64_t s_timeout_ms = 1500;
 
 #define ERROR_NONE 0
 #define ERROR_TIMEOUT 1
 #define ERROR_OTHER 2
-static int errors = 0;
-static char* response = NULL;
+static int s_errors = 0;
+static struct mg_str s_response_body = {0};
 
 char* error_to_str(int e) {
     switch (e) {
-        case 0: return "no error";      break;
-        case 1: return "timeout";       break;
-        case 2: return "unknown error"; break;
+    case 0:
+        return "no error";
+        break;
+    case 1:
+        return "timeout";
+        break;
+    case 2:
+        return "unknown error";
+        break;
     }
     return "?";
 }
@@ -62,7 +67,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
         if (mg_millis() > *(uint64_t*)c->data &&
             (c->is_connecting || c->is_resolving)) {
             mg_error(c, "Connect timeout");
-            errors = ERROR_TIMEOUT;
+            s_errors = ERROR_TIMEOUT;
         }
         return;
     }
@@ -88,15 +93,9 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
     }
 
     if (ev == MG_EV_HTTP_MSG) {
-        // Response is received. Print it
+        // Response received
         struct mg_http_message* hm = (struct mg_http_message*)ev_data;
-        D(
-            printf("===[ BEGIN RECV ]===\n");
-            printf("%.*s\n", (int)hm->message.len, hm->message.buf);
-            printf("===[ END RECV ]===\n"););
-
-        // response = std::string(hm->message.buf, hm->message.len);
-        response = strdup(hm->message.buf);
+        s_response_body = mg_strdup(hm->body);
 
         c->is_draining = 1;        // Tell mongoose to close this connection
         *(bool*)c->fn_data = true; // Tell event loop to stop
@@ -105,13 +104,13 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
 
     if (ev == MG_EV_ERROR) {
         *(bool*)c->fn_data = true; // Error, tell event loop to stop
-        errors = ERROR_OTHER;
+        s_errors = ERROR_OTHER;
         return;
     }
 }
 
 int get_request(const char* url) {
-    errors = 0; // RESET ERRORS
+    s_errors = 0;                            // RESET ERRORS
     struct mg_mgr mgr;                       // Event manager
     int done = 0;                            // Event handler flips it to true
     mg_mgr_init(&mgr);                       // Initialise event manager
@@ -119,41 +118,19 @@ int get_request(const char* url) {
     mg_http_connect(&mgr, s_url, fn, &done); // Create client connection
     while (!done) mg_mgr_poll(&mgr, 50);     // Event manager loops until 'done'
     mg_mgr_free(&mgr);                       // Free resources
-    return errors == 0;
+    return s_errors == 0;
 }
 
-// Function to extract JSON from HTTP response
-// TODO: FIX USE mongoose way to extract HTML BODY
-char* extract_json(const char* http_response) {
-    const char* json_start = strstr(http_response, "\r\n\r\n");
-    if (!json_start) return NULL;  // No JSON found
-    return strdup(json_start + 4); // Skip "\r\n\r\n" to get the JSON part
-}
+double extract(struct mg_str json_body, const char* label) {
+    D(printf("%s", json_body.buf));
+    D(printf(" -- extract: %s", label));
+    struct mg_str tok = mg_json_get_tok(json_body, label);
 
-double extract_d(struct json_object* parsed_json, const char* label) {
-    // Extract Tmax
-    struct json_object *obj, *value, *status;
-    if (json_object_object_get_ex(parsed_json, label, &obj)) {
-        json_object_object_get_ex(obj, "value", &value);
-        json_object_object_get_ex(obj, "status", &status);
-        double ret = json_object_get_double(value);
-        D(printf("EXTRACT: %s - Value: %f, Status: %d\n", label, ret, json_object_get_int(status)));
-        return ret;
-    }
-    return -1;
-}
+    double value = DBL_MIN;
+    mg_json_get_num(tok, "$.value", &value);
 
-int extract_i(struct json_object* parsed_json, const char* label) {
-    // Extract Tmax
-    struct json_object *obj, *value, *status;
-    if (json_object_object_get_ex(parsed_json, label, &obj)) {
-        json_object_object_get_ex(obj, "value", &value);
-        json_object_object_get_ex(obj, "status", &status);
-        int ret = json_object_get_int(value);
-        D(printf("EXTRACT: %s - Value: %d, Status: %d\n", label, ret, json_object_get_int(status)));
-        return ret;
-    }
-    return -1;
+    D(printf(" -> %f", value));
+    return value;
 }
 
 struct bas_info info = {0};
@@ -171,16 +148,16 @@ void sendreq(const char* url, int log) {
     if (log) { logger_requests_write("%s\n", request_url); }
     int res = get_request(request_url);
     if (!res) {
-        logger_errors_write("%s -- %s\n", request_url, error_to_str(errors));
+        logger_errors_write("%s -- %s\n", request_url, error_to_str(s_errors));
     }
 }
 
-int g_auto_timer = 1;
+int g_auto_timer = ENABLE_AUTO_TIMER;
 int g_auto_timer_started = 0;
 double g_auto_timer_seconds = 900; // 15 mins;
 double g_auto_timer_seconds_elapsed = 0;
 char g_auto_timer_status[STATUS_BUFFER_SIZE] = "...";
-int g_auto_gas = 1;
+int g_auto_gas = ENABLE_AUTO_GAS;
 char g_auto_gas_status[STATUS_BUFFER_SIZE] = "...";
 
 int g_history_mode = -1;
@@ -194,7 +171,10 @@ time_t g_history_gas_time_off = 0;
 
 int get_auto_timer() { return g_auto_timer; }
 void set_auto_timer(int val) { g_auto_timer = val; }
-double get_auto_timer_seconds() { printf("GET_AUTO_TIMER_SECONDS: %f\n", g_auto_timer_seconds); return g_auto_timer_seconds; }
+double get_auto_timer_seconds() {
+    printf("GET_AUTO_TIMER_SECONDS: %f\n", g_auto_timer_seconds);
+    return g_auto_timer_seconds;
+}
 void set_auto_timer_seconds(double val) { g_auto_timer_seconds = val; }
 int get_auto_gas() { return g_auto_gas; }
 void set_auto_gas(int val) { g_auto_gas = val; }
@@ -330,37 +310,23 @@ void update_info() {
 
     // get request, parse response
     sendreq(URL_VARS, 0);
-    if (errors) { return; }
-    if (!response) { return; }
+    if (s_errors) { return; }
+    if (!s_response_body.buf) { return; }
 
-    char* json_str = extract_json(response);
-    if (!json_str) {
-        DPL("failed to extract JSON from HTTP response");
-        return;
-    }
-    free(response);
-
-    // Parse the JSON string
-    struct json_object* parsed_json = json_tokener_parse(json_str);
-    if (!parsed_json) {
-        DPL("Error parsing JSON");
-        return;
-    }
-
-    info.mod_rada = extract_i(parsed_json, "mod_rada");
-    info.mod_rezim = extract_i(parsed_json, "mod_rezim");
-    info.StatusPumpe3 = extract_i(parsed_json, "StatusPumpe3");
-    info.StatusPumpe4 = extract_i(parsed_json, "StatusPumpe4");
-    info.StatusPumpe5 = extract_i(parsed_json, "StatusPumpe5");
-    info.StatusPumpe6 = extract_i(parsed_json, "StatusPumpe6");
-    info.StatusPumpe7 = extract_i(parsed_json, "StatusPumpe7");
-    info.Tspv = extract_d(parsed_json, "Tspv");
-    info.Tsolar = extract_d(parsed_json, "Tsolar");
-    info.Tzadata = extract_d(parsed_json, "Tzadata");
-    info.Tfs = extract_d(parsed_json, "Tfs");
-    info.Tmax = extract_d(parsed_json, "Tmax");
-    info.Tmin = extract_d(parsed_json, "Tmin");
-    info.Tsobna = extract_d(parsed_json, "Tsobna");
+    info.mod_rada = extract(s_response_body, "$.mod_rada");
+    info.mod_rezim = extract(s_response_body, "$.mod_rezim");
+    info.StatusPumpe3 = extract(s_response_body, "$.StatusPumpe3");
+    info.StatusPumpe4 = extract(s_response_body, "$.StatusPumpe4");
+    info.StatusPumpe5 = extract(s_response_body, "$.StatusPumpe5");
+    info.StatusPumpe6 = extract(s_response_body, "$.StatusPumpe6");
+    info.StatusPumpe7 = extract(s_response_body, "$.StatusPumpe7");
+    info.Tspv = extract(s_response_body, "$.Tspv");
+    info.Tsolar = extract(s_response_body, "$.Tsolar");
+    info.Tzadata = extract(s_response_body, "$.Tzadata");
+    info.Tfs = extract(s_response_body, "$.Tfs");
+    info.Tmax = extract(s_response_body, "$.Tmax");
+    info.Tmin = extract(s_response_body, "$.Tmin");
+    info.Tsobna = extract(s_response_body, "$.Tsobna");
 
     // cal other values
     info.Tmid = (info.Tmax + info.Tmin) / 2;
@@ -369,13 +335,11 @@ void update_info() {
     info.TminLT = info.Tmin < 45;
     info.TmidGE = info.Tmid >= 60;
 
-    draw_ui(info, 1, errors);
+    draw_ui(info, 1, s_errors);
 
     remember_vars_do_action(info.mod_rada, info.StatusPumpe4, info.TminLT, info.TmidGE);
 
-    // Clean up JSON object
-    json_object_put(parsed_json);
-    free(json_str);
+    free((void*)s_response_body.buf);
 }
 
 static int request_count = 0;
@@ -392,5 +356,5 @@ void reqworker_do_work() {
         return;
     }
 
-    draw_ui(info, 0, errors);
+    draw_ui(info, 0, s_errors);
 }
