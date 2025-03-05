@@ -13,7 +13,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data) {
     struct mg_http_message* hm = (struct mg_http_message*)ev_data;
 
     if (mg_match(hm->uri, mg_str("/api/get_timer_seconds"), NULL)) {
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"seconds\": %f}", atomic_load(&g_auto_timer_seconds));
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"seconds\": %d}", atomic_load(&g_auto_timer_seconds));
         return;
     }
 
@@ -22,7 +22,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data) {
         if (mg_json_get_num(hm->body, "$.seconds", &value)) {
             if (value > 0) { // Validate that it's a positive integer
                 atomic_store(&g_auto_timer_seconds, value);
-                mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %f}", atomic_load(&g_auto_timer_seconds));
+                mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", atomic_load(&g_auto_timer_seconds));
             } else {
                 mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}");
             }
