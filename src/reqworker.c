@@ -5,8 +5,11 @@
 #include "logger.h"
 #include "mongoose.h"
 #include "reqworker.h"
+#include "spinners.h"
 #include "utils.h"
 #include <float.h>
+#include <pthread.h>
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +29,40 @@ static const uint64_t s_timeout_ms = 1500;
 #define ERROR_OTHER 2
 static int s_errors = 0;
 static struct mg_str s_response_body = {0};
+
+struct bas_info g_info = {0};
+
+long long GLOBAL_UNIX_COUNTER = 0;
+
+atomic_int g_auto_timer;
+atomic_int g_auto_gas;
+atomic_int g_auto_timer_seconds;
+int g_auto_timer_seconds_old = AUTO_TIMER_SECONDS; // 15 mins;
+int g_auto_timer_started = 0;
+int g_auto_timer_seconds_elapsed = 0;
+char g_auto_timer_status[STATUS_BUFFER_SIZE] = "...";
+char g_auto_gas_status[STATUS_BUFFER_SIZE] = "...";
+
+int g_history_mode = -1;
+time_t g_history_mode_time_changed = 0;
+time_t g_history_mode_time_on = 0;
+time_t g_history_mode_time_off = 0;
+int g_history_gas = -1;
+time_t g_history_gas_time_changed = 0;
+time_t g_history_gas_time_on = 0;
+time_t g_history_gas_time_off = 0;
+
+void init_reqworker() {
+    // for req
+    GLOBAL_UNIX_COUNTER = timestamp();
+
+    atomic_init(&g_auto_timer, ENABLE_AUTO_TIMER);
+    atomic_init(&g_auto_gas, ENABLE_AUTO_GAS);
+    atomic_init(&g_auto_timer_seconds, AUTO_TIMER_SECONDS);
+
+    // for drawui
+    init_spinners();
+}
 
 char* error_to_str(int e) {
     switch (e) {
@@ -133,13 +170,7 @@ double extract(struct mg_str json_body, const char* label) {
     return value;
 }
 
-struct bas_info info = {0};
 
-long long GLOBAL_UNIX_COUNTER = 0;
-
-void init_unix_global() {
-    GLOBAL_UNIX_COUNTER = timestamp();
-}
 
 void sendreq(const char* url, int log) {
 
@@ -152,34 +183,9 @@ void sendreq(const char* url, int log) {
     }
 }
 
-int g_auto_timer = ENABLE_AUTO_TIMER;
-int g_auto_timer_started = 0;
-double g_auto_timer_seconds = 900; // 15 mins;
-double g_auto_timer_seconds_elapsed = 0;
-char g_auto_timer_status[STATUS_BUFFER_SIZE] = "...";
-int g_auto_gas = ENABLE_AUTO_GAS;
-char g_auto_gas_status[STATUS_BUFFER_SIZE] = "...";
 
-int g_history_mode = -1;
-time_t g_history_mode_time_changed = 0;
-time_t g_history_mode_time_on = 0;
-time_t g_history_mode_time_off = 0;
-int g_history_gas = -1;
-time_t g_history_gas_time_changed = 0;
-time_t g_history_gas_time_on = 0;
-time_t g_history_gas_time_off = 0;
 
-int get_auto_timer() { return g_auto_timer; }
-void set_auto_timer(int val) { g_auto_timer = val; }
-double get_auto_timer_seconds() {
-    printf("GET_AUTO_TIMER_SECONDS: %f\n", g_auto_timer_seconds);
-    return g_auto_timer_seconds;
-}
-void set_auto_timer_seconds(double val) { g_auto_timer_seconds = val; }
-int get_auto_gas() { return g_auto_gas; }
-void set_auto_gas(int val) { g_auto_gas = val; }
-char* get_auto_timer_status() { return g_auto_timer_status; }
-char* get_auto_gas_status() { return g_auto_gas_status; }
+
 
 void update_history(int mod_rada, int StatusPumpe4) {
 
@@ -255,7 +261,7 @@ void do_logic_timer(int mod_rada) {
     if (g_auto_timer && mod_rada) {
         if (g_auto_timer_started) {
             g_auto_timer_seconds_elapsed = difftime(current_time, g_history_mode_time_on);
-            snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%.0f/%.0f", g_auto_timer_seconds_elapsed, g_auto_timer_seconds);
+            snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%d/%d", g_auto_timer_seconds_elapsed, atomic_load(&g_auto_timer_seconds));
 
             if (g_auto_timer_seconds_elapsed >= g_auto_timer_seconds) {
                 g_auto_timer_started = 0;
@@ -313,37 +319,36 @@ void update_info() {
     if (s_errors) { return; }
     if (!s_response_body.buf) { return; }
 
-    info.mod_rada = extract(s_response_body, "$.mod_rada");
-    info.mod_rezim = extract(s_response_body, "$.mod_rezim");
-    info.StatusPumpe3 = extract(s_response_body, "$.StatusPumpe3");
-    info.StatusPumpe4 = extract(s_response_body, "$.StatusPumpe4");
-    info.StatusPumpe5 = extract(s_response_body, "$.StatusPumpe5");
-    info.StatusPumpe6 = extract(s_response_body, "$.StatusPumpe6");
-    info.StatusPumpe7 = extract(s_response_body, "$.StatusPumpe7");
-    info.Tspv = extract(s_response_body, "$.Tspv");
-    info.Tsolar = extract(s_response_body, "$.Tsolar");
-    info.Tzadata = extract(s_response_body, "$.Tzadata");
-    info.Tfs = extract(s_response_body, "$.Tfs");
-    info.Tmax = extract(s_response_body, "$.Tmax");
-    info.Tmin = extract(s_response_body, "$.Tmin");
-    info.Tsobna = extract(s_response_body, "$.Tsobna");
+    g_info.mod_rada = extract(s_response_body, "$.mod_rada");
+    g_info.mod_rezim = extract(s_response_body, "$.mod_rezim");
+    g_info.StatusPumpe3 = extract(s_response_body, "$.StatusPumpe3");
+    g_info.StatusPumpe4 = extract(s_response_body, "$.StatusPumpe4");
+    g_info.StatusPumpe5 = extract(s_response_body, "$.StatusPumpe5");
+    g_info.StatusPumpe6 = extract(s_response_body, "$.StatusPumpe6");
+    g_info.StatusPumpe7 = extract(s_response_body, "$.StatusPumpe7");
+    g_info.Tspv = extract(s_response_body, "$.Tspv");
+    g_info.Tsolar = extract(s_response_body, "$.Tsolar");
+    g_info.Tzadata = extract(s_response_body, "$.Tzadata");
+    g_info.Tfs = extract(s_response_body, "$.Tfs");
+    g_info.Tmax = extract(s_response_body, "$.Tmax");
+    g_info.Tmin = extract(s_response_body, "$.Tmin");
+    g_info.Tsobna = extract(s_response_body, "$.Tsobna");
 
     // cal other values
-    info.Tmid = (info.Tmax + info.Tmin) / 2;
-    info.Thottest = g_temp_max;
-    info.Tcoldest = g_temp_min;
-    info.TminLT = info.Tmin < 45;
-    info.TmidGE = info.Tmid >= 60;
+    g_info.Tmid = (g_info.Tmax + g_info.Tmin) / 2;
+    g_info.Thottest = g_temp_max;
+    g_info.Tcoldest = g_temp_min;
+    g_info.TminLT = g_info.Tmin < 45;
+    g_info.TmidGE = g_info.Tmid >= 60;
 
-    draw_ui(info, 1, s_errors);
+    draw_ui(g_info, 1, s_errors);
 
-    remember_vars_do_action(info.mod_rada, info.StatusPumpe4, info.TminLT, info.TmidGE);
+    remember_vars_do_action(g_info.mod_rada, g_info.StatusPumpe4, g_info.TminLT, g_info.TmidGE);
 
     free((void*)s_response_body.buf);
 }
 
 static int request_count = 0;
-
 extern char g_term_buffer[];
 
 void reqworker_do_work() {
@@ -356,5 +361,5 @@ void reqworker_do_work() {
         return;
     }
 
-    draw_ui(info, 0, s_errors);
+    draw_ui(g_info, 0, s_errors);
 }

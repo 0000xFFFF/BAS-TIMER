@@ -4,6 +4,7 @@
 #include "reqworker.h"
 #include "spinners.h"
 #include "utils.h"
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -65,12 +66,12 @@ char* bool_to_check(int isOn) {
 #define TERM_BUFFER_SIZE 1024 * 2
 char g_term_buffer[TERM_BUFFER_SIZE] = {0};
 
-extern int g_auto_timer;
+extern atomic_int g_auto_timer;
+extern atomic_int g_auto_gas;
+extern atomic_int g_auto_timer_seconds;
 extern int g_auto_timer_started;
-extern double g_auto_timer_seconds;
-extern double g_auto_timer_seconds_elapsed;
+extern int g_auto_timer_seconds_elapsed;
 extern time_t g_history_mode_time_on;
-extern int g_auto_gas;
 extern char g_auto_timer_status[];
 extern char g_auto_gas_status[];
 
@@ -128,20 +129,19 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
     char* emoji_check = ctext_fg(82, info.TmidGE ? get_frame(&spinner_check, 1) : " ");
     char* emoji_warn  = ctext_fg(51, info.TminLT ? get_frame(&spinner_snow, 1) : " ");
 
-    char* emoji_eye1  = ctext_fg(COLOR_ON, g_auto_timer ? get_frame(&spinner_eye_left, 0) : " ");
-    char* emoji_timer = g_auto_timer_started ? ctext_fg(COLOR_ON, get_frame(&spinner_clock, 0)) : ctext_fg(COLOR_OFF, g_auto_timer ? "󱎫" : " ");
-    char* emoji_eye2  = ctext_fg(COLOR_ON, g_auto_gas   ? get_frame(&spinner_eye_left, 0) : " ");
+    char* emoji_eye1  = ctext_fg(COLOR_ON, atomic_load(&g_auto_timer) ? get_frame(&spinner_eye_left, 0) : " ");
+    char* emoji_timer = g_auto_timer_started ? ctext_fg(COLOR_ON, get_frame(&spinner_clock, 0)) : ctext_fg(COLOR_OFF, atomic_load(&g_auto_timer) ? "󱎫" : " ");
+    char* emoji_eye2  = ctext_fg(COLOR_ON, atomic_load(&g_auto_gas)   ? get_frame(&spinner_eye_left, 0) : " ");
 
-    char* emoji_reye1 = g_auto_timer ?  ctext_fg(COLOR_ON, get_frame(&spinner_eye_right, 0)) : ctext_fg(COLOR_OFF, "");
-    char* emoji_reye2 = g_auto_gas   ?  ctext_fg(COLOR_ON, get_frame(&spinner_eye_right, 0)) : ctext_fg(COLOR_OFF, "");
+    char* emoji_reye1 = atomic_load(&g_auto_timer) ?  ctext_fg(COLOR_ON, get_frame(&spinner_eye_right, 0)) : ctext_fg(COLOR_OFF, "");
+    char* emoji_reye2 = atomic_load(&g_auto_gas)   ?  ctext_fg(COLOR_ON, get_frame(&spinner_eye_right, 0)) : ctext_fg(COLOR_OFF, "");
 
     if (g_auto_timer_started) {
 
         time_t current_time;
         time(&current_time);
         g_auto_timer_seconds_elapsed = difftime(current_time, g_history_mode_time_on);
-        snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%.0f/%.0f", g_auto_timer_seconds_elapsed, g_auto_timer_seconds);
-
+        snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%d/%d", g_auto_timer_seconds_elapsed, atomic_load(&g_auto_timer_seconds));
     }
 
     int bytes = snprintf(g_term_buffer, TERM_BUFFER_SIZE,

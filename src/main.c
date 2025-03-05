@@ -14,7 +14,6 @@
 #include "debug.h"
 #include "globals.h"
 #include "reqworker.h"
-#include "spinners.h"
 #include "term.h"
 
 #include "serve_site.h"
@@ -33,15 +32,14 @@ extern char g_term_buffer[];
 extern double g_temp_max;
 extern double g_temp_min;
 
-extern struct bas_info info;
+extern struct bas_info g_info;
 
 void* main_worker() {
 
     DPL("WORKER START");
 
     DPL("WORKER INIT");
-    init_unix_global();
-    init_spinners();
+    init_reqworker();
     DPL("WORKER INIT DONE");
 
     struct timespec ts;
@@ -62,7 +60,7 @@ void* main_worker() {
         ansi_to_html(g_term_buffer, html_buffer);
         escape_quotes(html_buffer, html_buffer_escaped);
 
-        int b = snprintf(emit_buffer, 1024 * 8 * 2, "{\"term\": \"%s\", \"Tmin\": %f, \"Tmax\": %f}", html_buffer_escaped, info.Tmin, info.Tmax);
+        int b = snprintf(emit_buffer, 1024 * 8 * 2, "{\"term\": \"%s\", \"Tmin\": %f, \"Tmax\": %f}", html_buffer_escaped, g_info.Tmin, g_info.Tmax);
         websocket_emit(emit_buffer, b);
 
         nanosleep(&ts, NULL);

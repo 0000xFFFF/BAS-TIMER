@@ -29,7 +29,7 @@ struct bas_info {
     int TminLT;
 };
 
-void init_unix_global();
+void init_reqworker();
 void reqworker_do_work();
 
 #endif // REQWORKER_H
