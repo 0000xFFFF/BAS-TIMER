@@ -6,7 +6,7 @@ DEBUGFULL_ARGS = -D DEBUG -D DEBUGFULL -g
 QUICK_ARGS     = -D DEBUG -D QUICK -g
 TEST_ARGS      = -g
 RELEASE_ARGS   = -Wall -Wextra -O2
-LIBS = -pthread -ljson-c 
+LIBS = -pthread
 OUTPUT = bas-server
 
 debug:
