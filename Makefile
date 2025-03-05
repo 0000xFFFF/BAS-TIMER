@@ -23,3 +23,6 @@ test:
 
 release:
 	$(GCC) $(RELEASE_ARGS) $(LIBS) $(FILES) -o $(OUTPUT)
+
+install:
+	sudo ln -sfr bas-server /usr/local/bin/bas-server
