@@ -8,9 +8,9 @@
 #define POLL_TIME 1000
 #endif
 
-#define S_ADDR_HTTP "http://0.0.0.0:8000"   // HTTP port
-#define S_ADDR_HTTPS "https://0.0.0.0:8443" // HTTPS port
-#define S_ADDR_WS "ws://0.0.0.0:8001"       // HTTPS port
+#define S_ADDR_HTTP "http://0.0.0.0:5000"   // HTTP port
+#define S_ADDR_HTTPS "https://0.0.0.0:5001" // HTTPS port -- unused
+#define S_ADDR_WS "ws://0.0.0.0:8001"       // WebSocket port
 #define S_STATIC_DIR "static"
 
 #define WS_MAX_CONN 100
