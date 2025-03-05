@@ -37,7 +37,6 @@ long long GLOBAL_UNIX_COUNTER = 0;
 atomic_int g_auto_timer;
 atomic_int g_auto_gas;
 atomic_int g_auto_timer_seconds;
-int g_auto_timer_seconds_old = AUTO_TIMER_SECONDS; // 15 mins;
 int g_auto_timer_started = 0;
 int g_auto_timer_seconds_elapsed = 0;
 char g_auto_timer_status[STATUS_BUFFER_SIZE] = "...";

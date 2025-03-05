@@ -69,6 +69,7 @@ char g_term_buffer[TERM_BUFFER_SIZE] = {0};
 extern atomic_int g_auto_timer;
 extern atomic_int g_auto_gas;
 extern atomic_int g_auto_timer_seconds;
+static int g_auto_timer_seconds_old = AUTO_TIMER_SECONDS;
 extern int g_auto_timer_started;
 extern int g_auto_timer_seconds_elapsed;
 extern time_t g_history_mode_time_on;
@@ -137,12 +138,18 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
     char* emoji_reye2 = atomic_load(&g_auto_gas)   ?  ctext_fg(COLOR_ON, get_frame(&spinner_eye_right, 0)) : ctext_fg(COLOR_OFF, "");
 
     if (g_auto_timer_started) {
-
         time_t current_time;
         time(&current_time);
         g_auto_timer_seconds_elapsed = difftime(current_time, g_history_mode_time_on);
         snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%d/%d", g_auto_timer_seconds_elapsed, atomic_load(&g_auto_timer_seconds));
     }
+
+    int s = atomic_load(&g_auto_timer_seconds);
+    if (s != g_auto_timer_seconds_old) {
+        g_auto_timer_seconds_old = s;
+        snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "changed to: %d", s);
+    }
+
 
     int bytes = snprintf(g_term_buffer, TERM_BUFFER_SIZE,
              "%s%s%s %s %s\n"
