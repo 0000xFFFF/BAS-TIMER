@@ -90,6 +90,7 @@ extern double g_temp_circ_max;
 int draw_ui(struct bas_info info, int is_sending, int errors) {
 
     // make header
+    char* emoji_light = ctext_fg(228, get_frame(&spinner_lights, 1));
     char* emoji_send  = is_sending ? CTEXT_FG(211, "") : " ";
 
     char full_time_header_raw[HEADER_BUFFER_SIZE];
@@ -97,7 +98,7 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
     int hour           = get_current_hour();
     char* emoji_clock  = hour_to_clock(hour);
     char* emoji_dayhr  = hour_to_emoji(hour);
-    snprintf(full_time_header_raw, HEADER_BUFFER_SIZE, "%s%s %s", emoji_clock, emoji_dayhr, current_time);
+    snprintf(full_time_header_raw, HEADER_BUFFER_SIZE, "%s %s %s", emoji_clock, emoji_dayhr, current_time);
     free(current_time);
 
     char* full_time_header = ctext_fg(hour_to_color(hour), full_time_header_raw);
@@ -163,6 +164,7 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
 
 
     int bytes = snprintf(g_term_buffer, TERM_BUFFER_SIZE,
+             "%s\n"
              "%s %s %s\n"
              "%s%s  %s %s %s  %s %s%s\n"
              "%s%s  %s %s %s  %s\n"
@@ -174,7 +176,8 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
              "%s%s  %s\n"
              "%s󱪯 %-37s\n"
              "%s󰙇 %-37s\n",
-             full_time_header, emoji_send, ip,
+             full_time_header,
+             emoji_light, emoji_send, ip,
              label_Tsolar,  moving_emoji_Tsolar,  Tsolar,  temp_to_emoji(info.Tsolar),  label_mode     ,                     mode,   emoji_eye1, emoji_timer,
              label_Tspv,    moving_emoji_Tspv,    Tspv,    temp_to_emoji(info.Tspv),    label_regime   ,                     regime,
              label_Tsobna,  moving_emoji_Tsobna,  Tsobna,  temp_to_emoji(info.Tsobna),  label_heat     , moving_emoji_heat,  heat,
@@ -188,6 +191,9 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
              );
 
 
+    free(full_time_header);
+    free(emoji_light);
+    free(ip);
     
     free(moving_emoji_Tsolar);
     free(moving_emoji_Tspv);
@@ -198,7 +204,7 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
     //moving_emoji_Tmin
     free(moving_emoji_Tfs);
 
-    free(full_time_header); free(ip);
+    
     free(Tspv);                                               free(mode);   free(emoji_eye1); free(emoji_timer);
     free(Tsolar);                                             free(regime);
     free(Tsobna);                  free(moving_emoji_heat);   free(heat);
