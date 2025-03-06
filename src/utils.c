@@ -28,8 +28,8 @@ long long timestamp() {
     struct timeval tv;
     gettimeofday(&tv, NULL); // Get the current time
 
-    // Convert seconds to milliseconds and ensure 64-bit arithmetic
-    long long timestamp_ms = ((long long)tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+    // Ensure 64-bit arithmetic by explicitly casting tv.tv_sec to long long
+    long long timestamp_ms = ((long long)tv.tv_sec) * 1000LL + (tv.tv_usec / 1000);
 
     return timestamp_ms;
 }
