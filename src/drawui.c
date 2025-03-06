@@ -164,8 +164,8 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
 
 
     int bytes = snprintf(g_term_buffer, TERM_BUFFER_SIZE,
-             "%s\n"
-             "%s %s %s\n"
+             " %s\n"
+             " %s %s %s\n"
              "%s%s  %s %s %s  %s %s%s\n"
              "%s%s  %s %s %s  %s\n"
              "%s%s  %s %s %s%s  %s\n"
