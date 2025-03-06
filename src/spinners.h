@@ -3,15 +3,17 @@
 
 // Declare the Spinner struct
 typedef struct {
-    char** frames;   // Array of frames (strings)
-    int frame_count; // Number of frames
-    int index;       // Current frame index
+    char** frames;    // Array of frames (strings)
+    int frame_count;  // Number of frames
+    int index;        // Current frame index
+    int i;            // 
+    int spin_on;      // Spin every i frames
 } Spinner;
 
 // Function prototypes
-void init_spinner(Spinner* spinner, char** frames, int frame_count);
-void spin_spinner(Spinner* spinner);
-char* get_frame(Spinner* spinner, int also_spin);
+void init_spinner(Spinner*, char**, int, int);
+void spin_spinner(Spinner*);
+char* get_frame(Spinner*, int);
 void init_spinners();
 
 // Declare external spinners
@@ -32,5 +34,10 @@ extern Spinner spinner_fire;
 extern Spinner spinner_lightning;
 extern Spinner spinner_sunrise;
 extern Spinner spinner_sunset;
+extern Spinner spinner_window;
+extern Spinner spinner_solar_panel;
+extern Spinner spinner_cog;
+extern Spinner spinner_house;
+extern Spinner spinner_recycle;
 
 #endif // SPINNER_H

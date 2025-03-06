@@ -12,8 +12,8 @@ double g_temp_human_min = TEMP_HUMAN_MIN;
 double g_temp_human_max = TEMP_HUMAN_MAX;
 double g_temp_buf_min = TEMP_BUF_MIN;
 double g_temp_buf_max = TEMP_BUF_MAX;
-double g_temp_circ_min = TEMP_BUF_MIN;
-double g_temp_circ_max = TEMP_BUF_MAX;
+double g_temp_circ_min = TEMP_CIRC_MIN;
+double g_temp_circ_max = TEMP_CIRC_MAX;
 
 #define BUFFER_SIZE 1024
 

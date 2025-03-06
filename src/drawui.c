@@ -106,15 +106,23 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
     char* ip           = ctext_fg(errors ? COLOR_OFF : COLOR_ON, ip_raw);
     free(ip_raw);
 
+    char* moving_emoji_Tsolar  = ctext_fg(230, get_frame(&spinner_solar_panel, 1));
+    char* moving_emoji_Tspv    = ctext_fg(213, get_frame(&spinner_window, 1));
+    char* moving_emoji_Tsobna  = ctext_fg( 76, get_frame(&spinner_house, 1));
+    char* moving_emoji_Tzadata = ctext_fg(154, get_frame(&spinner_cog, 1));
+    //char* moving_emoji_Tmax    = ctext_fg(214, get_frame(&spinner_));
+    //char* moving_emoji_Tmid    = ctext_fg(220, get_frame(&spinner_));
+    //char* moving_emoji_Tmin    = ctext_fg(226, get_frame(&spinner_));
+    char* moving_emoji_Tfs     = ctext_fg(110, get_frame(&spinner_recycle, 1));
 
-    char* label_Tsolar   = CTEXT_FG(230 , "Solar "); char* Tsolar   = temp_to_ctext_bg_con(info.Tsolar, &g_temp_solar_min, &g_temp_solar_max);
-    char* label_Tspv     = CTEXT_FG(213 , "  Out 󱇜"); char* Tspv     = temp_to_ctext_bg_con(info.Tspv, &g_temp_human_min, &g_temp_human_max);
-    char* label_Tsobna   = CTEXT_FG( 76 , " Room "); char* Tsobna   = temp_to_ctext_bg_con(info.Tsobna, &g_temp_human_min, &g_temp_human_max);
-    char* label_Tzadata  = CTEXT_FG(154 , "  Set "); char* Tzadata  = temp_to_ctext_bg_con(info.Tzadata, &g_temp_human_min, &g_temp_human_max);
+    char* label_Tsolar   = CTEXT_FG(230 , "Solar ");  char* Tsolar   = temp_to_ctext_bg_con(info.Tsolar, &g_temp_solar_min, &g_temp_solar_max);
+    char* label_Tspv     = CTEXT_FG(213 , "  Out ");  char* Tspv     = temp_to_ctext_bg_con(info.Tspv, &g_temp_human_min, &g_temp_human_max);
+    char* label_Tsobna   = CTEXT_FG( 76 , " Room ");  char* Tsobna   = temp_to_ctext_bg_con(info.Tsobna, &g_temp_human_min, &g_temp_human_max);
+    char* label_Tzadata  = CTEXT_FG(154 , "  Set ");  char* Tzadata  = temp_to_ctext_bg_con(info.Tzadata, &g_temp_human_min, &g_temp_human_max);
     char* label_Tmax     = CTEXT_FG(214 , "  Max "); char* Tmax     = temp_to_ctext_bg_con(info.Tmax, &g_temp_buf_min, &g_temp_buf_max);
     char* label_Tmid     = CTEXT_FG(220 , "  Mid "); char* Tmid     = temp_to_ctext_bg_con(info.Tmid, &g_temp_buf_min, &g_temp_buf_max);
     char* label_Tmin     = CTEXT_FG(226 , "  Min "); char* Tmin     = temp_to_ctext_bg_con(info.Tmin, &g_temp_buf_min, &g_temp_buf_max);
-    char* label_Tfs      = CTEXT_FG(110 , "Circ. "); char* Tfs      = temp_to_ctext_bg_con(info.Tfs, &g_temp_circ_min, &g_temp_circ_max);
+    char* label_Tfs      = CTEXT_FG(110 , "Circ. ");  char* Tfs      = temp_to_ctext_bg_con(info.Tfs, &g_temp_circ_min, &g_temp_circ_max);
 
     char* moving_emoji_heat  = ctext_fg(212 , info.StatusPumpe6 ? get_frame(&spinner_heat_pump, 1) : "󱩃");
     char* moving_emoji_gas   = ctext_fg(203 , info.StatusPumpe4 ? get_frame(&spinner_fire,      1) : "󰙇");
@@ -156,32 +164,39 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
 
     int bytes = snprintf(g_term_buffer, TERM_BUFFER_SIZE,
              "%s %s %s\n"
-             "%s  %s %s %s  %s %s%s\n"
-             "%s  %s %s %s  %s\n"
-             "%s  %s %s %s%s  %s\n"
-             "%s  %s %s %s%s  %s %s\n"
+             "%s%s  %s %s %s  %s %s%s\n"
+             "%s%s  %s %s %s  %s\n"
+             "%s%s  %s %s %s%s  %s\n"
+             "%s%s  %s %s %s%s  %s %s\n"
              "%s  %s   %s%s  %s\n"
              "%s  %s %s %s%s  %s\n"
              "%s  %s %s %s%s  %s\n"
-             "%s  %s\n"
+             "%s%s  %s\n"
              "%s󱪯 %-37s\n"
              "%s󰙇 %-37s\n",
              full_time_header, emoji_send, ip,
-             label_Tsolar,   Tsolar,  temp_to_emoji(info.Tsolar),  label_mode     ,                     mode,   emoji_eye1, emoji_timer,
-             label_Tspv,     Tspv,    temp_to_emoji(info.Tspv),    label_regime   ,                     regime,
-             label_Tsobna,   Tsobna,  temp_to_emoji(info.Tsobna),  label_heat     , moving_emoji_heat,  heat,
-             label_Tzadata,  Tzadata, temp_to_emoji(info.Tzadata), label_gas      , moving_emoji_gas,   gas,    emoji_eye2,
-             label_Tmax,     Tmax,                                   label_circ     , moving_emoji_circ,  circ,
-             label_Tmid,     Tmid,    emoji_check,                   label_solar    , moving_emoji_solar, solar,
-             label_Tmin,     Tmin,    emoji_warn,                    label_elec     , moving_emoji_elec,  elec,
-             label_Tfs,      Tfs,
+             label_Tsolar,  moving_emoji_Tsolar,  Tsolar,  temp_to_emoji(info.Tsolar),  label_mode     ,                     mode,   emoji_eye1, emoji_timer,
+             label_Tspv,    moving_emoji_Tspv,    Tspv,    temp_to_emoji(info.Tspv),    label_regime   ,                     regime,
+             label_Tsobna,  moving_emoji_Tsobna,  Tsobna,  temp_to_emoji(info.Tsobna),  label_heat     , moving_emoji_heat,  heat,
+             label_Tzadata, moving_emoji_Tzadata, Tzadata, temp_to_emoji(info.Tzadata), label_gas      , moving_emoji_gas,   gas,    emoji_eye2,
+             label_Tmax,                          Tmax,                                 label_circ     , moving_emoji_circ,  circ,
+             label_Tmid,                          Tmid,    emoji_check,                 label_solar    , moving_emoji_solar, solar,
+             label_Tmin,                          Tmin,    emoji_warn,                  label_elec     , moving_emoji_elec,  elec,
+             label_Tfs,     moving_emoji_Tfs,     Tfs,
              emoji_reye1, g_auto_timer_status,
              emoji_reye2, g_auto_gas_status
              );
 
 
     
-    
+    free(moving_emoji_Tsolar);
+    free(moving_emoji_Tspv);
+    free(moving_emoji_Tsobna);
+    free(moving_emoji_Tzadata);
+    //moving_emoji_Tmax
+    //moving_emoji_Tmid
+    //moving_emoji_Tmin
+    free(moving_emoji_Tfs);
 
     free(full_time_header); free(ip);
     free(Tspv);                                               free(mode);   free(emoji_eye1); free(emoji_timer);

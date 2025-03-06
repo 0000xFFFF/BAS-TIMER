@@ -34,7 +34,7 @@
 #define TEMP_HUMAN_MAX 30
 #define TEMP_BUF_MIN 45
 #define TEMP_BUF_MAX 60
-#define TEMP_CIRC_MIN 22
+#define TEMP_CIRC_MIN 0
 #define TEMP_CIRC_MAX 60
 
 #endif // GLOBALS_H
