@@ -89,7 +89,7 @@ void init_spinners() {
     init_spinner(&spinner_sunrise, frames_spinner_sunrise, sizeof(frames_spinner_sunrise)/sizeof(frames_spinner_sunrise[0]), 1);
     init_spinner(&spinner_sunset, frames_spinner_sunset, sizeof(frames_spinner_sunset)/sizeof(frames_spinner_sunset[0]), 1);
 
-#define SLOW_EMOJI_DELAY 5
+#define SLOW_EMOJI_DELAY 20
     init_spinner(&spinner_window, frames_spinner_window, sizeof(frames_spinner_window)/sizeof(frames_spinner_window[0]), SLOW_EMOJI_DELAY);
     init_spinner(&spinner_solar_panel, frames_spinner_solar_panel, sizeof(frames_spinner_solar_panel)/sizeof(frames_spinner_solar_panel[0]), SLOW_EMOJI_DELAY);
     init_spinner(&spinner_cog, frames_spinner_cog, sizeof(frames_spinner_cog)/sizeof(frames_spinner_cog[0]), SLOW_EMOJI_DELAY);
