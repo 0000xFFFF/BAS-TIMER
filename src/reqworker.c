@@ -307,8 +307,8 @@ void remember_vars_do_action(int mod_rada, int StatusPumpe4, int TminLT, int Tmi
     do_logic_gas(StatusPumpe4, TminLT, TmidGE);
 }
 
-extern double g_temp_max;
-extern double g_temp_min;
+extern double g_temp_buf_max;
+extern double g_temp_buf_min;
 
 void update_info() {
     GLOBAL_UNIX_COUNTER++;
@@ -335,8 +335,8 @@ void update_info() {
 
     // cal other values
     g_info.Tmid = (g_info.Tmax + g_info.Tmin) / 2;
-    g_info.Thottest = g_temp_max;
-    g_info.Tcoldest = g_temp_min;
+    g_info.Thottest = g_temp_buf_max;
+    g_info.Tcoldest = g_temp_buf_min;
     g_info.TminLT = g_info.Tmin < 45;
     g_info.TmidGE = g_info.Tmid >= 60;
 

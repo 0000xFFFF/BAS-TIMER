@@ -1,13 +1,19 @@
 // colors.cpp
 #include "colors.h"
+#include "globals.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 int TEMP_COLORS[TEMP_COLORS_SIZE] = {51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196};
-int APPEAR_COLORS[APPEAR_COLORS_SIZE] = {240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255};
 
-double g_temp_max = TEMP_MAX;
-double g_temp_min = TEMP_MIN;
+double g_temp_solar_min = TEMP_SOLAR_MIN;
+double g_temp_solar_max = TEMP_SOLAR_MAX;
+double g_temp_human_min = TEMP_HUMAN_MIN;
+double g_temp_human_max = TEMP_HUMAN_MAX;
+double g_temp_buf_min = TEMP_BUF_MIN;
+double g_temp_buf_max = TEMP_BUF_MAX;
+double g_temp_circ_min = TEMP_BUF_MIN;
+double g_temp_circ_max = TEMP_BUF_MAX;
 
 #define BUFFER_SIZE 1024
 
@@ -55,89 +61,50 @@ char* ctext_bg_con(int color, const char* text) {
     return result;
 }
 
-// Convert int value to a color within the APPEAR_COLORS range
-int int_to_color(int val, int min, int max) {
-    if (val >= max) return APPEAR_COLORS[APPEAR_COLORS_SIZE - 1];
-    if (val <= min) return APPEAR_COLORS[0];
-    int index = (val - min) * (APPEAR_COLORS_SIZE - 1) / (max - min);
-    return APPEAR_COLORS[index];
-}
-
-// Return a foreground colored string based on an integer value
-char* int_to_ctext_fg(int val, int min, int max) {
-    int color = int_to_color(val, min, max);
-    char* result = (char*)malloc(BUFFER_SIZE * sizeof(char));
-    snprintf(result, BUFFER_SIZE, "\033[38;5;%dm%d\033[0m", color, val);
-    return result;
-}
 
 // Convert temperature to a color
-int temperature_to_color(double temp) {
-    if (temp >= g_temp_max) {
-        g_temp_max = temp;
-        return TEMP_COLORS[TEMP_COLORS_SIZE - 1];
-    }
-    if (temp <= g_temp_min) {
-        g_temp_min = temp;
+int temperature_to_color(double temp, double* temp_min, double* temp_max) {
+    if (temp <= *temp_min) {
+        *temp_min = temp;
         return TEMP_COLORS[0];
     }
-    int index = (temp - g_temp_min) * (TEMP_COLORS_SIZE - 1) / (g_temp_max - g_temp_min);
+    if (temp >= *temp_max) {
+        *temp_max = temp;
+        return TEMP_COLORS[TEMP_COLORS_SIZE - 1];
+    }
+    int index = (temp - *temp_min) * (TEMP_COLORS_SIZE - 1) / (*temp_max - *temp_min);
     return TEMP_COLORS[index];
 }
 
 // Return a foreground colored string based on temperature
-char* temp_to_ctext_fg(double temp) {
-    int color = temperature_to_color(temp);
+char* temp_to_ctext_fg(double temp, double* temp_min, double* temp_max) {
+    int color = temperature_to_color(temp, temp_min, temp_max);
     char* result = (char*)malloc(BUFFER_SIZE * sizeof(char));
     snprintf(result, BUFFER_SIZE, "\033[38;5;%dm%7.2f 󰔄\033[0m", color, temp);
     return result;
 }
 
 // Return a background colored string based on temperature
-char* temp_to_ctext_bg(double temp) {
-    int color = temperature_to_color(temp);
+char* temp_to_ctext_bg(double temp, double* temp_min, double* temp_max) {
+    int color = temperature_to_color(temp, temp_min, temp_max);
     char* result = (char*)malloc(BUFFER_SIZE * sizeof(char));
     snprintf(result, BUFFER_SIZE, "\033[48;5;%dm%7.2f 󰔄\033[0m", color, temp);
     return result;
 }
 
 // Return a foreground colored string with contrast based on temperature
-char* temp_to_ctext_fg_con(double temp) {
-    int color = temperature_to_color(temp);
+char* temp_to_ctext_fg_con(double temp, double* temp_min, double* temp_max) {
+    int color = temperature_to_color(temp, temp_min, temp_max);
     char* result = (char*)malloc(BUFFER_SIZE * sizeof(char));
     snprintf(result, BUFFER_SIZE, "\033[48;5;%dm\033[38;5;%dm%7.2f 󰔄\033[0m", contrast_color(color), color, temp);
     return result;
 }
 
 // Return a background colored string with contrast based on temperature
-char* temp_to_ctext_bg_con(double temp) {
-    int color = temperature_to_color(temp);
+char* temp_to_ctext_bg_con(double temp, double* temp_min, double* temp_max) {
+    int color = temperature_to_color(temp, temp_min, temp_max);
     char* result = (char*)malloc(BUFFER_SIZE * sizeof(char));
     snprintf(result, BUFFER_SIZE, "\033[48;5;%dm\033[38;5;%dm%7.2f 󰔄\033[0m", color, contrast_color(color), temp);
     return result;
 }
 
-// Return a colored string based on boolean value (foreground)
-char* bool_to_ctext_fg(int b) {
-    return ctext_fg(b ? COLOR_ON : COLOR_OFF, b ? "true" : "false");
-}
-
-// Return a colored string based on boolean value (background)
-char* bool_to_ctext_bg(int b) {
-    return ctext_bg(b ? COLOR_ON : COLOR_OFF, b ? "true" : "false");
-}
-
-// Return a colored string based on boolean value with contrast (foreground)
-char* bool_to_ctext_fg_con(int b) {
-    return ctext_fg_con(b ? COLOR_ON : COLOR_OFF, b ? "true" : "false");
-}
-
-// Return a colored string based on boolean value with contrast (background)
-char* bool_to_ctext_bg_con(int b) {
-    return ctext_bg_con(b ? COLOR_ON : COLOR_OFF, b ? "true" : "false");
-}
-
-// Return a colored string for boolean with both foreground and background
-char* bool_to_ctext_bi(int b) {
-    return b ? ctext_bg_con(COLOR_ON, " true ") : ctext_fg(COLOR_OFF, " false ");
-}
