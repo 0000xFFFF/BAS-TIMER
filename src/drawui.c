@@ -89,6 +89,13 @@ extern double g_temp_circ_max;
 #define HEADER_BUFFER_SIZE 1024
 int draw_ui(struct bas_info info, int is_sending, int errors) {
 
+    if (!info.hasValues) {
+        char* ip = get_local_ips();
+        int r = printf("[%s]:\n> %s\n> %s\n", ip, "no values to draw.", sendreq_error_to_str(errors));
+        free(ip);
+        return r;
+    }
+
     // make header
     char* emoji_light = ctext_fg(228, get_frame(&spinner_lights, 1));
     char* emoji_send  = is_sending ? CTEXT_FG(211, "") : " ";

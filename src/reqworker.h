@@ -3,6 +3,8 @@
 
 struct bas_info {
 
+    int hasValues; // to check if struct is empty or not
+
     // statuses
     int mod_rada;
     int mod_rezim;
@@ -31,5 +33,6 @@ struct bas_info {
 
 void init_reqworker();
 void reqworker_do_work();
+char* sendreq_error_to_str(int e);
 
 #endif // REQWORKER_H

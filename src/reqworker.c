@@ -26,7 +26,7 @@ static const uint64_t s_timeout_ms = 1500;
 
 #define ERROR_NONE 0
 #define ERROR_TIMEOUT 1
-#define ERROR_OTHER 2
+#define ERROR_CONN 2
 static int s_errors = 0;
 static int s_remember_response = 0;
 static struct mg_str s_response_body = {0};
@@ -64,7 +64,7 @@ void init_reqworker() {
     init_spinners();
 }
 
-char* error_to_str(int e) {
+char* sendreq_error_to_str(int e) {
     switch (e) {
     case 0:
         return "no error";
@@ -73,7 +73,7 @@ char* error_to_str(int e) {
         return "timeout";
         break;
     case 2:
-        return "unknown error";
+        return "connection error";
         break;
     }
     return "?";
@@ -138,11 +138,10 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
 
     if (ev == MG_EV_ERROR) {
         *(bool*)c->fn_data = true; // Error, tell event loop to stop
-        s_errors = ERROR_OTHER;
+        s_errors = ERROR_CONN;
         return;
     }
 }
-
 
 int sendreq(const char* url, int log, int remember_response) {
     char request_url[REQUEST_URL_BUFFER_SIZE];
@@ -160,7 +159,7 @@ int sendreq(const char* url, int log, int remember_response) {
     mg_mgr_free(&mgr);                       // Free resources
 
     if (s_errors) {
-        logger_errors_write("%s -- %s\n", request_url, error_to_str(s_errors));
+        logger_errors_write("%s -- %s\n", request_url, sendreq_error_to_str(s_errors));
     }
 
     return s_errors == 0;
@@ -177,14 +176,6 @@ double extract(struct mg_str json_body, const char* label) {
     D(printf(" -> %f", value));
     return value;
 }
-
-
-
-
-
-
-
-
 
 void update_history(int mod_rada, int StatusPumpe4) {
 
@@ -316,30 +307,34 @@ void update_info() {
 
     // get request, parse response
     sendreq(URL_VARS, 0, 1);
-    if (s_errors) { return; }
-    if (!s_response_body.buf) { return; }
-    g_info.mod_rada = extract(s_response_body, "$.mod_rada");
-    g_info.mod_rezim = extract(s_response_body, "$.mod_rezim");
-    g_info.StatusPumpe3 = extract(s_response_body, "$.StatusPumpe3");
-    g_info.StatusPumpe4 = extract(s_response_body, "$.StatusPumpe4");
-    g_info.StatusPumpe5 = extract(s_response_body, "$.StatusPumpe5");
-    g_info.StatusPumpe6 = extract(s_response_body, "$.StatusPumpe6");
-    g_info.StatusPumpe7 = extract(s_response_body, "$.StatusPumpe7");
-    g_info.Tspv = extract(s_response_body, "$.Tspv");
-    g_info.Tsolar = extract(s_response_body, "$.Tsolar");
-    g_info.Tzadata = extract(s_response_body, "$.Tzadata");
-    g_info.Tfs = extract(s_response_body, "$.Tfs");
-    g_info.Tmax = extract(s_response_body, "$.Tmax");
-    g_info.Tmin = extract(s_response_body, "$.Tmin");
-    g_info.Tsobna = extract(s_response_body, "$.Tsobna");
-    free((void*)s_response_body.buf);
+    if (s_response_body.buf) {
+        g_info.hasValues = 1;
+        g_info.mod_rada = extract(s_response_body, "$.mod_rada");
+        g_info.mod_rezim = extract(s_response_body, "$.mod_rezim");
+        g_info.StatusPumpe3 = extract(s_response_body, "$.StatusPumpe3");
+        g_info.StatusPumpe4 = extract(s_response_body, "$.StatusPumpe4");
+        g_info.StatusPumpe5 = extract(s_response_body, "$.StatusPumpe5");
+        g_info.StatusPumpe6 = extract(s_response_body, "$.StatusPumpe6");
+        g_info.StatusPumpe7 = extract(s_response_body, "$.StatusPumpe7");
+        g_info.Tspv = extract(s_response_body, "$.Tspv");
+        g_info.Tsolar = extract(s_response_body, "$.Tsolar");
+        g_info.Tzadata = extract(s_response_body, "$.Tzadata");
+        g_info.Tfs = extract(s_response_body, "$.Tfs");
+        g_info.Tmax = extract(s_response_body, "$.Tmax");
+        g_info.Tmin = extract(s_response_body, "$.Tmin");
+        g_info.Tsobna = extract(s_response_body, "$.Tsobna");
 
-    // cal other values
-    g_info.Tmid = (g_info.Tmax + g_info.Tmin) / 2;
-    g_info.Thottest = g_temp_buf_max;
-    g_info.Tcoldest = g_temp_buf_min;
-    g_info.TminLT = g_info.Tmin < 45;
-    g_info.TmidGE = g_info.Tmid >= 60;
+        // calc other values
+        g_info.Tmid = (g_info.Tmax + g_info.Tmin) / 2;
+        g_info.Thottest = g_temp_buf_max;
+        g_info.Tcoldest = g_temp_buf_min;
+        g_info.TminLT = g_info.Tmin < 45;
+        g_info.TmidGE = g_info.Tmid >= 60;
+
+        // free buffer
+        free((void*)s_response_body.buf);
+        s_response_body.buf = NULL;
+    }
 
     draw_ui(g_info, 1, s_errors);
 
