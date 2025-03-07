@@ -308,6 +308,7 @@ void update_info() {
     // get request, parse response
     sendreq(URL_VARS, 0, 1);
     if (s_response_body.buf) {
+        D(printf("RESPONSE BODY BUF LEN: %lu\n", strlen(s_response_body.buf)));
         g_info.hasValues = 1;
         g_info.mod_rada = extract(s_response_body, "$.mod_rada");
         g_info.mod_rezim = extract(s_response_body, "$.mod_rezim");
@@ -342,13 +343,12 @@ void update_info() {
 }
 
 static int request_count = 0;
-extern char g_term_buffer[];
 
 void reqworker_do_work() {
 
     request_count++;
 
-    if (g_term_buffer[0] == 0 || request_count >= DO_REQUEST_COUNT) {
+    if (!g_info.hasValues || request_count >= DO_REQUEST_COUNT) {
         request_count = 0;
         update_info();
         return;

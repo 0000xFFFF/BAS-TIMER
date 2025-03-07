@@ -229,9 +229,9 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
     spin_spinner(&spinner_bars);
     spin_spinner(&spinner_clock);
 
-    DPL("===[ OUTPUT BEGIN ]===\n");
+    DPL("===[ OUTPUT BEGIN ]===");
     printf("%s", g_term_buffer);
-    DPL("===[ OUTPUT END ]===\n");
+    DPL("===[ OUTPUT END ]===");
     D(printf("OUTPUT LEN: %d\n", bytes));
     return bytes;
 }
