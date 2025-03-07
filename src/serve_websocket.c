@@ -54,11 +54,11 @@ void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
         // Remove from our connection array
         for (int i = 0; i < conn_count; i++) {
             if (ws_connections[i] == c) {
-                ws_connections[i] = NULL;
                 // Shift all remaining connections
                 for (int j = i; j < conn_count - 1; j++) {
                     ws_connections[j] = ws_connections[j + 1];
                 }
+                ws_connections[conn_count - 1] = NULL;
                 conn_count--;
                 break;
             }

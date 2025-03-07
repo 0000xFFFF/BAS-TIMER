@@ -28,6 +28,7 @@ static const uint64_t s_timeout_ms = 1500;
 #define ERROR_TIMEOUT 1
 #define ERROR_OTHER 2
 static int s_errors = 0;
+static int s_remember_response = 0;
 static struct mg_str s_response_body = {0};
 
 struct bas_info g_info = {0};
@@ -118,20 +119,17 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
             mg_tls_init(c, &opts);
         }
 
-        D(
-            printf("===[ BEGIN REQ ]===\n");
-            printf(REQUEST_FORMAT, mg_url_uri(s_url), (int)host.len, host.buf);
-            printf("===[ END REQ ]===\n"));
-
         // Send request
         mg_printf(c, REQUEST_FORMAT, mg_url_uri(s_url), (int)host.len, host.buf);
         return;
     }
 
     if (ev == MG_EV_HTTP_MSG) {
-        // Response received
-        struct mg_http_message* hm = (struct mg_http_message*)ev_data;
-        s_response_body = mg_strdup(hm->body);
+        if (s_remember_response) {
+            // Response received
+            struct mg_http_message* hm = (struct mg_http_message*)ev_data;
+            s_response_body = mg_strdup(hm->body);
+        }
 
         c->is_draining = 1;        // Tell mongoose to close this connection
         *(bool*)c->fn_data = true; // Tell event loop to stop
@@ -145,7 +143,13 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
     }
 }
 
-int get_request(const char* url) {
+
+int sendreq(const char* url, int log, int remember_response) {
+    char request_url[REQUEST_URL_BUFFER_SIZE];
+    snprintf(request_url, REQUEST_URL_BUFFER_SIZE, "%s&_=%lld", url, GLOBAL_UNIX_COUNTER);
+    if (log) { logger_requests_write("%s\n", request_url); }
+
+    s_remember_response = remember_response;
     s_errors = 0;                            // RESET ERRORS
     struct mg_mgr mgr;                       // Event manager
     int done = 0;                            // Event handler flips it to true
@@ -154,6 +158,11 @@ int get_request(const char* url) {
     mg_http_connect(&mgr, s_url, fn, &done); // Create client connection
     while (!done) mg_mgr_poll(&mgr, 50);     // Event manager loops until 'done'
     mg_mgr_free(&mgr);                       // Free resources
+
+    if (s_errors) {
+        logger_errors_write("%s -- %s\n", request_url, error_to_str(s_errors));
+    }
+
     return s_errors == 0;
 }
 
@@ -171,16 +180,7 @@ double extract(struct mg_str json_body, const char* label) {
 
 
 
-void sendreq(const char* url, int log) {
 
-    char request_url[REQUEST_URL_BUFFER_SIZE];
-    snprintf(request_url, REQUEST_URL_BUFFER_SIZE, "%s&_=%lld", url, GLOBAL_UNIX_COUNTER);
-    if (log) { logger_requests_write("%s\n", request_url); }
-    int res = get_request(request_url);
-    if (!res) {
-        logger_errors_write("%s -- %s\n", request_url, error_to_str(s_errors));
-    }
-}
 
 
 
@@ -210,6 +210,7 @@ void update_history(int mod_rada, int StatusPumpe4) {
                 char* elap = elapsed_str(g_history_mode_time_off, g_history_mode_time_on);
                 snprintf(e, sizeof(e), " -- %s\n", elap);
                 snprintf(p, sizeof(p), " 󱫐 %s", elap);
+                free(elap);
             }
 
             logger_changes_write("mod_rada = %d%s", mod_rada, e);
@@ -270,7 +271,7 @@ void do_logic_timer(int mod_rada) {
                     snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "󱫐 %s 󱪯", elap);
                     free(elap);
                 }
-                sendreq(URL_OFF, 1);
+                sendreq(URL_OFF, 1, 0);
             }
         } else {
             g_auto_timer_started = 1;
@@ -287,7 +288,7 @@ void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE) {
 
     if (g_auto_gas && StatusPumpe4 == 0 && TminLT) {
         sprintf(g_auto_gas_status, "%s ", t);
-        sendreq(URL_GAS_ON, 1);
+        sendreq(URL_GAS_ON, 1, 0);
     }
 
     if (g_auto_gas && StatusPumpe4 == 3 && TmidGE) {
@@ -295,7 +296,7 @@ void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE) {
         if (g_history_gas_time_on && g_history_gas_time_off) {
             sprintf(g_auto_gas_status, "󱫐 %s 󰙇", elapsed_str(time(NULL), g_history_gas_time_on));
         }
-        sendreq(URL_GAS_OFF, 1);
+        sendreq(URL_GAS_OFF, 1, 0);
     }
 
     free(t);
@@ -314,10 +315,9 @@ void update_info() {
     GLOBAL_UNIX_COUNTER++;
 
     // get request, parse response
-    sendreq(URL_VARS, 0);
+    sendreq(URL_VARS, 0, 1);
     if (s_errors) { return; }
     if (!s_response_body.buf) { return; }
-
     g_info.mod_rada = extract(s_response_body, "$.mod_rada");
     g_info.mod_rezim = extract(s_response_body, "$.mod_rezim");
     g_info.StatusPumpe3 = extract(s_response_body, "$.StatusPumpe3");
@@ -332,6 +332,7 @@ void update_info() {
     g_info.Tmax = extract(s_response_body, "$.Tmax");
     g_info.Tmin = extract(s_response_body, "$.Tmin");
     g_info.Tsobna = extract(s_response_body, "$.Tsobna");
+    free((void*)s_response_body.buf);
 
     // cal other values
     g_info.Tmid = (g_info.Tmax + g_info.Tmin) / 2;
@@ -343,8 +344,6 @@ void update_info() {
     draw_ui(g_info, 1, s_errors);
 
     remember_vars_do_action(g_info.mod_rada, g_info.StatusPumpe4, g_info.TminLT, g_info.TmidGE);
-
-    free((void*)s_response_body.buf);
 }
 
 static int request_count = 0;
