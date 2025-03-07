@@ -285,7 +285,9 @@ void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE) {
     if (g_auto_gas && StatusPumpe4 == 3 && TmidGE) {
         sprintf(g_auto_gas_status, "%s 󰙇", t);
         if (g_history_gas_time_on && g_history_gas_time_off) {
-            sprintf(g_auto_gas_status, "󱫐 %s 󰙇", elapsed_str(time(NULL), g_history_gas_time_on));
+            char* elap = elapsed_str(time(NULL), g_history_gas_time_on);
+            sprintf(g_auto_gas_status, "󱫐 %s 󰙇", elap);
+            free(elap);
         }
         sendreq(URL_GAS_OFF, 1, 0);
     }
