@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 mkdir -p ~/.config/i3
 cp configs/i3config ~/.config/i3/config
 mkdir -p ~/.config/alacritty
