@@ -172,7 +172,7 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
 
     int bytes = snprintf(g_term_buffer, TERM_BUFFER_SIZE,
              " %s\n"
-             " %s %s %s %s\n"
+             " %s %s %s %-16s\n"
              "%s%s  %s %s %s  %s %s%s\n"
              "%s%s  %s %s %s  %s\n"
              "%s%s  %s %s %s%s  %s\n"
@@ -181,8 +181,8 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
              "%s  %s %s %s%s  %s\n"
              "%s  %s %s %s%s  %s\n"
              "%s%s  %s\n"
-             "%s󱪯 %-37s\n"
-             "%s󰙇 %-37s\n",
+             "%s󱪯 %-40s\n"
+             "%s󰙇 %-40s\n",
              full_time_header,
              emoji_light, emoji_send, ip, errors ? sendreq_error_to_str(errors) : "",
              label_Tsolar,  moving_emoji_Tsolar,  Tsolar,  temp_to_emoji(info.Tsolar),  label_mode     ,                     mode,   emoji_eye1, emoji_timer,
