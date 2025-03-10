@@ -1,5 +1,4 @@
 #include "mongoose.h"
-#include <json-c/json.h>
 
 #include <assert.h>
 #include <pthread.h>
