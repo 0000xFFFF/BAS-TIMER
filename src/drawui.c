@@ -93,7 +93,7 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
 
     if (!info.hasValues) {
         char* ip = get_local_ips();
-        int r = printf("[%s]:\n> %s\n> %s\n", ip, "no values to draw.", sendreq_error_to_str(errors));
+        int r = printf("@ %-30s\n> %-30s\n> %-30s\n", ip, "no values to draw.", sendreq_error_to_str(errors));
         free(ip);
         return r;
     }
