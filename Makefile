@@ -5,7 +5,7 @@ DEBUG_ARGS     = -D DEBUG -g
 DEBUGFULL_ARGS = -D DEBUG -D DEBUGFULL -g
 QUICK_ARGS     = -D DEBUG -D QUICK -g
 TEST_ARGS      = -g
-RELEASE_ARGS   = -Wall -Wextra -O2
+RELEASE_ARGS   = -Wall -Wextra -O2 -s
 LIBS = -pthread
 OUTPUT = bas-server
 
