@@ -1,5 +1,34 @@
 const txt_input = document.getElementById('txt_input');
 
+
+function bas_heat_on() {
+    fetch('/api/bas_heat_on')
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error fetching data:', error));
+}
+
+function bas_heat_off() {
+    fetch('/api/bas_heat_off')
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error fetching data:', error));
+}
+
+function bas_gas_on() {
+    fetch('/api/bas_gas_on')
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error fetching data:', error));
+}
+
+function bas_gas_off() {
+    fetch('/api/bas_gas_off')
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error fetching data:', error));
+}
+
 function fetch_state() {
     fetch("/api/state")
         .then(response => response.json())
@@ -126,22 +155,22 @@ const term = document.getElementById("term");
 function connectWebSocket() {
     ws = new WebSocket("ws://" + document.domain + ":8001/ws");
 
-    ws.onopen = function () {
+    ws.onopen = function() {
         term.style.backgroundColor = "#000000";
     };
 
-    ws.onmessage = function (event) {
+    ws.onmessage = function(event) {
         const json = JSON.parse(event.data);
         term.innerHTML = json.term;
         drawTemperatureGradient(json.Tmin, json.Tmax);
     };
 
-    ws.onerror = function () {
+    ws.onerror = function() {
         term.style.backgroundColor = "#600000";
         setTimeout(connectWebSocket, reconnectInterval);
     };
 
-    ws.onclose = function () {
+    ws.onclose = function() {
         term.style.backgroundColor = "#400000";
         setTimeout(connectWebSocket, reconnectInterval);
     };
@@ -149,4 +178,3 @@ function connectWebSocket() {
 
 // Start WebSocket connection
 connectWebSocket();
-

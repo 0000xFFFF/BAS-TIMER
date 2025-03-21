@@ -12,6 +12,17 @@ body {
     color: #DB2828;
 }
 
+#main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    min-height: calc(100vh - 25px);
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 50px;
+    box-sizing: border-box;
+}
 
 .c0 {
     display: flex;
@@ -142,4 +153,3 @@ button:active {
     box-shadow: 5px 5px 0 black;
     border-radius: 2px;
 }
-
