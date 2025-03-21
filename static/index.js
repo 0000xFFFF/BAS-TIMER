@@ -151,6 +151,7 @@ function drawTemperatureGradient(temp_min, temp_max) {
 let ws;
 let reconnectInterval = 3000; // Initial reconnect interval (1s)
 const term = document.getElementById("term");
+let reconnectTimeout = null;
 
 function connectWebSocket() {
     ws = new WebSocket("ws://" + document.domain + ":8001/ws");
@@ -167,12 +168,12 @@ function connectWebSocket() {
 
     ws.onerror = function() {
         term.style.backgroundColor = "#600000";
-        setTimeout(connectWebSocket, reconnectInterval);
+        if (!reconnectTimeout) { reconnectTimeout = setTimeout(connectWebSocket, reconnectInterval); }
     };
 
     ws.onclose = function() {
         term.style.backgroundColor = "#400000";
-        setTimeout(connectWebSocket, reconnectInterval);
+        if (!reconnectTimeout) { reconnectTimeout = setTimeout(connectWebSocket, reconnectInterval); }
     };
 }
 
