@@ -167,9 +167,8 @@ int sendreq(const char* url, int log, int remember_response) {
         logger_errors_write("%s -- %s\n", request_url, sendreq_error_to_str(s_errors));
     }
 
-    int r = s_errors == 0;
     pthread_mutex_unlock(&s_sendreq_mutex);
-    return r;
+    return s_errors;
 }
 
 double extract(struct mg_str json_body, const char* label) {

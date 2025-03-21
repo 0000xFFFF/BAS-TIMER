@@ -73,25 +73,25 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data) {
 
     if (mg_match(hm->uri, mg_str("/api/bas_heat_on"), NULL)) {
         int r = sendreq(URL_HEAT_ON, 1, 0);
-        mg_http_reply(c, 200, "", "bas_heat_on - %s", sendreq_error_to_str(r));
+        mg_http_reply(c, 200, "Content-Type: text/plain", "bas_heat_on - %s", sendreq_error_to_str(r));
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_heat_off"), NULL)) {
         int r = sendreq(URL_HEAT_OFF, 1, 0);
-        mg_http_reply(c, 200, "", "bas_heat_off - %s", sendreq_error_to_str(r));
+        mg_http_reply(c, 200, "Content-Type: text/plain", "bas_heat_off - %s", sendreq_error_to_str(r));
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_gas_on"), NULL)) {
         int r = sendreq(URL_GAS_ON, 1, 0);
-        mg_http_reply(c, 200, "", "bas_gas_on - %s", sendreq_error_to_str(r));
+        mg_http_reply(c, 200, "Content-Type: text/plain", "bas_gas_on - %s", sendreq_error_to_str(r));
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_gas_off"), NULL)) {
         int r = sendreq(URL_GAS_OFF, 1, 0);
-        mg_http_reply(c, 200, "", "bas_gas_off - %s", sendreq_error_to_str(r));
+        mg_http_reply(c, 200, "Content-Type: text/plain", "bas_gas_off - %s", sendreq_error_to_str(r));
         return;
     }
 

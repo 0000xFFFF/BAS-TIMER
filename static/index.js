@@ -149,7 +149,7 @@ function drawTemperatureGradient(temp_min, temp_max) {
 }
 
 let ws;
-let reconnectInterval = 1000; // Initial reconnect interval (1s)
+let reconnectInterval = 3000; // Initial reconnect interval (1s)
 const term = document.getElementById("term");
 
 function connectWebSocket() {
