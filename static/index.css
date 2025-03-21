@@ -17,7 +17,6 @@ body {
     justify-content: center;
     align-items: center;
     width: fit-content;
-    min-height: calc(100vh - 25px);
     margin: 0 auto;
     padding: 20px;
     border-radius: 50px;

@@ -180,3 +180,40 @@ function connectWebSocket() {
 
 // Start WebSocket connection
 connectWebSocket();
+
+
+
+
+function zoomOutOnMobile() {
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+        let metaTag = document.querySelector("meta[name=viewport]");
+        if (!metaTag) {
+            metaTag = document.createElement("meta");
+            metaTag.name = "viewport";
+            document.head.appendChild(metaTag);
+        }
+
+        // Get the main element's dimensions
+        const main = document.getElementById("main");
+        const mainWidth = main.offsetWidth;
+        const mainHeight = main.offsetHeight;
+
+        // Get the viewport's width and height
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Set the scale factor to make sure the main div fits
+        // Calculate how much we need to zoom out
+        const scaleFactorWidth = viewportWidth / mainWidth;
+        const scaleFactorHeight = viewportHeight / mainHeight;
+
+        // Set a more limited scale factor to zoom out less aggressively
+        const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight, 0.45); // Try 50% zoom-out max
+
+        // Set the viewport meta tag with the calculated scale factor
+        metaTag.content = `width=device-width, initial-scale=${scaleFactor}, maximum-scale=1.0, minimum-scale=0.06, user-scalable=yes`;
+    }
+}
+
+// Run on page load
+window.addEventListener("load", zoomOutOnMobile);
