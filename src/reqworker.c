@@ -15,11 +15,11 @@
 #include <string.h>
 #include <time.h>
 
-#define URL_VARS "http://192.168.1.250/isc/get_var_js.aspx?StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&mod_rada=&mod_rezim=&__Time=&__Date=&Jeftina_tarifa=&grejanje_off=&Alarm_tank=&Alarm_solar=&STATE_Preklopka=&SESSIONID=-1"
-#define URL_OFF "http://192.168.1.250/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1"
-#define URL_ON "http://192.168.1.250/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1"
-#define URL_GAS_OFF "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=0,-1&=&SESSIONID=-1"
-#define URL_GAS_ON "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1"
+const char* URL_VARS = "http://192.168.1.250/isc/get_var_js.aspx?StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&mod_rada=&mod_rezim=&__Time=&__Date=&Jeftina_tarifa=&grejanje_off=&Alarm_tank=&Alarm_solar=&STATE_Preklopka=&SESSIONID=-1";
+const char* URL_HEAT_OFF = "http://192.168.1.250/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1";
+const char* URL_HEAT_ON = "http://192.168.1.250/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1";
+const char* URL_GAS_OFF = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=0,-1&=&SESSIONID=-1";
+const char* URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1";
 
 static const char* s_url = NULL;
 static const uint64_t s_timeout_ms = 1500;
@@ -143,7 +143,12 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
     }
 }
 
+
+static pthread_mutex_t s_sendreq_mutex;
+
 int sendreq(const char* url, int log, int remember_response) {
+    pthread_mutex_lock(&s_sendreq_mutex);
+
     char request_url[REQUEST_URL_BUFFER_SIZE];
     snprintf(request_url, REQUEST_URL_BUFFER_SIZE, "%s&_=%lld", url, GLOBAL_UNIX_COUNTER);
     if (log) { logger_requests_write("%s\n", request_url); }
@@ -162,7 +167,9 @@ int sendreq(const char* url, int log, int remember_response) {
         logger_errors_write("%s -- %s\n", request_url, sendreq_error_to_str(s_errors));
     }
 
-    return s_errors == 0;
+    int r = s_errors == 0;
+    pthread_mutex_unlock(&s_sendreq_mutex);
+    return r;
 }
 
 double extract(struct mg_str json_body, const char* label) {
@@ -262,7 +269,7 @@ void do_logic_timer(int mod_rada) {
                     snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "󱫐 %s 󱪯", elap);
                     free(elap);
                 }
-                sendreq(URL_OFF, 1, 0);
+                sendreq(URL_HEAT_OFF, 1, 0);
             }
         } else {
             g_auto_timer_started = 1;

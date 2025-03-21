@@ -1,6 +1,12 @@
 #ifndef REQWORKER_H
 #define REQWORKER_H
 
+extern const char* URL_VARS;
+extern const char* URL_HEAT_OFF;
+extern const char* URL_HEAT_ON;
+extern const char* URL_GAS_OFF;
+extern const char* URL_GAS_ON;
+
 struct bas_info {
 
     int hasValues; // to check if struct is empty or not
@@ -31,6 +37,7 @@ struct bas_info {
     int TminLT;
 };
 
+int sendreq(const char* url, int log, int remember_response);
 void init_reqworker();
 void reqworker_do_work();
 char* sendreq_error_to_str(int e);
