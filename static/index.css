@@ -24,21 +24,21 @@ body {
     box-sizing: border-box;
 }
 
-.c0 {
+.flex-row {
     display: flex;
     flex-direction: row;
-    gap: 5px;
+    gap: 10px;
     align-items: center;
 }
 
-.c_col {
+.flex-col {
     display: flex;
     flex-direction: column;
     gap: 15px;
     align-items: center;
 }
 
-.c1 {
+.f_sb {
     display: flex;
     gap: 10px;
     justify-content: space-between;
@@ -56,13 +56,11 @@ body {
 .text {
     color: #DB2828;
     font-size: 20px;
-    font-weight: bold;
     text-shadow: 3px 3px 0 black;
 }
 
 a {
     color: #DB2828;
-    font-weight: bold;
     text-shadow: 3px 3px 0 black;
 }
 
@@ -70,7 +68,6 @@ a {
     background-color: #200000;
     font-size: 20px;
     color: white;
-    font-weight: bold;
     border-top: 2px double #ff0000;
     border-left: 2px double #ff0000;
     border-right: 2px double #800000;
@@ -95,7 +92,6 @@ button {
     padding: 7px;
     border-radius: 2px;
     background-color: #600000;
-    font-weight: bold;
     border-top: 2px double #ff0000;
     border-left: 2px double #ff0000;
     border-right: 2px double #800000;

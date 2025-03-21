@@ -13,45 +13,55 @@
 
 <body>
     <div id="main">
-        <div class="c1">
+        <div class="flex-row">
             <div>
-                <div id="links">
-                    <a href="/errors">errors.log</a>
-                    <a href="/requests">requests.log</a>
-                    <a href="/changes">changes.log</a>
-                </div>
-                <div id="settings" class="c1">
-                    <div>
-                        <div id="settings_time" class="c1">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span class="text">Seconds:</span>
-                                <input type="text" id="txt_input">
-                                <button id="button_update" onclick="updateTime()">Update</button>
+                <div class="flex-row">
+                    <div id="settings" class="flex-col">
+                        <div>
+                            <div id="settings_time" class="flex-row">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="text">Seconds:</span>
+                                    <input type="text" id="txt_input">
+                                    <button id="button_update" onclick="updateTime()">Update</button>
+                                </div>
+                            </div>
+
+                            <div class="flex-col">
+                                <div class="flex-row">
+                                    <button id="button_1min" class="btn_time" onclick="setTime(this)">1 min</button>
+                                    <button id="button_2min" class="btn_time" onclick="setTime(this)">2 min</button>
+                                    <button id="button_3min" class="btn_time" onclick="setTime(this)">3 min</button>
+                                    <button id="button_5min" class="btn_time" onclick="setTime(this)">5 min</button>
+                                </div>
+                                <div class="flex-row">
+                                    <button id="button_8min" class="btn_time" onclick="setTime(this)">8 min</button>
+                                    <button id="button_10min" class="btn_time" onclick="setTime(this)">10 min</button>
+                                    <button id="button_15min" class="btn_time" onclick="setTime(this)">15 min</button>
+                                    <button id="button_20min" class="btn_time" onclick="setTime(this)">20 min</button>
+                                </div>
                             </div>
                         </div>
 
-                        <div id="times_cont" class="c1">
-                            <button id="button_5min" class="btn_time" onclick="setTime(300)">5 min</button>
-                            <button id="button_8min" class="btn_time" onclick="setTime(480)">8 min</button>
-                            <button id="button_10min" class="btn_time" onclick="setTime(600)">10 min</button>
-                            <button id="button_15min" class="btn_time" onclick="setTime(900)">15 min</button>
-                            <button id="button_20min" class="btn_time" onclick="setTime(1200)">20 min</button>
-                            <button id="button_25min" class="btn_time" onclick="setTime(1500)">25 min</button>
+                        <div class="flex-row">
+                            <div class="flex-col">
+                                <button id="toggleTimerButton" onclick="toggleAutoTimer()">󱎫 Auto Timer</button>
+                                <button id="toggleGasButton" onclick="toggleAutoGas()">󰙇 Auto Gas</button>
+                            </div>
+                            <div class="flex-col">
+                                <button id="bas_heat_on" onclick="bas_heat_on()">󰐸 Heat On</button>
+                                <button id="bas_heat_off" onclick="bas_heat_off()">󰫗 Heat Off</button>
+                            </div>
+                            <div class="flex-col">
+                                <button id="bas_gas_on" onclick="bas_gas_on()">󰈸 Gas On</button>
+                                <button id="bas_gas_off" onclick="bas_gas_off()">󰙇 Gas Off</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="bt_cont" class="c_col">
-                        <button id="toggleTimerButton" onclick="toggleAutoTimer()">󱎫 Auto Timer</button>
-                        <button id="toggleGasButton" onclick="toggleAutoGas()">󰙇 Auto Gas</button>
-                    </div>
-
-                    <div id="bt_cont" class="c_col">
-                        <button id="bas_heat_on" onclick="bas_heat_on()">󰐸 Heat On</button>
-                        <button id="bas_heat_off" onclick="bas_heat_off()">󰫗 Heat Off</button>
-                    </div>
-                    <div id="bt_cont" class="c_col">
-                        <button id="bas_gas_on" onclick="bas_gas_on()">󰈸 Gas On</button>
-                        <button id="bas_gas_off" onclick="bas_gas_off()">󰙇 Gas Off</button>
+                    <div id="links" class="flex-col">
+                        <a href="/errors">errors.log</a>
+                        <a href="/requests">requests.log</a>
+                        <a href="/changes">changes.log</a>
                     </div>
                 </div>
 

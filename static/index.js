@@ -73,7 +73,8 @@ txt_input.addEventListener("keydown", function(event) {
 });
 
 
-function setTime(seconds) {
+function setTime(btn) {
+    const seconds = parseInt(btn.textContent) * 60;
     txt_input.value = seconds;
     updateTime(seconds);
 }
