@@ -7,6 +7,8 @@
 static struct mg_connection* ws_connections[WS_MAX_CONN]; // Array to track WebSocket connections
 atomic_int g_ws_conn_count = 0;                           // Counter for active connections
 
+static uint8_t ws_connections_ips[WS_MAX_CONN][16]; // Array to track WebSocket connections
+
 // Helper function to emit a message to all WebSocket clients
 void websocket_emit(const char* data, int len) {
     // Send to all active WebSocket connections
@@ -33,6 +35,8 @@ void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
         // WebSocket handshake completed
         DPL("WebSocket connection established\n");
 
+        D(printf("new ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
+
         // // Disable Nagle's Algorithm (TCP_NODELAY)
         // int fd = (int)(intptr_t)c->fd;
         // int flag = 1;
@@ -41,7 +45,19 @@ void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
         // Store the connection (same code as in websocket_handler)
         int count = atomic_load(&g_ws_conn_count);
         if (count < WS_MAX_CONN) {
-            ws_connections[count++] = c;
+            ws_connections[count] = c;
+
+            for (int i = 0; i < count; i++) {
+                if (memcmp(ws_connections_ips[i], c->rem.ip, 16) == 0) {
+                    D(printf("drop existing ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
+                    return;
+                }
+            }
+
+            memcpy(ws_connections_ips[count], c->rem.ip, 16);
+            D(printf("added new ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
+
+            count++;
             atomic_store(&g_ws_conn_count, count);
         }
     } else if (ev == MG_EV_WS_MSG) {
@@ -63,6 +79,8 @@ void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
                     ws_connections[j] = ws_connections[j + 1];
                 }
                 ws_connections[count - 1] = NULL;
+                D(printf("removed ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
+                memset(ws_connections_ips[count - 1], 0, 16);
                 count--;
                 atomic_store(&g_ws_conn_count, count);
                 break;
