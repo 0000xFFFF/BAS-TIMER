@@ -7,8 +7,6 @@
 static struct mg_connection* ws_connections[WS_MAX_CONN]; // Array to track WebSocket connections
 atomic_int g_ws_conn_count = 0;                           // Counter for active connections
 
-static uint8_t ws_connections_ips[WS_MAX_CONN][16]; // Array to track WebSocket connections
-
 // Helper function to emit a message to all WebSocket clients
 void websocket_emit(const char* data, int len) {
     // Send to all active WebSocket connections
@@ -41,20 +39,25 @@ void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
         // int fd = (int)(intptr_t)c->fd;
         // int flag = 1;
         // setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(int));
+        int count = atomic_load(&g_ws_conn_count);
+
+        for (int i = 0; i < count; i++) {
+            if (memcmp(ws_connections[i]->rem.ip, c->rem.ip, 16) == 0) {
+                D(printf("drop existing ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
+                // Send a WebSocket close frame
+                mg_ws_send(c, "", 0, WEBSOCKET_OP_CLOSE);
+
+                // Close the connection
+                c->is_closing = 1;      // Mark for closure
+                mg_mgr_poll(c->mgr, 0); // Process the closure
+                return;
+            }
+        }
 
         // Store the connection (same code as in websocket_handler)
-        int count = atomic_load(&g_ws_conn_count);
         if (count < WS_MAX_CONN) {
+
             ws_connections[count] = c;
-
-            for (int i = 0; i < count; i++) {
-                if (memcmp(ws_connections_ips[i], c->rem.ip, 16) == 0) {
-                    D(printf("drop existing ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
-                    return;
-                }
-            }
-
-            memcpy(ws_connections_ips[count], c->rem.ip, 16);
             D(printf("added new ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
 
             count++;
@@ -73,14 +76,13 @@ void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
         // Remove from our connection array
         int count = atomic_load(&g_ws_conn_count);
         for (int i = 0; i < count; i++) {
-            if (ws_connections[i] == c) {
+            if (memcmp(ws_connections[i]->rem.ip, c->rem.ip, 16) == 0) {
                 D(printf("removed ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
                 // Shift all remaining connections
                 for (int j = i; j < count - 1; j++) {
                     ws_connections[j] = ws_connections[j + 1];
                 }
                 ws_connections[count - 1] = NULL;
-                memset(ws_connections_ips[count - 1], 0, 16);
                 count--;
                 atomic_store(&g_ws_conn_count, count);
                 break;
