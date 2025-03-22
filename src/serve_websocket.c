@@ -74,12 +74,12 @@ void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
         int count = atomic_load(&g_ws_conn_count);
         for (int i = 0; i < count; i++) {
             if (ws_connections[i] == c) {
+                D(printf("removed ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
                 // Shift all remaining connections
                 for (int j = i; j < count - 1; j++) {
                     ws_connections[j] = ws_connections[j + 1];
                 }
                 ws_connections[count - 1] = NULL;
-                D(printf("removed ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
                 memset(ws_connections_ips[count - 1], 0, 16);
                 count--;
                 atomic_store(&g_ws_conn_count, count);
