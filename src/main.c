@@ -33,7 +33,7 @@ extern double g_temp_min;
 
 extern struct bas_info g_info;
 
-void* main_worker() {
+static void* main_worker(void* sig) {
 
     DPL("WORKER START");
 
@@ -71,10 +71,10 @@ void* main_worker() {
     }
 
     DPL("WORKER EXIT (CLEANUP)");
-    return NULL;
 }
 
-static void signal_handler() {
+static void signal_handler(int sig) {
+    printf("Caught signal: %d\n", sig);
     running = 0;
     term_cursor_show();
 }
