@@ -69,15 +69,16 @@ enum PUMP_STATUS {
 
 int pump_is_on(int i)
 {
-    return i == PUMP_STATUS_OPEN_START;
+    return i == PUMP_STATUS_OPEN_START || i == PUMP_STATUS_PASSIVE;
 }
 
 char* draw_pump_bars(int value)
 {
 
     switch (value) {
-        case PUMP_STATUS_AUTO:       return ctext_fg(COLOR_OFF, "A"); break;
-        case PUMP_STATUS_PASSIVE:    return ctext_fg(COLOR_OFF, "P"); break;
+        case PUMP_STATUS_AUTO:       return ctext_fg(36, "A"); break;
+
+        case PUMP_STATUS_PASSIVE:
         case PUMP_STATUS_OPEN_START: return ctext_fg_con(COLOR_ON, get_frame(&spinner_bars, 0)); break;
 
         default:
