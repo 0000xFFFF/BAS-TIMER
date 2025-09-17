@@ -9,7 +9,8 @@
 #include <time.h>
 #include <unistd.h>
 
-void change_to_bin_dir() {
+void change_to_bin_dir()
+{
     char path[PATH_MAX];
     ssize_t len = readlink("/proc/self/exe", path, sizeof(path) - 1);
 
@@ -18,13 +19,14 @@ void change_to_bin_dir() {
         char* dir = dirname(path); // Extract directory part
 
         if (chdir(dir) != 0) { perror("chdir failed"); }
-
-    } else {
+    }
+    else {
         perror("readlink failed");
     }
 }
 
-long long timestamp() {
+long long timestamp()
+{
     struct timeval tv;
     gettimeofday(&tv, NULL); // Get the current time
 
@@ -35,7 +37,8 @@ long long timestamp() {
 }
 
 #define TIME_BUFFER_SIZE 32
-char* get_current_time() {
+char* get_current_time()
+{
     time_t rawtime;
     struct tm* timeinfo;
 
@@ -47,7 +50,8 @@ char* get_current_time() {
     return strdup(buffer);
 }
 
-int get_current_hour() {
+int get_current_hour()
+{
     time_t t;
     struct tm* tm_info;
     time(&t);                // Get current time
@@ -55,7 +59,8 @@ int get_current_hour() {
     return tm_info->tm_hour; // Extract the hour in 24-hour format
 }
 
-char* elapsed_str(time_t f, time_t s) {
+char* elapsed_str(time_t f, time_t s)
+{
     time_t elapsed = f - s;
     struct tm* tm_info = gmtime(&elapsed);
 
@@ -71,7 +76,8 @@ char* elapsed_str(time_t f, time_t s) {
 }
 
 #define BUFFER_SIZE 1024
-char* get_local_ips() {
+char* get_local_ips()
+{
     char* buffer = malloc(BUFFER_SIZE);
 
     char* command =
@@ -102,43 +108,44 @@ char* get_local_ips() {
     return buffer;
 }
 
-void escape_quotes(const char* input, char* output) {
+void escape_quotes(const char* input, char* output)
+{
     int i = 0, j = 0;
 
     // Iterate through each character in the input string
     while (input[i] != '\0') {
         switch (input[i]) {
-        case '"':
-            output[j++] = '\\';
-            output[j++] = '"'; // Escape double quote
-            break;
-        case '\\':
-            output[j++] = '\\';
-            output[j++] = '\\'; // Escape backslash
-            break;
-        case '\b':
-            output[j++] = '\\';
-            output[j++] = 'b'; // Escape backspace
-            break;
-        case '\f':
-            output[j++] = '\\';
-            output[j++] = 'f'; // Escape form feed
-            break;
-        case '\n':
-            output[j++] = '\\';
-            output[j++] = 'n'; // Escape newline
-            break;
-        case '\r':
-            output[j++] = '\\';
-            output[j++] = 'r'; // Escape carriage return
-            break;
-        case '\t':
-            output[j++] = '\\';
-            output[j++] = 't'; // Escape tab
-            break;
-        default:
-            output[j++] = input[i]; // Copy other characters as is
-            break;
+            case '"':
+                output[j++] = '\\';
+                output[j++] = '"'; // Escape double quote
+                break;
+            case '\\':
+                output[j++] = '\\';
+                output[j++] = '\\'; // Escape backslash
+                break;
+            case '\b':
+                output[j++] = '\\';
+                output[j++] = 'b'; // Escape backspace
+                break;
+            case '\f':
+                output[j++] = '\\';
+                output[j++] = 'f'; // Escape form feed
+                break;
+            case '\n':
+                output[j++] = '\\';
+                output[j++] = 'n'; // Escape newline
+                break;
+            case '\r':
+                output[j++] = '\\';
+                output[j++] = 'r'; // Escape carriage return
+                break;
+            case '\t':
+                output[j++] = '\\';
+                output[j++] = 't'; // Escape tab
+                break;
+            default:
+                output[j++] = input[i]; // Copy other characters as is
+                break;
         }
         i++;
     }
