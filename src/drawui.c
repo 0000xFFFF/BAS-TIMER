@@ -18,7 +18,8 @@ char* weather[] = {
     CTEXT_FG(81, ""),
     CTEXT_FG(87, "")};
 
-char* temp_to_emoji(double temp) {
+char* temp_to_emoji(double temp)
+{
     if (temp > 40.0) return weather[0];  //  super hot
     if (temp >= 30.0) return weather[1]; //  really hot
     if (temp >= 25.0) return weather[2]; // 󰖨 hot
@@ -29,11 +30,13 @@ char* temp_to_emoji(double temp) {
 }
 
 char* clock_hours[] = {"", "", "", "", "", "", "", "", "", "", "", ""};
-char* hour_to_clock(int hour) {
+char* hour_to_clock(int hour)
+{
     return clock_hours[hour % 12];
 }
 
-char* hour_to_emoji(int hour) {
+char* hour_to_emoji(int hour)
+{
     if (hour >= 5 && hour <= 7) return get_frame(&spinner_sunrise, 1); // Sunrise
     if (hour >= 7 && hour < 12) return "";                          // Morning
     if (hour >= 12 && hour < 17) return "󰖙";                        // Afternoon
@@ -42,7 +45,8 @@ char* hour_to_emoji(int hour) {
     return "󰖔";                                                     // Night
 }
 
-int hour_to_color(int hour) {
+int hour_to_color(int hour)
+{
     if (hour >= 5 && hour < 7) return 214;   // Orange (Sunrise)
     if (hour >= 7 && hour < 12) return 220;  // Bright Yellow (Morning)
     if (hour >= 12 && hour < 17) return 208; // Deep Orange (Afternoon)
@@ -51,15 +55,38 @@ int hour_to_color(int hour) {
     return 33;                               // Deep Blue (Night)
 }
 
-char* draw_heat(int isOn) {
+char* draw_heat(int isOn)
+{
     return isOn ? ctext_fg(COLOR_ON, get_frame(&spinner_heat, 1)) : ctext_fg(COLOR_OFF, "󱪯");
 }
 
-char* draw_pump_bars(int isOn) {
-    return isOn ? ctext_fg_con(COLOR_ON, get_frame(&spinner_bars, 0)) : ctext_fg(COLOR_OFF, "");
+enum PUMP_STATUS {
+    PUMP_STATUS_AUTO = 0,
+    PUMP_STATUS_PASSIVE = 1,
+    PUMP_STATUS_CLOSE_STOP = 2,
+    PUMP_STATUS_OPEN_START = 3
+};
+
+int pump_is_on(int i)
+{
+    return i == PUMP_STATUS_OPEN_START;
 }
 
-char* bool_to_check(int isOn) {
+char* draw_pump_bars(int value)
+{
+
+    switch (value) {
+        case PUMP_STATUS_AUTO:       return ctext_fg(COLOR_OFF, "A"); break;
+        case PUMP_STATUS_PASSIVE:    return ctext_fg(COLOR_OFF, "P"); break;
+        case PUMP_STATUS_OPEN_START: return ctext_fg_con(COLOR_ON, get_frame(&spinner_bars, 0)); break;
+
+        default:
+        case PUMP_STATUS_CLOSE_STOP: return ctext_fg(COLOR_OFF, ""); break;
+    }
+}
+
+char* bool_to_check(int isOn)
+{
     return isOn ? ctext_fg(COLOR_ON, "") : ctext_fg(COLOR_OFF, "");
 }
 
@@ -134,11 +161,11 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
     char* label_Tmin     = CTEXT_FG(226 , "  Min "); char* Tmin     = temp_to_ctext_bg_con(info.Tmin, &g_temp_buf_min, &g_temp_buf_max);
     char* label_Tfs      = CTEXT_FG(110 , "Circ. ");  char* Tfs      = temp_to_ctext_bg_con(info.Tfs, &g_temp_circ_min, &g_temp_circ_max);
 
-    char* moving_emoji_heat  = ctext_fg(212 , info.StatusPumpe6 ? get_frame(&spinner_heat_pump, 1) : "󱩃");
-    char* moving_emoji_gas   = ctext_fg(203 , info.StatusPumpe4 ? get_frame(&spinner_fire,      1) : "󰙇");
-    char* moving_emoji_circ  = ctext_fg(168 , info.StatusPumpe3 ? get_frame(&spinner_circle,    1) : "");
-    char* moving_emoji_solar = ctext_fg(224 , info.StatusPumpe7 ? get_frame(&spinner_solar,     1) : "");
-    char* moving_emoji_elec  = ctext_fg( 78 , info.StatusPumpe5 ? get_frame(&spinner_lightning, 1) : "󰠠");
+    char* moving_emoji_heat  = ctext_fg(212 , pump_is_on(info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃");
+    char* moving_emoji_gas   = ctext_fg(203 , pump_is_on(info.StatusPumpe4) ? get_frame(&spinner_fire,      1) : "󰙇");
+    char* moving_emoji_circ  = ctext_fg(168 , pump_is_on(info.StatusPumpe3) ? get_frame(&spinner_circle,    1) : "");
+    char* moving_emoji_solar = ctext_fg(224 , pump_is_on(info.StatusPumpe7) ? get_frame(&spinner_solar,     1) : "");
+    char* moving_emoji_elec  = ctext_fg( 78 , pump_is_on(info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠");
 
     char* label_mode      = CTEXT_FG(222 , "   Mode 󱪯"); char* mode      = draw_heat(info.mod_rada);
     char* label_regime    = CTEXT_FG(192 , " Regime 󱖫"); char* regime    = cnum_fg(192, info.mod_rezim);
