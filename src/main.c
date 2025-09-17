@@ -3,12 +3,10 @@
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 #include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "debug.h"
 #include "globals.h"
@@ -34,6 +32,8 @@ extern double g_temp_min;
 extern struct bas_info g_info;
 
 static void* main_worker(void* sig) {
+
+    UNUSED(sig);
 
     DPL("WORKER START");
 
@@ -71,6 +71,7 @@ static void* main_worker(void* sig) {
     }
 
     DPL("WORKER EXIT (CLEANUP)");
+    return NULL;
 }
 
 static void signal_handler(int sig) {
