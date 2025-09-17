@@ -1,8 +1,14 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-#define COLOR_ON 46
-#define COLOR_OFF 255
+#define COLOR_ON_AUTO 48
+#define COLOR_ON_MANUAL 46
+
+#define COLOR_OFF_AUTO 255
+#define COLOR_OFF_MANUAL 203
+
+#define COLOR_ON COLOR_ON_AUTO
+#define COLOR_OFF COLOR_OFF_AUTO
 
 #define TEMP_COLORS_SIZE 18
 extern int TEMP_COLORS[TEMP_COLORS_SIZE];

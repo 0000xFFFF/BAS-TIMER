@@ -61,28 +61,28 @@ char* draw_heat(int isOn)
 }
 
 enum PUMP_STATUS {
-    PUMP_STATUS_AUTO = 0,
-    PUMP_STATUS_PASSIVE = 1,
-    PUMP_STATUS_CLOSE_STOP = 2,
-    PUMP_STATUS_OPEN_START = 3
+    PUMP_STATUS_AUTO_OFF = 0,
+    PUMP_STATUS_AUTO_ON = 1,
+    PUMP_STATUS_MANUAL_OFF = 2,
+    PUMP_STATUS_MANUAL_ON = 3
 };
 
 int pump_is_on(int i)
 {
-    return i == PUMP_STATUS_OPEN_START || i == PUMP_STATUS_PASSIVE;
+    return i == PUMP_STATUS_AUTO_ON || i == PUMP_STATUS_MANUAL_ON;
 }
 
 char* draw_pump_bars(int value)
 {
 
     switch (value) {
-        case PUMP_STATUS_AUTO:       return ctext_fg(36, "A"); break;
 
-        case PUMP_STATUS_PASSIVE:
-        case PUMP_STATUS_OPEN_START: return ctext_fg_con(COLOR_ON, get_frame(&spinner_bars, 0)); break;
+        case PUMP_STATUS_AUTO_ON:    return ctext_fg_con(COLOR_ON_AUTO, get_frame(&spinner_bars, 0)); break;
+        case PUMP_STATUS_MANUAL_ON:  return ctext_fg_con(COLOR_ON_MANUAL, get_frame(&spinner_bars, 0)); break;
 
         default:
-        case PUMP_STATUS_CLOSE_STOP: return ctext_fg(COLOR_OFF, ""); break;
+        case PUMP_STATUS_AUTO_OFF:   return ctext_fg(COLOR_OFF_AUTO, ""); break;
+        case PUMP_STATUS_MANUAL_OFF: return ctext_fg(COLOR_OFF_MANUAL, ""); break;
     }
 }
 
