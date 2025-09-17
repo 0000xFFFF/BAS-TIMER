@@ -7,7 +7,8 @@ extern atomic_int g_auto_timer;
 extern atomic_int g_auto_gas;
 extern atomic_int g_auto_timer_seconds;
 
-void serve_site(struct mg_connection* c, int ev, void* ev_data) {
+void serve_site(struct mg_connection* c, int ev, void* ev_data)
+{
 
     if (ev != MG_EV_HTTP_MSG) { return; }
 
@@ -24,10 +25,12 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data) {
             if (value > 0) { // Validate that it's a positive integer
                 atomic_store(&g_auto_timer_seconds, value);
                 mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", atomic_load(&g_auto_timer_seconds));
-            } else {
+            }
+            else {
                 mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}");
             }
-        } else {
+        }
+        else {
             mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}");
         }
         return;

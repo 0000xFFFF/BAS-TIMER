@@ -24,9 +24,9 @@ const char* URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=
 static const char* s_url = NULL;
 static const uint64_t s_timeout_ms = 1500;
 
-#define ERROR_NONE 0
+#define ERROR_NONE    0
 #define ERROR_TIMEOUT 1
-#define ERROR_CONN 2
+#define ERROR_CONN    2
 static int s_errors = 0;
 static int s_remember_response = 0;
 static struct mg_str s_response_body = {0};
@@ -52,7 +52,8 @@ time_t g_history_gas_time_changed = 0;
 time_t g_history_gas_time_on = 0;
 time_t g_history_gas_time_off = 0;
 
-void init_reqworker() {
+void init_reqworker()
+{
     // for req
     GLOBAL_UNIX_COUNTER = timestamp();
 
@@ -64,17 +65,18 @@ void init_reqworker() {
     init_spinners();
 }
 
-char* sendreq_error_to_str(int e) {
+char* sendreq_error_to_str(int e)
+{
     switch (e) {
-    case 0:
-        return "no error";
-        break;
-    case 1:
-        return "timeout";
-        break;
-    case 2:
-        return "connection error";
-        break;
+        case 0:
+            return "no error";
+            break;
+        case 1:
+            return "timeout";
+            break;
+        case 2:
+            return "connection error";
+            break;
     }
     return "?";
 }
@@ -93,7 +95,8 @@ static char* REQUEST_FORMAT =
     "\r\n";
 
 // Print HTTP response and signal that we're done
-static void fn(struct mg_connection* c, int ev, void* ev_data) {
+static void fn(struct mg_connection* c, int ev, void* ev_data)
+{
     if (ev == MG_EV_OPEN) {
         // Connection created. Store connect expiration time in c->data
         *(uint64_t*)c->data = mg_millis() + s_timeout_ms;
@@ -143,10 +146,10 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
     }
 }
 
-
 static pthread_mutex_t s_sendreq_mutex;
 
-int sendreq(const char* url, int log, int remember_response) {
+int sendreq(const char* url, int log, int remember_response)
+{
     pthread_mutex_lock(&s_sendreq_mutex);
 
     char request_url[REQUEST_URL_BUFFER_SIZE];
@@ -171,7 +174,8 @@ int sendreq(const char* url, int log, int remember_response) {
     return s_errors;
 }
 
-double extract(struct mg_str json_body, const char* label) {
+double extract(struct mg_str json_body, const char* label)
+{
     D(printf("%s", json_body.buf));
     D(printf(" -- extract: %s", label));
     struct mg_str tok = mg_json_get_tok(json_body, label);
@@ -183,7 +187,8 @@ double extract(struct mg_str json_body, const char* label) {
     return value;
 }
 
-void update_history(int mod_rada, int StatusPumpe4) {
+void update_history(int mod_rada, int StatusPumpe4)
+{
 
     DPL("UPDATE HISTORY");
     time_t current_time;
@@ -198,7 +203,8 @@ void update_history(int mod_rada, int StatusPumpe4) {
             g_history_mode_time_on = g_history_mode_time_changed;
             logger_changes_write("mod_rada = %d\n", mod_rada);
             snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, " %s 󰐸", t);
-        } else {
+        }
+        else {
             g_history_mode_time_off = g_history_mode_time_changed;
             char e[100] = "\n";
             char p[100] = "";
@@ -228,7 +234,8 @@ void update_history(int mod_rada, int StatusPumpe4) {
             g_history_gas_time_on = g_history_gas_time_changed;
             logger_changes_write("StatusPumpe4 = %d\n", StatusPumpe4);
             snprintf(g_auto_gas_status, STATUS_BUFFER_SIZE, " %s ", t);
-        } else {
+        }
+        else {
             g_history_gas_time_off = g_history_gas_time_changed;
             char e[100] = "\n";
             char p[100] = "";
@@ -248,7 +255,8 @@ void update_history(int mod_rada, int StatusPumpe4) {
     free(t);
 }
 
-void do_logic_timer(int mod_rada) {
+void do_logic_timer(int mod_rada)
+{
 
     time_t current_time;
     time(&current_time);
@@ -270,7 +278,8 @@ void do_logic_timer(int mod_rada) {
                 }
                 sendreq(URL_HEAT_OFF, 1, 0);
             }
-        } else {
+        }
+        else {
             g_auto_timer_started = 1;
             snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%s 󱫌", t);
         }
@@ -279,7 +288,8 @@ void do_logic_timer(int mod_rada) {
     free(t);
 }
 
-void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE) {
+void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE)
+{
 
     char* t = get_current_time();
 
@@ -301,7 +311,8 @@ void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE) {
     free(t);
 }
 
-void remember_vars_do_action(int mod_rada, int StatusPumpe4, int TminLT, int TmidGE) {
+void remember_vars_do_action(int mod_rada, int StatusPumpe4, int TminLT, int TmidGE)
+{
     update_history(mod_rada, StatusPumpe4);
     do_logic_timer(mod_rada);
     do_logic_gas(StatusPumpe4, TminLT, TmidGE);
@@ -310,7 +321,8 @@ void remember_vars_do_action(int mod_rada, int StatusPumpe4, int TminLT, int Tmi
 extern double g_temp_buf_max;
 extern double g_temp_buf_min;
 
-void update_info() {
+void update_info()
+{
     GLOBAL_UNIX_COUNTER++;
 
     // get request, parse response
@@ -352,7 +364,8 @@ void update_info() {
 
 static int request_count = 0;
 
-void reqworker_do_work() {
+void reqworker_do_work()
+{
 
     request_count++;
 

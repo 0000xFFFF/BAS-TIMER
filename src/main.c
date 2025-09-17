@@ -31,7 +31,8 @@ extern double g_temp_min;
 
 extern struct bas_info g_info;
 
-static void* main_worker(void* sig) {
+static void* main_worker(void* sig)
+{
 
     UNUSED(sig);
 
@@ -44,7 +45,7 @@ static void* main_worker(void* sig) {
     struct timespec ts;
     ts.tv_sec = 0;
     ts.tv_nsec = 1000000000 * MAIN_WORKER_DRAW_SLEEP; // 1 milliseconds in nanoseconds
-    
+
     char html_buffer[1024 * 8] = {0};
     char html_buffer_escaped[1024 * 8 * 2] = {0};
     char emit_buffer[1024 * 8 * 2] = {0};
@@ -74,13 +75,15 @@ static void* main_worker(void* sig) {
     return NULL;
 }
 
-static void signal_handler(int sig) {
+static void signal_handler(int sig)
+{
     printf("Caught signal: %d\n", sig);
     running = 0;
     term_cursor_show();
 }
 
-int main() {
+int main()
+{
 
     DPL("MAIN START");
 

@@ -8,7 +8,8 @@ static struct mg_connection* ws_connections[WS_MAX_CONN]; // Array to track WebS
 atomic_int g_ws_conn_count = 0;                           // Counter for active connections
 
 // Helper function to emit a message to all WebSocket clients
-void websocket_emit(const char* data, int len) {
+void websocket_emit(const char* data, int len)
+{
     // Send to all active WebSocket connections
     for (int i = 0; i < atomic_load(&g_ws_conn_count); i++) {
         if (ws_connections[i] != NULL) {
@@ -17,7 +18,8 @@ void websocket_emit(const char* data, int len) {
     }
 }
 
-void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
+void serve_websocket(struct mg_connection* c, int ev, void* ev_data)
+{
 
     if (ev == MG_EV_HTTP_MSG) {
         struct mg_http_message* hm = (struct mg_http_message*)ev_data;
@@ -28,8 +30,8 @@ void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
             DPL("WS UPGRADE\n");
             mg_ws_upgrade(c, hm, NULL);
         }
-
-    } else if (ev == MG_EV_WS_OPEN) {
+    }
+    else if (ev == MG_EV_WS_OPEN) {
         // WebSocket handshake completed
         DPL("WebSocket connection established\n");
 
@@ -63,13 +65,14 @@ void serve_websocket(struct mg_connection* c, int ev, void* ev_data) {
             count++;
             atomic_store(&g_ws_conn_count, count);
         }
-    } else if (ev == MG_EV_WS_MSG) {
+    }
+    else if (ev == MG_EV_WS_MSG) {
         // WebSocket message handling
         struct mg_ws_message* wm = (struct mg_ws_message*)ev_data;
         D(printf("ECHO BACK WS RECV: %.*s\n", (int)wm->data.len, wm->data.buf));
         mg_ws_send(c, wm->data.buf, wm->data.len, WEBSOCKET_OP_TEXT); // echo back
-
-    } else if (ev == MG_EV_CLOSE) {
+    }
+    else if (ev == MG_EV_CLOSE) {
         // Connection closed handling
         DPL("Connection closed\n");
 

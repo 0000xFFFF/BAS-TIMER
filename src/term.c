@@ -5,26 +5,31 @@
 #include <stdlib.h>
 #include <string.h>
 
-void term_clear() {
+void term_clear()
+{
     system("clear");
 }
 
-void term_cursor_reset() {
+void term_cursor_reset()
+{
     printf("\033[0;0H");
     fflush(stdout);
 }
 
-void term_cursor_hide() {
+void term_cursor_hide()
+{
     printf("\033[?25l");
     fflush(stdout);
 }
 
-void term_cursor_show() {
+void term_cursor_show()
+{
     printf("\033[?25h");
     fflush(stdout);
 }
 
-void term_blank() {
+void term_blank()
+{
     term_cursor_hide();
     term_clear();
 }
@@ -38,7 +43,8 @@ typedef struct {
 } StyleState;
 
 // Convert 256-color index to RGB hex string
-void ansi_256_to_rgb(int color_index, char* result) {
+void ansi_256_to_rgb(int color_index, char* result)
+{
     if (color_index < 16) {
         // Basic 16 colors
         const char* basic_colors[] = {
@@ -47,25 +53,29 @@ void ansi_256_to_rgb(int color_index, char* result) {
             "#808080", "#ff0000", "#00ff00", "#ffff00",
             "#0000ff", "#ff00ff", "#00ffff", "#ffffff"};
         strcpy(result, basic_colors[color_index]);
-    } else if (16 <= color_index && color_index <= 231) {
+    }
+    else if (16 <= color_index && color_index <= 231) {
         // 6x6x6 color cube
         color_index -= 16;
         int r = (color_index / 36) * 51;
         int g = ((color_index % 36) / 6) * 51;
         int b = (color_index % 6) * 51;
         sprintf(result, "#%02x%02x%02x", r, g, b);
-    } else if (232 <= color_index && color_index <= 255) {
+    }
+    else if (232 <= color_index && color_index <= 255) {
         // Grayscale
         int shade = (color_index - 232) * 10 + 8;
         sprintf(result, "#%02x%02x%02x", shade, shade, shade);
-    } else {
+    }
+    else {
         // Default
         strcpy(result, "#ffffff");
     }
 }
 
 // Parse ANSI escape sequence and update style state
-void parse_ansi_sequence(const char* seq, StyleState* state) {
+void parse_ansi_sequence(const char* seq, StyleState* state)
+{
     state->has_style = false;
 
     char* sequence = strdup(seq);
@@ -80,11 +90,13 @@ void parse_ansi_sequence(const char* seq, StyleState* state) {
             state->bg_color[0] = '\0';
             state->bold = false;
             state->has_style = false;
-        } else if (code == 1) {
+        }
+        else if (code == 1) {
             // Bold
             state->bold = true;
             state->has_style = true;
-        } else if (code == 38) {
+        }
+        else if (code == 38) {
             // Foreground color
             token = strtok(NULL, ";");
             if (token != NULL && atoi(token) == 5) {
@@ -94,7 +106,8 @@ void parse_ansi_sequence(const char* seq, StyleState* state) {
                     state->has_style = true;
                 }
             }
-        } else if (code == 48) {
+        }
+        else if (code == 48) {
             // Background color
             token = strtok(NULL, ";");
             if (token != NULL && atoi(token) == 5) {
@@ -113,7 +126,8 @@ void parse_ansi_sequence(const char* seq, StyleState* state) {
 }
 
 // Generate CSS style string based on current state
-void generate_style_string(const StyleState* state, char* style_str, size_t max_len) {
+void generate_style_string(const StyleState* state, char* style_str, size_t max_len)
+{
     style_str[0] = '\0';
 
     if (state->color[0] != '\0') {
@@ -134,7 +148,8 @@ void generate_style_string(const StyleState* state, char* style_str, size_t max_
 }
 
 // Convert ANSI escape sequences to HTML
-int ansi_to_html(const char* text, char* result) {
+int ansi_to_html(const char* text, char* result)
+{
     if (text == NULL) return 0;
     if (result == NULL) return 0;
 
@@ -186,7 +201,8 @@ int ansi_to_html(const char* text, char* result) {
 
                         // Reset style state
                         memset(&current_style, 0, sizeof(StyleState));
-                    } else {
+                    }
+                    else {
                         // Parse the sequence and update style
                         if (in_span) {
                             strcpy(result + result_pos, "</span>");
@@ -202,7 +218,8 @@ int ansi_to_html(const char* text, char* result) {
                             generate_style_string(&current_style, style_str, sizeof(style_str));
 
                             result_pos += sprintf(result + result_pos, "<span style=\"%s\">", style_str);
-                        } else {
+                        }
+                        else {
                             strcpy(result + result_pos, "<span>");
                             result_pos += 6;
                         }
@@ -214,29 +231,34 @@ int ansi_to_html(const char* text, char* result) {
                 }
 
                 i += seq_len + 1; // Skip past the sequence and 'm'
-            } else {
+            }
+            else {
                 // Malformed escape sequence, treat as plain text
                 result[result_pos++] = text[i - 2];
                 result[result_pos++] = text[i - 1];
                 i++;
             }
-        } else if (text[i] == ' ') {
+        }
+        else if (text[i] == ' ') {
             // Convert spaces to &nbsp;
             strcpy(result + result_pos, "&nbsp;");
             result_pos += 6;
             i++;
-        } else if (text[i] == '\n') {
+        }
+        else if (text[i] == '\n') {
             // Handle newlines
             if (in_span) {
                 strcpy(result + result_pos, "</span><br><span>");
                 result_pos += 17;
-            } else {
+            }
+            else {
                 strcpy(result + result_pos, "<br><span>");
                 result_pos += 10;
                 in_span = true;
             }
             i++;
-        } else {
+        }
+        else {
             // Regular character
             result[result_pos++] = text[i++];
         }
