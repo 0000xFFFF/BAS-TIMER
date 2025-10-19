@@ -60,7 +60,24 @@ static void* main_worker(void* sig)
         ansi_to_html(g_term_buffer, html_buffer);
         escape_quotes(html_buffer, html_buffer_escaped);
 
-        int b = snprintf(emit_buffer, 1024 * 8 * 2, "{\"term\": \"%s\", \"Tmin\": %f, \"Tmax\": %f}", html_buffer_escaped, g_info.Tmin, g_info.Tmax);
+        int b = snprintf(emit_buffer, 1024 * 8 * 2,
+                         "{"
+                         "\"term\": \"%s\""
+                         ","
+                         "\"Tmin\": %f"
+                         ","
+                         "\"Tmax\": %f"
+                         ","
+                         "\"mod_rada\": %d"
+                         ","
+                         "\"StatusPumpe4\": %d"
+                         "}",
+                         html_buffer_escaped,
+                         g_info.Tmin,
+                         g_info.Tmax,
+                         g_info.mod_rada, // heat
+                         g_info.StatusPumpe4 // gas pump
+                         );
         websocket_emit(emit_buffer, b);
 
         nanosleep(&ts, NULL);

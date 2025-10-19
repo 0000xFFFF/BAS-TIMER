@@ -33,20 +33,13 @@ function fetch_state() {
     fetch("/api/state")
         .then(response => response.json())
         .then(data => {
+
+            txt_input.value = data.seconds;
+            colorButtons();
+
             document.getElementById("toggleTimerButton").classList.toggle("on", data.auto_timer);
             document.getElementById("toggleGasButton").classList.toggle("on", data.auto_gas);
         });
-}
-
-function fetch_seconds() {
-
-    fetch('/api/get_timer_seconds')
-        .then(response => response.json())
-        .then(data => {
-            txt_input.value = data.seconds;
-            colorButtons();
-        })
-        .catch(error => console.error('Error fetching timer seconds:', error));
 }
 
 function updateTime() {
@@ -60,7 +53,7 @@ function updateTime() {
         .then(response => response.json())
         .then(data => {
             console.log('Server updated:', data);
-            fetch_seconds();
+            fetch_state();
         })
         .catch(error => console.error('Error:', error));
 }
@@ -81,18 +74,20 @@ function setTime(btn) {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-    fetch_seconds();
     fetch_state();
 });
 
 
+function colorButton(btn, isOn) {
+    btn.classList.remove('on');
+    if (isOn) {
+        btn.classList.add('on');
+    }
+}
 
 function colorButtons() {
     document.querySelectorAll('.btn_time').forEach(btn => {
-        btn.classList.remove('on');
-        if (parseInt(btn.textContent) * 60 == parseInt(txt_input.value)) {
-            btn.classList.add('on');
-        }
+        colorButton(btn, parseInt(btn.textContent) * 60 == parseInt(txt_input.value));
     });
 }
 
@@ -149,40 +144,48 @@ function drawTemperatureGradient(temp_min, temp_max) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-let ws;
-let reconnectInterval = 3000; // Initial reconnect interval (1s)
+let ws = null;
+const RECONN_INTERVAL_MS = 1000;
 const term = document.getElementById("term");
-let reconnectTimeout = null;
+let reconnectInterval = null;
 
-function connectWebSocket() {
-    ws = new WebSocket("ws://" + document.domain + ":8001/ws");
-
-    ws.onopen = function() {
-        term.style.backgroundColor = "#000000";
-    };
-
-    ws.onmessage = function(event) {
-        const json = JSON.parse(event.data);
-        term.innerHTML = json.term;
-        drawTemperatureGradient(json.Tmin, json.Tmax);
-    };
-
-    ws.onerror = function() {
-        term.style.backgroundColor = "#600000";
-        if (!reconnectTimeout) { reconnectTimeout = setTimeout(connectWebSocket, reconnectInterval); }
-    };
-
-    ws.onclose = function() {
-        term.style.backgroundColor = "#400000";
-        if (!reconnectTimeout) { reconnectTimeout = setTimeout(connectWebSocket, reconnectInterval); }
-    };
+function perror(error) {
+    ws = null;
+    term.style.backgroundColor = "#600000";
+    if (reconnectInterval == null) {
+        reconnectInterval = setInterval(connect, RECONN_INTERVAL_MS);
+    }
 }
 
-// Start WebSocket connection
-connectWebSocket();
 
+function connect() {
+    try {
+        ws = new WebSocket("ws://" + document.domain + ":8001/ws");
 
+        ws.onopen = function() {
+            term.style.backgroundColor = "#000000";
+            clearInterval(reconnectInterval);
+            reconnectInterval = null;
+        };
 
+        ws.onmessage = function(event) {
+            const json = JSON.parse(event.data);
+            term.innerHTML = json.term;
+            drawTemperatureGradient(json.Tmin, json.Tmax);
+            colorButton(document.getElementById("bas_heat_off"), json.mod_rada == 0);
+            colorButton(document.getElementById("bas_heat_on"), json.mod_rada == 1);
+            colorButton(document.getElementById("bas_gas_off"), json.StatusPumpe4 == 0 || json.StatusPumpe4 == 2);
+            colorButton(document.getElementById("bas_gas_on"), json.StatusPumpe4 == 1 || json.StatusPumpe4 == 3);
+        };
+
+        ws.onerror = function(error) { perror(error); };
+        ws.onclose = function(error) { perror(error); };
+
+    }
+    catch (error) { perror(error); }
+}
+
+connect();
 
 function zoomOutOnMobile() {
     if (/Mobi|Android/i.test(navigator.userAgent)) {
