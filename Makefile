@@ -17,10 +17,10 @@ debugfull:
 quick:
 	$(GCC) $(QUICK_ARGS) $(LIBS) $(FILES) -o $(OUTPUT)
 
-test:
+test: src/logger.c src/utils.c src/tests/main.c
 	$(GCC) $(DEBUG_ARGS) $(LIBS) src/logger.c src/utils.c src/tests/main.c -o test
 
-release:
+release: src/*.c
 	$(GCC) $(RELEASE_ARGS) $(LIBS) $(FILES) -o $(OUTPUT)
 
 install:

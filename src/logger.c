@@ -84,7 +84,6 @@ void logger_sumtime(const char* filename, const char* pattern)
     long total_minutes = total_seconds / 60;
     long total_hours = total_minutes / 60;
     long total_days = total_hours / 24;
-    long total_months = total_days / 30; // approximate
     long total_years = total_days / 365; // approximate
 
     int seconds = total_seconds % 60;
