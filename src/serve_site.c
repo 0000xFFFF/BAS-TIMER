@@ -1,4 +1,5 @@
 #include "debug.h"
+#include "logger.h"
 #include "mongoose.h"
 #include "reqworker.h"
 #include <stdatomic.h>
@@ -100,6 +101,31 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         struct mg_http_serve_opts opts = {.mime_types = "text/plain"};
         DPL("SERVER changes.txt");
         mg_http_serve_file(c, hm, "./changes.log", &opts);
+        return;
+    }
+
+    if (mg_match(hm->uri, mg_str("/api/sumtime"), NULL)) {
+
+#define BUFFER_SIZE 1024
+        char sumtime1[BUFFER_SIZE] = {0};
+        char sumtime2[BUFFER_SIZE] = {0};
+
+        int r1 = logger_sumtime(sumtime1, BUFFER_SIZE, "changes.log", "mod_rada = 0 -- ");
+        int r2 = logger_sumtime(sumtime2, BUFFER_SIZE, "changes.log", "StatusPumpe4 = 0 -- ");
+        if (r1 == -1 || r2 == -1) {
+            mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't sum time\"}");
+            return;
+        }
+
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n",
+                      "{"
+                      "\"mod_rada\": \"%s\""
+                      ","
+                      "\"StatusPumpe4\": \"%s\""
+                      "}",
+                      sumtime1,
+                      sumtime2);
+
         return;
     }
 

@@ -52,13 +52,12 @@ void logger_changes_write(const char* fmt, ...)
     va_end(args);
 }
 
-void logger_sumtime(const char* filename, const char* pattern)
+int logger_sumtime(char* buffer, int buffer_size, const char* filename, const char* pattern)
 {
-
     FILE* f = fopen(filename, "r");
     if (f == NULL) {
         perror("Failed to open log file");
-        return;
+        return -1;
     }
 
     char line[1024 * 4] = {0};
@@ -92,7 +91,38 @@ void logger_sumtime(const char* filename, const char* pattern)
     int days = total_days % 30; // remainder days after months
     int months = (total_days / 30) % 12;
 
-    printf("Total time for '%s':\n", pattern);
-    printf("  %02d years, %02d months, %02d days, %02d:%02d:%02d\n",
-           (int)total_years, months, days, hours, minutes, seconds);
+    int c = 0;
+
+    if (total_years != 0) {
+        c += snprintf(buffer+c, buffer_size, "%dy", (int)total_years);
+        c += snprintf(buffer+c, buffer_size, "%s", " ");
+    }
+
+    if (months != 0) {
+        c += snprintf(buffer+c, buffer_size, "%dM", months);
+        c += snprintf(buffer+c, buffer_size, "%s", " ");
+    }
+
+    if (days != 0) {
+        c += snprintf(buffer+c, buffer_size, "%dd", days);
+        c += snprintf(buffer+c, buffer_size, "%s", " ");
+    }
+
+    if (hours != 0) {
+        c += snprintf(buffer+c, buffer_size, "%dh", hours);
+        c += snprintf(buffer+c, buffer_size, "%s", " ");
+    }
+
+    if (minutes != 0) {
+        c += snprintf(buffer+c, buffer_size, "%dm", minutes);
+        c += snprintf(buffer+c, buffer_size, "%s", " ");
+    }
+
+    if (seconds != 0) {
+        c += snprintf(buffer+c, buffer_size, "%ds", seconds);
+    }
+
+    c += snprintf(buffer+c, buffer_size, " (%lu sec)", total_seconds);
+
+    return c;
 }

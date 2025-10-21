@@ -4,6 +4,9 @@
 
 int main() {
 
-    logger_sumtime("changes.log", "StatusPumpe4 = 0 -- ");
+    char buffer[1024] = {0};
+    logger_sumtime(buffer, 1024, "changes.log", "StatusPumpe4 = 0 -- ");
+    printf("%s\n", buffer);
 
+    return 0;
 }

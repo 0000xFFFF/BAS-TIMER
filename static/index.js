@@ -42,6 +42,22 @@ function fetch_state() {
         });
 }
 
+function fetch_sumtime() {
+    fetch("/api/sumtime")
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("sumtime_mod_rada").innerHTML = data.mod_rada;
+            document.getElementById("sumtime_StatusPumpe4").innerHTML = data.StatusPumpe4;
+        });
+}
+
+fetch_sumtime();
+
+function fetch_all() {
+    fetch_state();
+    fetch_sumtime();
+}
+
 function updateTime() {
     const seconds = txt_input.value;
 
@@ -166,6 +182,8 @@ function connect() {
             term.style.backgroundColor = "#000000";
             clearInterval(reconnectInterval);
             reconnectInterval = null;
+
+            fetch_all();
         };
 
         ws.onmessage = function(event) {

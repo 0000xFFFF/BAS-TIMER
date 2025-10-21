@@ -148,3 +148,8 @@ button:active {
     box-shadow: 5px 5px 0 black;
     border-radius: 2px;
 }
+
+#sumtime {
+    padding: 10px;
+}
+
