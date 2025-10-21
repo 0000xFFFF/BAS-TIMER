@@ -51,3 +51,39 @@ void logger_changes_write(const char* fmt, ...)
     logger_write(LOG_CHANGES, fmt, args);
     va_end(args);
 }
+
+void logger_sumtime(const char* filename, const char* pattern)
+{
+
+    FILE* f = fopen(filename, "r");
+    if (f == NULL) {
+        perror("Failed to open log file");
+        return;
+    }
+
+    char line[1024 * 4] = {0};
+    long total_seconds = 0;
+
+    while (fgets(line, sizeof(line), f)) {
+        if (strstr(line, pattern)) {
+            // Find the "--" part
+            char *sep = strstr(line, "--");
+            if (sep) {
+                sep += 2; // move past "--"
+                while (*sep == ' ') sep++; // skip spaces
+
+                int h, m, s;
+                if (sscanf(sep, "%d:%d:%d", &h, &m, &s) == 3) {
+                    total_seconds += h * 3600 + m * 60 + s;
+                }
+            }
+        }
+    }
+
+    // Convert total_seconds back to hh:mm:ss
+    int total_h = total_seconds / 3600;
+    int total_m = (total_seconds % 3600) / 60;
+    int total_s = total_seconds % 60;
+
+    printf("Total time for 'StatusPumpe4 = 0': %02d:%02d:%02d\n", total_h, total_m, total_s);
+}

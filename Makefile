@@ -4,7 +4,6 @@ FILES = src/*.c
 DEBUG_ARGS     = -D DEBUG -g
 DEBUGFULL_ARGS = -D DEBUG -D DEBUGFULL -g
 QUICK_ARGS     = -D DEBUG -D QUICK -g
-TEST_ARGS      = -g
 RELEASE_ARGS   = -Wall -Wextra -O2 -s
 LIBS = -pthread
 OUTPUT = bas-server
@@ -19,7 +18,7 @@ quick:
 	$(GCC) $(QUICK_ARGS) $(LIBS) $(FILES) -o $(OUTPUT)
 
 test:
-	$(GCC) $(TEST_ARGS) $(LIBS) $(FILES) -o $(OUTPUT)
+	$(GCC) $(DEBUG_ARGS) $(LIBS) src/logger.c src/utils.c src/tests/main.c -o test
 
 release:
 	$(GCC) $(RELEASE_ARGS) $(LIBS) $(FILES) -o $(OUTPUT)
