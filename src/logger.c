@@ -67,9 +67,9 @@ void logger_sumtime(const char* filename, const char* pattern)
     while (fgets(line, sizeof(line), f)) {
         if (strstr(line, pattern)) {
             // Find the "--" part
-            char *sep = strstr(line, "--");
+            char* sep = strstr(line, "--");
             if (sep) {
-                sep += 2; // move past "--"
+                sep += 2;                  // move past "--"
                 while (*sep == ' ') sep++; // skip spaces
 
                 int h, m, s;
@@ -80,10 +80,20 @@ void logger_sumtime(const char* filename, const char* pattern)
         }
     }
 
-    // Convert total_seconds back to hh:mm:ss
-    int total_h = total_seconds / 3600;
-    int total_m = (total_seconds % 3600) / 60;
-    int total_s = total_seconds % 60;
+    // Convert total_seconds into years, months, days, hours, minutes, seconds
+    long total_minutes = total_seconds / 60;
+    long total_hours = total_minutes / 60;
+    long total_days = total_hours / 24;
+    long total_months = total_days / 30; // approximate
+    long total_years = total_days / 365; // approximate
 
-    printf("Total time for 'StatusPumpe4 = 0': %02d:%02d:%02d\n", total_h, total_m, total_s);
+    int seconds = total_seconds % 60;
+    int minutes = total_minutes % 60;
+    int hours = total_hours % 24;
+    int days = total_days % 30; // remainder days after months
+    int months = (total_days / 30) % 12;
+
+    printf("Total time for '%s':\n", pattern);
+    printf("  %02d years, %02d months, %02d days, %02d:%02d:%02d\n",
+           (int)total_years, months, days, hours, minutes, seconds);
 }
