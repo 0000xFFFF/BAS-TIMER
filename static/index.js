@@ -58,6 +58,8 @@ function fetch_all() {
     fetch_sumtime();
 }
 
+setInterval(fetch_all, 3600000); // 1000 * 60 * 60 -- every hour fetch all
+
 function updateTime() {
     const seconds = txt_input.value;
 
