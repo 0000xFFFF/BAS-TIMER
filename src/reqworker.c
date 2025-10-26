@@ -21,8 +21,35 @@ const char* URL_HEAT_ON = "http://192.168.1.250/isc/set_var.aspx?mod_rada=1,-1&=
 const char* URL_GAS_OFF = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=0,-1&=&SESSIONID=-1";
 const char* URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1";
 
+const char* URL_WTTRIN = "https://wttr.in/?format=4";
+
+extern int g_running;
+
+static char* REQUEST_FORMAT_BAS =
+    "GET %s HTTP/1.0\r\n"
+    "Host: %.*s\r\n"
+    "Accept: application/json, text/javascript, */*; q=0.01\r\n"
+    "Accept-Encoding: gzip, deflate\r\n"
+    "Accept-Language: en-US,en;q=0.9\r\n"
+    "Connection: keep-alive\r\n"
+    "Cookie: i18next=srb\r\n"
+    "Referer: http://192.168.1.250/\r\n"
+    "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36\r\n"
+    "X-Requested-With: XMLHttpRequest\r\n"
+    "\r\n";
+
+static char* REQUEST_FORMAT_WTTRIN =
+    "GET %s HTTP/1.0\r\n"
+    "Host: %.*s\r\n"
+    "Content-Type: octet-stream\r\n"
+    "Content-Length: 0\r\n"
+    "\r\n";
+
 static const char* s_url = NULL;
-static const uint64_t s_timeout_ms = 1500;
+static const char* s_request_format = NULL;
+#define TIMEOUT_BAS    1500
+#define TIMEOUT_WTTRIN 5000
+static uint64_t s_timeout_ms = TIMEOUT_BAS;
 
 #define ERROR_NONE    0
 #define ERROR_TIMEOUT 1
@@ -32,6 +59,8 @@ static int s_remember_response = 0;
 static struct mg_str s_response_body = {0};
 
 struct bas_info g_info = {0};
+
+char g_wttrin_buffer[BIGBUFF] = {0};
 
 long long GLOBAL_UNIX_COUNTER = 0;
 
@@ -81,96 +110,101 @@ char* sendreq_error_to_str(int e)
     return "?";
 }
 
-static char* REQUEST_FORMAT =
-    "GET %s HTTP/1.0\r\n"
-    "Host: %.*s\r\n"
-    "Accept: application/json, text/javascript, */*; q=0.01\r\n"
-    "Accept-Encoding: gzip, deflate\r\n"
-    "Accept-Language: en-US,en;q=0.9\r\n"
-    "Connection: keep-alive\r\n"
-    "Cookie: i18next=srb\r\n"
-    "Referer: http://192.168.1.250/\r\n"
-    "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36\r\n"
-    "X-Requested-With: XMLHttpRequest\r\n"
-    "\r\n";
-
 // Print HTTP response and signal that we're done
 static void fn(struct mg_connection* c, int ev, void* ev_data)
 {
     if (ev == MG_EV_OPEN) {
         // Connection created. Store connect expiration time in c->data
         *(uint64_t*)c->data = mg_millis() + s_timeout_ms;
-        return;
     }
-
-    if (ev == MG_EV_POLL) {
-        if (mg_millis() > *(uint64_t*)c->data &&
-            (c->is_connecting || c->is_resolving)) {
+    else if (ev == MG_EV_POLL) {
+        if (mg_millis() > *(uint64_t*)c->data && (c->is_connecting || c->is_resolving)) {
             mg_error(c, "Connect timeout");
             s_errors = ERROR_TIMEOUT;
         }
-        return;
     }
-
-    if (ev == MG_EV_CONNECT) {
+    else if (ev == MG_EV_CONNECT) {
         // Connected to server. Extract host name from URL
         struct mg_str host = mg_url_host(s_url);
 
         if (mg_url_is_ssl(s_url)) {
-            struct mg_tls_opts opts = {.ca = mg_unpacked("/certs/ca.pem"),
-                                       .name = mg_url_host(s_url)};
+            struct mg_tls_opts opts = {.ca = mg_unpacked("/certs/ca.pem"), .name = mg_url_host(s_url)};
             mg_tls_init(c, &opts);
         }
 
         // Send request
-        mg_printf(c, REQUEST_FORMAT, mg_url_uri(s_url), (int)host.len, host.buf);
-        return;
+        mg_printf(c, s_request_format, mg_url_uri(s_url), (int)host.len, host.buf);
+        DPL("SENDREQ FN:");
+        D(printf(s_request_format, mg_url_uri(s_url), (int)host.len, host.buf));
     }
+    else if (ev == MG_EV_HTTP_MSG) {
 
-    if (ev == MG_EV_HTTP_MSG) {
+        struct mg_http_message* hm = (struct mg_http_message*)ev_data;
+        printf("%.*s", (int)hm->message.len, hm->message.buf);
+
         if (s_remember_response) {
             // Response received
-            struct mg_http_message* hm = (struct mg_http_message*)ev_data;
             s_response_body = mg_strdup(hm->body);
         }
 
         c->is_draining = 1;        // Tell mongoose to close this connection
         *(bool*)c->fn_data = true; // Tell event loop to stop
-        return;
     }
-
-    if (ev == MG_EV_ERROR) {
+    else if (ev == MG_EV_ERROR) {
         *(bool*)c->fn_data = true; // Error, tell event loop to stop
         s_errors = ERROR_CONN;
-        return;
+        D(printf("CONNECTION ERROR: %d\n", s_errors));
     }
 }
 
-static pthread_mutex_t s_sendreq_mutex;
-
 int sendreq(const char* url, int log, int remember_response)
 {
-    pthread_mutex_lock(&s_sendreq_mutex);
-
     char request_url[REQUEST_URL_BUFFER_SIZE];
     snprintf(request_url, REQUEST_URL_BUFFER_SIZE, "%s&_=%lld", url, GLOBAL_UNIX_COUNTER);
     if (log) { logger_requests_write("%s\n", request_url); }
 
+    s_url = url; // set url
+    s_request_format = REQUEST_FORMAT_BAS;
+    s_timeout_ms = TIMEOUT_BAS;
     s_remember_response = remember_response;
-    s_errors = 0;                            // RESET ERRORS
-    struct mg_mgr mgr;                       // Event manager
-    int done = 0;                            // Event handler flips it to true
-    mg_mgr_init(&mgr);                       // Initialise event manager
-    s_url = url;                             // set url
-    mg_http_connect(&mgr, s_url, fn, &done); // Create client connection
-    while (!done) mg_mgr_poll(&mgr, 50);     // Event manager loops until 'done'
-    mg_mgr_free(&mgr);                       // Free resources
+    s_errors = 0;                                     // RESET ERRORS
+    struct mg_mgr mgr;                                // Event manager
+    bool done = false;                               // Event handler flips it to true
+    mg_mgr_init(&mgr);                                // Initialise event manager
+    mg_http_connect(&mgr, s_url, fn, &done);          // Create client connection
+    while (g_running && !done) mg_mgr_poll(&mgr, 50); // Event manager loops until 'done'
+    mg_mgr_free(&mgr);                                // Free resources
 
     if (s_errors) {
         logger_errors_write("%s -- %s\n", request_url, sendreq_error_to_str(s_errors));
     }
 
-    pthread_mutex_unlock(&s_sendreq_mutex);
+    return s_errors;
+}
+
+int sendreq_wttrin(const char* url, int log, int remember_response)
+{
+    char request_url[REQUEST_URL_BUFFER_SIZE];
+    snprintf(request_url, REQUEST_URL_BUFFER_SIZE, "%s", url);
+    if (log) { logger_requests_write("%s\n", request_url); }
+
+    s_url = url; // set url
+    s_request_format = REQUEST_FORMAT_WTTRIN;
+    s_timeout_ms = TIMEOUT_WTTRIN;
+    s_remember_response = remember_response;
+    s_errors = 0;                                     // RESET ERRORS
+    struct mg_mgr mgr;                                // Event manager
+    int done = 0;                                     // Event handler flips it to true
+    mg_mgr_init(&mgr);                                // Initialise event manager
+    mg_http_connect(&mgr, s_url, fn, &done);          // Create client connection
+    while (g_running && !done) mg_mgr_poll(&mgr, 50); // Event manager loops until 'done'
+    mg_mgr_free(&mgr);                                // Free resources
+
+    if (s_errors) {
+        D(printf("WTTRIN ERROR: %d\n", s_errors));
+        logger_errors_write("%s -- %s\n", request_url, sendreq_error_to_str(s_errors));
+    }
+
     return s_errors;
 }
 
@@ -362,17 +396,41 @@ void update_info()
     remember_vars_do_action(g_info.mod_rada, g_info.StatusPumpe4, g_info.TminLT, g_info.TmidGE);
 }
 
+void wttrin_get_weather()
+{
+    DPL("WTTRIN SENDREQ");
+    sendreq_wttrin(URL_WTTRIN, 0, 1);
+
+    if (s_response_body.buf) {
+        D(printf("WTTRIN RESPONSE BODY BUF LEN: %lu\n", strlen(s_response_body.buf)));
+
+        // write response to buffer
+        snprintf(g_wttrin_buffer, BIGBUFF, "%s", s_response_body.buf);
+
+        // free buffer
+        free((void*)s_response_body.buf);
+        s_response_body.buf = NULL;
+    }
+
+    exit(1);
+}
+
 static int request_count = 0;
+static int wttrin_request_count = 0;
 
 void reqworker_do_work()
 {
-
     request_count++;
+    wttrin_request_count++;
 
     if (!g_info.hasValues || request_count >= DO_REQUEST_COUNT) {
         request_count = 0;
         update_info();
-        return;
+    }
+
+    if (g_wttrin_buffer[0] == 0 || wttrin_request_count >= WTTRIN_DO_REQUEST_COUNT) {
+        wttrin_request_count = 0;
+        wttrin_get_weather();
     }
 
     draw_ui(g_info, 0, s_errors);

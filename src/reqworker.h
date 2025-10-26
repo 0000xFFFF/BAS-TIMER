@@ -7,6 +7,8 @@ extern const char* URL_HEAT_ON;
 extern const char* URL_GAS_OFF;
 extern const char* URL_GAS_ON;
 
+extern char g_wttrin_buffer[];
+
 struct bas_info {
 
     int hasValues; // to check if struct is empty or not

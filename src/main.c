@@ -17,7 +17,7 @@
 #include "serve_websocket.h"
 #include "utils.h"
 
-static int running = 1;
+int g_running = 1;
 
 #ifdef QUICK
 #define MAX_ITERS 20
@@ -50,7 +50,7 @@ static void* main_worker(void* sig)
     char html_buffer_escaped[1024 * 8 * 2] = {0};
     char emit_buffer[1024 * 8 * 2] = {0};
 
-    while (running) {
+    while (g_running) {
 
 #ifndef DEBUG
         term_cursor_reset();
@@ -84,7 +84,7 @@ static void* main_worker(void* sig)
 
 #ifdef QUICK
         iter_counter++;
-        if (iter_counter >= MAX_ITERS) { running = 0; }
+        if (iter_counter >= MAX_ITERS) { g_running = 0; }
 #endif
     }
 
@@ -95,7 +95,7 @@ static void* main_worker(void* sig)
 static void signal_handler(int sig)
 {
     printf("Caught signal: %d\n", sig);
-    running = 0;
+    g_running = 0;
     term_cursor_show();
 }
 
@@ -108,18 +108,17 @@ int main()
 
     signal(SIGINT, signal_handler);
 
-#ifndef DEBUG
+#ifdef DEBUG
+    const char* log_level = getenv("LOG_LEVEL");
+    if (log_level == NULL) log_level = "4";
+    mg_log_set(atoi(log_level));
+#else
+    mg_log_set(MG_LL_NONE);
     term_clear();
     term_cursor_hide();
 #endif
 
-    mg_log_set(0);
 
-#ifdef DEBUGFULL
-    const char* log_level = getenv("LOG_LEVEL");
-    if (log_level == NULL) log_level = "4";
-    mg_log_set(atoi(log_level));
-#endif
 
     pthread_t t1;
     int result_code = pthread_create(&t1, NULL, main_worker, NULL);
@@ -130,7 +129,7 @@ int main()
     mg_http_listen(&mgr, S_ADDR_HTTP, serve_site, &mgr);
     mg_http_listen(&mgr, S_ADDR_WS, serve_websocket, &mgr);
 
-    while (running) {
+    while (g_running) {
         mg_mgr_poll(&mgr, POLL_TIME);
     }
     mg_mgr_free(&mgr);
