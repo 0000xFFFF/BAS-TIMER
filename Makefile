@@ -11,7 +11,7 @@ RELEASE_ARGS   = -O2 -s
 
 # Mongoose build options. See https://mongoose.ws/documentation/#build-options
 CFLAGS_MONGOOSE += -DMG_ENABLE_LINES=1 -DMG_ENABLE_PACKED_FS=1
-CFLAGS_EXTRA ?= -DMG_TLS=MG_TLS_BUILTIN
+CFLAGS_EXTRA ?= -D MG_TLS=MG_TLS_OPENSSL -D MG_ENABLE_OPENSSL=1 -lssl -lcrypto
 
 ifeq ($(OS),Windows_NT)   # Windows settings. Assume MinGW compiler. To use VC: make CC=cl CFLAGS=/MD OUT=/Feprog.exe
   PROG ?= example.exe           # Use .exe suffix for the binary
