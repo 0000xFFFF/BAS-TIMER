@@ -129,7 +129,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
 
         if (mg_url_is_ssl(s_url)) {
             struct mg_tls_opts opts = {.ca = mg_unpacked("/certs/curl.pem"), .name = mg_url_host(s_url)};
-            //struct mg_tls_opts opts = {.name = mg_url_host(s_url)};
+            // struct mg_tls_opts opts = {.name = mg_url_host(s_url)};
             mg_tls_init(c, &opts);
         }
 
@@ -141,7 +141,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
     else if (ev == MG_EV_HTTP_MSG) {
 
         struct mg_http_message* hm = (struct mg_http_message*)ev_data;
-        printf("%.*s", (int)hm->message.len, hm->message.buf);
+        D(printf("%.*s", (int)hm->message.len, hm->message.buf));
 
         if (s_remember_response) {
             // Response received
@@ -170,7 +170,7 @@ int sendreq(const char* url, int log, int remember_response)
     s_remember_response = remember_response;
     s_errors = 0;                                     // RESET ERRORS
     struct mg_mgr mgr;                                // Event manager
-    bool done = false;                               // Event handler flips it to true
+    bool done = false;                                // Event handler flips it to true
     mg_mgr_init(&mgr);                                // Initialise event manager
     mg_http_connect(&mgr, s_url, fn, &done);          // Create client connection
     while (g_running && !done) mg_mgr_poll(&mgr, 50); // Event manager loops until 'done'
@@ -392,8 +392,6 @@ void update_info()
         s_response_body.buf = NULL;
     }
 
-    draw_ui(g_info, 1, s_errors);
-
     remember_vars_do_action(g_info.mod_rada, g_info.StatusPumpe4, g_info.TminLT, g_info.TmidGE);
 }
 
@@ -408,12 +406,16 @@ void wttrin_get_weather()
         // write response to buffer
         snprintf(g_wttrin_buffer, BIGBUFF, "%s", s_response_body.buf);
 
+        // trim newline
+        size_t l = strlen(g_wttrin_buffer);
+        if (g_wttrin_buffer[l - 1] == '\n') {
+            g_wttrin_buffer[l - 1] = '\0';
+        }
+
         // free buffer
         free((void*)s_response_body.buf);
         s_response_body.buf = NULL;
     }
-
-    exit(1);
 }
 
 static int request_count = 0;

@@ -26,9 +26,7 @@ endif
 debug:
 	$(CC) $(DEBUG_ARGS) $(SOURCES) $(CFLAGS) $(CFLAGS_MONGOOSE) $(CFLAGS_EXTRA) $(OUT)
 
-release: $(PROG)
-
-$(PROG): $(SOURCES)       # Build program from sources
+release:
 	$(CC) $(RELEASE_ARGS) $(SOURCES) $(CFLAGS) $(CFLAGS_MONGOOSE) $(CFLAGS_EXTRA) $(OUT)
 
 clean:                    # Cleanup. Delete built program and all build artifacts
