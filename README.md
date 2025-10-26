@@ -11,6 +11,7 @@ My home heat control server
 
 - gcc
 - make
+- openssl
 
 ## Install
 
