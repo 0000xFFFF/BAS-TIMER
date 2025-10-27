@@ -39,9 +39,9 @@ struct bas_info {
     int TminLT;
 };
 
-int sendreq(const char* url, int log, int remember_response);
-void init_reqworker();
-void reqworker_do_work();
-char* sendreq_error_to_str(int e);
+extern int sendreq(const char* url, int log, int remember_response);
+extern void init_reqworker();
+extern void reqworker_do_work();
+extern char* sendreq_error_to_str(int e);
 
 #endif // REQWORKER_H

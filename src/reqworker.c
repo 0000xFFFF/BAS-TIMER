@@ -62,7 +62,7 @@ struct bas_info g_info = {0};
 
 char g_wttrin_buffer[BIGBUFF] = {0};
 
-long long GLOBAL_UNIX_COUNTER = 0;
+long long g_global_unix_counter = 0;
 
 atomic_int g_auto_timer;
 atomic_int g_auto_gas;
@@ -84,7 +84,7 @@ time_t g_history_gas_time_off = 0;
 void init_reqworker()
 {
     // for req
-    GLOBAL_UNIX_COUNTER = timestamp();
+    g_global_unix_counter = timestamp();
 
     atomic_init(&g_auto_timer, ENABLE_AUTO_TIMER);
     atomic_init(&g_auto_gas, ENABLE_AUTO_GAS);
@@ -135,13 +135,13 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
 
         // Send request
         mg_printf(c, s_request_format, mg_url_uri(s_url), (int)host.len, host.buf);
-        DPL("SENDREQ FN:");
-        D(printf(s_request_format, mg_url_uri(s_url), (int)host.len, host.buf));
+        //DPL("SENDREQ FN:");
+        //D(printf(s_request_format, mg_url_uri(s_url), (int)host.len, host.buf));
     }
     else if (ev == MG_EV_HTTP_MSG) {
 
         struct mg_http_message* hm = (struct mg_http_message*)ev_data;
-        D(printf("%.*s", (int)hm->message.len, hm->message.buf));
+        //D(printf("%.*s", (int)hm->message.len, hm->message.buf));
 
         if (s_remember_response) {
             // Response received
@@ -161,10 +161,10 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
 int sendreq(const char* url, int log, int remember_response)
 {
     char request_url[BIGBUFF];
-    snprintf(request_url, BIGBUFF, "%s&_=%lld", url, GLOBAL_UNIX_COUNTER);
+    snprintf(request_url, BIGBUFF, "%s&_=%lld", url, g_global_unix_counter);
     if (log) { logger_requests_write("%s\n", request_url); }
 
-    s_url = url; // set url
+    s_url = request_url; // set url
     s_request_format = REQUEST_FORMAT_BAS;
     s_timeout_ms = TIMEOUT_BAS;
     s_remember_response = remember_response;
@@ -211,24 +211,25 @@ int sendreq_wttrin(const char* url, int log, int remember_response)
 
 double extract(struct mg_str json_body, const char* label)
 {
-    D(printf("%s", json_body.buf));
-    D(printf(" -- extract: %s", label));
+    //D(printf("%s", json_body.buf));
+    //D(printf(" -- extract: %s", label));
     struct mg_str tok = mg_json_get_tok(json_body, label);
 
     double value = DBL_MIN;
     mg_json_get_num(tok, "$.value", &value);
 
-    D(printf(" -> %f", value));
+    //D(printf(" -> %f", value));
     return value;
 }
 
 void update_history(int mod_rada, int StatusPumpe4)
 {
-
     DPL("UPDATE HISTORY");
     time_t current_time;
     time(&current_time);
-    char* t = get_current_time();
+    struct tm* timeinfo = localtime(&current_time);
+    char time_str[MIDBUFF] = {0};
+    strftime_YmdHMS(time_str, MIDBUFF, timeinfo);
 
     if (g_history_mode == -1 || g_history_mode != mod_rada) {
         g_history_mode = mod_rada;
@@ -237,26 +238,25 @@ void update_history(int mod_rada, int StatusPumpe4)
         if (mod_rada) {
             g_history_mode_time_on = g_history_mode_time_changed;
             logger_changes_write("mod_rada = %d\n", mod_rada);
-            snprintf(g_auto_timer_status, BIGBUFF, " %s 󰐸", t);
+            snprintf(g_auto_timer_status, BIGBUFF, " %s 󰐸", time_str);
         }
         else {
             g_history_mode_time_off = g_history_mode_time_changed;
-            char e[100] = "\n";
-            char p[100] = "";
+            char e[MIDBUFF] = "\n";
+            char p[MIDBUFF] = "";
             if (g_history_mode_time_on && g_history_mode_time_off) {
-                // Assuming elapsed_str() will return a string with the elapsed time
-                char* elap = elapsed_str(g_history_mode_time_off, g_history_mode_time_on);
-                snprintf(e, sizeof(e), " -- %s\n", elap);
-                snprintf(p, sizeof(p), " 󱫐 %s", elap);
-                free(elap);
+                char elap[SMALLBUFF];
+                elapsed_str(elap, SMALLBUFF, g_history_mode_time_off, g_history_mode_time_on);
+                snprintf(e, MIDBUFF, " -- %s\n", elap);
+                snprintf(p, MIDBUFF, " 󱫐 %s", elap);
             }
 
             logger_changes_write("mod_rada = %d%s", mod_rada, e);
-            snprintf(g_auto_timer_status, BIGBUFF, " %s %s", t, p);
+            snprintf(g_auto_timer_status, BIGBUFF, " %s %s", time_str, p);
 
             if (g_auto_timer_started) {
                 g_auto_timer_started = 0;
-                snprintf(g_auto_timer_status, BIGBUFF, "%s 󰜺", t);
+                snprintf(g_auto_timer_status, BIGBUFF, "%s 󰜺", time_str);
             }
         }
     }
@@ -268,26 +268,23 @@ void update_history(int mod_rada, int StatusPumpe4)
         if (StatusPumpe4) {
             g_history_gas_time_on = g_history_gas_time_changed;
             logger_changes_write("StatusPumpe4 = %d\n", StatusPumpe4);
-            snprintf(g_auto_gas_status, BIGBUFF, " %s ", t);
+            snprintf(g_auto_gas_status, BIGBUFF, " %s ", time_str);
         }
         else {
             g_history_gas_time_off = g_history_gas_time_changed;
-            char e[100] = "\n";
-            char p[100] = "";
+            char e[MIDBUFF] = "\n";
+            char p[MIDBUFF] = "";
             if (g_history_gas_time_on && g_history_gas_time_off) {
-                // Assuming elapsed_str() will return a string with the elapsed time
-                char* elap = elapsed_str(g_history_gas_time_off, g_history_gas_time_on);
+                char elap[SMALLBUFF] = {0};
+                elapsed_str(elap, SMALLBUFF, g_history_gas_time_off, g_history_gas_time_on);
                 snprintf(e, sizeof(e), " -- %s\n", elap);
                 snprintf(p, sizeof(p), " 󱫐 %s", elap);
-                free(elap);
             }
 
             logger_changes_write("StatusPumpe4 = %d%s", StatusPumpe4, e);
-            sprintf(g_auto_gas_status, " %s %s", t, p);
+            sprintf(g_auto_gas_status, " %s %s", time_str, p);
         }
     }
-
-    free(t);
 }
 
 void do_logic_timer(int mod_rada)
@@ -295,8 +292,9 @@ void do_logic_timer(int mod_rada)
 
     time_t current_time;
     time(&current_time);
-
-    char* t = get_current_time();
+    struct tm* timeinfo = localtime(&current_time);
+    char time_str[MIDBUFF] = {0};
+    strftime_YmdHMS(time_str, MIDBUFF, timeinfo);
 
     if (g_auto_timer && mod_rada) {
         if (g_auto_timer_started) {
@@ -305,45 +303,45 @@ void do_logic_timer(int mod_rada)
 
             if (g_auto_timer_seconds_elapsed >= g_auto_timer_seconds) {
                 g_auto_timer_started = 0;
-                snprintf(g_auto_timer_status, BIGBUFF, "%s 󱪯", t);
+                snprintf(g_auto_timer_status, BIGBUFF, "%s 󱪯", time_str);
                 if (g_history_mode_time_on) {
-                    char* elap = elapsed_str(time(NULL), g_history_mode_time_on);
+                    char elap[SMALLBUFF] = {0};
+                    elapsed_str(elap, SMALLBUFF, current_time, g_history_mode_time_on);
                     snprintf(g_auto_timer_status, BIGBUFF, "󱫐 %s 󱪯", elap);
-                    free(elap);
                 }
                 sendreq(URL_HEAT_OFF, 1, 0);
             }
         }
         else {
             g_auto_timer_started = 1;
-            snprintf(g_auto_timer_status, BIGBUFF, "%s 󱫌", t);
+            snprintf(g_auto_timer_status, BIGBUFF, "%s 󱫌", time_str);
         }
     }
-
-    free(t);
 }
 
 void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE)
 {
 
-    char* t = get_current_time();
+    time_t current_time;
+    time(&current_time);
+    struct tm* timeinfo = localtime(&current_time);
+    char time_str[MIDBUFF] = {0};
+    strftime_YmdHMS(time_str, MIDBUFF, timeinfo);
 
     if (g_auto_gas && StatusPumpe4 == 0 && TminLT) {
-        sprintf(g_auto_gas_status, "%s ", t);
+        sprintf(g_auto_gas_status, "%s ", time_str);
         sendreq(URL_GAS_ON, 1, 0);
     }
 
     if (g_auto_gas && StatusPumpe4 == 3 && TmidGE) {
-        sprintf(g_auto_gas_status, "%s 󰙇", t);
+        sprintf(g_auto_gas_status, "%s 󰙇", time_str);
         if (g_history_gas_time_on && g_history_gas_time_off) {
-            char* elap = elapsed_str(time(NULL), g_history_gas_time_on);
+            char elap[SMALLBUFF] = {0};
+            elapsed_str(elap, SMALLBUFF, current_time, g_history_gas_time_on);
             sprintf(g_auto_gas_status, "󱫐 %s 󰙇", elap);
-            free(elap);
         }
         sendreq(URL_GAS_OFF, 1, 0);
     }
-
-    free(t);
 }
 
 void remember_vars_do_action(int mod_rada, int StatusPumpe4, int TminLT, int TmidGE)
@@ -358,7 +356,7 @@ extern double g_temp_buf_min;
 
 void update_info()
 {
-    GLOBAL_UNIX_COUNTER++;
+    g_global_unix_counter++;
 
     // get request, parse response
     sendreq(URL_VARS, 0, 1);
@@ -401,16 +399,17 @@ void wttrin_get_weather()
     sendreq_wttrin(URL_WTTRIN, 0, 1);
 
     if (s_response_body.buf) {
-        D(printf("WTTRIN RESPONSE BODY BUF LEN: %lu\n", strlen(s_response_body.buf)));
+        //D(printf("WTTRIN RESPONSE BODY BUF LEN: %lu\n", strlen(s_response_body.buf)));
 
         // write response to buffer
-        snprintf(g_wttrin_buffer, BIGBUFF, "%s", s_response_body.buf);
+        size_t b = 0;
+        b += snprintf(g_wttrin_buffer + b, BIGBUFF - b, "%s", s_response_body.buf);
 
-        // trim newline
+        // replace newline with space
         size_t l = strlen(g_wttrin_buffer);
-        if (g_wttrin_buffer[l - 1] == '\n') {
-            g_wttrin_buffer[l - 1] = '\0';
-        }
+        if (g_wttrin_buffer[l - 1] == '\n') { g_wttrin_buffer[l - 1] = ' '; }
+
+        b += dt_HM(g_wttrin_buffer + b, BIGBUFF - b);
 
         // free buffer
         free((void*)s_response_body.buf);

@@ -37,20 +37,39 @@ long long timestamp()
 }
 
 #define TIME_BUFFER_SIZE 32
-char* get_current_time()
+
+size_t strftime_HM(char* buffer, size_t size, struct tm* timeinfo) { return strftime(buffer, size, "%H:%M", timeinfo); }
+size_t strftime_HMS(char* buffer, size_t size, struct tm* timeinfo) { return strftime(buffer, size, "%H:%M:%S", timeinfo); }
+size_t strftime_YmdHMS(char* buffer, size_t size, struct tm* timeinfo) { return strftime(buffer, size, "%Y-%m-%d %H:%M:%S", timeinfo); }
+
+size_t dt_HM(char* buffer, size_t size)
 {
     time_t rawtime;
     struct tm* timeinfo;
-
     time(&rawtime);
     timeinfo = localtime(&rawtime);
-
-    char buffer[TIME_BUFFER_SIZE];
-    strftime(buffer, TIME_BUFFER_SIZE, "%Y-%m-%d %H:%M:%S", timeinfo);
-    return strdup(buffer);
+    return strftime_HM(buffer, size, timeinfo);
 }
 
-int get_current_hour()
+size_t dt_HMS(char* buffer, size_t size)
+{
+    time_t rawtime;
+    struct tm* timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    return strftime_HMS(buffer, size, timeinfo);
+}
+
+size_t dt_full(char* buffer, size_t size)
+{
+    time_t rawtime;
+    struct tm* timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    return strftime_YmdHMS(buffer, size, timeinfo);
+}
+
+int localtime_hour()
 {
     time_t t;
     struct tm* tm_info;
@@ -59,27 +78,15 @@ int get_current_hour()
     return tm_info->tm_hour; // Extract the hour in 24-hour format
 }
 
-char* elapsed_str(time_t f, time_t s)
+size_t elapsed_str(char* buffer, size_t size, time_t end, time_t start)
 {
-    time_t elapsed = f - s;
+    time_t elapsed = end - start;
     struct tm* tm_info = gmtime(&elapsed);
-
-    // Allocate memory for the formatted string
-    char* buffer = (char*)calloc(9, sizeof(char)); // "HH:MM:SS" + null terminator
-
-    if (buffer != NULL) {
-        // Format the elapsed time as HH:MM:SS
-        strftime(buffer, 9, "%H:%M:%S", tm_info);
-    }
-
-    return buffer;
+    return strftime(buffer, size, "%H:%M:%S", tm_info);
 }
 
-#define BUFFER_SIZE 1024
-char* get_local_ips()
+size_t get_local_ips(char* buffer, size_t size)
 {
-    char* buffer = malloc(BUFFER_SIZE);
-
     char* command =
 #if PRINT_ONLY_ONE_IP
         "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1 | tr -d '\n'";
@@ -88,24 +95,12 @@ char* get_local_ips()
 #endif
 
     FILE* fp = popen(command, "r");
-
-    if (fp == NULL) {
-        snprintf(buffer, BUFFER_SIZE, "Can't get ip.");
-        return buffer;
-    }
-
+    if (fp == NULL) { return snprintf(buffer, size, "Can't get ip."); }
     int found = 0;
-    while (fgets(buffer, BUFFER_SIZE, fp) != NULL) {
-        found = 1;
-    }
-
+    while (fgets(buffer, size, fp) != NULL) { found = 1; }
     pclose(fp);
-
-    if (!found) {
-        snprintf(buffer, BUFFER_SIZE, "No IP found.");
-    }
-
-    return buffer;
+    if (!found) { return snprintf(buffer, size, "No IP found."); }
+    return 0;
 }
 
 void escape_quotes(const char* input, char* output)

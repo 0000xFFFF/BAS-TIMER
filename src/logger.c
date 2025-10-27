@@ -1,9 +1,8 @@
 #include "logger.h"
-#include "debug.h"
+#include "globals.h"
 #include "utils.h"
 #include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define LOG_CHANGES  "changes.log"
@@ -21,9 +20,9 @@ void logger_write(const char* filename, const char* fmt, va_list args)
         return;
     }
 
-    char* t = get_current_time();
-    fprintf(f, "%s - ", t);
-    free(t);
+    char time[MIDBUFF] = {0};
+    dt_full(time, MIDBUFF);
+    fprintf(f, "%s - ", time);
 
     vfprintf(f, fmt, args);
     fclose(f);

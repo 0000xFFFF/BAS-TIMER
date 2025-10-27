@@ -6,7 +6,8 @@ OUT ?= -o $(PROG)                 # Compiler argument for output file
 SOURCES = src/*.c                 # Source code files, packed_fs.c contains ca.pem, which contains CA certs for TLS
 CFLAGS = -W -Wall -Wextra -g -I.  # Build options
 
-DEBUG_ARGS     = -D DEBUG -g
+DEBUG_ARGS     = -g -D DEBUG
+QUICK_ARGS     = -g -D DEBUG -D QUICK
 RELEASE_ARGS   = -O2 -s
 
 # Mongoose build options. See https://mongoose.ws/documentation/#build-options
@@ -25,6 +26,9 @@ endif
 
 debug:
 	$(CC) $(DEBUG_ARGS) $(SOURCES) $(CFLAGS) $(CFLAGS_MONGOOSE) $(CFLAGS_EXTRA) $(OUT)
+
+quick:
+	$(CC) $(QUICK_ARGS) $(SOURCES) $(CFLAGS) $(CFLAGS_MONGOOSE) $(CFLAGS_EXTRA) $(OUT)
 
 release:
 	$(CC) $(RELEASE_ARGS) $(SOURCES) $(CFLAGS) $(CFLAGS_MONGOOSE) $(CFLAGS_EXTRA) $(OUT)

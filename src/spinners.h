@@ -11,10 +11,10 @@ typedef struct {
 } Spinner;
 
 // Function prototypes
-void init_spinner(Spinner*, char**, int, int);
-void spin_spinner(Spinner*);
-char* get_frame(Spinner*, int);
-void init_spinners();
+extern void init_spinner(Spinner*, char**, int, int);
+extern void spin_spinner(Spinner*);
+extern char* get_frame(Spinner*, int);
+extern void init_spinners();
 
 // Declare external spinners
 extern Spinner spinner_basic;
