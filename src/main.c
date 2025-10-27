@@ -75,9 +75,9 @@ static void* main_worker(void* sig)
                          html_buffer_escaped,
                          g_info.Tmin,
                          g_info.Tmax,
-                         g_info.mod_rada, // heat
+                         g_info.mod_rada,    // heat
                          g_info.StatusPumpe4 // gas pump
-                         );
+        );
         websocket_emit(emit_buffer, b);
 
         nanosleep(&ts, NULL);
@@ -110,15 +110,12 @@ int main()
 
 #ifdef DEBUG
     const char* log_level = getenv("LOG_LEVEL");
-    if (log_level == NULL) log_level = "4";
-    mg_log_set(atoi(log_level));
+    mg_log_set(log_level == NULL ? MG_LL_DEBUG : atoi(log_level));
 #else
     mg_log_set(MG_LL_NONE);
     term_clear();
     term_cursor_hide();
 #endif
-
-
 
     pthread_t t1;
     int result_code = pthread_create(&t1, NULL, main_worker, NULL);

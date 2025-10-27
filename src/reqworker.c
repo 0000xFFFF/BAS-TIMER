@@ -69,8 +69,8 @@ atomic_int g_auto_gas;
 atomic_int g_auto_timer_seconds;
 int g_auto_timer_started = 0;
 int g_auto_timer_seconds_elapsed = 0;
-char g_auto_timer_status[STATUS_BUFFER_SIZE] = "...";
-char g_auto_gas_status[STATUS_BUFFER_SIZE] = "...";
+char g_auto_timer_status[BIGBUFF] = "...";
+char g_auto_gas_status[BIGBUFF] = "...";
 
 int g_history_mode = -1;
 time_t g_history_mode_time_changed = 0;
@@ -160,8 +160,8 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
 
 int sendreq(const char* url, int log, int remember_response)
 {
-    char request_url[REQUEST_URL_BUFFER_SIZE];
-    snprintf(request_url, REQUEST_URL_BUFFER_SIZE, "%s&_=%lld", url, GLOBAL_UNIX_COUNTER);
+    char request_url[BIGBUFF];
+    snprintf(request_url, BIGBUFF, "%s&_=%lld", url, GLOBAL_UNIX_COUNTER);
     if (log) { logger_requests_write("%s\n", request_url); }
 
     s_url = url; // set url
@@ -185,8 +185,8 @@ int sendreq(const char* url, int log, int remember_response)
 
 int sendreq_wttrin(const char* url, int log, int remember_response)
 {
-    char request_url[REQUEST_URL_BUFFER_SIZE];
-    snprintf(request_url, REQUEST_URL_BUFFER_SIZE, "%s", url);
+    char request_url[BIGBUFF];
+    snprintf(request_url, BIGBUFF, "%s", url);
     if (log) { logger_requests_write("%s\n", request_url); }
 
     s_url = url; // set url
@@ -237,7 +237,7 @@ void update_history(int mod_rada, int StatusPumpe4)
         if (mod_rada) {
             g_history_mode_time_on = g_history_mode_time_changed;
             logger_changes_write("mod_rada = %d\n", mod_rada);
-            snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, " %s 󰐸", t);
+            snprintf(g_auto_timer_status, BIGBUFF, " %s 󰐸", t);
         }
         else {
             g_history_mode_time_off = g_history_mode_time_changed;
@@ -252,11 +252,11 @@ void update_history(int mod_rada, int StatusPumpe4)
             }
 
             logger_changes_write("mod_rada = %d%s", mod_rada, e);
-            snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, " %s %s", t, p);
+            snprintf(g_auto_timer_status, BIGBUFF, " %s %s", t, p);
 
             if (g_auto_timer_started) {
                 g_auto_timer_started = 0;
-                snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%s 󰜺", t);
+                snprintf(g_auto_timer_status, BIGBUFF, "%s 󰜺", t);
             }
         }
     }
@@ -268,7 +268,7 @@ void update_history(int mod_rada, int StatusPumpe4)
         if (StatusPumpe4) {
             g_history_gas_time_on = g_history_gas_time_changed;
             logger_changes_write("StatusPumpe4 = %d\n", StatusPumpe4);
-            snprintf(g_auto_gas_status, STATUS_BUFFER_SIZE, " %s ", t);
+            snprintf(g_auto_gas_status, BIGBUFF, " %s ", t);
         }
         else {
             g_history_gas_time_off = g_history_gas_time_changed;
@@ -301,14 +301,14 @@ void do_logic_timer(int mod_rada)
     if (g_auto_timer && mod_rada) {
         if (g_auto_timer_started) {
             g_auto_timer_seconds_elapsed = difftime(current_time, g_history_mode_time_on);
-            snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%d/%d", g_auto_timer_seconds_elapsed, atomic_load(&g_auto_timer_seconds));
+            snprintf(g_auto_timer_status, BIGBUFF, "%d/%d", g_auto_timer_seconds_elapsed, atomic_load(&g_auto_timer_seconds));
 
             if (g_auto_timer_seconds_elapsed >= g_auto_timer_seconds) {
                 g_auto_timer_started = 0;
-                snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%s 󱪯", t);
+                snprintf(g_auto_timer_status, BIGBUFF, "%s 󱪯", t);
                 if (g_history_mode_time_on) {
                     char* elap = elapsed_str(time(NULL), g_history_mode_time_on);
-                    snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "󱫐 %s 󱪯", elap);
+                    snprintf(g_auto_timer_status, BIGBUFF, "󱫐 %s 󱪯", elap);
                     free(elap);
                 }
                 sendreq(URL_HEAT_OFF, 1, 0);
@@ -316,7 +316,7 @@ void do_logic_timer(int mod_rada)
         }
         else {
             g_auto_timer_started = 1;
-            snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%s 󱫌", t);
+            snprintf(g_auto_timer_status, BIGBUFF, "%s 󱫌", t);
         }
     }
 

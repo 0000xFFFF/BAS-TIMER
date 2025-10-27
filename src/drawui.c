@@ -192,13 +192,13 @@ int draw_ui(struct bas_info info, int is_sending, int errors) {
         time_t current_time;
         time(&current_time);
         g_auto_timer_seconds_elapsed = difftime(current_time, g_history_mode_time_on);
-        snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "%d/%d", g_auto_timer_seconds_elapsed, atomic_load(&g_auto_timer_seconds));
+        snprintf(g_auto_timer_status, BIGBUFF, "%d/%d", g_auto_timer_seconds_elapsed, atomic_load(&g_auto_timer_seconds));
     }
 
     int s = atomic_load(&g_auto_timer_seconds);
     if (s != g_auto_timer_seconds_old) {
         g_auto_timer_seconds_old = s;
-        snprintf(g_auto_timer_status, STATUS_BUFFER_SIZE, "changed to: %d", s);
+        snprintf(g_auto_timer_status, BIGBUFF, "changed to: %d", s);
     }
 
 
