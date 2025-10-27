@@ -207,6 +207,11 @@ function connect() {
 
 connect();
 
+function setButtonSize(padding, fontSize) {
+    document.documentElement.style.setProperty('--button-padding', padding);
+    document.documentElement.style.setProperty('--button-font-size', fontSize);
+}
+
 function zoomOutOnMobile() {
     if (/Mobi|Android/i.test(navigator.userAgent)) {
         let metaTag = document.querySelector("meta[name=viewport]");
@@ -216,27 +221,31 @@ function zoomOutOnMobile() {
             document.head.appendChild(metaTag);
         }
 
-        // Get the main element's dimensions
         const main = document.getElementById("main");
-        const mainWidth = main.offsetWidth;
-        const mainHeight = main.offsetHeight;
+        if (!main) return;
 
-        // Get the viewport's width and height
+        const mainWidth = main.scrollWidth;
+        const mainHeight = main.scrollHeight;
+
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
 
-        // Set the scale factor to make sure the main div fits
-        // Calculate how much we need to zoom out
+        // Calculate scale factor to fit everything
         const scaleFactorWidth = viewportWidth / mainWidth;
         const scaleFactorHeight = viewportHeight / mainHeight;
 
-        // Set a more limited scale factor to zoom out less aggressively
-        const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight, 0.45); // Try 50% zoom-out max
+        // Choose the smaller scale so it fits both width and height
+        let scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
 
-        // Set the viewport meta tag with the calculated scale factor
-        metaTag.content = `width=device-width, initial-scale=${scaleFactor}, maximum-scale=1.0, minimum-scale=0.06, user-scalable=yes`;
+        // Optional: prevent extreme zoom-out
+        const MIN_SCALE = 0.25;
+        if (scaleFactor < MIN_SCALE) scaleFactor = MIN_SCALE;
+
+        setButtonSize('10px', '40px');
+
+        metaTag.content = `width=device-width, initial-scale=${scaleFactor}, maximum-scale=1.0, minimum-scale=${scaleFactor}, user-scalable=yes`;
     }
 }
 
-// Run on page load
-window.addEventListener("load", zoomOutOnMobile);
+window.addEventListener('load', zoomOutOnMobile);
+window.addEventListener('resize', zoomOutOnMobile); // adjust if screen rotates

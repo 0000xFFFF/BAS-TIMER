@@ -5,6 +5,11 @@
     font-family: 'GohuFontMono', monospace;
 }
 
+:root {
+  --button-padding: 10px;
+  --button-font-size: 30px;
+}
+
 body {
     background-color: white;
     background: #1c1c1c;
@@ -13,38 +18,23 @@ body {
 }
 
 #main {
-    display: flex;
     justify-content: center;
     align-items: center;
     width: fit-content;
     margin: 0 auto;
-    padding: 5px;
+    padding: 30px;
     border-radius: 50px;
     box-sizing: border-box;
 }
 
-.flex-row {
+.input_cont {
     display: flex;
-    flex-direction: row;
-    gap: 10px;
     align-items: center;
-}
-
-.flex-col {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-}
-
-.f_sb {
-    display: flex;
     gap: 10px;
-    justify-content: space-between;
-    padding: 3px;
 }
 
 #settings {
+    width: 750px;
     margin-bottom: 20px;
 }
 
@@ -54,7 +44,7 @@ body {
 
 .text {
     color: #DB2828;
-    font-size: 20px;
+    font-size: 30px;
     text-shadow: 3px 3px 0 black;
 }
 
@@ -63,9 +53,10 @@ a {
     text-shadow: 3px 3px 0 black;
 }
 
-#txt_input {
+
+input {
     background-color: #200000;
-    font-size: 20px;
+    font-size: 40px;
     color: white;
     border-top: 2px double #ff0000;
     border-left: 2px double #ff0000;
@@ -74,6 +65,11 @@ a {
     padding: 5px;
 }
 
+input::selection, input::-moz-selection{
+    color: #1c87c9;
+    background: red;
+    border: 2px solid red;
+}
 
 .on {
     color: green;
@@ -84,11 +80,16 @@ a {
     border-bottom: 2px double #008000;
 }
 
+.btn_large {
+    padding: var(--button-padding);
+    font-size: var(--button-font-size);
+}
+
 
 button {
-    font-size: 25px;
+    padding: 10px;
+    font-size: 20px;
     color: #ddd;
-    padding: 7px;
     border-radius: 2px;
     background-color: #600000;
     border-top: 2px double #ff0000;
@@ -96,7 +97,11 @@ button {
     border-right: 2px double #800000;
     border-bottom: 2px double #800000;
     cursor: pointer;
+    width: fit-content;
     box-shadow: 5px 5px 0 black;
+    flex: 0 0 auto; /* do not grow, do not shrink */
+    margin: 10px 0 0 0;
+
 }
 
 button:hover {
@@ -110,7 +115,12 @@ button:active {
     box-shadow: none;
 }
 
-
+#stats {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
 
 #status {
     display: flex;
@@ -125,7 +135,7 @@ button:active {
     font-size: 30px;
     width: auto;
     height: auto;
-    min-width: 700px;
+    min-width: 800px;
     min-height: 500px;
     border-radius: 2px;
     border-top: 2px double #ff0000;
@@ -150,6 +160,18 @@ button:active {
 }
 
 #sumtime {
-    padding: 10px;
+    color: white;
+    padding: 15px;
+    font-size: 30px;
+    width: fit-content;
+    margin: 0 auto;
+    height: auto;
+    border-radius: 2px;
+    border-top: 2px double #ff0000;
+    border-left: 2px double #ff0000;
+    border-right: 2px double #800000;
+    border-bottom: 2px double #800000;
+    font-family: monospace;
+    background: #000005;
+    box-shadow: 5px 5px 0 black;
 }
-
