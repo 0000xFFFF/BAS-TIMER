@@ -1,0 +1,73 @@
+a {
+    font-size: 10px;
+}
+
+input {
+    font-size: 10px;
+}
+
+.btn_action {
+    font-size: 15px;
+}
+
+
+.fc,
+.fr {
+    display: flex;
+    gap: 3px;
+    margin: 3px;
+}
+
+.fc {
+    flex-direction: column;
+}
+
+.fr {
+    align-items: flex-end;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.text {
+    font-size: 10px;
+}
+
+.btn_action {
+    padding: 5px;
+    font-size: 20px;
+}
+
+#term {
+    padding: 15px;
+    font-size: 10px;
+}
+
+#status {
+    gap: 3px;
+}
+
+#term {
+    color: white;
+    width: auto;
+    height: auto;
+    min-width: 200px;
+    min-height: 200px;
+    border-radius: 2px;
+    border-top: 2px double #ff0000;
+    border-left: 2px double #ff0000;
+    border-right: 2px double #800000;
+    border-bottom: 2px double #800000;
+    font-family: monospace;
+    background: #000005;
+    box-shadow: 5px 5px 0 black;
+}
+
+#canv {
+    width: 10px;
+    height: auto;
+}
+
+#sumtime {
+    padding: 15px;
+    font-size: 10px;
+}

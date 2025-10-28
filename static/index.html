@@ -8,54 +8,56 @@
     <title>BAS CTRL SERVER</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/desktop.css">
     <script defer type="text/javascript" src="/index.js"></script>
 </head>
 
 <body>
     <div id="main">
+        <div id="controls">
+            <div id="links">
+                <a href="/errors">errors.log</a>
+                <a href="/requests">requests.log</a>
+                <a href="/changes">changes.log</a>
+            </div>
 
-        <div id="links">
-            <a href="/errors">errors.log</a>
-            <a href="/requests">requests.log</a>
-            <a href="/changes">changes.log</a>
-        </div>
-
-        <div id="settings">
-            <div>
+            <div id="settings">
                 <div id="settings_time">
-                    <div class="input_cont">
-                        <span class="text">Seconds:</span>
-                        <input type="text" id="txt_input">
-                        <button id="button_update" onclick="updateTime()">Update</button>
-                    </div>
+                    <span class="block">
+                        <div class="input_cont">
+                            <span class="text">Seconds:</span>
+                            <input type="text" id="txt_input">
+                            <button id="button_update" onclick="updateTime()">Update</button>
+                        </div>
+                    </span>
                 </div>
 
-                <div>
-                    <div>
-                        <button class="btn_large btn_time" id="button_1min" onclick="setTime(this)">1 min</button>
-                        <button class="btn_large btn_time" id="button_2min" onclick="setTime(this)">2 min</button>
-                        <button class="btn_large btn_time" id="button_3min" onclick="setTime(this)">3 min</button>
-                        <button class="btn_large btn_time" id="button_5min" onclick="setTime(this)">5 min</button>
-                        <button class="btn_large btn_time" id="button_8min" onclick="setTime(this)">8 min</button>
-                        <button class="btn_large btn_time" id="button_10min" onclick="setTime(this)">10 min</button>
-                        <button class="btn_large btn_time" id="button_15min" onclick="setTime(this)">15 min</button>
-                        <button class="btn_large btn_time" id="button_20min" onclick="setTime(this)">20 min</button>
-                    </div>
-                    <div>
-                        <button class="btn_large " id="toggleTimerButton" onclick="toggleAutoTimer()">󱎫 Auto Timer</button>
-                        <button class="btn_large " id="toggleGasButton" onclick="toggleAutoGas()">󰙇 Auto Gas</button>
-                    </div>
+                <div class="fr">
+                    <button class="btn_action btn_time" id="button_1min" onclick="setTime(this)">1 min</button>
+                    <button class="btn_action btn_time" id="button_2min" onclick="setTime(this)">2 min</button>
+                    <button class="btn_action btn_time" id="button_3min" onclick="setTime(this)">3 min</button>
+                    <button class="btn_action btn_time" id="button_5min" onclick="setTime(this)">5 min</button>
+                </div>
+                <div class="fr">
+                    <button class="btn_action btn_time" id="button_8min" onclick="setTime(this)">8 min</button>
+                    <button class="btn_action btn_time" id="button_10min" onclick="setTime(this)">10 min</button>
+                    <button class="btn_action btn_time" id="button_15min" onclick="setTime(this)">15 min</button>
+                    <button class="btn_action btn_time" id="button_20min" onclick="setTime(this)">20 min</button>
+                </div>
 
-                    <div>
-                        <button class="btn_large " id="bas_heat_on" onclick="bas_heat_on()">󰐸 Heat On</button>
-                        <button class="btn_large " id="bas_heat_off" onclick="bas_heat_off()">󰫗 Heat Off</button>
-                    </div>
+                <div class="fr">
+                    <button class="btn_action" id="toggleTimerButton" onclick="toggleAutoTimer()">󱎫 Auto Timer</button>
+                    <button class="btn_action" id="toggleGasButton" onclick="toggleAutoGas()">󰙇 Auto Gas</button>
+                </div>
 
-                    <div>
-                        <button class="btn_large " id="bas_gas_on" onclick="bas_gas_on()">󰈸 Gas On</button>
-                        <button class="btn_large " id="bas_gas_off" onclick="bas_gas_off()">󰙇 Gas Off</button>
-                    </div>
+                <div class="fr">
+                    <button class="btn_action" id="bas_heat_on" onclick="bas_heat_on()">󰐸 Heat On</button>
+                    <button class="btn_action" id="bas_heat_off" onclick="bas_heat_off()">󰫗 Heat Off</button>
+                </div>
 
+                <div class="fr">
+                    <button class="btn_action" id="bas_gas_on" onclick="bas_gas_on()">󰈸 Gas On</button>
+                    <button class="btn_action" id="bas_gas_off" onclick="bas_gas_off()">󰙇 Gas Off</button>
                 </div>
             </div>
         </div>
