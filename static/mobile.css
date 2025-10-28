@@ -28,6 +28,12 @@ input {
     justify-content: flex-end;
 }
 
+.frc {
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+}
+
 .text {
     font-size: 10px;
 }
@@ -37,29 +43,17 @@ input {
     font-size: 20px;
 }
 
-#term {
-    padding: 15px;
-    font-size: 10px;
-}
-
 #status {
     gap: 3px;
 }
 
 #term {
-    color: white;
+    padding: 15px;
+    font-size: 10px;
     width: auto;
     height: auto;
     min-width: 200px;
     min-height: 200px;
-    border-radius: 2px;
-    border-top: 2px double #ff0000;
-    border-left: 2px double #ff0000;
-    border-right: 2px double #800000;
-    border-bottom: 2px double #800000;
-    font-family: monospace;
-    background: #000005;
-    box-shadow: 5px 5px 0 black;
 }
 
 #canv {
