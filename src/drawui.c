@@ -310,7 +310,6 @@ size_t draw_ui(struct bas_info info, int is_sending, int errors) {
     DPL("===[ OUTPUT BEGIN ]===");
     size_t r = printf("%s", g_term_buffer);
     DPL("===[ OUTPUT END ]===");
-    D(printf("OUTPUT LEN: %ld\n", r));
     return r;
 }
 // clang-format on

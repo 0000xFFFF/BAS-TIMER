@@ -361,7 +361,6 @@ void update_info()
     // get request, parse response
     sendreq(URL_VARS, 0, 1);
     if (s_response_body.buf) {
-        D(printf("RESPONSE BODY BUF LEN: %lu\n", strlen(s_response_body.buf)));
         g_info.hasValues = 1;
         g_info.mod_rada = extract(s_response_body, "$.mod_rada");
         g_info.mod_rezim = extract(s_response_body, "$.mod_rezim");
