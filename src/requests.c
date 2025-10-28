@@ -1,10 +1,9 @@
-#include "reqworker.h"
+#include "requests.h"
 #include "debug.h"
-#include "drawui.h"
+#include "draw_ui.h"
 #include "globals.h"
 #include "logger.h"
 #include "mongoose.h"
-#include "reqworker.h"
 #include "spinners.h"
 #include "utils.h"
 #include <float.h>

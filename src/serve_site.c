@@ -1,7 +1,7 @@
 #include "debug.h"
 #include "logger.h"
 #include "mongoose.h"
-#include "reqworker.h"
+#include "requests.h"
 #include <stdatomic.h>
 
 extern atomic_int g_auto_timer;

@@ -10,7 +10,7 @@
 
 #include "debug.h"
 #include "globals.h"
-#include "reqworker.h"
+#include "requests.h"
 #include "term.h"
 
 #include "serve_site.h"

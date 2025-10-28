@@ -1,7 +1,7 @@
 #include "colors.h"
 #include "debug.h"
 #include "globals.h"
-#include "reqworker.h"
+#include "requests.h"
 #include "spinners.h"
 #include "utils.h"
 #include <stdatomic.h>

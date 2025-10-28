@@ -1,5 +1,5 @@
-#ifndef REQWORKER_H
-#define REQWORKER_H
+#ifndef REQUESTS_H
+#define REQUESTS_H
 
 extern const char* URL_VARS;
 extern const char* URL_HEAT_OFF;
@@ -44,4 +44,4 @@ extern void init_reqworker();
 extern void reqworker_do_work();
 extern char* sendreq_error_to_str(int e);
 
-#endif // REQWORKER_H
+#endif // REQUESTS_H
