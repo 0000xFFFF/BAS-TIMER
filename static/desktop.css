@@ -54,6 +54,11 @@ button {
     font-size: 50px;;
 }
 
+
+#stats {
+    gap: 20px;
+}
+
 #status {
     gap: 20px;
 }
@@ -76,3 +81,4 @@ button {
     padding: 15px;
     font-size: 30px;
 }
+

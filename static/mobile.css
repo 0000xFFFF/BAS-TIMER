@@ -3,7 +3,7 @@ a {
 }
 
 input {
-    font-size: 10px;
+    font-size: 15px;
 }
 
 .btn_action {
@@ -14,7 +14,7 @@ input {
 .fc,
 .fr {
     display: flex;
-    gap: 3px;
+    gap: 5px;
     margin: 3px;
 }
 
@@ -40,7 +40,11 @@ input {
 
 .btn_action {
     padding: 5px;
-    font-size: 20px;
+    font-size: 24px;
+}
+
+#stats {
+    gap: 3px;
 }
 
 #status {
@@ -49,11 +53,11 @@ input {
 
 #term {
     padding: 15px;
-    font-size: 10px;
+    font-size: 12px;
     width: auto;
     height: auto;
     min-width: 200px;
-    min-height: 200px;
+    min-height: 150px;
 }
 
 #canv {
