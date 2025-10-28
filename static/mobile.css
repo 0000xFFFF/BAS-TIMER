@@ -29,9 +29,11 @@ input {
 }
 
 .frc {
+    display: flex;
     align-items: center;
     flex-direction: row;
     justify-content: center;
+    gap: 5px;
 }
 
 .text {

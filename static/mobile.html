@@ -16,6 +16,12 @@
 <body>
     <div id="main">
 
+        <div class="frc">
+            <a href="/errors">errors.log</a>
+            <a href="/requests">requests.log</a>
+            <a href="/changes">changes.log</a>
+        </div>
+
         <div id="stats">
             <div id="status">
                 <div id="term"></div>
@@ -35,21 +41,12 @@
         </div>
 
         <div id="controls">
-            <div id="frc">
-                <a href="/errors">errors.log</a>
-                <a href="/requests">requests.log</a>
-                <a href="/changes">changes.log</a>
-            </div>
-
-            <div id="settings">
-                <div id="settings_time">
-                    <div class="frc input_cont">
-                        <span class="text">Seconds:</span>
-                        <input type="text" id="txt_input">
-                        <button id="button_update" onclick="updateTime()">Update</button>
-                    </div>
+            <div id="seconds">
+                <div class="frc input_cont">
+                    <span class="text">Seconds:</span>
+                    <input type="text" id="txt_input">
+                    <button id="button_update" onclick="updateTime()">Update</button>
                 </div>
-
             </div>
 
             <span class="fr">

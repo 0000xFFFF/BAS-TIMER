@@ -40,6 +40,14 @@ input {
     justify-content: flex-end;
 }
 
+.frc {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    gap: 15px;
+}
+
 .text {
     font-size: 30px;
 }

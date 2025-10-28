@@ -30,19 +30,10 @@ a {
 
 }
 
-#settings {
-    margin-bottom: 20px;
-}
-
-#settings_time {
-    margin-bottom: 5px;
-}
-
 .text {
     color: #DB2828;
     text-shadow: 3px 3px 0 black;
 }
-
 
 input {
     background-color: #200000;
