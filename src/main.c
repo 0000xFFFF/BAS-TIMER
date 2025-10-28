@@ -39,7 +39,7 @@ static void* main_worker(void* sig)
     DPL("WORKER START");
 
     DPL("WORKER INIT");
-    init_reqworker();
+    init_requests_worker();
     DPL("WORKER INIT DONE");
 
     struct timespec ts;
@@ -55,7 +55,7 @@ static void* main_worker(void* sig)
 #ifndef DEBUG
         term_cursor_reset();
 #endif
-        reqworker_do_work();
+        requests_worker_do_work();
 
         ansi_to_html(g_term_buffer, html_buffer);
         escape_quotes(html_buffer, html_buffer_escaped);

@@ -14,13 +14,13 @@
 #include <string.h>
 #include <time.h>
 
-const char* URL_VARS = "http://192.168.1.250/isc/get_var_js.aspx?StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&mod_rada=&mod_rezim=&__Time=&__Date=&Jeftina_tarifa=&grejanje_off=&Alarm_tank=&Alarm_solar=&STATE_Preklopka=&SESSIONID=-1";
-const char* URL_HEAT_OFF = "http://192.168.1.250/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1";
-const char* URL_HEAT_ON = "http://192.168.1.250/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1";
-const char* URL_GAS_OFF = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=0,-1&=&SESSIONID=-1";
-const char* URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1";
+const char* const URL_VARS = "http://192.168.1.250/isc/get_var_js.aspx?StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&mod_rada=&mod_rezim=&__Time=&__Date=&Jeftina_tarifa=&grejanje_off=&Alarm_tank=&Alarm_solar=&STATE_Preklopka=&SESSIONID=-1";
+const char* const URL_HEAT_OFF = "http://192.168.1.250/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1";
+const char* const URL_HEAT_ON = "http://192.168.1.250/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1";
+const char* const URL_GAS_OFF = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=0,-1&=&SESSIONID=-1";
+const char* const URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1";
 
-const char* URL_WTTRIN = "https://wttr.in/?format=4";
+const char* const URL_WTTRIN = "https://wttr.in/?format=4";
 
 extern int g_running;
 
@@ -80,7 +80,7 @@ time_t g_history_gas_time_changed = 0;
 time_t g_history_gas_time_on = 0;
 time_t g_history_gas_time_off = 0;
 
-void init_reqworker()
+void init_requests_worker()
 {
     // for req
     g_global_unix_counter = timestamp();
@@ -109,11 +109,9 @@ char* sendreq_error_to_str(int e)
     return "?";
 }
 
-// Print HTTP response and signal that we're done
 static void fn(struct mg_connection* c, int ev, void* ev_data)
 {
     if (ev == MG_EV_OPEN) {
-        // Connection created. Store connect expiration time in c->data
         *(uint64_t*)c->data = mg_millis() + s_timeout_ms;
     }
     else if (ev == MG_EV_POLL) {
@@ -123,7 +121,6 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
         }
     }
     else if (ev == MG_EV_CONNECT) {
-        // Connected to server. Extract host name from URL
         struct mg_str host = mg_url_host(s_url);
 
         if (mg_url_is_ssl(s_url)) {
@@ -132,7 +129,6 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
             mg_tls_init(c, &opts);
         }
 
-        // Send request
         mg_printf(c, s_request_format, mg_url_uri(s_url), (int)host.len, host.buf);
         // DPL("SENDREQ FN:");
         // D(printf(s_request_format, mg_url_uri(s_url), (int)host.len, host.buf));
@@ -141,12 +137,9 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
 
         struct mg_http_message* hm = (struct mg_http_message*)ev_data;
         // D(printf("%.*s", (int)hm->message.len, hm->message.buf));
-
         if (s_remember_response) {
-            // Response received
             s_response_body = mg_strdup(hm->body);
         }
-
         c->is_draining = 1;        // Tell mongoose to close this connection
         *(bool*)c->fn_data = true; // Tell event loop to stop
     }
@@ -210,14 +203,9 @@ int sendreq_wttrin(const char* url, int log, int remember_response)
 
 double extract(struct mg_str json_body, const char* label)
 {
-    // D(printf("%s", json_body.buf));
-    // D(printf(" -- extract: %s", label));
     struct mg_str tok = mg_json_get_tok(json_body, label);
-
     double value = DBL_MIN;
     mg_json_get_num(tok, "$.value", &value);
-
-    // D(printf(" -> %f", value));
     return value;
 }
 
@@ -418,7 +406,7 @@ void wttrin_get_weather()
 static int request_count = 0;
 static int wttrin_request_count = 0;
 
-void reqworker_do_work()
+void requests_worker_do_work()
 {
     request_count++;
     wttrin_request_count++;

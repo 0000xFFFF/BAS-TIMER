@@ -1,11 +1,11 @@
 #ifndef REQUESTS_H
 #define REQUESTS_H
 
-extern const char* URL_VARS;
-extern const char* URL_HEAT_OFF;
-extern const char* URL_HEAT_ON;
-extern const char* URL_GAS_OFF;
-extern const char* URL_GAS_ON;
+extern const char* const URL_VARS;
+extern const char* const URL_HEAT_OFF;
+extern const char* const URL_HEAT_ON;
+extern const char* const URL_GAS_OFF;
+extern const char* const URL_GAS_ON;
 
 extern char g_wttrin_buffer[];
 
@@ -40,8 +40,8 @@ struct bas_info {
 };
 
 extern int sendreq(const char* url, int log, int remember_response);
-extern void init_reqworker();
-extern void reqworker_do_work();
+extern void init_requests_worker();
+extern void requests_worker_do_work();
 extern char* sendreq_error_to_str(int e);
 
 #endif // REQUESTS_H
