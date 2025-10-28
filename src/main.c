@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <pthread.h>
+#include <stdatomic.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -10,14 +11,17 @@
 
 #include "debug.h"
 #include "globals.h"
-#include "requests.h"
+#include "request.h"
+#include "src/spinners.h"
 #include "term.h"
 
 #include "serve_site.h"
 #include "serve_websocket.h"
 #include "utils.h"
 
-int g_running = 1;
+atomic_bool g_running = true;
+pthread_mutex_t g_update_info_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t g_cond = PTHREAD_COND_INITIALIZER;
 
 #ifdef QUICK
 #define MAX_ITERS 20
@@ -31,32 +35,35 @@ extern double g_temp_min;
 
 extern struct bas_info g_info;
 
-static void* main_worker(void* sig)
+void init() {
+
+    g_global_unix_counter = timestamp();
+
+    // for drawui
+    init_spinners();
+}
+
+static void* th_print_loop(void* sig)
 {
 
     UNUSED(sig);
 
-    DPL("WORKER START");
-
-    DPL("WORKER INIT");
-    init_requests_worker();
-    DPL("WORKER INIT DONE");
+    init();
 
     struct timespec ts;
     ts.tv_sec = 0;
-    ts.tv_nsec = 1000000000 * MAIN_WORKER_DRAW_SLEEP; // 1 milliseconds in nanoseconds
+    ts.tv_nsec = 1000000 * SLEEP_MS_DRAW;
 
-    char html_buffer[1024 * 8] = {0};
-    char html_buffer_escaped[1024 * 8 * 2] = {0};
-    char emit_buffer[1024 * 8 * 2] = {0};
+    char html_buffer[1024 * 16] = {0};
+    char html_buffer_escaped[1024 * 16 * 2] = {0};
+    char emit_buffer[1024 * 16 * 2] = {0};
 
-    while (g_running) {
+    while (atomic_load(&g_running)) {
 
 #ifndef DEBUG
         term_cursor_reset();
 #endif
-        requests_worker_do_work();
-
+        draw_ui();
         ansi_to_html(g_term_buffer, html_buffer);
         escape_quotes(html_buffer, html_buffer_escaped);
 
@@ -92,6 +99,58 @@ static void* main_worker(void* sig)
     return NULL;
 }
 
+static void* th_requests_bas(void* sig)
+{
+
+    UNUSED(sig);
+
+    while (atomic_load(&g_running)) {
+
+#if MAKE_REQUEST_BAS
+        update_info_bas();
+#endif
+
+        struct timespec ts;
+        clock_gettime(CLOCK_REALTIME, &ts);
+        ts.tv_sec += SLEEP_MS_REQUESTS_WORKER_WTTRIN;
+
+        pthread_mutex_lock(&g_update_info_bas_mutex);
+        while (atomic_load(&g_running)) {
+            int rc = pthread_cond_timedwait(&g_cond, &g_update_info_bas_mutex, &ts);
+            if (rc == ETIMEDOUT) break;
+        }
+        pthread_mutex_unlock(&g_update_info_bas_mutex);
+    }
+
+    return NULL;
+}
+
+static void* th_requests_wttrin(void* sig)
+{
+
+    UNUSED(sig);
+
+    while (atomic_load(&g_running)) {
+
+#if MAKE_REQUEST_WTTRIN
+        update_info_wttrin();
+#endif
+
+        struct timespec ts;
+        clock_gettime(CLOCK_REALTIME, &ts);
+        ts.tv_sec += SLEEP_MS_REQUESTS_WORKER_WTTRIN;
+
+        pthread_mutex_lock(&g_update_info_bas_mutex);
+        while (atomic_load(&g_running)) {
+            int rc = pthread_cond_timedwait(&g_cond, &g_update_info_bas_mutex, &ts);
+            if (rc == ETIMEDOUT) break;
+        }
+        pthread_mutex_unlock(&g_update_info_bas_mutex);
+    }
+
+    return NULL;
+}
+
 static void signal_handler(int sig)
 {
     printf("Caught signal: %d\n", sig);
@@ -118,22 +177,29 @@ int main()
 #endif
 
     pthread_t t1;
-    int result_code = pthread_create(&t1, NULL, main_worker, NULL);
-    assert(!result_code);
+    assert(!pthread_create(&t1, NULL, th_print_loop, NULL));
+
+    pthread_t t2;
+    assert(!pthread_create(&t2, NULL, th_requests_bas, NULL));
+
+    pthread_t t3;
+    assert(!pthread_create(&t3, NULL, th_requests_wttrin, NULL));
 
     struct mg_mgr mgr;
     mg_mgr_init(&mgr);
     mg_http_listen(&mgr, S_ADDR_HTTP, serve_site, &mgr);
     mg_http_listen(&mgr, S_ADDR_WS, serve_websocket, &mgr);
-
-    while (g_running) {
-        mg_mgr_poll(&mgr, POLL_TIME);
-    }
+    while (atomic_load(&g_running)) { mg_mgr_poll(&mgr, POLL_TIME); }
     mg_mgr_free(&mgr);
 
-    DPL("WORKER JOIN");
+    atomic_store(&g_running, false);
+    pthread_mutex_lock(&g_update_info_bas_mutex);
+    pthread_cond_broadcast(&g_cond);
+    pthread_mutex_unlock(&g_update_info_bas_mutex);
+
     pthread_join(t1, NULL);
-    DPL("WORKER JOIN DONE");
+    pthread_join(t2, NULL);
+    pthread_join(t3, NULL);
 
     DPL("MAIN EXIT");
     return 0;

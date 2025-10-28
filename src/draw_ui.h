@@ -1,6 +1,8 @@
 #ifndef DRAWUI_H
 #define DRAWUI_H
 
-extern void draw_ui(struct bas_info info, int is_sending, int errors);
+#include <stddef.h>
+
+size_t draw_ui();
 
 #endif // DRAWUI_H

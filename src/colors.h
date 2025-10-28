@@ -22,10 +22,10 @@ extern size_t ctext_bg(char* buffer, size_t size, int color, const char* text);
 extern int contrast_color(int color);
 extern size_t ctext_fg_con(char* buffer, size_t size, int color, const char* text);
 extern size_t ctext_bg_con(char* buffer, size_t size, int color, const char* text);
-extern int temperature_to_color(double temp, double* temp_min, double* temp_max);
-extern size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double* temp_min, double* temp_max);
-extern size_t temp_to_ctext_bg(char* buffer, size_t size, double temp, double* temp_min, double* temp_max);
-extern size_t temp_to_ctext_fg_con(char* buffer, size_t size, double temp, double* temp_min, double* temp_max);
-extern size_t temp_to_ctext_bg_con(char* buffer, size_t size, double temp, double* temp_min, double* temp_max);
+extern int temperature_to_color(double temp, double temp_min, double temp_max);
+extern size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double temp_min, double temp_max);
+extern size_t temp_to_ctext_bg(char* buffer, size_t size, double temp, double temp_min, double temp_max);
+extern size_t temp_to_ctext_fg_con(char* buffer, size_t size, double temp, double temp_min, double temp_max);
+extern size_t temp_to_ctext_bg_con(char* buffer, size_t size, double temp, double temp_min, double temp_max);
 
 #endif // COLORS_H
