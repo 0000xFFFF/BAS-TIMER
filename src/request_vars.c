@@ -32,7 +32,6 @@ const char* const REQUEST_FORMAT_WTTRIN =
     "Content-Length: 0\r\n"
     "\r\n";
 
-struct bas_info g_info = {0};
 
 atomic_int g_auto_timer = ENABLE_AUTO_TIMER;
 atomic_int g_auto_gas = ENABLE_AUTO_GAS;
