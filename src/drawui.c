@@ -138,7 +138,7 @@ size_t draw_col1(char* buffer, size_t size, char* prelabel, char* label, char* i
     c += ctext_fg(buffer + c, size - c, color, temp);
     c += snprintf(buffer + c, size - c, "%s", gap);
     c += temp_to_ctext_bg_con(buffer + c, size - c, value, min, max);
-    c += snprintf(buffer + c, size - c, " %s", end);
+    if (end) c += snprintf(buffer + c, size - c, " %s", end);
     if (extra) c += extra(buffer + c, size - c);
     c += snprintf(buffer + c, size - c, "\n");
     return c;
@@ -149,13 +149,13 @@ size_t draw_col2(char* buffer, size_t size, char* prelabel, char* label, char* i
     size_t c = 0;
     c += snprintf(buffer + c, size - c, "%s", prelabel); // draw prelabel
     char temp[MIDBUFF] = {0};
-    snprintf(temp, MIDBUFF, "%s %s", label, icon);    // make label with color
-    c += ctext_fg(buffer + c, size - c, color, temp); // draw label with color
-    c += snprintf(buffer + c, size - c, "%s", gap);   // draw gap
-    if (func) c += func(buffer + c, size - c, value); // draw function pump_bars or heat
-    c += snprintf(buffer + c, size - c, " %s", end);  // draw end
-    if (extra) c += extra(buffer + c, size);          // draw extra function (eye)
-    c += snprintf(buffer + c, size - c, "\n");        // newline
+    snprintf(temp, MIDBUFF, "%s %s", label, icon);            // make label with color
+    c += ctext_fg(buffer + c, size - c, color, temp);         // draw label with color
+    c += snprintf(buffer + c, size - c, "%s", gap);           // draw gap
+    if (func) c += func(buffer + c, size - c, value);         // draw function pump_bars or heat
+    if (end) c += snprintf(buffer + c, size - c, " %s", end); // draw end
+    if (extra) c += extra(buffer + c, size);                  // draw extra function (eye)
+    c += snprintf(buffer + c, size - c, "\n");                // newline
     return c;
 }
 
@@ -182,16 +182,12 @@ size_t draw_extra_eye_gas(char* buffer, size_t size)
 
 size_t draw_extra_check(char* buffer, size_t size)
 {
-    size_t b = 0;
-    if (g_info.hasValues && g_info.TmidGE) b += ctext_fg(buffer + b, size - b, 82, get_frame(&spinner_check, 1));
-    return 0;
+    return ctext_fg(buffer, size, 82, g_info.hasValues && g_info.TmidGE ? get_frame(&spinner_check, 1) : " ");
 }
 
 size_t draw_extra_warn(char* buffer, size_t size)
 {
-    size_t b = 0;
-    if (g_info.hasValues && g_info.TminLT) b += ctext_fg(buffer + b, size - b, 51, get_frame(&spinner_snow, 1));
-    return b;
+    return ctext_fg(buffer, size, 51, g_info.hasValues && g_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
 }
 
 // clang-format off
@@ -242,10 +238,10 @@ size_t draw_ui(struct bas_info info, int is_sending, int errors) {
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Out", get_frame(&spinner_window, 1),      213, "  ", info.Tspv,    &g_temp_human_min, &g_temp_human_max, temp_to_emoji(info.Tspv), NULL);
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, " ", "Room", get_frame(&spinner_house, 1),        76, "  ", info.Tsobna,  &g_temp_human_min, &g_temp_human_max, temp_to_emoji(info.Tsobna), NULL);
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Set", get_frame(&spinner_cog, 1),         154, "  ", info.Tzadata, &g_temp_human_min, &g_temp_human_max, temp_to_emoji(info.Tzadata), NULL);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Max", "",                                214, "  ", info.Tmax,    &g_temp_buf_min,   &g_temp_buf_max,   " ", NULL);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Mid", "",                                220, "  ", info.Tmid,    &g_temp_buf_min,   &g_temp_buf_max,   " ", draw_extra_check);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Min", "",                                226, "  ", info.Tmin,    &g_temp_buf_min,   &g_temp_buf_max,   " ", draw_extra_warn);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "", "Circ.", get_frame(&spinner_recycle, 1),     110, "  ", info.Tfs,     &g_temp_circ_min,  &g_temp_circ_max,  " ", NULL);
+    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Max", "",                                214, "  ", info.Tmax,    &g_temp_buf_min,   &g_temp_buf_max,   "", NULL);
+    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Mid", "",                                220, "  ", info.Tmid,    &g_temp_buf_min,   &g_temp_buf_max,   "", draw_extra_check);
+    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Min", "",                                226, "  ", info.Tmin,    &g_temp_buf_min,   &g_temp_buf_max,   "", draw_extra_warn);
+    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "", "Circ.", get_frame(&spinner_recycle, 1),     110, "  ", info.Tfs,     &g_temp_circ_min,  &g_temp_circ_max,  "", NULL);
 
     //DPL("COL1");
     //D(printf("%s\n", col1));
@@ -256,7 +252,7 @@ size_t draw_ui(struct bas_info info, int is_sending, int errors) {
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, " ", "Regime", "󱖫",                                                                       192, "  ", info.mod_rada,     draw_regime,    "", NULL);
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Heat",  pump_is_on(info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃",   212, "  ", info.StatusPumpe6, draw_pump_bars, "", NULL);
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "    ", "Gas",  pump_is_on(info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇",        203, "  ", info.StatusPumpe4, draw_pump_bars, "", draw_extra_eye_gas);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Circ.",  pump_is_on(info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",      168, "  ", info.StatusPumpe3, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Circ.",  pump_is_on(info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",      168, "  ", info.StatusPumpe3, draw_pump_bars, "", NULL);
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Solar",  pump_is_on(info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",       224, "  ", info.StatusPumpe7, draw_pump_bars, "", NULL);
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Elec.",  pump_is_on(info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠",    78, "  ", info.StatusPumpe5, draw_pump_bars, "", NULL);
 

@@ -135,13 +135,13 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
 
         // Send request
         mg_printf(c, s_request_format, mg_url_uri(s_url), (int)host.len, host.buf);
-        //DPL("SENDREQ FN:");
-        //D(printf(s_request_format, mg_url_uri(s_url), (int)host.len, host.buf));
+        // DPL("SENDREQ FN:");
+        // D(printf(s_request_format, mg_url_uri(s_url), (int)host.len, host.buf));
     }
     else if (ev == MG_EV_HTTP_MSG) {
 
         struct mg_http_message* hm = (struct mg_http_message*)ev_data;
-        //D(printf("%.*s", (int)hm->message.len, hm->message.buf));
+        // D(printf("%.*s", (int)hm->message.len, hm->message.buf));
 
         if (s_remember_response) {
             // Response received
@@ -211,14 +211,14 @@ int sendreq_wttrin(const char* url, int log, int remember_response)
 
 double extract(struct mg_str json_body, const char* label)
 {
-    //D(printf("%s", json_body.buf));
-    //D(printf(" -- extract: %s", label));
+    // D(printf("%s", json_body.buf));
+    // D(printf(" -- extract: %s", label));
     struct mg_str tok = mg_json_get_tok(json_body, label);
 
     double value = DBL_MIN;
     mg_json_get_num(tok, "$.value", &value);
 
-    //D(printf(" -> %f", value));
+    // D(printf(" -> %f", value));
     return value;
 }
 
@@ -399,7 +399,7 @@ void wttrin_get_weather()
     sendreq_wttrin(URL_WTTRIN, 0, 1);
 
     if (s_response_body.buf) {
-        //D(printf("WTTRIN RESPONSE BODY BUF LEN: %lu\n", strlen(s_response_body.buf)));
+        // D(printf("WTTRIN RESPONSE BODY BUF LEN: %lu\n", strlen(s_response_body.buf)));
 
         // write response to buffer
         size_t b = 0;
@@ -427,12 +427,16 @@ void reqworker_do_work()
 
     if (!g_info.hasValues || request_count >= DO_REQUEST_COUNT) {
         request_count = 0;
+#if MAKE_REQUEST_BAS
         update_info();
+#endif
     }
 
     if (g_wttrin_buffer[0] == 0 || wttrin_request_count >= WTTRIN_DO_REQUEST_COUNT) {
         wttrin_request_count = 0;
+#if MAKE_REQUEST_WTTRIN
         wttrin_get_weather();
+#endif
     }
 
     draw_ui(g_info, 0, s_errors);
