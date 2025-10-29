@@ -1,8 +1,5 @@
-#include "debug.h"
 #include "globals.h"
-#include "logger.h"
 #include "mongoose.h"
-#include "spinners.h"
 #include "utils.h"
 #include <float.h>
 #include <pthread.h>
@@ -13,10 +10,6 @@
 #include <time.h>
 
 #include "request.h"
-
-extern double g_temp_buf_max;
-extern double g_temp_buf_min;
-
 
 pthread_mutex_t g_update_info_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -42,11 +35,11 @@ bool update_info_bas()
     request.request_format = REQUEST_FORMAT_BAS;
     request.timeout_ms = TIMEOUT_BAS;
     request.remember_response = 1;
-    requests_send(&request);
+    request_send(&request);
 
     if (request.output.buf) {
 
-        struct bas_info info;
+        struct bas_info info = {0};
 
         info.valid = true;
         info.status = request.status;
@@ -67,10 +60,29 @@ bool update_info_bas()
 
         // calc other values
         info.Tmid = (info.Tmax + info.Tmin) / 2;
-        info.peak_max_buf = g_temp_buf_max;
-        info.Tcoldest = g_temp_buf_min;
         info.TminLT = g_info.Tmin < 45;
         info.TmidGE = g_info.Tmid >= 60;
+        if (info.peaks_valid) {
+            info.peak_min_solar = mind(info.peak_min_solar, info.Tsolar);
+            info.peak_max_solar = maxd(info.peak_max_solar, info.Tsolar);
+            info.peak_min_human = mind(info.peak_min_human, info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_max_human = maxd(info.peak_max_human, info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_min_buf = mind(info.peak_min_buf, info.Tmin);
+            info.peak_max_buf = maxd(info.peak_max_buf, info.Tmax);
+            info.peak_min_circ = mind(info.peak_min_circ, info.Tfs);
+            info.peak_max_circ = maxd(info.peak_max_circ, info.Tfs);
+        }
+        else {
+            info.peaks_valid = true;
+            info.peak_min_solar = info.Tsolar;
+            info.peak_max_solar = info.Tsolar;
+            info.peak_min_human = mind(info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_max_human = maxd(info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_min_buf = info.Tmin;
+            info.peak_max_buf = info.Tmax;
+            info.peak_min_circ = info.Tfs;
+            info.peak_max_circ = info.Tfs;
+        }
 
         update_info_bas_safe_swap(&info, &info);
 
@@ -100,7 +112,7 @@ bool update_info_wttrin()
     request.request_format = REQUEST_FORMAT_WTTRIN;
     request.timeout_ms = TIMEOUT_WTTRIN;
     request.remember_response = 1;
-    requests_send(&request);
+    request_send(&request);
 
     if (request.output.buf) {
 

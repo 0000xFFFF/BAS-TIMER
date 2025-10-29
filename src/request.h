@@ -1,5 +1,5 @@
-#ifndef REQUESTS_H
-#define REQUESTS_H
+#ifndef REQUEST_H
+#define REQUEST_H
 
 #include "mongoose.h"
 #include "src/globals.h"
@@ -61,6 +61,7 @@ struct bas_info {
     int TmidGE;
     int TminLT;
 
+    bool peaks_valid;
     double peak_min_solar;
     double peak_max_solar;
     double peak_min_human;
@@ -75,10 +76,10 @@ struct bas_info {
 #define TIMEOUT_BAS    1500
 #define TIMEOUT_WTTRIN 5000
 
+extern void update_info_bas_safe_swap(struct bas_info* in, struct bas_info* out);
 extern bool update_info_bas();
 extern bool update_info_wttrin();
-extern enum RequestStatus requests_send(struct Request* request);
-
+extern enum RequestStatus request_send(struct Request* request);
 extern enum RequestStatus request_send_quick(const char* url);
 extern char* request_status_to_str(enum RequestStatus status);
 extern double extract_json_label(struct mg_str json_body, const char* label);
@@ -127,4 +128,4 @@ extern time_t g_history_gas_time_changed;
 extern time_t g_history_gas_time_on;
 extern time_t g_history_gas_time_off;
 
-#endif // REQUESTS_H
+#endif // REQUEST_H

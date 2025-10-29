@@ -6,6 +6,5 @@ extern void term_cursor_reset();
 extern void term_cursor_hide();
 extern void term_cursor_show();
 extern void term_blank();
-extern int ansi_to_html(const char* text, char* buffer);
 
 #endif // TERM_H

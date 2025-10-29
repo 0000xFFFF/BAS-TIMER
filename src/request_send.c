@@ -56,11 +56,12 @@ enum RequestStatus request_send(struct Request* request)
 {
     if (request->log) { logger_requests_write("%s\n", request->url); }
 
-    struct mg_mgr mgr;                                                                          // event manager
-    mg_mgr_init(&mgr);                                                                          // initialise event manager
-    mg_http_connect(&mgr, request->url, fn, &request);                                          // create client connection
-    while (atomic_load(&g_running) && request == REQUEST_STATUS_RUNNING) mg_mgr_poll(&mgr, 50); // event manager loops until 'done'
-    mg_mgr_free(&mgr);                                                                          // free resources
+    struct mg_mgr mgr;                                                                                  // event manager
+    mg_mgr_init(&mgr);                                                                                  // initialise event manager
+    //mgr.dns4.url = "udp://8.8.8.8:53";
+    mg_http_connect(&mgr, request->url, fn, request);                                                   // create client connection
+    while (atomic_load(&g_running) && request->status == REQUEST_STATUS_RUNNING) mg_mgr_poll(&mgr, 50); // event manager loops until 'done'
+    mg_mgr_free(&mgr);                                                                                  // free resources
 
     if (request_status_failed(request->status)) { logger_errors_write("%s -- %s\n", request->url, request_status_to_str(request->status)); }
     return request->status;
@@ -74,5 +75,5 @@ enum RequestStatus request_send_quick(const char* url)
     request.request_format = REQUEST_FORMAT_BAS;
     request.timeout_ms = TIMEOUT_BAS;
     request.remember_response = 0;
-    return requests_send(&request);
+    return request_send(&request);
 }

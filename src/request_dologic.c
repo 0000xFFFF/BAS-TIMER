@@ -92,7 +92,7 @@ void do_logic_timer(int mod_rada)
                     elapsed_str(elap, SMALLBUFF, current_time, g_history_mode_time_on);
                     snprintf(g_auto_timer_status, BIGBUFF, "󱫐 %s 󱪯", elap);
                 }
-                requests_send_quick(URL_HEAT_OFF, 1, 0);
+                request_send_quick(URL_HEAT_OFF);
             }
         }
         else {
@@ -113,7 +113,7 @@ void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE)
 
     if (g_auto_gas && StatusPumpe4 == 0 && TminLT) {
         sprintf(g_auto_gas_status, "%s ", time_str);
-        requests_send_bas(URL_GAS_ON, 1, 0);
+        request_send_quick(URL_GAS_ON);
     }
 
     if (g_auto_gas && StatusPumpe4 == 3 && TmidGE) {
@@ -123,7 +123,7 @@ void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE)
             elapsed_str(elap, SMALLBUFF, current_time, g_history_gas_time_on);
             sprintf(g_auto_gas_status, "󱫐 %s 󰙇", elap);
         }
-        requests_send_bas(URL_GAS_OFF, 1, 0);
+        request_send_quick(URL_GAS_OFF);
     }
 }
 

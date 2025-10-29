@@ -70,25 +70,25 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_heat_on"), NULL)) {
-        int r = requests_send_bas(URL_HEAT_ON, 1, 0);
+        int r = request_send_quick(URL_HEAT_ON);
         mg_http_reply(c, 200, "Content-Type: text/plain", "bas_heat_on - %s", request_status_to_str(r));
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_heat_off"), NULL)) {
-        int r = requests_send_bas(URL_HEAT_OFF, 1, 0);
+        int r = request_send_quick(URL_HEAT_OFF);
         mg_http_reply(c, 200, "Content-Type: text/plain", "bas_heat_off - %s", request_status_to_str(r));
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_gas_on"), NULL)) {
-        int r = requests_send_bas(URL_GAS_ON, 1, 0);
+        int r = request_send_quick(URL_GAS_ON);
         mg_http_reply(c, 200, "Content-Type: text/plain", "bas_gas_on - %s", request_status_to_str(r));
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_gas_off"), NULL)) {
-        int r = requests_send_bas(URL_GAS_OFF, 1, 0);
+        int r = request_send_quick(URL_GAS_OFF);
         mg_http_reply(c, 200, "Content-Type: text/plain", "bas_gas_off - %s", request_status_to_str(r));
         return;
     }

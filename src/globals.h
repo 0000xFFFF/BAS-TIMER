@@ -1,6 +1,9 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <pthread.h>
+#include <stdatomic.h>
+
 #define POLL_TIME 10
 
 #ifdef DEBUG
@@ -15,9 +18,9 @@
 
 #define WS_MAX_CONN 100
 
-#define SLEEP_MS_DRAW 250
-#define SLEEP_MS_REQUESTS_WORKER_BAS    3       // every 3 seconds
-#define SLEEP_MS_REQUESTS_WORKER_WTTRIN 60 * 15 // 15 min
+#define SLEEP_MS_DRAW   250
+#define SLEEP_MS_BAS    3000       // every 3 seconds
+#define SLEEP_MS_WTTRIN 60 * 15    // 15 min
 
 #define MAKE_REQUEST_BAS    1
 #define MAKE_REQUEST_WTTRIN 1
@@ -39,5 +42,9 @@
 #define TEMP_BUF_MAX   60
 #define TEMP_CIRC_MIN  0
 #define TEMP_CIRC_MAX  60
+
+extern atomic_bool g_running;
+extern pthread_mutex_t g_mutex;
+extern pthread_cond_t g_cond;
 
 #endif // GLOBALS_H
