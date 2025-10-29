@@ -226,8 +226,8 @@ size_t draw_ui() {
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Min", "",                                226, "  ", du_info.Tmin,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_warn);
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "", "Circ.", get_frame(&spinner_recycle, 1),     110, "  ", du_info.Tfs,     du_info.peak_min_circ,  du_info.peak_max_circ,  "", NULL);
 
-    DPL("COL1");
-    D(printf("%s\n", col1));
+    //DPL("COL1");
+    //D(printf("%s\n", col1));
 
     char col2[TERM_BUFFER_SIZE] = {0};
     size_t c2 = 0;
@@ -239,8 +239,8 @@ size_t draw_ui() {
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Solar",  pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",       224, "  ", du_info.StatusPumpe7, draw_pump_bars, "", NULL);
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Elec.",  pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠",    78, "  ", du_info.StatusPumpe5, draw_pump_bars, "", NULL);
 
-    DPL("COL2");
-    D(printf("%s\n", col2));
+    //DPL("COL2");
+    //D(printf("%s\n", col2));
 
     char line1[BIGBUFF], line2[BIGBUFF];
     const char *p1 = col1;
