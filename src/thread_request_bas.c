@@ -12,16 +12,16 @@ extern pthread_cond_t g_cond;
 
 void* th_request_bas(void* sig)
 {
-
+    DPL("THREAD START BAS");
     UNUSED(sig);
 
     while (atomic_load(&g_running)) {
-
 #if MAKE_REQUEST_BAS
         update_info_bas();
 #endif
         sleep_ms_interruptible(SLEEP_MS_BAS);
     }
 
+    DPL("THREAD STOP BAS");
     return NULL;
 }

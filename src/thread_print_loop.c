@@ -12,6 +12,7 @@
 
 void* th_print_loop(void* sig)
 {
+    DPL("THREAD START PRINT LOOP");
     UNUSED(sig);
 
     char html_buffer[1024 * 16] = {0};
@@ -50,6 +51,6 @@ void* th_print_loop(void* sig)
         sleep_ms_interruptible(SLEEP_MS_DRAW);
     }
 
-    DPL("WORKER EXIT (CLEANUP)");
+    DPL("THREAD STOP PRINT LOOP");
     return NULL;
 }

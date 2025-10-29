@@ -13,11 +13,13 @@ extern pthread_cond_t g_cond;
 void* th_request_wttrin(void* sig)
 {
     UNUSED(sig);
+    DPL("THREAD START WTTRIN");
     while (atomic_load(&g_running)) {
 #if MAKE_REQUEST_WTTRIN
         update_info_wttrin();
 #endif
         sleep_ms_interruptible(SLEEP_MS_WTTRIN);
     }
+    DPL("THREAD STOP WTTRIN");
     return NULL;
 }
