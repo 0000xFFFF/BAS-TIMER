@@ -84,7 +84,7 @@ bool update_info_bas()
             info.peak_max_circ = info.Tfs;
         }
 
-        update_info_bas_safe_swap(&info, &info);
+        update_info_bas_safe_swap(&info, &g_info);
 
         free((void*)request.output.buf);
     }
