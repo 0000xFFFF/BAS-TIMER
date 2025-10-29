@@ -56,12 +56,12 @@ enum RequestStatus request_send(struct Request* request)
 {
     if (request->log) { logger_requests_write("%s\n", request->url); }
 
-    struct mg_mgr mgr;                                                                                  // event manager
-    mg_mgr_init(&mgr);                                                                                  // initialise event manager
+    struct mg_mgr mgr;
+    mg_mgr_init(&mgr);
     //mgr.dns4.url = "udp://8.8.8.8:53";
-    mg_http_connect(&mgr, request->url, fn, request);                                                   // create client connection
-    while (atomic_load(&g_running) && request->status == REQUEST_STATUS_RUNNING) mg_mgr_poll(&mgr, 50); // event manager loops until 'done'
-    mg_mgr_free(&mgr);                                                                                  // free resources
+    mg_http_connect(&mgr, request->url, fn, request);
+    while (atomic_load(&g_running) && request->status == REQUEST_STATUS_RUNNING) mg_mgr_poll(&mgr, 50);
+    mg_mgr_free(&mgr);
 
     if (request_status_failed(request->status)) { logger_errors_write("%s -- %s\n", request->url, request_status_to_str(request->status)); }
     return request->status;
