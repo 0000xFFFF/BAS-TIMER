@@ -8,6 +8,7 @@
 void* th_serve(void* sig)
 {
     UNUSED(sig);
+    DPL("THREAD START SERVE");
 
     struct mg_mgr mgr;
     mg_mgr_init(&mgr);
@@ -16,5 +17,6 @@ void* th_serve(void* sig)
     while (atomic_load(&g_running)) { mg_mgr_poll(&mgr, POLL_TIME); }
     mg_mgr_free(&mgr);
 
+    DPL("THREAD STOP SERVE");
     return NULL;
 }
