@@ -69,7 +69,10 @@ int main()
     pthread_t t3;
     assert(!pthread_create(&t3, NULL, th_request_wttrin, NULL));
 
-    th_print_loop(0);
+    pthread_t t4;
+    assert(!pthread_create(&t4, NULL, th_print_loop, NULL));
+
+    pthread_join(t4, NULL);
 
     stop();
 

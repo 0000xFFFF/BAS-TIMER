@@ -97,15 +97,8 @@ size_t elapsed_str(char* buffer, size_t size, time_t end, time_t start)
     return strftime(buffer, size, "%H:%M:%S", tm_info);
 }
 
-size_t get_local_ips(char* buffer, size_t size)
+size_t get_local_ip_exec(char* buffer, size_t size, char* command)
 {
-    char* command =
-#if PRINT_ONLY_ONE_IP
-        "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1 | tr -d '\n'";
-#else
-        "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | tr '\n' ' '";
-#endif
-
     FILE* fp = popen(command, "r");
     if (fp == NULL) { return snprintf(buffer, size, "Can't get ip."); }
     int found = 0;
@@ -113,6 +106,18 @@ size_t get_local_ips(char* buffer, size_t size)
     pclose(fp);
     if (!found) { return snprintf(buffer, size, "No IP found."); }
     return 0;
+}
+
+size_t get_local_ip(char* buffer, size_t size)
+{
+    char* command = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1 | tr -d '\n'";
+    return get_local_ip_exec(buffer, size, command);
+}
+
+size_t get_local_ips(char* buffer, size_t size)
+{
+    char* command = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | tr '\n' ' '";
+    return get_local_ip_exec(buffer, size, command);
 }
 
 void escape_quotes(const char* input, char* output)
@@ -431,4 +436,3 @@ double maxd(int count, ...)
     va_end(args);
     return m;
 }
-

@@ -24,7 +24,6 @@
 
 #define MAKE_REQUEST_BAS    1
 #define MAKE_REQUEST_WTTRIN 1
-#define PRINT_ONLY_ONE_IP   1
 
 #define ENABLE_AUTO_TIMER  1
 #define ENABLE_AUTO_GAS    1
