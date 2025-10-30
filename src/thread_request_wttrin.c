@@ -2,7 +2,6 @@
 #include "globals.h"
 #include "src/request.h"
 #include "thread_utils.h"
-#include <mongoose.h>
 #include <pthread.h>
 #include <stdatomic.h>
 #include <unistd.h>
