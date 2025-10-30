@@ -55,7 +55,10 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         if (!info.valid) { mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); return; }
 
         info.opt_auto_timer_seconds = value;
+        snprintf(info.opt_auto_timer_status, MIDBUFF, "changed to: %d", info.opt_auto_timer_seconds);
+
         update_info_bas_safe_io(&info, &g_info);
+
         mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", info.opt_auto_timer_seconds);
         draw_ui_and_front();
         return;

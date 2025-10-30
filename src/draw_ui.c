@@ -275,11 +275,6 @@ static size_t draw_ui_unsafe() {
         snprintf(auto_timer_status, MIDBUFF, "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
     }
 
-    if (du_info.opt_auto_timer_seconds != du_info.opt_auto_timer_seconds_old) {
-        du_info.opt_auto_timer_seconds_old = du_info.opt_auto_timer_seconds;
-        snprintf(du_info.opt_auto_timer_status, MIDBUFF, "changed to: %d", du_info.opt_auto_timer_seconds);
-    }
-
     if (du_info.opt_auto_timer) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
     else                        { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
     b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󱪯 %s\n", du_info.opt_auto_timer_status);
