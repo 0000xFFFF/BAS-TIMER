@@ -1,5 +1,4 @@
 #include "utils.h"
-#include "globals.h"
 #include <float.h>
 #include <libgen.h>
 #include <limits.h>
@@ -8,7 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -28,7 +29,8 @@ void change_to_bin_dir()
     }
 }
 
-void mkdir_safe(const char* dir) {
+void mkdir_safe(const char* dir)
+{
     struct stat st = {0};
     if (stat(dir, &st) == -1) { mkdir(dir, 0700); }
 }
