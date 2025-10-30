@@ -13,7 +13,7 @@
 
 pthread_mutex_t g_update_info_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void update_info_bas_safe_swap(struct bas_info* in, struct bas_info* out)
+void update_info_bas_safe_swap(const struct bas_info* in, struct bas_info* out)
 {
     pthread_mutex_lock(&g_update_info_bas_mutex);
     memcpy(out, in, sizeof(struct bas_info));
@@ -96,14 +96,14 @@ bool update_info_bas()
 
 static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void update_info_wttrin_safe_swap(const char* in, char* out)
+char g_wttrin_buffer[BIGBUFF] = {0};
+
+void update_info_wttrin_safe_swap(const char in[], char out[])
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
     memcpy(out, in, sizeof(g_wttrin_buffer));
-    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }
-
-char g_wttrin_buffer[BIGBUFF] = {0};
 
 bool update_info_wttrin()
 {

@@ -76,9 +76,10 @@ struct bas_info {
 #define TIMEOUT_BAS    1500
 #define TIMEOUT_WTTRIN 5000
 
-extern void update_info_bas_safe_swap(struct bas_info* in, struct bas_info* out);
 extern bool update_info_bas();
+extern void update_info_bas_safe_swap(const struct bas_info* in, struct bas_info* out);
 extern bool update_info_wttrin();
+extern void update_info_wttrin_safe_swap(const char in[], char out[]);
 extern enum RequestStatus request_send(struct Request* request);
 extern enum RequestStatus request_send_quick(const char* url);
 extern char* request_status_to_str(enum RequestStatus status);

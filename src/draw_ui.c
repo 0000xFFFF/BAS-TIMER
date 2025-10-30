@@ -12,7 +12,9 @@
 #include <string.h>
 #include <time.h>
 
+// must copy these values they update from another thread
 struct bas_info du_info = {0};
+char du_wttrin_buffer[BIGBUFF] = {0};
 
 #define TERM_BUFFER_SIZE 1024 * 2
 char g_term_buffer[TERM_BUFFER_SIZE] = {0};
@@ -175,6 +177,7 @@ size_t draw_ui() {
 
     DPL("DRAW UI");
     update_info_bas_safe_swap(&g_info, &du_info);
+    update_info_wttrin_safe_swap(g_wttrin_buffer, du_wttrin_buffer);
 
     // init draw buffers
     char temp[MIDBUFF] = {0};
@@ -203,7 +206,7 @@ size_t draw_ui() {
     b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, "\n");
 
     // weather
-    b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, color_hour, g_wttrin_buffer);
+    b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, color_hour, du_wttrin_buffer);
     b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, "\n");
 
     // light + send + conn count + ip
