@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "mongoose.h"
+#include "src/debug.h"
 #include "utils.h"
 #include <float.h>
 #include <pthread.h>
@@ -57,7 +58,7 @@ void update_info_bas_init()
     info.history_gas_time_on = 0;
     info.history_gas_time_off = 0;
 
-    update_info_bas_safe_io(&g_info, &info);
+    update_info_bas_safe_io(&info, &g_info);
 }
 
 // must update_info_bas_init before running this
@@ -100,8 +101,8 @@ bool update_info_bas()
 
         // calc other values
         info.Tmid = (info.Tmax + info.Tmin) / 2;
-        info.TminLT = g_info.Tmin < 45;
-        info.TmidGE = g_info.Tmid >= 60;
+        info.TminLT = g_info.Tmin < (double)45.0;
+        info.TmidGE = g_info.Tmid >= (double)60.0;
         info.peak_min_solar = min_dv(2, info.peak_min_solar, info.Tsolar);
         info.peak_max_solar = max_dv(2, info.peak_max_solar, info.Tsolar);
         info.peak_min_human = min_dv(4, info.peak_min_human, info.Tsobna, info.Tzadata, info.Tspv);
@@ -113,9 +114,12 @@ bool update_info_bas()
 
         remember_vars_do_action(&info);
 
+        D(print_bas_info(&info));
+
         update_info_bas_safe_io(&info, &g_info);
         free((void*)request.output.buf);
     }
+
 
     return info.valid;
 }
