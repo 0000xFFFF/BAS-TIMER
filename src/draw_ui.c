@@ -291,23 +291,21 @@ static size_t draw_ui_unsafe()
             g_term_buffer[b++] = '\n';
     }
 
-    char auto_timer_status[MIDBUFF] = {0};
-
     if (du_info.opt_auto_timer_started) {
         time_t current_time;
         time(&current_time);
         du_info.opt_auto_timer_seconds_elapsed = difftime(current_time, du_info.history_mode_time_on);
-        snprintf(auto_timer_status, MIDBUFF, "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
+        snprintf(du_info.opt_auto_timer_status, MIDBUFF, "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
     }
 
     // clang-format off
     if (du_info.opt_auto_timer) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
     else                        { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󱪯 %s\n", du_info.opt_auto_timer_status);
+    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󱪯 %-*s\n", term_w-3, du_info.opt_auto_timer_status);
 
     if (du_info.opt_auto_gas) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
     else                            { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󰙇 %s\n", du_info.opt_auto_gas_status);
+    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󰙇 %-*s\n", term_w-3, du_info.opt_auto_gas_status);
     // clang-format on
 
     spin_spinner(&spinner_circle);
