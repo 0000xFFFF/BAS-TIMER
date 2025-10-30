@@ -179,6 +179,8 @@ size_t draw_ui() {
     update_info_bas_safe_swap(&g_info, &du_info);
     update_info_wttrin_safe_swap(g_wttrin_buffer, du_wttrin_buffer);
 
+    print_bas_info(&du_info);
+
     // init draw buffers
     char temp[MIDBUFF] = {0};
     size_t t = 0;
@@ -187,9 +189,9 @@ size_t draw_ui() {
 
     // check if we have values
     if (!du_info.valid) {
-        b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, "@ ");
-        get_local_ips(g_term_buffer+b, TERM_BUFFER_SIZE - b);
-        b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, "\n> no values to draw.\n>%s\n", request_status_to_str(du_info.status));
+        t = 0;
+        t += get_local_ip(temp, MIDBUFF-t);
+        b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, "@ %s\n> no values to draw.\n> %s\n", temp, request_status_to_str(du_info.status));
         return printf("%s", g_term_buffer);
     }
 
