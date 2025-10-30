@@ -89,7 +89,7 @@ extern void update_info_wttrin_safe_swap(const char in[], char out[]);
 extern enum RequestStatus request_send(struct Request* request);
 extern enum RequestStatus request_send_quick(const char* url);
 extern char* request_status_to_str(enum RequestStatus status);
-extern double extract_json_label(struct mg_str json_body, const char* label);
+extern double extract_json_label(struct mg_str json_body, const char* label, double fallback);
 extern void remember_vars_do_action(int mod_rada, int StatusPumpe4, int TminLT, int TmidGE);
 
 // request_vars.c

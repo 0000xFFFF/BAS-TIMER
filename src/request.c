@@ -46,20 +46,20 @@ bool update_info_bas()
 
         info.valid = true;
         info.status = request.status;
-        info.mod_rada = extract_json_label(request.output, "$.mod_rada");
-        info.mod_rezim = extract_json_label(request.output, "$.mod_rezim");
-        info.StatusPumpe3 = extract_json_label(request.output, "$.StatusPumpe3");
-        info.StatusPumpe4 = extract_json_label(request.output, "$.StatusPumpe4");
-        info.StatusPumpe5 = extract_json_label(request.output, "$.StatusPumpe5");
-        info.StatusPumpe6 = extract_json_label(request.output, "$.StatusPumpe6");
-        info.StatusPumpe7 = extract_json_label(request.output, "$.StatusPumpe7");
-        info.Tspv = extract_json_label(request.output, "$.Tspv");
-        info.Tsolar = extract_json_label(request.output, "$.Tsolar");
-        info.Tzadata = extract_json_label(request.output, "$.Tzadata");
-        info.Tfs = extract_json_label(request.output, "$.Tfs");
-        info.Tmax = extract_json_label(request.output, "$.Tmax");
-        info.Tmin = extract_json_label(request.output, "$.Tmin");
-        info.Tsobna = extract_json_label(request.output, "$.Tsobna");
+        info.mod_rada = extract_json_label(request.output, "$.mod_rada", 0);
+        info.mod_rezim = extract_json_label(request.output, "$.mod_rezim", 0);
+        info.StatusPumpe3 = extract_json_label(request.output, "$.StatusPumpe3", 0);
+        info.StatusPumpe4 = extract_json_label(request.output, "$.StatusPumpe4", 0);
+        info.StatusPumpe5 = extract_json_label(request.output, "$.StatusPumpe5", 0);
+        info.StatusPumpe6 = extract_json_label(request.output, "$.StatusPumpe6", 0);
+        info.StatusPumpe7 = extract_json_label(request.output, "$.StatusPumpe7", 0);
+        info.Tspv = extract_json_label(request.output, "$.Tspv", 0);
+        info.Tsolar = extract_json_label(request.output, "$.Tsolar", 0);
+        info.Tzadata = extract_json_label(request.output, "$.Tzadata", 0);
+        info.Tfs = extract_json_label(request.output, "$.Tfs", 0);
+        info.Tmax = extract_json_label(request.output, "$.Tmax", 0);
+        info.Tmin = extract_json_label(request.output, "$.Tmin", 0);
+        info.Tsobna = extract_json_label(request.output, "$.Tsobna", 0);
 
         // calc other values
         info.Tmid = (info.Tmax + info.Tmin) / 2;
@@ -77,14 +77,14 @@ bool update_info_bas()
         }
         else {
             info.peaks_valid = true;
-            info.peak_min_solar = min_dv(2, TEMP_MIN_SOLAR, info.Tsolar);
-            info.peak_max_solar = max_dv(2, TEMP_MAX_SOLAR, info.Tsolar);
-            info.peak_min_human = min_dv(4, TEMP_MIN_HUMAN, info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_max_human = max_dv(4, TEMP_MAX_HUMAN, info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_min_buf = min_dv(2, TEMP_MIN_BUF, info.Tmin);
-            info.peak_max_buf = max_dv(2, TEMP_MAX_BUF, info.Tmax);
-            info.peak_min_circ = min_dv(2, TEMP_MIN_CIRC, info.Tfs);
-            info.peak_max_circ = max_dv(2, TEMP_MAX_CIRC, info.Tfs);
+            info.peak_min_solar = min_dv(2, (double)TEMP_MIN_SOLAR, info.Tsolar);
+            info.peak_max_solar = max_dv(2, (double)TEMP_MAX_SOLAR, info.Tsolar);
+            info.peak_min_human = min_dv(4, (double)TEMP_MIN_HUMAN, info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_max_human = max_dv(4, (double)TEMP_MAX_HUMAN, info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_min_buf = min_dv(2, (double)TEMP_MIN_BUF, info.Tmin);
+            info.peak_max_buf = max_dv(2, (double)TEMP_MAX_BUF, info.Tmax);
+            info.peak_min_circ = min_dv(2, (double)TEMP_MIN_CIRC, info.Tfs);
+            info.peak_max_circ = max_dv(2, (double)TEMP_MAX_CIRC, info.Tfs);
             DPL("INIT PEAKS");
             print_bas_info(&info);
         }
