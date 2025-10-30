@@ -16,9 +16,7 @@ void* th_request_bas(void* sig)
     UNUSED(sig);
 
     while (atomic_load(&g_running)) {
-#if MAKE_REQUEST_BAS
-        update_info_bas();
-#endif
+        if (MAKE_REQUEST_BAS) update_info_bas();
         sleep_ms_interruptible(SLEEP_MS_BAS);
     }
 
