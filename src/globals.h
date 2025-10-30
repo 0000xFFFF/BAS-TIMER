@@ -4,10 +4,15 @@
 #include <pthread.h>
 #include <stdatomic.h>
 
-extern char* S_ADDR_HTTP;
-extern char* S_ADDR_HTTPS;
-extern char* S_ADDR_WS;
-extern char* S_STATIC_DIR;
+extern char* ADDR_HTTP;
+extern char* ADDR_HTTPS;
+extern char* ADDR_WS;
+extern char* STATIC_DIR;
+
+extern const char* STATE_DIR;
+extern const char* STATE_DIR_FILE_CHANGES_LOG;
+extern const char* STATE_DIR_FILE_REQUESTS_LOG;
+extern const char* STATE_DIR_FILE_ERRORS_LOG;
 
 extern int POLL_TIME;
 
@@ -35,7 +40,6 @@ extern int TEMP_CIRC_MAX;
 extern atomic_bool g_running;
 extern pthread_mutex_t g_mutex;
 extern pthread_cond_t g_cond;
-extern pthread_mutex_t g_mutex_file_changes;
 
 #define SMALLBUFF 64
 #define MIDBUFF   256

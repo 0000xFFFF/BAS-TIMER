@@ -4,6 +4,7 @@
 #include <time.h>
 
 extern void change_to_bin_dir();
+extern void mkdir_safe(const char* dir);
 extern long long timestamp();
 extern size_t strftime_HM(char* buffer, size_t size, struct tm* timeinfo);
 extern size_t strftime_HMS(char* buffer, size_t size, struct tm* timeinfo);

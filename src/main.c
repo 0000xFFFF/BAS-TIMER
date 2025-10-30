@@ -1,4 +1,5 @@
 #include "debug.h"
+#include "globals.h"
 #include "mongoose.h"
 #include "signals.h"
 #include "term.h"
@@ -19,6 +20,7 @@ int main()
     // init
     DPL("MAIN START");
     change_to_bin_dir();
+    mkdir_safe(STATE_DIR);
     signal(SIGINT, signals_sigint);
 
 #ifdef DEBUG

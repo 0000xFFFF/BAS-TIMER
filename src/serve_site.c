@@ -4,7 +4,8 @@
 #include "request.h"
 #include <stdatomic.h>
 
-static int mg_str_contains(struct mg_str haystack, const char *needle) {
+static int mg_str_contains(struct mg_str haystack, const char* needle)
+{
     if (haystack.len == 0 || !needle) return 0;
     for (size_t i = 0; i + strlen(needle) <= haystack.len; i++) {
         if (strncmp(haystack.buf + i, needle, strlen(needle)) == 0) {
@@ -116,10 +117,8 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         char sumtime1[BUFFER_SIZE] = {0};
         char sumtime2[BUFFER_SIZE] = {0};
 
-        pthread_mutex_lock(&g_mutex_file_changes);
-        int r1 = logger_sumtime(sumtime1, BUFFER_SIZE, "changes.log", "mod_rada = 0 -- ");
-        int r2 = logger_sumtime(sumtime2, BUFFER_SIZE, "changes.log", "StatusPumpe4 = 0 -- ");
-        pthread_mutex_unlock(&g_mutex_file_changes);
+        int r1 = logger_changes_sumtime(sumtime1, BUFFER_SIZE, "mod_rada = 0 -- ");
+        int r2 = logger_changes_sumtime(sumtime2, BUFFER_SIZE, "StatusPumpe4 = 0 -- ");
         if (r1 == -1 || r2 == -1) {
             mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't sum time\"}");
             return;
@@ -150,6 +149,6 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         }
     }
 
-    struct mg_http_serve_opts opts = {.root_dir = "static"};
+    struct mg_http_serve_opts opts = {.root_dir = STATIC_DIR};
     mg_http_serve_dir(c, hm, &opts);
 }

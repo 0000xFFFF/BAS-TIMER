@@ -5,11 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define LOG_CHANGES  "changes.log"
-#define LOG_REQUESTS "requests.log"
-#define LOG_ERRORS   "errors.log"
+static pthread_mutex_t g_mutex_file_errors = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t g_mutex_file_requests = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t g_mutex_file_changes = PTHREAD_MUTEX_INITIALIZER;
 
-// General logging function
 void logger_write(const char* filename, const char* fmt, va_list args)
 {
     if (fmt == NULL || filename == NULL) { return; }
@@ -30,33 +29,42 @@ void logger_write(const char* filename, const char* fmt, va_list args)
 
 void logger_errors_write(const char* fmt, ...)
 {
+
+    pthread_mutex_lock(&g_mutex_file_errors);
     va_list args;
     va_start(args, fmt);
-    logger_write(LOG_ERRORS, fmt, args);
+    logger_write(STATE_DIR_FILE_ERRORS_LOG, fmt, args);
     va_end(args);
+    pthread_mutex_unlock(&g_mutex_file_errors);
 }
 
 void logger_requests_write(const char* fmt, ...)
 {
+    pthread_mutex_lock(&g_mutex_file_requests);
     va_list args;
     va_start(args, fmt);
-    logger_write(LOG_REQUESTS, fmt, args);
+    logger_write(STATE_DIR_FILE_REQUESTS_LOG, fmt, args);
     va_end(args);
+    pthread_mutex_unlock(&g_mutex_file_requests);
 }
 
 void logger_changes_write(const char* fmt, ...)
 {
+    pthread_mutex_lock(&g_mutex_file_changes);
     va_list args;
     va_start(args, fmt);
-    logger_write(LOG_CHANGES, fmt, args);
+    logger_write(STATE_DIR_FILE_CHANGES_LOG, fmt, args);
     va_end(args);
+    pthread_mutex_unlock(&g_mutex_file_changes);
 }
 
-int logger_sumtime(char* buffer, int buffer_size, const char* filename, const char* pattern)
+int logger_changes_sumtime(char* buffer, int buffer_size, const char* pattern)
 {
-    FILE* f = fopen(filename, "r");
+    pthread_mutex_lock(&g_mutex_file_changes);
+    FILE* f = fopen(STATE_DIR_FILE_CHANGES_LOG, "r");
     if (f == NULL) {
         perror("Failed to open log file");
+        pthread_mutex_unlock(&g_mutex_file_changes);
         return -1;
     }
 
@@ -124,5 +132,6 @@ int logger_sumtime(char* buffer, int buffer_size, const char* filename, const ch
 
     c += snprintf(buffer+c, buffer_size, " (%lu sec)", total_seconds);
 
+    pthread_mutex_unlock(&g_mutex_file_changes);
     return c;
 }

@@ -2,10 +2,10 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 
-const char* S_ADDR_HTTP = "http://0.0.0.0:5000";   // HTTP port
-const char* S_ADDR_HTTPS = "https://0.0.0.0:5001"; // HTTPS port -- unused
-const char* S_ADDR_WS = "ws://0.0.0.0:8001";       // WebSocket port
-const char* S_STATIC_DIR = "static";
+const char* ADDR_HTTP = "http://0.0.0.0:5000";   // HTTP port
+const char* ADDR_HTTPS = "https://0.0.0.0:5001"; // HTTPS port -- unused
+const char* ADDR_WS = "ws://0.0.0.0:8001";       // WebSocket port
+const char* STATIC_DIR = "static";
 
 #define STATE_DIR_ "state"
 #define SEP_ "/"

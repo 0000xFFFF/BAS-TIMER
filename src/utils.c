@@ -28,6 +28,11 @@ void change_to_bin_dir()
     }
 }
 
+void mkdir_safe(const char* dir) {
+    struct stat st = {0};
+    if (stat(dir, &st) == -1) { mkdir(dir, 0700); }
+}
+
 long long timestamp()
 {
     struct timeval tv;
