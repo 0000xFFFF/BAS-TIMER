@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "mongoose.h"
 #include "request.h"
+#include "src/draw_ui.h"
 #include <stdatomic.h>
 
 static int mg_str_contains(struct mg_str haystack, const char* needle)
@@ -43,6 +44,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
             if (value > 0) { // Validate that it's a positive integer
                 atomic_store(&g_auto_timer_seconds, value);
                 mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", atomic_load(&g_auto_timer_seconds));
+                draw_ui_and_front();
             }
             else {
                 mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}");
@@ -57,36 +59,42 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
     if (mg_match(hm->uri, mg_str("/api/toggle_auto_timer"), NULL)) {
         g_auto_timer = !g_auto_timer;
         mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"auto_timer\": %d}", atomic_load(&g_auto_timer));
+        draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/toggle_auto_gas"), NULL)) {
         g_auto_gas = !g_auto_gas;
         mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"auto_gas\": %d}", atomic_load(&g_auto_gas));
+        draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_heat_on"), NULL)) {
         int r = request_send_quick(URL_HEAT_ON);
         mg_http_reply(c, 200, "Content-Type: text/plain", "bas_heat_on - %s", request_status_to_str(r));
+        draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_heat_off"), NULL)) {
         int r = request_send_quick(URL_HEAT_OFF);
         mg_http_reply(c, 200, "Content-Type: text/plain", "bas_heat_off - %s", request_status_to_str(r));
+        draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_gas_on"), NULL)) {
         int r = request_send_quick(URL_GAS_ON);
         mg_http_reply(c, 200, "Content-Type: text/plain", "bas_gas_on - %s", request_status_to_str(r));
+        draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_gas_off"), NULL)) {
         int r = request_send_quick(URL_GAS_OFF);
         mg_http_reply(c, 200, "Content-Type: text/plain", "bas_gas_off - %s", request_status_to_str(r));
+        draw_ui_and_front();
         return;
     }
 

@@ -11,9 +11,6 @@
 #define COLOR_ON COLOR_ON_AUTO
 #define COLOR_OFF COLOR_OFF_AUTO
 
-#define TEMP_COLORS_SIZE 18
-extern int TEMP_COLORS[TEMP_COLORS_SIZE];
-
 #define CTEXT_FG(color, text) "\033[38;5;" #color "m" text "\033[0m"
 
 extern size_t ctext_fg(char* buffer, size_t size, int color, const char* text);

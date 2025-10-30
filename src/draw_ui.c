@@ -1,9 +1,11 @@
+#include "draw_ui.h"
 #include "colors.h"
 #include "debug.h"
 #include "globals.h"
 #include "request.h"
 #include "serve_websocket.h"
 #include "spinners.h"
+#include "term.h"
 #include "utils.h"
 #include <stdatomic.h>
 #include <stdbool.h>
@@ -13,13 +15,13 @@
 #include <time.h>
 
 // must copy these values they update from another thread
-struct bas_info du_info = {0};
-char du_wttrin_buffer[BIGBUFF] = {0};
+static struct bas_info du_info = {0};
+static char du_wttrin_buffer[BIGBUFF] = {0};
 
 #define TERM_BUFFER_SIZE 1024 * 2
-char g_term_buffer[TERM_BUFFER_SIZE] = {0};
+static char g_term_buffer[TERM_BUFFER_SIZE] = {0};
 
-char* weather[] = {
+static char* weather[] = {
     CTEXT_FG(196, ""),
     CTEXT_FG(208, ""),
     CTEXT_FG(208, "󰖨"),
@@ -28,7 +30,7 @@ char* weather[] = {
     CTEXT_FG(81, ""),
     CTEXT_FG(87, "")};
 
-char* temp_to_emoji(double temp)
+static char* temp_to_emoji(double temp)
 {
     if (temp > 40.0) return weather[0];  //  super hot
     if (temp >= 30.0) return weather[1]; //  really hot
@@ -39,13 +41,13 @@ char* temp_to_emoji(double temp)
     return weather[6];                   //  super cold
 }
 
-char* clock_hours[] = {"", "", "", "", "", "", "", "", "", "", "", ""};
-char* hour_to_clock(int hour)
+static char* clock_hours[] = {"", "", "", "", "", "", "", "", "", "", "", ""};
+static char* hour_to_clock(int hour)
 {
     return clock_hours[hour % 12];
 }
 
-char* hour_to_emoji(int hour)
+static char* hour_to_emoji(int hour)
 {
     if (hour >= 5 && hour <= 7) return get_frame(&spinner_sunrise, 1); // Sunrise
     if (hour >= 7 && hour < 12) return "";                          // Morning
@@ -55,7 +57,7 @@ char* hour_to_emoji(int hour)
     return "󰖔";                                                     // Night
 }
 
-int hour_to_color(int hour)
+static int hour_to_color(int hour)
 {
     if (hour >= 5 && hour < 7) return 214;   // Orange (Sunrise)
     if (hour >= 7 && hour < 12) return 220;  // Bright Yellow (Morning)
@@ -65,12 +67,12 @@ int hour_to_color(int hour)
     return 33;                               // Deep Blue (Night)
 }
 
-size_t draw_heat(char* buffer, size_t size, int value)
+static size_t draw_heat(char* buffer, size_t size, int value)
 {
     return value ? ctext_fg(buffer, size, COLOR_ON, get_frame(&spinner_heat, 1)) : ctext_fg(buffer, size, COLOR_OFF, "󱪯");
 }
 
-size_t draw_regime(char* buffer, size_t size, int value)
+static size_t draw_regime(char* buffer, size_t size, int value)
 {
     return cnum_fg(buffer, size, 192, value);
 }
@@ -82,12 +84,12 @@ enum PUMP_STATUS {
     PUMP_STATUS_MANUAL_ON = 3
 };
 
-int pump_is_on(int value)
+static int pump_is_on(int value)
 {
     return value == PUMP_STATUS_AUTO_ON || value == PUMP_STATUS_MANUAL_ON;
 }
 
-size_t draw_pump_bars(char* buffer, size_t size, int value)
+static size_t draw_pump_bars(char* buffer, size_t size, int value)
 {
 
     switch (value) {
@@ -104,12 +106,12 @@ size_t draw_pump_bars(char* buffer, size_t size, int value)
 typedef size_t (*func_draw_with_value)(char* buffer, size_t size, int value);
 typedef size_t (*func_draw_extra)(char* buffer, size_t size);
 
-size_t bool_to_check(char* buffer, size_t size, int value)
-{
-    return value ? ctext_fg(buffer, size, COLOR_ON, "") : ctext_fg(buffer, size, COLOR_OFF, "");
-}
+// static size_t bool_to_check(char* buffer, size_t size, int value)
+// {
+//     return value ? ctext_fg(buffer, size, COLOR_ON, "") : ctext_fg(buffer, size, COLOR_OFF, "");
+// }
 
-size_t draw_col1(char* buffer, size_t size, char* prelabel, char* label, char* icon, int color, char* gap, double value, double min, double max, char* end, func_draw_extra extra)
+static size_t draw_col1(char* buffer, size_t size, char* prelabel, char* label, char* icon, int color, char* gap, double value, double min, double max, char* end, func_draw_extra extra)
 {
     size_t c = 0;
     c += snprintf(buffer + c, size - c, "%s", prelabel);
@@ -124,7 +126,7 @@ size_t draw_col1(char* buffer, size_t size, char* prelabel, char* label, char* i
     return c;
 }
 
-size_t draw_col2(char* buffer, size_t size, char* prelabel, char* label, char* icon, int color, char* gap, int value, func_draw_with_value func, char* end, func_draw_extra extra)
+static size_t draw_col2(char* buffer, size_t size, char* prelabel, char* label, char* icon, int color, char* gap, int value, func_draw_with_value func, char* end, func_draw_extra extra)
 {
     size_t c = 0;
     c += snprintf(buffer + c, size - c, "%s", prelabel); // draw prelabel
@@ -139,7 +141,7 @@ size_t draw_col2(char* buffer, size_t size, char* prelabel, char* label, char* i
     return c;
 }
 
-size_t draw_extra_eye_timer(char* buffer, size_t size)
+static size_t draw_extra_eye_timer(char* buffer, size_t size)
 {
 
     size_t b = 0;
@@ -153,19 +155,19 @@ size_t draw_extra_eye_timer(char* buffer, size_t size)
     return b;
 }
 
-size_t draw_extra_eye_gas(char* buffer, size_t size)
+static size_t draw_extra_eye_gas(char* buffer, size_t size)
 {
     size_t b = 0;
     if (atomic_load(&g_auto_gas)) { b += ctext_fg(buffer, size - b, COLOR_ON, get_frame(&spinner_eye_left, 0)); }
     return b;
 }
 
-size_t draw_extra_check(char* buffer, size_t size)
+static size_t draw_extra_check(char* buffer, size_t size)
 {
     return ctext_fg(buffer, size, 82, du_info.valid && du_info.TmidGE ? get_frame(&spinner_check, 1) : " ");
 }
 
-size_t draw_extra_warn(char* buffer, size_t size)
+static size_t draw_extra_warn(char* buffer, size_t size)
 {
     return ctext_fg(buffer, size, 51, du_info.valid && du_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
 }
@@ -173,7 +175,7 @@ size_t draw_extra_warn(char* buffer, size_t size)
 static int g_auto_timer_seconds_old = AUTO_TIMER_SECONDS;
 
 // clang-format off
-size_t draw_ui_unsafe() {
+static size_t draw_ui_unsafe() {
 
     DPL("DRAW UI");
     update_info_bas_safe_swap(&g_info, &du_info);
@@ -304,10 +306,40 @@ size_t draw_ui_unsafe() {
 // clang-format on
 
 static pthread_mutex_t s_du_mutex = PTHREAD_MUTEX_INITIALIZER;
-size_t draw_ui() {
 
-    pthread_mutex_unlock(&s_du_mutex);
+size_t draw_ui_and_front()
+{
+    pthread_mutex_lock(&s_du_mutex);
+
+#ifndef DEBUG
+    term_cursor_reset();
+#endif
     size_t r = draw_ui_unsafe();
+    char html_buffer[1024 * 16] = {0};
+    ansi_to_html(g_term_buffer, html_buffer);
+    char html_buffer_escaped[1024 * 16 * 2] = {0};
+    escape_quotes(html_buffer, html_buffer_escaped);
+
+    char emit_buffer[1024 * 16 * 2] = {0};
+    int b = snprintf(emit_buffer, 1024 * 8 * 2,
+                     "{"
+                     "\"term\": \"%s\""
+                     ","
+                     "\"Tmin\": %f"
+                     ","
+                     "\"Tmax\": %f"
+                     ","
+                     "\"mod_rada\": %d"
+                     ","
+                     "\"StatusPumpe4\": %d"
+                     "}",
+                     html_buffer_escaped,
+                     du_info.Tmin,
+                     du_info.Tmax,
+                     du_info.mod_rada,    // heat
+                     du_info.StatusPumpe4 // gas pump
+    );
+    websocket_emit(emit_buffer, b);
     pthread_mutex_unlock(&s_du_mutex);
     return r;
 }

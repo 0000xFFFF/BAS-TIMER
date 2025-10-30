@@ -1,11 +1,9 @@
-// colors.cpp
 #include "colors.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-int TEMP_COLORS[TEMP_COLORS_SIZE] = {51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196};
-
-#define BUFFER_SIZE 1024
+static int TEMP_COLORS[] = {51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196};
+#define TEMP_COLORS_SIZE ((int)(sizeof(TEMP_COLORS) / sizeof(TEMP_COLORS[0])))
 
 size_t ctext_fg(char* buffer, size_t size, int color, const char* text)
 {
