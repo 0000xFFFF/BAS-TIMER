@@ -24,7 +24,7 @@ static long long g_global_unix_counter = 0;
 
 struct bas_info g_info = {0};
 
-void update_info_init()
+void update_info_bas_init()
 {
     g_global_unix_counter = timestamp();
 

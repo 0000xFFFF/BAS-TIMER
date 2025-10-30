@@ -100,7 +100,7 @@ struct bas_info {
 #define TIMEOUT_BAS    1500
 #define TIMEOUT_WTTRIN 5000
 
-extern void update_info_init();
+extern void update_info_bas_init();
 extern bool update_info_bas();
 extern void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* out);
 extern bool update_info_wttrin();

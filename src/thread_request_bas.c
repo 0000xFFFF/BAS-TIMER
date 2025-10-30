@@ -9,7 +9,7 @@
 
 void* th_request_bas(void* sig)
 {
-    update_info_init();
+    update_info_bas_init();
 
     DPL("THREAD START BAS");
     UNUSED(sig);
