@@ -179,7 +179,7 @@ size_t draw_ui() {
     update_info_bas_safe_swap(&g_info, &du_info);
     update_info_wttrin_safe_swap(g_wttrin_buffer, du_wttrin_buffer);
 
-    print_bas_info(&du_info);
+    D(print_bas_info(&du_info));
 
     // init draw buffers
     char temp[MIDBUFF] = {0};

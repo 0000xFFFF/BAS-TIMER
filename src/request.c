@@ -86,7 +86,7 @@ bool update_info_bas()
             info.peak_min_circ = min_dv(2, (double)TEMP_MIN_CIRC, info.Tfs);
             info.peak_max_circ = max_dv(2, (double)TEMP_MAX_CIRC, info.Tfs);
             DPL("INIT PEAKS");
-            print_bas_info(&info);
+            D(print_bas_info(&info));
         }
 
         update_info_bas_safe_swap(&info, &g_info);
