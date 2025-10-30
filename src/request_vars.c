@@ -32,7 +32,6 @@ const char* const REQUEST_FORMAT_WTTRIN =
     "Content-Length: 0\r\n"
     "\r\n";
 
-
 atomic_int g_auto_timer = ENABLE_AUTO_TIMER;
 atomic_int g_auto_gas = ENABLE_AUTO_GAS;
 atomic_int g_auto_timer_seconds = AUTO_TIMER_SECONDS;
@@ -83,4 +82,47 @@ bool request_status_failed(enum RequestStatus status)
         case REQUEST_STATUS_ERROR_CONN:    return true; break;
     }
     return false;
+}
+
+void print_bas_info(const struct bas_info* b)
+{
+    if (!b) return;
+
+    printf("valid: %s\n", b->valid ? "true" : "false");
+    printf("status: %d\n", (int)b->status);
+
+    printf("\n--- statuses ---\n");
+    printf("mod_rada: %d\n", b->mod_rada);
+    printf("mod_rezim: %d\n", b->mod_rezim);
+    printf("StatusPumpe3: %d\n", b->StatusPumpe3);
+    printf("StatusPumpe4: %d\n", b->StatusPumpe4);
+    printf("StatusPumpe5: %d\n", b->StatusPumpe5);
+    printf("StatusPumpe6: %d\n", b->StatusPumpe6);
+    printf("StatusPumpe7: %d\n", b->StatusPumpe7);
+
+    printf("\n--- temperatures ---\n");
+    printf("Tspv: %.2f\n", b->Tspv);
+    printf("Tsolar: %.2f\n", b->Tsolar);
+    printf("Tzadata: %.2f\n", b->Tzadata);
+    printf("Tfs: %.2f\n", b->Tfs);
+    printf("Tmax: %.2f\n", b->Tmax);
+    printf("Tmin: %.2f\n", b->Tmin);
+    printf("Tsobna: %.2f\n", b->Tsobna);
+
+    printf("\n--- other calced values ---\n");
+    printf("Tmid: %.2f\n", b->Tmid);
+    printf("Thottest: %.2f\n", b->Thottest);
+    printf("Tcoldest: %.2f\n", b->Tcoldest);
+    printf("TmidGE: %d\n", b->TmidGE);
+    printf("TminLT: %d\n", b->TminLT);
+
+    printf("\npeaks_valid: %s\n", b->peaks_valid ? "true" : "false");
+    printf("peak_min_solar: %.2f\n", b->peak_min_solar);
+    printf("peak_max_solar: %.2f\n", b->peak_max_solar);
+    printf("peak_min_human: %.2f\n", b->peak_min_human);
+    printf("peak_max_human: %.2f\n", b->peak_max_human);
+    printf("peak_min_buf: %.2f\n", b->peak_min_buf);
+    printf("peak_max_buf: %.2f\n", b->peak_max_buf);
+    printf("peak_min_circ: %.2f\n", b->peak_min_circ);
+    printf("peak_max_circ: %.2f\n", b->peak_max_circ);
 }
