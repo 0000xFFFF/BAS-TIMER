@@ -7,9 +7,6 @@
 #include <stdatomic.h>
 #include <unistd.h>
 
-extern pthread_mutex_t g_mutex;
-extern pthread_cond_t g_cond;
-
 void* th_request_bas(void* sig)
 {
     DPL("THREAD START BAS");

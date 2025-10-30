@@ -4,10 +4,6 @@
 #include "request.h"
 #include <stdatomic.h>
 
-extern atomic_int g_auto_timer;
-extern atomic_int g_auto_gas;
-extern atomic_int g_auto_timer_seconds;
-
 static int mg_str_contains(struct mg_str haystack, const char *needle) {
     if (haystack.len == 0 || !needle) return 0;
     for (size_t i = 0; i + strlen(needle) <= haystack.len; i++) {
