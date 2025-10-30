@@ -2,13 +2,12 @@
 #include "draw_ui.h"
 #include "globals.h"
 #include "serve_websocket.h"
-#include "src/spinners.h"
-#include "utils.h"
+#include "spinners.h"
 #include "thread_utils.h"
+#include "utils.h"
 #ifndef DEBUG
 #include "term.h"
 #endif
-#include <mongoose.h>
 #include <stdatomic.h>
 
 void* th_print_loop(void* sig)
