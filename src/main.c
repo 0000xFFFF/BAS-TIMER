@@ -1,5 +1,4 @@
 #include "debug.h"
-#include "globals.h"
 #include "mongoose.h"
 #include "signals.h"
 #include "term.h"
@@ -14,10 +13,6 @@
 #include <signal.h>
 #include <stdatomic.h>
 #include <unistd.h>
-
-atomic_bool g_running = true;
-pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t g_cond = PTHREAD_COND_INITIALIZER;
 
 int main()
 {

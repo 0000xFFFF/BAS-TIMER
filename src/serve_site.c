@@ -116,8 +116,10 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         char sumtime1[BUFFER_SIZE] = {0};
         char sumtime2[BUFFER_SIZE] = {0};
 
+        pthread_mutex_lock(&g_mutex_file_changes);
         int r1 = logger_sumtime(sumtime1, BUFFER_SIZE, "changes.log", "mod_rada = 0 -- ");
         int r2 = logger_sumtime(sumtime2, BUFFER_SIZE, "changes.log", "StatusPumpe4 = 0 -- ");
+        pthread_mutex_unlock(&g_mutex_file_changes);
         if (r1 == -1 || r2 == -1) {
             mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't sum time\"}");
             return;

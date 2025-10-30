@@ -4,46 +4,47 @@
 #include <pthread.h>
 #include <stdatomic.h>
 
-#define POLL_TIME 10
+extern char* S_ADDR_HTTP;
+extern char* S_ADDR_HTTPS;
+extern char* S_ADDR_WS;
+extern char* S_STATIC_DIR;
 
-#ifdef DEBUG
-#undef POLL_TIME
-#define POLL_TIME 1000
-#endif
+extern int POLL_TIME;
 
-#define S_ADDR_HTTP  "http://0.0.0.0:5000"  // HTTP port
-#define S_ADDR_HTTPS "https://0.0.0.0:5001" // HTTPS port -- unused
-#define S_ADDR_WS    "ws://0.0.0.0:8001"    // WebSocket port
-#define S_STATIC_DIR "static"
+extern int WS_MAX_CONN;
+extern int MAKE_REQUEST_BAS;
+extern int MAKE_REQUEST_WTTRIN;
 
-#define WS_MAX_CONN 100
+extern int SLEEP_MS_DRAW;
+extern int SLEEP_MS_BAS;
+extern int SLEEP_MS_WTTRIN;
 
-#define SLEEP_MS_DRAW   250
-#define SLEEP_MS_BAS    3000       // every 3 seconds
-#define SLEEP_MS_WTTRIN 60 * 15    // 15 min
+extern int ENABLE_AUTO_TIMER;
+extern int ENABLE_AUTO_GAS;
+extern int AUTO_TIMER_SECONDS;
 
-#define MAKE_REQUEST_BAS    1
-#define MAKE_REQUEST_WTTRIN 1
+extern int TEMP_SOLAR_MIN;
+extern int TEMP_SOLAR_MAX;
+extern int TEMP_HUMAN_MIN;
+extern int TEMP_HUMAN_MAX;
+extern int TEMP_BUF_MIN;
+extern int TEMP_BUF_MAX;
+extern int TEMP_CIRC_MIN;
+extern int TEMP_CIRC_MAX;
 
-#define ENABLE_AUTO_TIMER  1
-#define ENABLE_AUTO_GAS    1
-#define AUTO_TIMER_SECONDS 8 * 60
+extern atomic_bool g_running;
+extern pthread_mutex_t g_mutex;
+extern pthread_cond_t g_cond;
+extern pthread_mutex_t g_mutex_file_changes;
 
 #define SMALLBUFF 64
 #define MIDBUFF   256
 #define BIGBUFF   1024
 
-#define TEMP_SOLAR_MIN 0
-#define TEMP_SOLAR_MAX 100
-#define TEMP_HUMAN_MIN 0
-#define TEMP_HUMAN_MAX 30
-#define TEMP_BUF_MIN   45
-#define TEMP_BUF_MAX   60
-#define TEMP_CIRC_MIN  0
-#define TEMP_CIRC_MAX  60
+#define WS_MAX_CONN MIDBUFF
 
-extern atomic_bool g_running;
-extern pthread_mutex_t g_mutex;
-extern pthread_cond_t g_cond;
+#define ENABLE_AUTO_TIMER  1
+#define ENABLE_AUTO_GAS    1
+#define AUTO_TIMER_SECONDS 8 * 60
 
 #endif // GLOBALS_H

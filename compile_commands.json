@@ -65,6 +65,30 @@
       "MG_ENABLE_OPENSSL=1",
       "-o",
       "bas-server",
+      "src/globals.c"
+    ],
+    "directory": "/home/user/.vip/mytools/BAS-TIMER",
+    "file": "/home/user/.vip/mytools/BAS-TIMER/src/globals.c",
+    "output": "/home/user/.vip/mytools/BAS-TIMER/bas-server"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-O2",
+      "-W",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-I.",
+      "-DMG_ENABLE_LINES=1",
+      "-DMG_ENABLE_PACKED_FS=1",
+      "-D",
+      "MG_TLS=MG_TLS_OPENSSL",
+      "-D",
+      "MG_ENABLE_OPENSSL=1",
+      "-o",
+      "bas-server",
       "src/logger.c"
     ],
     "directory": "/home/user/.vip/mytools/BAS-TIMER",
@@ -309,6 +333,30 @@
     ],
     "directory": "/home/user/.vip/mytools/BAS-TIMER",
     "file": "/home/user/.vip/mytools/BAS-TIMER/src/serve_websocket.c",
+    "output": "/home/user/.vip/mytools/BAS-TIMER/bas-server"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-O2",
+      "-W",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-I.",
+      "-DMG_ENABLE_LINES=1",
+      "-DMG_ENABLE_PACKED_FS=1",
+      "-D",
+      "MG_TLS=MG_TLS_OPENSSL",
+      "-D",
+      "MG_ENABLE_OPENSSL=1",
+      "-o",
+      "bas-server",
+      "src/signals.c"
+    ],
+    "directory": "/home/user/.vip/mytools/BAS-TIMER",
+    "file": "/home/user/.vip/mytools/BAS-TIMER/src/signals.c",
     "output": "/home/user/.vip/mytools/BAS-TIMER/bas-server"
   },
   {
