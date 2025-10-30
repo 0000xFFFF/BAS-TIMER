@@ -236,13 +236,13 @@ size_t draw_ui() {
 
     char col2[TERM_BUFFER_SIZE] = {0};
     size_t c2 = 0;
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Mode", "󱪯",                                                                       222, "  ", du_info.mod_rada,     draw_heat,      "", draw_extra_eye_timer);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, " ", "Regime", "󱖫",                                                                       192, "  ", du_info.mod_rada,     draw_regime,    "", NULL);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Heat",  pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃",   212, "  ", du_info.StatusPumpe6, draw_pump_bars, "", NULL);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "    ", "Gas",  pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇",        203, "  ", du_info.StatusPumpe4, draw_pump_bars, "", draw_extra_eye_gas);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Circ.",  pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",      168, "  ", du_info.StatusPumpe3, draw_pump_bars, "", NULL);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Solar",  pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",       224, "  ", du_info.StatusPumpe7, draw_pump_bars, "", NULL);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Elec.",  pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠",    78, "  ", du_info.StatusPumpe5, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Mode", "󱪯",                                                                        222, "  ", du_info.mod_rada,     draw_heat,      "", draw_extra_eye_timer);
+    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, " ", "Regime", "󱖫",                                                                        192, "  ", du_info.mod_rada,     draw_regime,    "", NULL);
+    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Heat",  pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃", 212, "  ", du_info.StatusPumpe6, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "    ", "Gas",  pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇",      203, "  ", du_info.StatusPumpe4, draw_pump_bars, "", draw_extra_eye_gas);
+    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Circ.",  pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",   168, "  ", du_info.StatusPumpe3, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Solar",  pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",     224, "  ", du_info.StatusPumpe7, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Elec.",  pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠", 78,  "  ", du_info.StatusPumpe5, draw_pump_bars, "", NULL);
 
     //DPL("COL2");
     //D(printf("%s\n", col2));
