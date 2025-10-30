@@ -1,6 +1,5 @@
 #include "globals.h"
 #include "mongoose.h"
-#include "src/debug.h"
 #include "utils.h"
 #include <float.h>
 #include <pthread.h>
@@ -14,17 +13,54 @@
 
 pthread_mutex_t g_update_info_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void update_info_bas_safe_swap(const struct bas_info* in, struct bas_info* out)
+void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* out)
 {
     pthread_mutex_lock(&g_update_info_bas_mutex);
     memcpy(out, in, sizeof(struct bas_info));
     pthread_mutex_unlock(&g_update_info_bas_mutex);
 }
 
-long long g_global_unix_counter = 0;
+static long long g_global_unix_counter = 0;
 
 struct bas_info g_info = {0};
 
+void update_info_init()
+{
+    g_global_unix_counter = timestamp();
+
+    struct bas_info info = {0};
+
+    info.peaks_valid = true;
+    info.peak_min_solar = TEMP_MIN_SOLAR;
+    info.peak_max_solar = TEMP_MAX_SOLAR;
+    info.peak_min_human = TEMP_MIN_HUMAN;
+    info.peak_max_human = TEMP_MAX_HUMAN;
+    info.peak_min_buf = TEMP_MIN_BUF;
+    info.peak_max_buf = TEMP_MAX_BUF;
+    info.peak_min_circ = TEMP_MIN_CIRC;
+    info.peak_max_circ = TEMP_MAX_CIRC;
+
+    info.opt_auto_timer = ENABLE_AUTO_TIMER;
+    info.opt_auto_gas = ENABLE_AUTO_GAS;
+    info.opt_auto_timer_seconds = AUTO_TIMER_SECONDS;
+    info.opt_auto_timer_started = 0;
+    info.opt_auto_timer_seconds_elapsed = 0;
+    snprintf(info.opt_auto_timer_status, MIDBUFF, "...");
+    snprintf(info.opt_auto_gas_status, MIDBUFF, "...");
+
+    info.history_mode = -1;
+    info.history_mode_time_changed = 0;
+    info.history_mode_time_on = 0;
+    info.history_mode_time_off = 0;
+    info.history_gas = -1;
+    info.history_gas_time_changed = 0;
+    info.history_gas_time_on = 0;
+    info.history_gas_time_off = 0;
+
+    update_info_bas_safe_io(&g_info, &info);
+}
+
+// must update_info_bas_init before running this
 bool update_info_bas()
 {
     g_global_unix_counter++;
@@ -39,10 +75,11 @@ bool update_info_bas()
     request.remember_response = 1;
     request_send(&request);
 
+    struct bas_info info = {0};
+
     if (request.output.buf) {
 
-        struct bas_info info = {0};
-        update_info_bas_safe_swap(&g_info, &info);
+        update_info_bas_safe_io(&g_info, &info);
 
         info.valid = true;
         info.status = request.status;
@@ -65,44 +102,30 @@ bool update_info_bas()
         info.Tmid = (info.Tmax + info.Tmin) / 2;
         info.TminLT = g_info.Tmin < 45;
         info.TmidGE = g_info.Tmid >= 60;
-        if (info.peaks_valid) {
-            info.peak_min_solar = min_dv(2, info.peak_min_solar, info.Tsolar);
-            info.peak_max_solar = max_dv(2, info.peak_max_solar, info.Tsolar);
-            info.peak_min_human = min_dv(4, info.peak_min_human, info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_max_human = max_dv(4, info.peak_max_human, info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_min_buf = min_dv(2, info.peak_min_buf, info.Tmin);
-            info.peak_max_buf = max_dv(2, info.peak_max_buf, info.Tmax);
-            info.peak_min_circ = min_dv(2, info.peak_min_circ, info.Tfs);
-            info.peak_max_circ = max_dv(2, info.peak_max_circ, info.Tfs);
-        }
-        else {
-            info.peaks_valid = true;
-            info.peak_min_solar = min_dv(2, (double)TEMP_MIN_SOLAR, info.Tsolar);
-            info.peak_max_solar = max_dv(2, (double)TEMP_MAX_SOLAR, info.Tsolar);
-            info.peak_min_human = min_dv(4, (double)TEMP_MIN_HUMAN, info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_max_human = max_dv(4, (double)TEMP_MAX_HUMAN, info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_min_buf = min_dv(2, (double)TEMP_MIN_BUF, info.Tmin);
-            info.peak_max_buf = max_dv(2, (double)TEMP_MAX_BUF, info.Tmax);
-            info.peak_min_circ = min_dv(2, (double)TEMP_MIN_CIRC, info.Tfs);
-            info.peak_max_circ = max_dv(2, (double)TEMP_MAX_CIRC, info.Tfs);
-            DPL("INIT PEAKS");
-            D(print_bas_info(&info));
-        }
+        info.peak_min_solar = min_dv(2, info.peak_min_solar, info.Tsolar);
+        info.peak_max_solar = max_dv(2, info.peak_max_solar, info.Tsolar);
+        info.peak_min_human = min_dv(4, info.peak_min_human, info.Tsobna, info.Tzadata, info.Tspv);
+        info.peak_max_human = max_dv(4, info.peak_max_human, info.Tsobna, info.Tzadata, info.Tspv);
+        info.peak_min_buf = min_dv(2, info.peak_min_buf, info.Tmin);
+        info.peak_max_buf = max_dv(2, info.peak_max_buf, info.Tmax);
+        info.peak_min_circ = min_dv(2, info.peak_min_circ, info.Tfs);
+        info.peak_max_circ = max_dv(2, info.peak_max_circ, info.Tfs);
 
-        update_info_bas_safe_swap(&info, &g_info);
+        update_info_bas_safe_io(&info, &g_info);
+
+        remember_vars_do_action(&info);
 
         free((void*)request.output.buf);
     }
 
-    if (g_info.valid) remember_vars_do_action(g_info.mod_rada, g_info.StatusPumpe4, g_info.TminLT, g_info.TmidGE);
-    return g_info.valid;
+    return info.valid;
 }
 
 static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 char g_wttrin_buffer[BIGBUFF] = {0};
 
-void update_info_wttrin_safe_swap(const char in[], char out[])
+void update_info_wttrin_safe_io(const char in[], char out[])
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
     memcpy(out, in, sizeof(g_wttrin_buffer));
@@ -130,7 +153,7 @@ bool update_info_wttrin()
         b += dt_HM(response + b, BIGBUFF - b);                  // append hour:minute
         free((void*)request.output.buf);
 
-        update_info_wttrin_safe_swap(response, g_wttrin_buffer);
+        update_info_wttrin_safe_io(response, g_wttrin_buffer);
         return true;
     }
     return false;

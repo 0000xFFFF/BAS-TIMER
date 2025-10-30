@@ -145,9 +145,9 @@ static size_t draw_extra_eye_timer(char* buffer, size_t size)
 {
 
     size_t b = 0;
-    if (atomic_load(&g_auto_timer)) b += ctext_fg(buffer + b, size - b, COLOR_ON, get_frame(&spinner_eye_left, 0));
-    if (g_auto_timer) {
-        if (g_auto_timer_started)
+    if (du_info.opt_auto_timer) b += ctext_fg(buffer + b, size - b, COLOR_ON, get_frame(&spinner_eye_left, 0));
+    if (du_info.opt_auto_timer) {
+        if (du_info.opt_auto_timer_started)
             b += ctext_fg(buffer + b, size - b, COLOR_ON, get_frame(&spinner_clock, 0));
         else
             b += ctext_fg(buffer + b, size - b, COLOR_OFF, "󱎫");
@@ -158,7 +158,7 @@ static size_t draw_extra_eye_timer(char* buffer, size_t size)
 static size_t draw_extra_eye_gas(char* buffer, size_t size)
 {
     size_t b = 0;
-    if (atomic_load(&g_auto_gas)) { b += ctext_fg(buffer, size - b, COLOR_ON, get_frame(&spinner_eye_left, 0)); }
+    if (du_info.opt_auto_gas) { b += ctext_fg(buffer, size - b, COLOR_ON, get_frame(&spinner_eye_left, 0)); }
     return b;
 }
 
@@ -172,14 +172,12 @@ static size_t draw_extra_warn(char* buffer, size_t size)
     return ctext_fg(buffer, size, 51, du_info.valid && du_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
 }
 
-static int g_auto_timer_seconds_old = AUTO_TIMER_SECONDS;
-
 // clang-format off
 static size_t draw_ui_unsafe() {
 
     DPL("DRAW UI");
-    update_info_bas_safe_swap(&g_info, &du_info);
-    update_info_wttrin_safe_swap(g_wttrin_buffer, du_wttrin_buffer);
+    update_info_bas_safe_io(&g_info, &du_info);
+    update_info_wttrin_safe_io(g_wttrin_buffer, du_wttrin_buffer);
 
     D(print_bas_info(&du_info));
 
@@ -268,27 +266,27 @@ static size_t draw_ui_unsafe() {
         b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"%s%s\n", line1, line2);
     }
 
+    char auto_timer_status[MIDBUFF] = {0};
 
-    if (g_auto_timer_started) {
+    if (du_info.opt_auto_timer_started) {
         time_t current_time;
         time(&current_time);
-        g_auto_timer_seconds_elapsed = difftime(current_time, g_history_mode_time_on);
-        snprintf(g_auto_timer_status, BIGBUFF, "%d/%d", g_auto_timer_seconds_elapsed, atomic_load(&g_auto_timer_seconds));
+        du_info.opt_auto_timer_seconds_elapsed = difftime(current_time, du_info.history_mode_time_on);
+        snprintf(auto_timer_status, MIDBUFF, "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
     }
 
-    int s = atomic_load(&g_auto_timer_seconds);
-    if (s != g_auto_timer_seconds_old) {
-        g_auto_timer_seconds_old = s;
-        snprintf(g_auto_timer_status, BIGBUFF, "changed to: %d", s);
+    if (du_info.opt_auto_timer_seconds != du_info.opt_auto_timer_seconds_old) {
+        du_info.opt_auto_timer_seconds_old = du_info.opt_auto_timer_seconds;
+        snprintf(du_info.opt_auto_timer_status, MIDBUFF, "changed to: %d", du_info.opt_auto_timer_seconds);
     }
 
-    if (atomic_load(&g_auto_timer)) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
-    else                            { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󱪯 %s\n", g_auto_timer_status);
+    if (du_info.opt_auto_timer) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
+    else                        { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
+    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󱪯 %s\n", du_info.opt_auto_timer_status);
 
-    if (atomic_load(&g_auto_gas)) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
+    if (du_info.opt_auto_gas) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
     else                            { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󰙇 %s\n", g_auto_gas_status);
+    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󰙇 %s\n", du_info.opt_auto_gas_status);
 
     spin_spinner(&spinner_circle);
     spin_spinner(&spinner_eye_left);

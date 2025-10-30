@@ -68,6 +68,24 @@ struct bas_info {
     double peak_max_buf;
     double peak_min_circ;
     double peak_max_circ;
+
+    int opt_auto_timer;
+    int opt_auto_timer_seconds;
+    int opt_auto_timer_seconds_old;
+    int opt_auto_timer_started;
+    int opt_auto_timer_seconds_elapsed;
+    char opt_auto_timer_status[BIGBUFF];
+    int opt_auto_gas;
+    char opt_auto_gas_status[BIGBUFF];
+
+    int history_mode;
+    int history_mode_time_changed;
+    int history_mode_time_on;
+    int history_mode_time_off;
+    int history_gas;
+    int history_gas_time_changed;
+    int history_gas_time_on;
+    int history_gas_time_off;
 };
 
 #define TEMP_MIN_SOLAR 10
@@ -82,15 +100,16 @@ struct bas_info {
 #define TIMEOUT_BAS    1500
 #define TIMEOUT_WTTRIN 5000
 
+extern void update_info_init();
 extern bool update_info_bas();
-extern void update_info_bas_safe_swap(const struct bas_info* in, struct bas_info* out);
+extern void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* out);
 extern bool update_info_wttrin();
-extern void update_info_wttrin_safe_swap(const char in[], char out[]);
+extern void update_info_wttrin_safe_io(const char in[], char out[]);
 extern enum RequestStatus request_send(struct Request* request);
 extern enum RequestStatus request_send_quick(const char* url);
 extern char* request_status_to_str(enum RequestStatus status);
 extern double extract_json_label(struct mg_str json_body, const char* label, double fallback);
-extern void remember_vars_do_action(int mod_rada, int StatusPumpe4, int TminLT, int TmidGE);
+extern void remember_vars_do_action(struct bas_info* info);
 
 // request_vars.c
 extern char* request_status_to_str(enum RequestStatus status);
@@ -105,7 +124,6 @@ extern const char* const URL_GAS_OFF;
 extern const char* const URL_GAS_ON;
 
 extern const char* const URL_WTTRIN;
-
 extern const char* const REQUEST_FORMAT_BAS;
 extern const char* const REQUEST_FORMAT_WTTRIN;
 
@@ -116,24 +134,5 @@ extern const char* const REQUEST_FORMAT_WTTRIN;
 extern struct bas_info g_info;
 
 extern char g_wttrin_buffer[BIGBUFF];
-
-extern long long g_global_unix_counter;
-
-extern atomic_int g_auto_timer;
-extern atomic_int g_auto_gas;
-extern atomic_int g_auto_timer_seconds;
-extern int g_auto_timer_started;
-extern int g_auto_timer_seconds_elapsed;
-extern char g_auto_timer_status[BIGBUFF];
-extern char g_auto_gas_status[BIGBUFF];
-
-extern int g_history_mode;
-extern time_t g_history_mode_time_changed;
-extern time_t g_history_mode_time_on;
-extern time_t g_history_mode_time_off;
-extern int g_history_gas;
-extern time_t g_history_gas_time_changed;
-extern time_t g_history_gas_time_on;
-extern time_t g_history_gas_time_off;
 
 #endif // REQUEST_H

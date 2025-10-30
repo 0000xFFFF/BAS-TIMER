@@ -24,6 +24,13 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
     struct mg_http_message* hm = (struct mg_http_message*)ev_data;
 
     if (mg_match(hm->uri, mg_str("/api/state"), NULL)) {
+        struct bas_info info = {0};
+        update_info_bas_safe_io(&g_info, &info);
+        if (!info.valid) {
+            mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}");
+            return;
+        }
+
         mg_http_reply(c, 200, "Content-Type: application/json\r\n",
                       "{"
                       "\"seconds\": %d"
@@ -32,40 +39,49 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
                       ","
                       "\"auto_gas\": %d"
                       "}",
-                      atomic_load(&g_auto_timer_seconds),
-                      atomic_load(&g_auto_timer),
-                      atomic_load(&g_auto_gas));
+                      info.opt_auto_timer_seconds,
+                      info.opt_auto_timer,
+                      info.opt_auto_gas);
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/set_timer_seconds"), NULL)) {
         double value;
-        if (mg_json_get_num(hm->body, "$.seconds", &value)) {
-            if (value > 0) { // Validate that it's a positive integer
-                atomic_store(&g_auto_timer_seconds, value);
-                mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", atomic_load(&g_auto_timer_seconds));
-                draw_ui_and_front();
-            }
-            else {
-                mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}");
-            }
-        }
-        else {
-            mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}");
-        }
+        if (!mg_json_get_num(hm->body, "$.seconds", &value)) { mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}"); return; }
+        if (value <= 0) { mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}"); return; }
+
+        struct bas_info info = {0};
+        update_info_bas_safe_io(&g_info, &info);
+        if (!info.valid) { mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); return; }
+
+        info.opt_auto_timer_seconds = value;
+        update_info_bas_safe_io(&info, &g_info);
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", info.opt_auto_timer_seconds);
+        draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/toggle_auto_timer"), NULL)) {
-        g_auto_timer = !g_auto_timer;
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"auto_timer\": %d}", atomic_load(&g_auto_timer));
+
+        struct bas_info info = {0};
+        update_info_bas_safe_io(&g_info, &info);
+        if (!info.valid) { mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); return; }
+
+        info.opt_auto_timer = !info.opt_auto_timer;
+        update_info_bas_safe_io(&info, &g_info);
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"auto_timer\": %d}", info.opt_auto_timer);
         draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/toggle_auto_gas"), NULL)) {
-        g_auto_gas = !g_auto_gas;
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"auto_gas\": %d}", atomic_load(&g_auto_gas));
+        struct bas_info info = {0};
+        update_info_bas_safe_io(&g_info, &info);
+        if (!info.valid) { mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); return; }
+
+        info.opt_auto_gas = !info.opt_auto_gas;
+        update_info_bas_safe_io(&info, &g_info);
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"auto_gas\": %d}", info.opt_auto_gas);
         draw_ui_and_front();
         return;
     }

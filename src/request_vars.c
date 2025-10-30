@@ -32,22 +32,6 @@ const char* const REQUEST_FORMAT_WTTRIN =
     "Content-Length: 0\r\n"
     "\r\n";
 
-atomic_int g_auto_timer = ENABLE_AUTO_TIMER;
-atomic_int g_auto_gas = ENABLE_AUTO_GAS;
-atomic_int g_auto_timer_seconds = AUTO_TIMER_SECONDS;
-int g_auto_timer_started = 0;
-int g_auto_timer_seconds_elapsed = 0;
-char g_auto_timer_status[BIGBUFF] = "...";
-char g_auto_gas_status[BIGBUFF] = "...";
-
-int g_history_mode = -1;
-time_t g_history_mode_time_changed = 0;
-time_t g_history_mode_time_on = 0;
-time_t g_history_mode_time_off = 0;
-int g_history_gas = -1;
-time_t g_history_gas_time_changed = 0;
-time_t g_history_gas_time_on = 0;
-time_t g_history_gas_time_off = 0;
 
 char* request_status_to_str(enum RequestStatus status)
 {

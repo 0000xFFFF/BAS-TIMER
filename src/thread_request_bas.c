@@ -1,7 +1,6 @@
 #include "debug.h"
 #include "globals.h"
 #include "request.h"
-#include "src/utils.h"
 #include "thread_utils.h"
 #include <assert.h>
 #include <pthread.h>
@@ -10,7 +9,7 @@
 
 void* th_request_bas(void* sig)
 {
-    g_global_unix_counter = timestamp();
+    update_info_init();
 
     DPL("THREAD START BAS");
     UNUSED(sig);

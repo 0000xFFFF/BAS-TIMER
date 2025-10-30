@@ -5,131 +5,131 @@
 #include <stdio.h>
 #include <time.h>
 
-void update_history(int mod_rada, int StatusPumpe4)
+static void update_history(struct bas_info* info)
 {
     DPL("UPDATE HISTORY");
     time_t current_time;
     time(&current_time);
     struct tm* timeinfo = localtime(&current_time);
     char time_str[MIDBUFF] = {0};
-    strftime_YmdHMS(time_str, MIDBUFF, timeinfo);
+    strftime_YmdHMS(time_str, sizeof(time_str), timeinfo);
 
-    if (g_history_mode == -1 || g_history_mode != mod_rada) {
-        g_history_mode = mod_rada;
-        g_history_mode_time_changed = current_time;
+    if (info->history_mode == -1 || info->history_mode != info->mod_rada) {
+        info->history_mode = info->mod_rada;
+        info->history_mode_time_changed = current_time;
 
-        if (mod_rada) {
-            g_history_mode_time_on = g_history_mode_time_changed;
-            logger_changes_write("mod_rada = %d\n", mod_rada);
-            snprintf(g_auto_timer_status, BIGBUFF, " %s 󰐸", time_str);
+        if (info->mod_rada) {
+            info->history_mode_time_on = info->history_mode_time_changed;
+            logger_changes_write("mod_rada = %d\n", info->mod_rada);
+            snprintf(info->opt_auto_timer_status, sizeof(info->opt_auto_timer_status), " %s 󰐸", time_str);
         }
         else {
-            g_history_mode_time_off = g_history_mode_time_changed;
+            info->history_mode_time_off = info->history_mode_time_changed;
             char e[MIDBUFF] = "\n";
             char p[MIDBUFF] = "";
-            if (g_history_mode_time_on && g_history_mode_time_off) {
+            if (info->history_mode_time_on && info->history_mode_time_off) {
                 char elap[SMALLBUFF];
-                elapsed_str(elap, SMALLBUFF, g_history_mode_time_off, g_history_mode_time_on);
-                snprintf(e, MIDBUFF, " -- %s\n", elap);
-                snprintf(p, MIDBUFF, " 󱫐 %s", elap);
-            }
-
-            logger_changes_write("mod_rada = %d%s", mod_rada, e);
-            snprintf(g_auto_timer_status, BIGBUFF, " %s %s", time_str, p);
-
-            if (g_auto_timer_started) {
-                g_auto_timer_started = 0;
-                snprintf(g_auto_timer_status, BIGBUFF, "%s 󰜺", time_str);
-            }
-        }
-    }
-
-    if (g_history_gas == -1 || g_history_gas != StatusPumpe4) {
-        g_history_gas = StatusPumpe4;
-        g_history_gas_time_changed = current_time;
-
-        if (StatusPumpe4) {
-            g_history_gas_time_on = g_history_gas_time_changed;
-            logger_changes_write("StatusPumpe4 = %d\n", StatusPumpe4);
-            snprintf(g_auto_gas_status, BIGBUFF, " %s ", time_str);
-        }
-        else {
-            g_history_gas_time_off = g_history_gas_time_changed;
-            char e[MIDBUFF] = "\n";
-            char p[MIDBUFF] = "";
-            if (g_history_gas_time_on && g_history_gas_time_off) {
-                char elap[SMALLBUFF] = {0};
-                elapsed_str(elap, SMALLBUFF, g_history_gas_time_off, g_history_gas_time_on);
+                elapsed_str(elap, sizeof(elap), info->history_mode_time_off, info->history_mode_time_on);
                 snprintf(e, sizeof(e), " -- %s\n", elap);
                 snprintf(p, sizeof(p), " 󱫐 %s", elap);
             }
 
-            logger_changes_write("StatusPumpe4 = %d%s", StatusPumpe4, e);
-            sprintf(g_auto_gas_status, " %s %s", time_str, p);
+            logger_changes_write("mod_rada = %d%s", info->mod_rada, e);
+            snprintf(info->opt_auto_timer_status, sizeof(info->opt_auto_timer_status), " %s %s", time_str, p);
+
+            if (info->opt_auto_timer_started) {
+                info->opt_auto_timer_started = 0;
+                snprintf(info->opt_auto_timer_status, sizeof(info->opt_auto_timer_status), "%s 󰜺", time_str);
+            }
+        }
+    }
+
+    if (info->history_gas == -1 || info->history_gas != info->StatusPumpe4) {
+        info->history_gas = info->StatusPumpe4;
+        info->history_gas_time_changed = current_time;
+
+        if (info->StatusPumpe4) {
+            info->history_gas_time_on = info->history_gas_time_changed;
+            logger_changes_write("StatusPumpe4 = %d\n", info->StatusPumpe4);
+            snprintf(info->opt_auto_gas_status, sizeof(info->opt_auto_gas_status), " %s ", time_str);
+        }
+        else {
+            info->history_gas_time_off = info->history_gas_time_changed;
+            char e[MIDBUFF] = "\n";
+            char p[MIDBUFF] = "";
+            if (info->history_gas_time_on && info->history_gas_time_off) {
+                char elap[SMALLBUFF] = {0};
+                elapsed_str(elap, sizeof(elap), info->history_gas_time_off, info->history_gas_time_on);
+                snprintf(e, sizeof(e), " -- %s\n", elap);
+                snprintf(p, sizeof(p), " 󱫐 %s", elap);
+            }
+
+            logger_changes_write("StatusPumpe4 = %d%s", info->StatusPumpe4, e);
+            snprintf(info->opt_auto_gas_status, sizeof(info->opt_auto_gas_status), " %s %s", time_str, p);
         }
     }
 }
 
-void do_logic_timer(int mod_rada)
+static void do_logic_timer(struct bas_info* info)
 {
-
     time_t current_time;
     time(&current_time);
     struct tm* timeinfo = localtime(&current_time);
     char time_str[MIDBUFF] = {0};
-    strftime_YmdHMS(time_str, MIDBUFF, timeinfo);
+    strftime_YmdHMS(time_str, sizeof(time_str), timeinfo);
 
-    if (g_auto_timer && mod_rada) {
-        if (g_auto_timer_started) {
-            g_auto_timer_seconds_elapsed = difftime(current_time, g_history_mode_time_on);
-            snprintf(g_auto_timer_status, BIGBUFF, "%d/%d", g_auto_timer_seconds_elapsed, atomic_load(&g_auto_timer_seconds));
+    if (info->opt_auto_timer && info->mod_rada) {
+        if (info->opt_auto_timer_started) {
+            info->opt_auto_timer_seconds_elapsed = difftime(current_time, info->history_mode_time_on);
+            snprintf(info->opt_auto_timer_status, sizeof(info->opt_auto_timer_status), "%d/%d", info->opt_auto_timer_seconds_elapsed, info->opt_auto_timer_seconds);
 
-            if (g_auto_timer_seconds_elapsed >= g_auto_timer_seconds) {
-                g_auto_timer_started = 0;
-                snprintf(g_auto_timer_status, BIGBUFF, "%s 󱪯", time_str);
-                if (g_history_mode_time_on) {
+            if (info->opt_auto_timer_seconds_elapsed >= info->opt_auto_timer_seconds) {
+                info->opt_auto_timer_started = 0;
+                snprintf(info->opt_auto_timer_status, sizeof(info->opt_auto_timer_status), "%s 󱪯", time_str);
+                if (info->history_mode_time_on) {
                     char elap[SMALLBUFF] = {0};
-                    elapsed_str(elap, SMALLBUFF, current_time, g_history_mode_time_on);
-                    snprintf(g_auto_timer_status, BIGBUFF, "󱫐 %s 󱪯", elap);
+                    elapsed_str(elap, SMALLBUFF, current_time, info->history_mode_time_on);
+                    snprintf(info->opt_auto_timer_status, sizeof(info->opt_auto_timer_status), "󱫐 %s 󱪯", elap);
                 }
                 request_send_quick(URL_HEAT_OFF);
             }
         }
         else {
-            g_auto_timer_started = 1;
-            snprintf(g_auto_timer_status, BIGBUFF, "%s 󱫌", time_str);
+            info->opt_auto_timer_started = 1;
+            snprintf(info->opt_auto_timer_status, sizeof(info->opt_auto_timer_status), "%s 󱫌", time_str);
         }
     }
 }
 
-void do_logic_gas(int StatusPumpe4, int TminLT, int TmidGE)
+static void do_logic_gas(struct bas_info* info)
 {
-
     time_t current_time;
     time(&current_time);
     struct tm* timeinfo = localtime(&current_time);
     char time_str[MIDBUFF] = {0};
-    strftime_YmdHMS(time_str, MIDBUFF, timeinfo);
+    strftime_YmdHMS(time_str, sizeof(time_str), timeinfo);
 
-    if (g_auto_gas && StatusPumpe4 == 0 && TminLT) {
-        sprintf(g_auto_gas_status, "%s ", time_str);
+    if (info->opt_auto_gas && info->StatusPumpe4 == 0 && info->TminLT) {
+        snprintf(info->opt_auto_gas_status, sizeof(info->opt_auto_gas_status), "%s ", time_str);
         request_send_quick(URL_GAS_ON);
     }
 
-    if (g_auto_gas && StatusPumpe4 == 3 && TmidGE) {
-        sprintf(g_auto_gas_status, "%s 󰙇", time_str);
-        if (g_history_gas_time_on && g_history_gas_time_off) {
+    if (info->opt_auto_gas && info->StatusPumpe4 == 3 && info->TmidGE) {
+        snprintf(info->opt_auto_gas_status, sizeof(info->opt_auto_gas_status), "%s 󰙇", time_str);
+        if (info->history_gas_time_on && info->history_gas_time_off) {
             char elap[SMALLBUFF] = {0};
-            elapsed_str(elap, SMALLBUFF, current_time, g_history_gas_time_on);
-            sprintf(g_auto_gas_status, "󱫐 %s 󰙇", elap);
+            elapsed_str(elap, sizeof(elap), current_time, info->history_gas_time_on);
+            snprintf(info->opt_auto_gas_status, sizeof(info->opt_auto_gas_status), "󱫐 %s 󰙇", elap);
         }
         request_send_quick(URL_GAS_OFF);
     }
 }
 
-void remember_vars_do_action(int mod_rada, int StatusPumpe4, int TminLT, int TmidGE)
+// TODO: request_send_quick can fail --> print/handle that
+
+void remember_vars_do_action(struct bas_info* info)
 {
-    update_history(mod_rada, StatusPumpe4);
-    do_logic_timer(mod_rada);
-    do_logic_gas(StatusPumpe4, TminLT, TmidGE);
+    update_history(info);
+    do_logic_timer(info);
+    do_logic_gas(info);
 }
