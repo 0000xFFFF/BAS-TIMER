@@ -56,8 +56,6 @@ struct bas_info {
 
     // other calced values
     double Tmid;
-    double Thottest;
-    double Tcoldest;
     int TmidGE;
     int TminLT;
 
