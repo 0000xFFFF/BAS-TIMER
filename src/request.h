@@ -4,7 +4,6 @@
 #include "mongoose.h"
 #include "src/globals.h"
 #include <stdatomic.h>
-#include <time.h>
 
 extern const char* const URL_VARS;
 extern const char* const URL_HEAT_OFF;

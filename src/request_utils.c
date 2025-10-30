@@ -1,4 +1,3 @@
-
 #include "src/mongoose.h"
 #include <float.h>
 

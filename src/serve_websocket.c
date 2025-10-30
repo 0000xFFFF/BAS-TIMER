@@ -1,7 +1,6 @@
 #include "debug.h"
 #include "globals.h"
 #include "mongoose.h"
-#include <netinet/tcp.h> // Required for TCP_NODELAY
 #include <stdatomic.h>
 
 static struct mg_connection* ws_connections[WS_MAX_CONN]; // Array to track WebSocket connections
