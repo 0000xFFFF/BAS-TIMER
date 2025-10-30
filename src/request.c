@@ -13,7 +13,8 @@
 
 pthread_mutex_t g_update_info_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void update_info_bas_safe_swap(struct bas_info* in, struct bas_info* out) {
+void update_info_bas_safe_swap(struct bas_info* in, struct bas_info* out)
+{
     pthread_mutex_lock(&g_update_info_bas_mutex);
     memcpy(out, in, sizeof(struct bas_info));
     pthread_mutex_unlock(&g_update_info_bas_mutex);
@@ -93,12 +94,12 @@ bool update_info_bas()
     return g_info.valid;
 }
 
-
 static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void update_info_wttrin_safe_swap(const char* in, char* out) {
+void update_info_wttrin_safe_swap(const char* in, char* out)
+{
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    memcpy(out, in, sizeof(struct bas_info));
+    memcpy(out, in, sizeof(g_wttrin_buffer));
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
 }
 
@@ -121,16 +122,12 @@ bool update_info_wttrin()
         size_t b = 0;
         b += snprintf(response + b, BIGBUFF - b, "%s", request.output.buf); // write response to buffer
         size_t l = strlen(response);
-        if (g_wttrin_buffer[l - 1] == '\n') {
-            g_wttrin_buffer[l - 1] = ' ';
-        } // replace newline with space
-        b += dt_HM(response + b, BIGBUFF - b); // append hour:minute
+        if (response[l - 1] == '\n') { response[l - 1] = ' '; } // replace newline with space
+        b += dt_HM(response + b, BIGBUFF - b);                  // append hour:minute
         free((void*)request.output.buf);
-
 
         update_info_wttrin_safe_swap(response, g_wttrin_buffer);
         return true;
     }
     return false;
 }
-
