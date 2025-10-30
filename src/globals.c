@@ -24,7 +24,13 @@ const int POLL_TIME =
 const int MAKE_REQUEST_BAS = 1;
 const int MAKE_REQUEST_WTTRIN = 1;
 
-const int SLEEP_MS_DRAW = 250;
+
+const int SLEEP_MS_DRAW =
+#ifdef DEBUG
+    1000;
+#else
+    250;
+#endif
 const int SLEEP_MS_BAS = 3000;       // every 3 seconds
 const int SLEEP_MS_WTTRIN = 60 * 15; // 15 min
 
