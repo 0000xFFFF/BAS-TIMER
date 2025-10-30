@@ -20,6 +20,5 @@ extern size_t ansi_to_html(const char* text, char* result);
 extern void escape_quotes(const char* input, char* output);
 extern double min_dv(int count, ...);
 extern double max_dv(int count, ...);
-extern struct timespec make_timeout_ms(long ms);
 
 #endif // UTILS_HPP

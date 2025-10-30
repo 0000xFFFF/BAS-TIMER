@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -436,4 +437,12 @@ double max_dv(int count, ...)
     }
     va_end(args);
     return m;
+}
+
+int get_terminal_width()
+{
+    struct winsize w;
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1)
+        return 80; // fallback if detection fails
+    return w.ws_col;
 }

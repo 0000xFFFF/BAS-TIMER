@@ -143,23 +143,23 @@ static size_t draw_col2(char* buffer, size_t size, char* prelabel, char* label, 
 
 static size_t draw_extra_eye_timer(char* buffer, size_t size)
 {
-
     size_t b = 0;
-    if (du_info.opt_auto_timer) b += ctext_fg(buffer + b, size - b, COLOR_ON, get_frame(&spinner_eye_left, 0));
+    b += ctext_fg(buffer + b, size - b, COLOR_ON, du_info.opt_auto_timer ? get_frame(&spinner_eye_left, 0) : " ");
     if (du_info.opt_auto_timer) {
         if (du_info.opt_auto_timer_started)
             b += ctext_fg(buffer + b, size - b, COLOR_ON, get_frame(&spinner_clock, 0));
         else
             b += ctext_fg(buffer + b, size - b, COLOR_OFF, "󱎫");
     }
+    else {
+        b += ctext_fg(buffer + b, size - b, COLOR_OFF, " ");
+    }
     return b;
 }
 
 static size_t draw_extra_eye_gas(char* buffer, size_t size)
 {
-    size_t b = 0;
-    if (du_info.opt_auto_gas) { b += ctext_fg(buffer, size - b, COLOR_ON, get_frame(&spinner_eye_left, 0)); }
-    return b;
+    return ctext_fg(buffer, size, COLOR_ON, du_info.opt_auto_gas ? get_frame(&spinner_eye_left, 0) : " ");
 }
 
 static size_t draw_extra_check(char* buffer, size_t size)
@@ -172,8 +172,8 @@ static size_t draw_extra_warn(char* buffer, size_t size)
     return ctext_fg(buffer, size, 51, du_info.valid && du_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
 }
 
-// clang-format off
-static size_t draw_ui_unsafe() {
+static size_t draw_ui_unsafe()
+{
 
     DPL("DRAW UI");
     update_info_bas_safe_io(&g_info, &du_info);
@@ -190,38 +190,39 @@ static size_t draw_ui_unsafe() {
     // check if we have values
     if (!du_info.valid) {
         t = 0;
-        t += get_local_ip(temp, MIDBUFF-t);
-        b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, "@ %s\n> no values to draw.\n> %s\n", temp, request_status_to_str(du_info.status));
+        t += get_local_ip(temp, MIDBUFF - t);
+        b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "@ %s\n> no values to draw.\n> %s\n", temp, request_status_to_str(du_info.status));
         return printf("%s", g_term_buffer);
     }
 
-
     // clock + hour emoji + date-time
-    int hour           = localtime_hour();
-    char* emoji_clock  = hour_to_clock(hour);
-    char* emoji_dayhr  = hour_to_emoji(hour);
+    int hour = localtime_hour();
+    char* emoji_clock = hour_to_clock(hour);
+    char* emoji_dayhr = hour_to_emoji(hour);
     t = 0;
-    t += snprintf(temp+t, MIDBUFF-t, "%s %s ", emoji_clock, emoji_dayhr);
-    t += dt_full(temp+t, MIDBUFF-t);
+    t += snprintf(temp + t, MIDBUFF - t, "%s %s ", emoji_clock, emoji_dayhr);
+    t += dt_full(temp + t, MIDBUFF - t);
     int color_hour = hour_to_color(hour);
-    b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, color_hour, temp);
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, "\n");
+    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, color_hour, temp);
+    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "\n");
 
     // weather
-    b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, color_hour, du_wttrin_buffer);
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, "\n");
+    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, color_hour, du_wttrin_buffer);
+    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "\n");
 
     // light + send + conn count + ip
-    b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, 228, get_frame(&spinner_lights, 1));
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, " %s %3d ", du_info.status == REQUEST_STATUS_RUNNING ? CTEXT_FG(211, "") : " ", atomic_load(&g_ws_conn_count));
+    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, 228, get_frame(&spinner_lights, 1));
+    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, " %s %3d ", du_info.status == REQUEST_STATUS_RUNNING ? CTEXT_FG(211, "") : " ", atomic_load(&g_ws_conn_count));
     t = 0;
-    t += get_local_ip(temp, MIDBUFF-t);
-    b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, temp);
-    if (request_status_failed(du_info.status)) b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, " %-16s", request_status_to_smallstr(du_info.status));
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b, "\n");
+    t += get_local_ip(temp, MIDBUFF - t);
+    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, temp);
+    if (request_status_failed(du_info.status)) b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, " %-16s", request_status_to_smallstr(du_info.status));
+    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "\n");
 
     char col1[TERM_BUFFER_SIZE] = {0};
     size_t c1 = 0;
+
+    // clang-format off
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "", "Solar", get_frame(&spinner_solar_panel, 1), 230, "  ", du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar, temp_to_emoji(du_info.Tsolar), NULL);
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Out", get_frame(&spinner_window, 1),      213, "  ", du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tspv), NULL);
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, " ", "Room", get_frame(&spinner_house, 1),        76, "  ", du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tsobna), NULL);
@@ -230,10 +231,12 @@ static size_t draw_ui_unsafe() {
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Mid", "",                                220, "  ", du_info.Tmid,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_check);
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Min", "",                                226, "  ", du_info.Tmin,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_warn);
     c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "", "Circ.", get_frame(&spinner_recycle, 1),     110, "  ", du_info.Tfs,     du_info.peak_min_circ,  du_info.peak_max_circ,  "", NULL);
+    // clang-format on
 
-    //DPL("COL1");
-    //D(printf("%s\n", col1));
+    // DPL("COL1");
+    // D(printf("%s\n", col1));
 
+    // clang-format off
     char col2[TERM_BUFFER_SIZE] = {0};
     size_t c2 = 0;
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Mode", "󱪯",                                                                        222, "  ", du_info.mod_rada,     draw_heat,      "", draw_extra_eye_timer);
@@ -243,27 +246,49 @@ static size_t draw_ui_unsafe() {
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Circ.",  pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",   168, "  ", du_info.StatusPumpe3, draw_pump_bars, "", NULL);
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Solar",  pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",     224, "  ", du_info.StatusPumpe7, draw_pump_bars, "", NULL);
     c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Elec.",  pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠", 78,  "  ", du_info.StatusPumpe5, draw_pump_bars, "", NULL);
+    // clang-format on
+    // DPL("COL2");
+    // D(printf("%s\n", col2));
 
-    //DPL("COL2");
-    //D(printf("%s\n", col2));
+    char line1[BIGBUFF], line2[BIGBUFF], combined[BIGBUFF * 2];
+    const char* p1 = col1;
+    const char* p2 = col2;
 
-    char line1[BIGBUFF], line2[BIGBUFF];
-    const char *p1 = col1;
-    const char *p2 = col2;
+    int term_w = term_width();
 
-    // combine 2 columns
     while (*p1 || *p2) {
         int n1 = 0, n2 = 0;
 
-        while (*p1 && *p1 != '\n' && n1 < (int)sizeof(line1) - 1) line1[n1++] = *p1++;
+        // read one line from col1
+        while (*p1 && *p1 != '\n' && n1 < (int)sizeof(line1) - 1)
+            line1[n1++] = *p1++;
         line1[n1] = '\0';
         if (*p1 == '\n') p1++;
 
-        while (*p2 && *p2 != '\n' && n2 < (int)sizeof(line2) - 1) line2[n2++] = *p2++;
+        // read one line from col2
+        while (*p2 && *p2 != '\n' && n2 < (int)sizeof(line2) - 1)
+            line2[n2++] = *p2++;
         line2[n2] = '\0';
         if (*p2 == '\n') p2++;
 
-        b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"%s%s\n", line1, line2);
+        // build combined text of both columns
+        int len = snprintf(combined, sizeof(combined), "%s%s", line1, line2);
+
+        // write combined to terminal buffer
+        b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "%s", combined);
+
+        // pad spaces until terminal width
+        if (len < term_w) {
+            int pad = term_w - len;
+            while (pad-- > 0) {
+                if (b < TERM_BUFFER_SIZE - 1)
+                    g_term_buffer[b++] = ' ';
+            }
+        }
+
+        // newline
+        if (b < TERM_BUFFER_SIZE - 1)
+            g_term_buffer[b++] = '\n';
     }
 
     char auto_timer_status[MIDBUFF] = {0};
@@ -275,6 +300,7 @@ static size_t draw_ui_unsafe() {
         snprintf(auto_timer_status, MIDBUFF, "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
     }
 
+    // clang-format off
     if (du_info.opt_auto_timer) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
     else                        { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
     b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󱪯 %s\n", du_info.opt_auto_timer_status);
@@ -282,6 +308,7 @@ static size_t draw_ui_unsafe() {
     if (du_info.opt_auto_gas) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
     else                            { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
     b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󰙇 %s\n", du_info.opt_auto_gas_status);
+    // clang-format on
 
     spin_spinner(&spinner_circle);
     spin_spinner(&spinner_eye_left);
@@ -289,14 +316,12 @@ static size_t draw_ui_unsafe() {
     spin_spinner(&spinner_bars);
     spin_spinner(&spinner_clock);
 
-
     DPL("===[ OUTPUT BEGIN ]===");
     size_t r = printf("%s", g_term_buffer);
     DPL("===[ OUTPUT END ]===");
 
     return r;
 }
-// clang-format on
 
 static pthread_mutex_t s_du_mutex = PTHREAD_MUTEX_INITIALIZER;
 
