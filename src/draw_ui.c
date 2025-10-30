@@ -173,7 +173,7 @@ size_t draw_extra_warn(char* buffer, size_t size)
 static int g_auto_timer_seconds_old = AUTO_TIMER_SECONDS;
 
 // clang-format off
-size_t draw_ui() {
+size_t draw_ui_unsafe() {
 
     DPL("DRAW UI");
     update_info_bas_safe_swap(&g_info, &du_info);
@@ -302,3 +302,12 @@ size_t draw_ui() {
     return r;
 }
 // clang-format on
+
+static pthread_mutex_t s_du_mutex = PTHREAD_MUTEX_INITIALIZER;
+size_t draw_ui() {
+
+    pthread_mutex_unlock(&s_du_mutex);
+    size_t r = draw_ui_unsafe();
+    pthread_mutex_unlock(&s_du_mutex);
+    return r;
+}
