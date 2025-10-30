@@ -2,6 +2,7 @@
 #define DEBUG_H
 
 #ifdef DEBUG
+    #include <stdio.h>
 #	define D(x) x
 #else
 #	define D(x)

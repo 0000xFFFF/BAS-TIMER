@@ -2,6 +2,7 @@
 #include "draw_ui.h"
 #include "globals.h"
 #include "serve_websocket.h"
+#include "src/spinners.h"
 #include "utils.h"
 #include "thread_utils.h"
 #ifndef DEBUG
@@ -12,6 +13,8 @@
 
 void* th_print_loop(void* sig)
 {
+    init_spinners();
+
     DPL("THREAD START PRINT LOOP");
     UNUSED(sig);
 

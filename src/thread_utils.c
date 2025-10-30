@@ -1,10 +1,21 @@
 #include "globals.h"
+#include "src/debug.h"
 #include "utils.h"
+#include <asm-generic/errno.h>
 #include <assert.h>
-#include <errno.h>
 #include <pthread.h>
 #include <stdatomic.h>
+#include <stdbool.h>
 #include <unistd.h>
+
+void stop_all_threads()
+{
+    DPL("STOPPING ALL THREADS");
+    atomic_store(&g_running, false);
+    pthread_mutex_lock(&g_mutex);
+    pthread_cond_broadcast(&g_cond); // wake all
+    pthread_mutex_unlock(&g_mutex);
+}
 
 struct timespec make_timeout_ms(long ms)
 {

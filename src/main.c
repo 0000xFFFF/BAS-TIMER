@@ -1,55 +1,30 @@
 #include "debug.h"
 #include "globals.h"
 #include "mongoose.h"
-#include "request.h"
-#include "spinners.h"
+#include "signals.h"
 #include "term.h"
 #include "thread_print_loop.h"
 #include "thread_request_bas.h"
 #include "thread_request_wttrin.h"
 #include "thread_serve.h"
+#include "thread_utils.h"
 #include "utils.h"
 #include <assert.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stdatomic.h>
-#include <stdio.h>
 #include <unistd.h>
 
 atomic_bool g_running = true;
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t g_cond = PTHREAD_COND_INITIALIZER;
 
-void init()
-{
-    g_global_unix_counter = timestamp();
-
-    // for drawui
-    init_spinners();
-}
-
-void stop() {
-    DPL("STOPPING ALL THREADS");
-    atomic_store(&g_running, false);
-    pthread_mutex_lock(&g_mutex);
-    pthread_cond_broadcast(&g_cond); // wake all
-    pthread_mutex_unlock(&g_mutex);
-}
-
-static void signal_handler(int sig)
-{
-    printf("Caught signal: %d\n", sig);
-    stop();
-    term_cursor_show();
-}
-
 int main()
 {
     // init
     DPL("MAIN START");
     change_to_bin_dir();
-    init();
-    signal(SIGINT, signal_handler);
+    signal(SIGINT, signals_sigint);
 
 #ifdef DEBUG
     const char* log_level = getenv("LOG_LEVEL");
@@ -74,12 +49,12 @@ int main()
 
     pthread_join(t4, NULL);
 
-    stop();
+    stop_all_threads();
 
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
     pthread_join(t3, NULL);
 
-    DPL("main exit");
+    DPL("MAIN STOP");
     return 0;
 }
