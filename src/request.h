@@ -72,6 +72,14 @@ struct bas_info {
     double peak_max_circ;
 };
 
+#define TEMP_MIN_SOLAR 10
+#define TEMP_MAX_SOLAR 100
+#define TEMP_MIN_HUMAN 0
+#define TEMP_MAX_HUMAN 30
+#define TEMP_MIN_BUF 45
+#define TEMP_MAX_BUF 70
+#define TEMP_MIN_CIRC 0
+#define TEMP_MAX_CIRC 30
 
 #define TIMEOUT_BAS    1500
 #define TIMEOUT_WTTRIN 5000
@@ -87,9 +95,10 @@ extern double extract_json_label(struct mg_str json_body, const char* label);
 extern void remember_vars_do_action(int mod_rada, int StatusPumpe4, int TminLT, int TmidGE);
 
 // request_vars.c
-char* request_status_to_str(enum RequestStatus status);
-char* request_status_to_smallstr(enum RequestStatus status);
-bool request_status_failed(enum RequestStatus status);
+extern char* request_status_to_str(enum RequestStatus status);
+extern char* request_status_to_smallstr(enum RequestStatus status);
+extern bool request_status_failed(enum RequestStatus status);
+extern void print_bas_info(const struct bas_info* b);
 
 extern const char* const URL_VARS;
 extern const char* const URL_HEAT_OFF;

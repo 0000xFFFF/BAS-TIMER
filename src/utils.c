@@ -405,34 +405,28 @@ size_t ansi_to_html(const char* text, char* result)
     return 1;
 }
 
-double mind(int count, ...)
+double min_dv(int count, ...)
 {
     va_list args;
     va_start(args, count);
-
-    double m = DBL_MAX;
-
-    for (int i = 0; i < count; i++) {
-        double v = va_arg(args, double);
-        if (v < m) m = v;
+    double m = va_arg(args, double);
+    for (int i = 1; i < count; i++) {
+        double val = va_arg(args, double);
+        if (val < m) m = val;
     }
-
     va_end(args);
     return m;
 }
 
-double maxd(int count, ...)
+double max_dv(int count, ...)
 {
     va_list args;
     va_start(args, count);
-
-    double m = -DBL_MAX;
-
-    for (int i = 0; i < count; i++) {
-        double v = va_arg(args, double);
-        if (v > m) m = v;
+    double m = va_arg(args, double);
+    for (int i = 1; i < count; i++) {
+        double val = va_arg(args, double);
+        if (val > m) m = val;
     }
-
     va_end(args);
     return m;
 }

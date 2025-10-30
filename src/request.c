@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "mongoose.h"
+#include "src/debug.h"
 #include "utils.h"
 #include <float.h>
 #include <pthread.h>
@@ -41,6 +42,7 @@ bool update_info_bas()
     if (request.output.buf) {
 
         struct bas_info info = {0};
+        update_info_bas_safe_swap(&g_info, &info);
 
         info.valid = true;
         info.status = request.status;
@@ -64,25 +66,27 @@ bool update_info_bas()
         info.TminLT = g_info.Tmin < 45;
         info.TmidGE = g_info.Tmid >= 60;
         if (info.peaks_valid) {
-            info.peak_min_solar = mind(info.peak_min_solar, info.Tsolar);
-            info.peak_max_solar = maxd(info.peak_max_solar, info.Tsolar);
-            info.peak_min_human = mind(info.peak_min_human, info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_max_human = maxd(info.peak_max_human, info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_min_buf = mind(info.peak_min_buf, info.Tmin);
-            info.peak_max_buf = maxd(info.peak_max_buf, info.Tmax);
-            info.peak_min_circ = mind(info.peak_min_circ, info.Tfs);
-            info.peak_max_circ = maxd(info.peak_max_circ, info.Tfs);
+            info.peak_min_solar = min_dv(2, info.peak_min_solar, info.Tsolar);
+            info.peak_max_solar = max_dv(2, info.peak_max_solar, info.Tsolar);
+            info.peak_min_human = min_dv(4, info.peak_min_human, info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_max_human = max_dv(4, info.peak_max_human, info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_min_buf = min_dv(2, info.peak_min_buf, info.Tmin);
+            info.peak_max_buf = max_dv(2, info.peak_max_buf, info.Tmax);
+            info.peak_min_circ = min_dv(2, info.peak_min_circ, info.Tfs);
+            info.peak_max_circ = max_dv(2, info.peak_max_circ, info.Tfs);
         }
         else {
             info.peaks_valid = true;
-            info.peak_min_solar = info.Tsolar;
-            info.peak_max_solar = info.Tsolar;
-            info.peak_min_human = mind(info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_max_human = maxd(info.Tsobna, info.Tzadata, info.Tspv);
-            info.peak_min_buf = info.Tmin;
-            info.peak_max_buf = info.Tmax;
-            info.peak_min_circ = info.Tfs;
-            info.peak_max_circ = info.Tfs;
+            info.peak_min_solar = min_dv(2, TEMP_MIN_SOLAR, info.Tsolar);
+            info.peak_max_solar = max_dv(2, TEMP_MAX_SOLAR, info.Tsolar);
+            info.peak_min_human = min_dv(4, TEMP_MIN_HUMAN, info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_max_human = max_dv(4, TEMP_MAX_HUMAN, info.Tsobna, info.Tzadata, info.Tspv);
+            info.peak_min_buf = min_dv(2, TEMP_MIN_BUF, info.Tmin);
+            info.peak_max_buf = max_dv(2, TEMP_MAX_BUF, info.Tmax);
+            info.peak_min_circ = min_dv(2, TEMP_MIN_CIRC, info.Tfs);
+            info.peak_max_circ = max_dv(2, TEMP_MAX_CIRC, info.Tfs);
+            DPL("INIT PEAKS");
+            print_bas_info(&info);
         }
 
         update_info_bas_safe_swap(&info, &g_info);

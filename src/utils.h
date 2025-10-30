@@ -17,8 +17,8 @@ extern size_t get_local_ips(char* buffer, size_t size);
 extern size_t elapsed_str(char* buffer, size_t size, time_t end, time_t start);
 extern size_t ansi_to_html(const char* text, char* result);
 extern void escape_quotes(const char* input, char* output);
-extern double mind(int count, ...);
-extern double maxd(int count, ...);
+extern double min_dv(int count, ...);
+extern double max_dv(int count, ...);
 extern struct timespec make_timeout_ms(long ms);
 
 #endif // UTILS_HPP
