@@ -111,10 +111,9 @@ bool update_info_bas()
         info.peak_min_circ = min_dv(2, info.peak_min_circ, info.Tfs);
         info.peak_max_circ = max_dv(2, info.peak_max_circ, info.Tfs);
 
-        update_info_bas_safe_io(&info, &g_info);
-
         remember_vars_do_action(&info);
 
+        update_info_bas_safe_io(&info, &g_info);
         free((void*)request.output.buf);
     }
 
