@@ -65,7 +65,7 @@ static size_t ws_drop_if_exist(struct mg_connection* c)
             D(printf("drop existing ip: %d.%d.%d.%d\n", ic->rem.ip[0], ic->rem.ip[1], ic->rem.ip[2], ic->rem.ip[3]));
             mg_ws_send(ic, "", 0, WEBSOCKET_OP_CLOSE); // Send a WebSocket close frame
             ic->is_closing = 1;                        // Mark for closure
-            //mg_mgr_poll(ic->mgr, 0);                   // Process the closure
+            // mg_mgr_poll(ic->mgr, 0);                   // Process the closure
             return dropped;
         }
     }
