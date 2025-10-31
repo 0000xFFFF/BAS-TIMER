@@ -174,6 +174,7 @@ static size_t draw_extra_warn(char* buffer, size_t size)
 
 static size_t draw_ui_unsafe()
 {
+    int term_w = term_width();
 
     DPL("DRAW UI");
     update_info_bas_safe_io(&g_info, &du_info);
@@ -211,7 +212,9 @@ static size_t draw_ui_unsafe()
     b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
 
     // weather
-    b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 181, du_wttrin_buffer);
+    t = 0;
+    t += ctext_fg(temp + t, sizeof(temp) - t, 181, du_wttrin_buffer);
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "%-*s", term_w, temp);
     b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
 
     // light + send + conn count + ip
@@ -258,7 +261,6 @@ static size_t draw_ui_unsafe()
     const char* p1 = col1;
     const char* p2 = col2;
 
-    int term_w = term_width();
 
     while (*p1 || *p2) {
         int n1 = 0, n2 = 0;

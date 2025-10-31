@@ -126,7 +126,7 @@ bool update_info_bas()
 
 static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-char g_wttrin_buffer[BIGBUFF] = {0};
+char g_wttrin_buffer[BIGBUFF] = "...";
 
 void update_info_wttrin_safe_io(const char in[], char out[])
 {
