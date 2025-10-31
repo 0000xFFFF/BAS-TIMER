@@ -3,92 +3,119 @@
 #include "mongoose.h"
 #include <stdatomic.h>
 
-static struct mg_connection* ws_connections[WS_MAX_CONN]; // Array to track WebSocket connections
-atomic_int g_ws_conn_count = 0;                           // Counter for active connections
+static struct mg_connection* ws_connections[WS_MAX_CONN] = {0}; // Array to track WebSocket connections
+atomic_size_t g_ws_conn_count = 0;                              // Counter for active connections
+
+static pthread_mutex_t s_mutex_ws = PTHREAD_MUTEX_INITIALIZER;
+
+size_t write_conn_to_buffer_safe(char* buffer, size_t size)
+{
+    size_t count = atomic_load(&g_ws_conn_count);
+    pthread_mutex_lock(&s_mutex_ws);
+    size_t b = 0;
+    for (size_t i = 0; i < count; i++) {
+        struct mg_connection* c = ws_connections[i];
+        b += snprintf(buffer + b, size - b, "%d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]);
+    }
+    pthread_mutex_unlock(&s_mutex_ws);
+    return b;
+}
 
 // Helper function to emit a message to all WebSocket clients
 void websocket_emit(const char* data, int len)
 {
-    // Send to all active WebSocket connections
-    for (int i = 0; i < atomic_load(&g_ws_conn_count); i++) {
+    size_t count = atomic_load(&g_ws_conn_count);
+    pthread_mutex_lock(&s_mutex_ws);
+    for (size_t i = 0; i < count; i++) {
         if (ws_connections[i] != NULL) {
             mg_ws_send(ws_connections[i], data, len, WEBSOCKET_OP_TEXT);
         }
     }
+    pthread_mutex_unlock(&s_mutex_ws);
+}
+
+// static bool ws_drop_if_exist(struct mg_connection* c)
+// {
+//     size_t count = atomic_load(&g_ws_conn_count);
+//     for (size_t i = 0; i < count; i++) {
+//         struct mg_connection* ic = ws_connections[i];
+//         if (memcmp(ic, c->rem.ip, 16) == 0) {
+//             D(printf("drop existing ip: %d.%d.%d.%d\n", ic->rem.ip[0], ic->rem.ip[1], ic->rem.ip[2], ic->rem.ip[3]));
+//             mg_ws_send(ic, "", 0, WEBSOCKET_OP_CLOSE); // Send a WebSocket close frame
+//             ic->is_closing = 1;                        // Mark for closure
+//             mg_mgr_poll(ic->mgr, 0);                   // Process the closure
+//             return true;
+//         }
+//     }
+//     return false;
+// }
+
+static void ws_add(struct mg_connection* c)
+{
+    int count = atomic_load(&g_ws_conn_count);
+    if (count < WS_MAX_CONN) {
+        ws_connections[count] = c;
+        D(printf("added new ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
+        count++;
+        atomic_store(&g_ws_conn_count, count);
+    }
+}
+
+static void ws_remove(struct mg_connection* c)
+{
+    int count = atomic_load(&g_ws_conn_count);
+    for (int i = 0; i < count; i++) {
+        if (memcmp(ws_connections[i]->rem.ip, c->rem.ip, 16) == 0) {
+            D(printf("removed ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
+            // Shift all remaining connections
+            for (int j = i; j < count - 1; j++) {
+                ws_connections[j] = ws_connections[j + 1];
+            }
+            ws_connections[count - 1] = NULL;
+            count--;
+            atomic_store(&g_ws_conn_count, count);
+            break;
+        }
+    }
+}
+
+static void ws_add_safe(struct mg_connection* c)
+{
+    pthread_mutex_lock(&s_mutex_ws);
+    ws_add(c);
+    pthread_mutex_unlock(&s_mutex_ws);
+}
+
+static void ws_remove_safe(struct mg_connection* c)
+{
+    pthread_mutex_lock(&s_mutex_ws);
+    ws_remove(c);
+    pthread_mutex_unlock(&s_mutex_ws);
 }
 
 void serve_websocket(struct mg_connection* c, int ev, void* ev_data)
 {
-
     if (ev == MG_EV_HTTP_MSG) {
         struct mg_http_message* hm = (struct mg_http_message*)ev_data;
-
-        // Check if this is a request to the WebSocket endpoint
-        if (mg_match(hm->uri, mg_str("/ws"), NULL)) {
-            // Upgrade the connection to WebSocket
-            DPL("WS UPGRADE\n");
-            mg_ws_upgrade(c, hm, NULL);
-        }
+        if (mg_match(hm->uri, mg_str("/ws"), NULL)) { return mg_ws_upgrade(c, hm, NULL); }
+        return;
     }
-    else if (ev == MG_EV_WS_OPEN) {
-        // WebSocket handshake completed
-        DPL("WebSocket connection established\n");
 
-        D(printf("new ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
-
-        // // Disable Nagle's Algorithm (TCP_NODELAY)
-        // int fd = (int)(intptr_t)c->fd;
-        // int flag = 1;
-        // setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(int));
-        int count = atomic_load(&g_ws_conn_count);
-
-        for (int i = 0; i < count; i++) {
-            if (memcmp(ws_connections[i]->rem.ip, c->rem.ip, 16) == 0) {
-                D(printf("drop existing ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
-                // Send a WebSocket close frame
-                mg_ws_send(c, "", 0, WEBSOCKET_OP_CLOSE);
-
-                // Close the connection
-                c->is_closing = 1;      // Mark for closure
-                mg_mgr_poll(c->mgr, 0); // Process the closure
-                return;
-            }
-        }
-
-        // Store the connection (same code as in websocket_handler)
-        if (count < WS_MAX_CONN) {
-
-            ws_connections[count] = c;
-            D(printf("added new ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
-
-            count++;
-            atomic_store(&g_ws_conn_count, count);
-        }
+    if (ev == MG_EV_WS_OPEN) {
+        D(printf("WS new ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
+        return ws_add_safe(c);
     }
-    else if (ev == MG_EV_WS_MSG) {
-        // WebSocket message handling
+
+    if (ev == MG_EV_WS_MSG) {
         struct mg_ws_message* wm = (struct mg_ws_message*)ev_data;
         D(printf("ECHO BACK WS RECV: %.*s\n", (int)wm->data.len, wm->data.buf));
         mg_ws_send(c, wm->data.buf, wm->data.len, WEBSOCKET_OP_TEXT); // echo back
+        return;
     }
-    else if (ev == MG_EV_CLOSE) {
-        // Connection closed handling
-        DPL("Connection closed\n");
 
-        // Remove from our connection array
-        int count = atomic_load(&g_ws_conn_count);
-        for (int i = 0; i < count; i++) {
-            if (memcmp(ws_connections[i]->rem.ip, c->rem.ip, 16) == 0) {
-                D(printf("removed ip: %d.%d.%d.%d\n", c->rem.ip[0], c->rem.ip[1], c->rem.ip[2], c->rem.ip[3]));
-                // Shift all remaining connections
-                for (int j = i; j < count - 1; j++) {
-                    ws_connections[j] = ws_connections[j + 1];
-                }
-                ws_connections[count - 1] = NULL;
-                count--;
-                atomic_store(&g_ws_conn_count, count);
-                break;
-            }
-        }
+    if (ev == MG_EV_CLOSE) {
+        DPL("WS connection closed\n");
+        ws_remove_safe(c);
+        return;
     }
 }

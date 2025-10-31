@@ -1,8 +1,9 @@
 #include "debug.h"
+#include "draw_ui.h"
 #include "logger.h"
 #include "mongoose.h"
 #include "request.h"
-#include "src/draw_ui.h"
+#include "serve_websocket.h"
 #include <stdatomic.h>
 
 static int mg_str_contains(struct mg_str haystack, const char* needle)
@@ -136,6 +137,13 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         DPL("SERVER changes.txt");
         mg_http_serve_file(c, hm, STATE_DIR_FILE_CHANGES_LOG, &opts);
         return;
+    }
+
+    if (mg_match(hm->uri, mg_str("/c"), NULL)) {
+        DPL("SERVER c");
+        char buffer[WS_MAX_CONN * 32] = {0};
+        write_conn_to_buffer_safe(buffer, sizeof(buffer));
+        return mg_http_reply(c, 200, "Content-Type: text/plain\r\n", "%s", buffer);
     }
 
     if (mg_match(hm->uri, mg_str("/api/sumtime"), NULL)) {
