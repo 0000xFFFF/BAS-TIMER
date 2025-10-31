@@ -11,7 +11,6 @@ typedef struct {
 } Spinner;
 
 // Function prototypes
-extern void init_spinner(Spinner*, char**, int, int);
 extern void spin_spinner(Spinner*);
 extern char* get_frame(Spinner*, int);
 extern void init_spinners();
