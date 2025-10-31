@@ -131,7 +131,7 @@ static size_t draw_col2(char* buffer, size_t size, char* prelabel, char* label, 
     size_t c = 0;
     c += snprintf(buffer + c, size - c, "%s", prelabel); // draw prelabel
     char temp[MIDBUFF] = {0};
-    snprintf(temp, sizeof(temp), "%s %s", label, icon);            // make label with color
+    snprintf(temp, sizeof(temp), "%s %s", label, icon);       // make label with color
     c += ctext_fg(buffer + c, size - c, color, temp);         // draw label with color
     c += snprintf(buffer + c, size - c, "%s", gap);           // draw gap
     if (func) c += func(buffer + c, size - c, value);         // draw function pump_bars or heat
@@ -152,7 +152,7 @@ static size_t draw_extra_eye_timer(char* buffer, size_t size)
             b += ctext_fg(buffer + b, size - b, COLOR_OFF, "󱎫");
     }
     else {
-b += ctext_fg(buffer + b, size - b, COLOR_OFF, " ");
+        b += ctext_fg(buffer + b, size - b, COLOR_OFF, " ");
     }
     return b;
 }
@@ -201,7 +201,7 @@ static size_t draw_ui_unsafe()
     char* emoji_clock = hour_to_clock(hour);
     char* emoji_dayhr = hour_to_emoji(hour);
     t = 0;
-    t += snprintf(temp + t, sizeof(temp) - t, "%s %s", emoji_clock, emoji_dayhr);
+    t += snprintf(temp + t, sizeof(temp) - t, "%s %s %s", emoji_clock, emoji_dayhr, get_frame(&spinner_sun, 1));
     int color_hour = hour_to_color(hour);
     b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, color_hour, temp);
 
@@ -260,7 +260,6 @@ static size_t draw_ui_unsafe()
     char line1[BIGBUFF], line2[BIGBUFF], combined[BIGBUFF * 2];
     const char* p1 = col1;
     const char* p2 = col2;
-
 
     while (*p1 || *p2) {
         int n1 = 0, n2 = 0;
