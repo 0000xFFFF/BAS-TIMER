@@ -3,15 +3,17 @@
 #include <stdatomic.h>
 #include <stdint.h>
 
-const char* const URL_VARS = "http://192.168.1.250/isc/get_var_js.aspx?StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&mod_rada=&mod_rezim=&__Time=&__Date=&Jeftina_tarifa=&grejanje_off=&Alarm_tank=&Alarm_solar=&STATE_Preklopka=&SESSIONID=-1";
-const char* const URL_HEAT_OFF = "http://192.168.1.250/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1";
-const char* const URL_HEAT_ON = "http://192.168.1.250/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1";
-const char* const URL_GAS_OFF = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=0,-1&=&SESSIONID=-1";
-const char* const URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1";
+// BAS
+const char* URL_VARS = "http://192.168.1.250/isc/get_var_js.aspx?StatusPumpe3=&StatusPumpe4=&StatusPumpe5=&StatusPumpe6=&StatusPumpe7=&Taktualno=&Tfs=&Tmax=&Tmin=&Tsobna=&Tsolar=&Tspv=&Tzad_komf=&Tzad_mraz=&Tzad_red=&Tzadata=&mod_rada=&mod_rezim=&__Time=&__Date=&Jeftina_tarifa=&grejanje_off=&Alarm_tank=&Alarm_solar=&STATE_Preklopka=&SESSIONID=-1";
+const char* URL_HEAT_OFF = "http://192.168.1.250/isc/set_var.aspx?mod_rada=0,-1&=&SESSIONID=-1";
+const char* URL_HEAT_ON = "http://192.168.1.250/isc/set_var.aspx?mod_rada=1,-1&=&SESSIONID=-1";
+const char* URL_GAS_OFF = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=0,-1&=&SESSIONID=-1";
+const char* URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1";
 
-const char* const URL_WTTRIN = "https://wttr.in/?format=4";
+// wttr.in
+const char* URL_WTTRIN = "https://wttr.in/?format=4";
 
-const char* const REQUEST_FORMAT_BAS =
+const char* REQUEST_FORMAT_BAS =
     "GET %s HTTP/1.0\r\n"
     "Host: %.*s\r\n"
     "Accept: application/json, text/javascript, */*; q=0.01\r\n"
@@ -24,7 +26,7 @@ const char* const REQUEST_FORMAT_BAS =
     "X-Requested-With: XMLHttpRequest\r\n"
     "\r\n";
 
-const char* const REQUEST_FORMAT_WTTRIN =
+const char* REQUEST_FORMAT_WTTRIN =
     "GET %s HTTP/1.0\r\n"
     "Host: %.*s\r\n"
     "Content-Type: octet-stream\r\n"

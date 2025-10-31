@@ -1,15 +1,18 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
+#include "globals.h"
 #include "mongoose.h"
-#include "src/globals.h"
 #include <stdatomic.h>
 
-extern const char* const URL_VARS;
-extern const char* const URL_HEAT_OFF;
-extern const char* const URL_HEAT_ON;
-extern const char* const URL_GAS_OFF;
-extern const char* const URL_GAS_ON;
+extern const char* URL_VARS;
+extern const char* URL_HEAT_OFF;
+extern const char* URL_HEAT_ON;
+extern const char* URL_GAS_OFF;
+extern const char* URL_GAS_ON;
+extern const char* URL_WTTRIN;
+extern const char* REQUEST_FORMAT_BAS;
+extern const char* REQUEST_FORMAT_WTTRIN;
 
 enum RequestStatus {
     REQUEST_STATUS_RUNNING = 0,
@@ -91,10 +94,10 @@ struct bas_info {
 #define TEMP_MAX_SOLAR 100
 #define TEMP_MIN_HUMAN 0
 #define TEMP_MAX_HUMAN 30
-#define TEMP_MIN_BUF 45
-#define TEMP_MAX_BUF 70
-#define TEMP_MIN_CIRC 0
-#define TEMP_MAX_CIRC 30
+#define TEMP_MIN_BUF   45
+#define TEMP_MAX_BUF   70
+#define TEMP_MIN_CIRC  0
+#define TEMP_MAX_CIRC  30
 
 #define TIMEOUT_BAS    1500
 #define TIMEOUT_WTTRIN 5000
@@ -116,22 +119,11 @@ extern char* request_status_to_smallstr(enum RequestStatus status);
 extern bool request_status_failed(enum RequestStatus status);
 extern void print_bas_info(const struct bas_info* b);
 
-extern const char* const URL_VARS;
-extern const char* const URL_HEAT_OFF;
-extern const char* const URL_HEAT_ON;
-extern const char* const URL_GAS_OFF;
-extern const char* const URL_GAS_ON;
-
-extern const char* const URL_WTTRIN;
-extern const char* const REQUEST_FORMAT_BAS;
-extern const char* const REQUEST_FORMAT_WTTRIN;
-
 #define ERROR_NONE    0
 #define ERROR_TIMEOUT 1
 #define ERROR_CONN    2
 
 extern struct bas_info g_info;
-
 extern char g_wttrin_buffer[BIGBUFF];
 
 #endif // REQUEST_H
