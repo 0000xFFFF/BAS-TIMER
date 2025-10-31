@@ -18,7 +18,7 @@ a {
 
 
 #controls,
-#stats {
+#status {
     display: inline-block;
 }
 
@@ -86,19 +86,13 @@ button:active {
     box-shadow: none;
 }
 
-#stats {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
 #status {
     display: flex;
     flex-direction: row;
     justify-content: center;
 }
 
-#term {
+#termcont {
     color: white;
     border-radius: 2px;
     border-top: 2px double #ff0000;
@@ -108,6 +102,16 @@ button:active {
     font-family: monospace;
     background: #000005;
     box-shadow: 5px 5px 0 black;
+}
+
+#term {
+    margin: 0;
+    padding: 0;
+}
+
+#sumtime {
+    margin: 0;
+    padding: 0;
 }
 
 #canv {
@@ -118,19 +122,5 @@ button:active {
     border-bottom: 2px double #800000;
     box-shadow: 5px 5px 0 black;
     border-radius: 2px;
-}
 
-#sumtime {
-    color: white;
-    width: fit-content;
-    margin: 0 auto;
-    height: auto;
-    border-radius: 2px;
-    border-top: 2px double #ff0000;
-    border-left: 2px double #ff0000;
-    border-right: 2px double #800000;
-    border-bottom: 2px double #800000;
-    font-family: monospace;
-    background: #000005;
-    box-shadow: 5px 5px 0 black;
 }

@@ -54,24 +54,19 @@ input {
 
 button {
     padding: 5px;
-    font-size: 20px;;
+    font-size: 20px;
 }
 
 .btn_action {
     padding: 5px;
-    font-size: 50px;;
-}
-
-
-#stats {
-    gap: 20px;
+    font-size: 50px;
 }
 
 #status {
     gap: 20px;
 }
 
-#term {
+#termcont {
     width: auto;
     height: auto;
     min-width: 800px;
@@ -80,13 +75,12 @@ button {
     font-size: 30px;
 }
 
+#term,
+#sumtime {
+    margin: 15px;
+}
+
 #canv {
     width: 60px;
     height: auto;
 }
-
-#sumtime {
-    padding: 15px;
-    font-size: 30px;
-}
-
