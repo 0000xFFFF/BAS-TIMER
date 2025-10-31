@@ -32,6 +32,7 @@ int main()
     const char* log_level = getenv("LOG_LEVEL");
     mg_log_set(log_level == NULL ? MG_LL_DEBUG : atoi(log_level));
 #else
+    mg_log_set(MG_LL_NONE);
     term_clear();
     term_cursor_hide();
 #endif
