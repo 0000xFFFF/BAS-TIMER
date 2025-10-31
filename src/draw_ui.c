@@ -116,7 +116,7 @@ static size_t draw_col1(char* buffer, size_t size, char* prelabel, char* label, 
     size_t c = 0;
     c += snprintf(buffer + c, size - c, "%s", prelabel);
     char temp[MIDBUFF] = {0};
-    snprintf(temp, MIDBUFF, "%s %s", label, icon);
+    snprintf(temp, sizeof(temp), "%s %s", label, icon);
     c += ctext_fg(buffer + c, size - c, color, temp);
     c += snprintf(buffer + c, size - c, "%s", gap);
     c += temp_to_ctext_bg_con(buffer + c, size - c, value, min, max);
@@ -131,7 +131,7 @@ static size_t draw_col2(char* buffer, size_t size, char* prelabel, char* label, 
     size_t c = 0;
     c += snprintf(buffer + c, size - c, "%s", prelabel); // draw prelabel
     char temp[MIDBUFF] = {0};
-    snprintf(temp, MIDBUFF, "%s %s", label, icon);            // make label with color
+    snprintf(temp, sizeof(temp), "%s %s", label, icon);            // make label with color
     c += ctext_fg(buffer + c, size - c, color, temp);         // draw label with color
     c += snprintf(buffer + c, size - c, "%s", gap);           // draw gap
     if (func) c += func(buffer + c, size - c, value);         // draw function pump_bars or heat
@@ -152,7 +152,7 @@ static size_t draw_extra_eye_timer(char* buffer, size_t size)
             b += ctext_fg(buffer + b, size - b, COLOR_OFF, "󱎫");
     }
     else {
-        b += ctext_fg(buffer + b, size - b, COLOR_OFF, " ");
+b += ctext_fg(buffer + b, size - b, COLOR_OFF, " ");
     }
     return b;
 }
@@ -190,8 +190,8 @@ static size_t draw_ui_unsafe()
     // check if we have values
     if (!du_info.valid) {
         t = 0;
-        t += get_local_ip(temp, MIDBUFF - t);
-        b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "@ %s\n> no values to draw.\n> %s\n", temp, request_status_to_str(du_info.status));
+        t += get_local_ip(temp, sizeof(temp) - t);
+        b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "@ %s\n> no values to draw.\n> %s\n", temp, request_status_to_str(du_info.status));
         return printf("%s", g_term_buffer);
     }
 
@@ -200,56 +200,56 @@ static size_t draw_ui_unsafe()
     char* emoji_clock = hour_to_clock(hour);
     char* emoji_dayhr = hour_to_emoji(hour);
     t = 0;
-    t += snprintf(temp + t, MIDBUFF - t, "%s %s", emoji_clock, emoji_dayhr);
+    t += snprintf(temp + t, sizeof(temp) - t, "%s %s", emoji_clock, emoji_dayhr);
     int color_hour = hour_to_color(hour);
-    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, color_hour, temp);
+    b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, color_hour, temp);
 
     t = 0;
-    t += dt_full(temp + t, MIDBUFF - t);
-    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, " ");
-    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, 182, temp);
-    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "\n");
+    t += dt_full(temp + t, sizeof(temp) - t);
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " ");
+    b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 182, temp);
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
 
     // weather
-    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, 181, du_wttrin_buffer);
-    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "\n");
+    b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 181, du_wttrin_buffer);
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
 
     // light + send + conn count + ip
-    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, 228, get_frame(&spinner_lights, 1));
-    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, " %s %3d ", du_info.status == REQUEST_STATUS_RUNNING ? CTEXT_FG(211, "") : " ", atomic_load(&g_ws_conn_count));
+    b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 228, get_frame(&spinner_lights, 1));
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %s %3d ", du_info.status == REQUEST_STATUS_RUNNING ? CTEXT_FG(211, "") : " ", atomic_load(&g_ws_conn_count));
     t = 0;
-    t += get_local_ip(temp, MIDBUFF - t);
-    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, temp);
-    if (request_status_failed(du_info.status)) b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, " %-16s", request_status_to_smallstr(du_info.status));
-    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "\n");
+    t += get_local_ip(temp, sizeof(temp) - t);
+    b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, temp);
+    if (request_status_failed(du_info.status)) b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %-16s", request_status_to_smallstr(du_info.status));
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
 
-    char col1[TERM_BUFFER_SIZE] = {0};
+    char col1[sizeof(g_term_buffer)] = {0};
     size_t c1 = 0;
 
     // clang-format off
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "", "Solar", get_frame(&spinner_solar_panel, 1), 230, "  ", du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar, temp_to_emoji(du_info.Tsolar), NULL);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Out", get_frame(&spinner_window, 1),      213, "  ", du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tspv), NULL);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, " ", "Room", get_frame(&spinner_house, 1),        76, "  ", du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tsobna), NULL);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Set", get_frame(&spinner_cog, 1),         154, "  ", du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tzadata), NULL);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Max", "",                                214, "  ", du_info.Tmax,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", NULL);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Mid", "",                                220, "  ", du_info.Tmid,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_check);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "  ", "Min", "",                                226, "  ", du_info.Tmin,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_warn);
-    c1 += draw_col1(col1+c1, TERM_BUFFER_SIZE - c1, "", "Circ.", get_frame(&spinner_recycle, 1),     110, "  ", du_info.Tfs,     du_info.peak_min_circ,  du_info.peak_max_circ,  "", NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "Solar", get_frame(&spinner_solar_panel, 1), 230, "  ", du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar, temp_to_emoji(du_info.Tsolar), NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Out", get_frame(&spinner_window, 1),      213, "  ", du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tspv), NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, " ", "Room", get_frame(&spinner_house, 1),        76, "  ", du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tsobna), NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Set", get_frame(&spinner_cog, 1),         154, "  ", du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tzadata), NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Max", "",                                214, "  ", du_info.Tmax,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Mid", "",                                220, "  ", du_info.Tmid,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_check);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Min", "",                                226, "  ", du_info.Tmin,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_warn);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "Circ.", get_frame(&spinner_recycle, 1),     110, "  ", du_info.Tfs,     du_info.peak_min_circ,  du_info.peak_max_circ,  "", NULL);
     // clang-format on
 
     // DPL("COL1");
     // D(printf("%s\n", col1));
 
     // clang-format off
-    char col2[TERM_BUFFER_SIZE] = {0};
+    char col2[sizeof(g_term_buffer)] = {0};
     size_t c2 = 0;
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Mode", "󱪯",                                                                        222, "  ", du_info.mod_rada,     draw_heat,      "", draw_extra_eye_timer);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, " ", "Regime", "󱖫",                                                                        192, "  ", du_info.mod_rada,     draw_regime,    "", NULL);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Heat",  pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃", 212, "  ", du_info.StatusPumpe6, draw_pump_bars, "", NULL);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "    ", "Gas",  pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇",      203, "  ", du_info.StatusPumpe4, draw_pump_bars, "", draw_extra_eye_gas);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "   ", "Circ.",  pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",   168, "  ", du_info.StatusPumpe3, draw_pump_bars, "", NULL);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Solar",  pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",     224, "  ", du_info.StatusPumpe7, draw_pump_bars, "", NULL);
-    c2 += draw_col2(col2+c2, TERM_BUFFER_SIZE - c2, "  ", "Elec.",  pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠", 78,  "  ", du_info.StatusPumpe5, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "   ", "Mode", "󱪯",                                                                        222, "  ", du_info.mod_rada,     draw_heat,      "", draw_extra_eye_timer);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, " ", "Regime", "󱖫",                                                                        192, "  ", du_info.mod_rada,     draw_regime,    "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "   ", "Heat",  pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃", 212, "  ", du_info.StatusPumpe6, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "    ", "Gas",  pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇",      203, "  ", du_info.StatusPumpe4, draw_pump_bars, "", draw_extra_eye_gas);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "   ", "Circ.",  pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",   168, "  ", du_info.StatusPumpe3, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "  ", "Solar",  pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",     224, "  ", du_info.StatusPumpe7, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "  ", "Elec.",  pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠", 78,  "  ", du_info.StatusPumpe5, draw_pump_bars, "", NULL);
     // clang-format on
     // DPL("COL2");
     // D(printf("%s\n", col2));
@@ -279,19 +279,19 @@ static size_t draw_ui_unsafe()
         int len = snprintf(combined, sizeof(combined), "%s%s", line1, line2);
 
         // write combined to terminal buffer
-        b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "%s", combined);
+        b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "%s", combined);
 
         // pad spaces until terminal width
         if (len < term_w) {
             int pad = term_w - len;
             while (pad-- > 0) {
-                if (b < TERM_BUFFER_SIZE - 1)
+                if (b < sizeof(g_term_buffer) - 1)
                     g_term_buffer[b++] = ' ';
             }
         }
 
         // newline
-        if (b < TERM_BUFFER_SIZE - 1)
+        if (b < sizeof(g_term_buffer) - 1)
             g_term_buffer[b++] = '\n';
     }
 
@@ -299,17 +299,17 @@ static size_t draw_ui_unsafe()
         time_t current_time;
         time(&current_time);
         du_info.opt_auto_timer_seconds_elapsed = difftime(current_time, du_info.history_mode_time_on);
-        snprintf(du_info.opt_auto_timer_status, MIDBUFF, "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
+        snprintf(du_info.opt_auto_timer_status, sizeof(du_info.opt_auto_timer_status), "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
     }
 
     // clang-format off
-    if (du_info.opt_auto_timer) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
-    else                        { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󱪯 %-*s\n", term_w-3, du_info.opt_auto_timer_status);
+    if (du_info.opt_auto_timer) { b += ctext_fg(g_term_buffer+b, sizeof(g_term_buffer) - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
+    else                        { b += ctext_fg(g_term_buffer+b, sizeof(g_term_buffer) - b, COLOR_OFF, ""); }
+    b += snprintf(g_term_buffer+b, sizeof(g_term_buffer) - b,"󱪯 %-*s\n", term_w-3, du_info.opt_auto_timer_status);
 
-    if (du_info.opt_auto_gas) { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
-    else                            { b += ctext_fg(g_term_buffer+b, TERM_BUFFER_SIZE - b, COLOR_OFF, ""); }
-    b += snprintf(g_term_buffer+b, TERM_BUFFER_SIZE - b,"󰙇 %-*s\n", term_w-3, du_info.opt_auto_gas_status);
+    if (du_info.opt_auto_gas) { b += ctext_fg(g_term_buffer+b, sizeof(g_term_buffer) - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
+    else                            { b += ctext_fg(g_term_buffer+b, sizeof(g_term_buffer) - b, COLOR_OFF, ""); }
+    b += snprintf(g_term_buffer+b, sizeof(g_term_buffer) - b,"󰙇 %-*s\n", term_w-3, du_info.opt_auto_gas_status);
     // clang-format on
 
     spin_spinner(&spinner_circle);
