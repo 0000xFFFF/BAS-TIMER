@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "mongoose.h"
 #include "signals.h"
+#include "request.h"
 #include "term.h"
 #include "thread_print_loop.h"
 #include "thread_request_bas.h"
@@ -22,12 +23,15 @@ int main()
     change_to_bin_dir();
     mkdir_safe(STATE_DIR);
     signal(SIGINT, signals_sigint);
+    load_env(".env");
+
+    const char* url_wttrin = getenv("URL_WTTRIN");
+    if (url_wttrin != NULL) { URL_WTTRIN = url_wttrin; }
 
 #ifdef DEBUG
     const char* log_level = getenv("LOG_LEVEL");
     mg_log_set(log_level == NULL ? MG_LL_DEBUG : atoi(log_level));
 #else
-    mg_log_set(MG_LL_NONE);
     term_clear();
     term_cursor_hide();
 #endif
