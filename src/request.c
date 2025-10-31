@@ -66,7 +66,7 @@ bool update_info_bas()
 {
     g_global_unix_counter++;
     char request_url[BIGBUFF];
-    snprintf(request_url, BIGBUFF, "%s&_=%lld", URL_VARS, g_global_unix_counter);
+    snprintf(request_url, sizeof(request_url), "%s&_=%lld", URL_VARS, g_global_unix_counter);
 
     struct Request request = {0};
     request.status = REQUEST_STATUS_RUNNING;
@@ -120,7 +120,6 @@ bool update_info_bas()
         free((void*)request.output.buf);
     }
 
-
     return info.valid;
 }
 
@@ -150,10 +149,11 @@ bool update_info_wttrin()
         char response[BIGBUFF] = {0};
 
         size_t b = 0;
-        b += snprintf(response + b, BIGBUFF - b, "%s", request.output.buf); // write response to buffer
+        b += dt_HM(response + b, sizeof(response) - b); // append hour:minute
+        b += snprintf(response + b, sizeof(response) - b, " ");
+        b += snprintf(response + b, sizeof(response) - b, "%s", request.output.buf); // write response to buffer
         size_t l = strlen(response);
-        if (response[l - 1] == '\n') { response[l - 1] = ' '; } // replace newline with space
-        b += dt_HM(response + b, BIGBUFF - b);                  // append hour:minute
+        if (response[l - 1] == '\n') { response[l - 1] = '\0'; }
         free((void*)request.output.buf);
 
         update_info_wttrin_safe_io(response, g_wttrin_buffer);
