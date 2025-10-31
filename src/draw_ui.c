@@ -185,7 +185,7 @@ static size_t draw_ui_unsafe()
     char temp[MIDBUFF] = {0};
     size_t t = 0;
     size_t b = 0;
-    memset(g_term_buffer, 0, TERM_BUFFER_SIZE);
+    memset(g_term_buffer, 0, sizeof(g_term_buffer));
 
     // check if we have values
     if (!du_info.valid) {
@@ -200,14 +200,18 @@ static size_t draw_ui_unsafe()
     char* emoji_clock = hour_to_clock(hour);
     char* emoji_dayhr = hour_to_emoji(hour);
     t = 0;
-    t += snprintf(temp + t, MIDBUFF - t, "%s %s ", emoji_clock, emoji_dayhr);
-    t += dt_full(temp + t, MIDBUFF - t);
+    t += snprintf(temp + t, MIDBUFF - t, "%s %s", emoji_clock, emoji_dayhr);
     int color_hour = hour_to_color(hour);
     b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, color_hour, temp);
+
+    t = 0;
+    t += dt_full(temp + t, MIDBUFF - t);
+    b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, " ");
+    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, 182, temp);
     b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "\n");
 
     // weather
-    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, color_hour, du_wttrin_buffer);
+    b += ctext_fg(g_term_buffer + b, TERM_BUFFER_SIZE - b, 181, du_wttrin_buffer);
     b += snprintf(g_term_buffer + b, TERM_BUFFER_SIZE - b, "\n");
 
     // light + send + conn count + ip
