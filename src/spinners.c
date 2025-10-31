@@ -63,7 +63,11 @@ char* spinner_sunrise_frames[] = {"󰖚", "󰖜"};
 Spinner spinner_sunset;
 char* spinner_sunset_frames[] = {"󰖚", "󰖛"};
 Spinner spinner_rain;
-char* spinner_rain_frames[] = {"", "", "", ""};
+char* spinner_rain_frames[] = {"", "", "", "", ""};
+Spinner spinner_cloud;
+char* spinner_cloud_frames[] = {"", "󰅟", ""};
+Spinner spinner_sun;
+char* spinner_sun_frames[] = {"", "", "", "󰖙"};
 
 // SLOW EMOJI
 Spinner spinner_window;
@@ -97,6 +101,8 @@ void init_spinners()
     init_spinner(&spinner_sunrise, spinner_sunrise_frames, sizeof(spinner_sunrise_frames) / sizeof(spinner_sunrise_frames[0]), 1);
     init_spinner(&spinner_sunset, spinner_sunset_frames, sizeof(spinner_sunset_frames) / sizeof(spinner_sunset_frames[0]), 1);
     init_spinner(&spinner_rain, spinner_rain_frames, sizeof(spinner_rain_frames) / sizeof(spinner_rain_frames[0]), 1);
+    init_spinner(&spinner_cloud, spinner_cloud_frames, sizeof(spinner_cloud_frames) / sizeof(spinner_cloud_frames[0]), 1);
+    init_spinner(&spinner_sun, spinner_sun_frames, sizeof(spinner_sun_frames) / sizeof(spinner_sun_frames[0]), 1);
 
 #define SLOW_EMOJI_DELAY 20
     init_spinner(&spinner_window, spinner_window_frames, sizeof(spinner_window_frames) / sizeof(spinner_window_frames[0]), SLOW_EMOJI_DELAY);

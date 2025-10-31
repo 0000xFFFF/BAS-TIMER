@@ -33,6 +33,11 @@ extern Spinner spinner_fire;
 extern Spinner spinner_lightning;
 extern Spinner spinner_sunrise;
 extern Spinner spinner_sunset;
+extern Spinner spinner_rain;
+extern Spinner spinner_cloud;
+extern Spinner spinner_sun;
+
+// slow emojis
 extern Spinner spinner_window;
 extern Spinner spinner_solar_panel;
 extern Spinner spinner_cog;
