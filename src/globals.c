@@ -7,12 +7,12 @@ const char* ADDR_HTTPS = "https://0.0.0.0:5001"; // HTTPS port -- unused
 const char* ADDR_WS = "ws://0.0.0.0:8001";       // WebSocket port
 const char* STATIC_DIR = "static";
 
-#define STATE_DIR_ "state"
+#define VAR_DIR_ "var"
 #define SEP_ "/"
-const char* STATE_DIR = STATE_DIR_;
-const char* STATE_DIR_FILE_CHANGES_LOG = STATE_DIR_ SEP_ "changes.log";
-const char* STATE_DIR_FILE_REQUESTS_LOG = STATE_DIR_ SEP_ "requests.log";
-const char* STATE_DIR_FILE_ERRORS_LOG = STATE_DIR_ SEP_ "errors.log";
+const char* VAR_DIR = VAR_DIR_;
+const char* VAR_DIR_FILE_CHANGES_LOG = VAR_DIR_ SEP_ "changes.log";
+const char* VAR_DIR_FILE_REQUESTS_LOG = VAR_DIR_ SEP_ "requests.log";
+const char* VAR_DIR_FILE_ERRORS_LOG = VAR_DIR_ SEP_ "errors.log";
 
 const int POLL_TIME =
 #ifdef DEBUG

@@ -9,10 +9,10 @@ extern char* ADDR_HTTPS;
 extern char* ADDR_WS;
 extern char* STATIC_DIR;
 
-extern const char* STATE_DIR;
-extern const char* STATE_DIR_FILE_CHANGES_LOG;
-extern const char* STATE_DIR_FILE_REQUESTS_LOG;
-extern const char* STATE_DIR_FILE_ERRORS_LOG;
+extern const char* VAR_DIR;
+extern const char* VAR_DIR_FILE_CHANGES_LOG;
+extern const char* VAR_DIR_FILE_REQUESTS_LOG;
+extern const char* VAR_DIR_FILE_ERRORS_LOG;
 
 extern int POLL_TIME;
 

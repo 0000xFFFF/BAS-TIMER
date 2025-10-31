@@ -21,7 +21,7 @@ int main()
     // init
     DPL("MAIN START");
     change_to_bin_dir();
-    mkdir_safe(STATE_DIR);
+    mkdir_safe(VAR_DIR);
     signal(SIGINT, signals_sigint);
     load_env(".env");
 

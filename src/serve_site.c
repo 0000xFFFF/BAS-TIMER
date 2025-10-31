@@ -121,21 +121,21 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
     if (mg_match(hm->uri, mg_str("/errors"), NULL)) {
         struct mg_http_serve_opts opts = {.mime_types = "text/plain"};
         DPL("SERVER errors.txt");
-        mg_http_serve_file(c, hm, STATE_DIR_FILE_ERRORS_LOG, &opts);
+        mg_http_serve_file(c, hm, VAR_DIR_FILE_ERRORS_LOG, &opts);
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/requests"), NULL)) {
         struct mg_http_serve_opts opts = {.mime_types = "text/plain"};
         DPL("SERVER requests.txt");
-        mg_http_serve_file(c, hm, STATE_DIR_FILE_REQUESTS_LOG, &opts);
+        mg_http_serve_file(c, hm, VAR_DIR_FILE_REQUESTS_LOG, &opts);
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/changes"), NULL)) {
         struct mg_http_serve_opts opts = {.mime_types = "text/plain"};
         DPL("SERVER changes.txt");
-        mg_http_serve_file(c, hm, STATE_DIR_FILE_CHANGES_LOG, &opts);
+        mg_http_serve_file(c, hm, VAR_DIR_FILE_CHANGES_LOG, &opts);
         return;
     }
 
