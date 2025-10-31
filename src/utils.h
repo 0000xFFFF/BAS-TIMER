@@ -20,5 +20,6 @@ extern size_t ansi_to_html(const char* text, char* result);
 extern void escape_quotes(const char* input, char* output);
 extern double min_dv(int count, ...);
 extern double max_dv(int count, ...);
+extern int load_env(const char* filename);
 
 #endif // UTILS_HPP

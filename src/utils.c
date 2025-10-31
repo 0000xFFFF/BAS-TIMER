@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "globals.h"
 #include <float.h>
 #include <libgen.h>
 #include <limits.h>
@@ -439,10 +440,28 @@ double max_dv(int count, ...)
     return m;
 }
 
-int get_terminal_width()
+int load_env(const char* filename)
 {
-    struct winsize w;
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1)
-        return 80; // fallback if detection fails
-    return w.ws_col;
+    FILE* file = fopen(filename, "r");
+    if (!file) return 0;
+
+    char line[BIGBUFF] = {0};
+    while (fgets(line, sizeof(line), file)) {
+        // Ignore comments and blank lines
+        if (line[0] == '#' || line[0] == '\n') continue;
+
+        char* eq = strchr(line, '=');
+        if (!eq) continue;
+
+        *eq = '\0'; // split KEY and VALUE
+        char* key = line;
+        char* value = eq + 1;
+
+        // strip newline from value
+        value[strcspn(value, "\n")] = 0;
+        setenv(key, value, 1); // 1 = overwrite existing
+    }
+
+    fclose(file);
+    return 1;
 }
