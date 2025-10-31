@@ -440,26 +440,56 @@ double max_dv(int count, ...)
     return m;
 }
 
+/*
+** - handles quoted values like "hello world"
+** - handles unquoted values like hello
+** - trims whitespace
+** - strips newline
+** - works with spaces inside quotes
+** - does not modify the original line buffer in unsafe ways
+*/
 int load_env(const char* filename)
 {
     FILE* file = fopen(filename, "r");
     if (!file) return 0;
 
-    char line[BIGBUFF] = {0};
-    while (fgets(line, sizeof(line), file)) {
-        // Ignore comments and blank lines
-        if (line[0] == '#' || line[0] == '\n') continue;
+    char line[BIGBUFF];
 
-        char* eq = strchr(line, '=');
+    while (fgets(line, sizeof(line), file)) {
+        // Trim leading spaces
+        char* p = line;
+        while (*p == ' ' || *p == '\t') p++;
+
+        // Skip blank lines or comments
+        if (*p == '#' || *p == '\n' || *p == '\0') continue;
+
+        // Find '='
+        char* eq = strchr(p, '=');
         if (!eq) continue;
 
-        *eq = '\0'; // split KEY and VALUE
-        char* key = line;
+        *eq = '\0';
+        char* key = p;
         char* value = eq + 1;
 
-        // strip newline from value
-        value[strcspn(value, "\n")] = 0;
-        setenv(key, value, 1); // 1 = overwrite existing
+        // Trim trailing whitespace from key
+        for (char* end = key + strlen(key) - 1;
+             end > key && (*end == ' ' || *end == '\t');
+             end--) {
+            *end = '\0';
+        }
+
+        // Trim newline and trailing spaces on value
+        size_t len = strlen(value);
+        while (len > 0 && (value[len - 1] == '\n' || value[len - 1] == ' ' || value[len - 1] == '\t'))
+            value[--len] = '\0';
+
+        // Strip surrounding quotes if present
+        if (value[0] == '"' && len >= 2 && value[len - 1] == '"') {
+            value[len - 1] = '\0'; // remove ending quote
+            value++;               // skip starting quote
+        }
+
+        setenv(key, value, 1);
     }
 
     fclose(file);
