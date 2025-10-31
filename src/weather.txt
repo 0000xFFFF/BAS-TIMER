@@ -1,0 +1,48 @@
+Blizzard
+Blowing snow
+Clear/Sunny
+Cloudy
+Fog
+Freezing drizzle
+Freezing fog
+Heavy freezing drizzle
+Heavy rain
+Heavy rain at times
+Heavy snow
+Ice pellets
+Light drizzle
+Light freezing rain
+Light rain
+Light rain shower
+Light showers of ice pellets
+Light sleet
+Light sleet showers
+Light snow
+Light snow showers
+Mist
+Moderate or Heavy freezing rain
+Moderate or heavy rain in area with thunder
+Moderate or heavy rain shower
+Moderate or heavy showers of ice pellets
+Moderate or heavy sleet
+Moderate or heavy sleet showers
+Moderate or heavy snow in area with thunder
+Moderate or heavy snow showers
+Moderate rain
+Moderate rain at times
+Moderate snow
+Overcast
+Partly Cloudy
+Patchy freezing drizzle nearby
+Patchy heavy snow
+Patchy light drizzle
+Patchy light rain
+Patchy light rain in area with thunder
+Patchy light snow
+Patchy light snow in area with thunder
+Patchy moderate snow
+Patchy rain nearby
+Patchy sleet nearby
+Patchy snow nearby
+Thundery outbreaks in nearby
+Torrential rain shower
