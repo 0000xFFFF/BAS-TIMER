@@ -21,5 +21,6 @@ extern void escape_quotes(const char* input, char* output);
 extern double min_dv(int count, ...);
 extern double max_dv(int count, ...);
 extern int load_env(const char* filename);
+extern char* istrstr(const char* haystack, const char* needle);
 
 #endif // UTILS_HPP

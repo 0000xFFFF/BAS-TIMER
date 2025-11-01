@@ -9,11 +9,10 @@
 
 void* th_request_bas(void* sig)
 {
-    update_info_bas_init();
-
     DPL("THREAD START BAS");
     UNUSED(sig);
 
+    update_info_bas_init();
     while (atomic_load(&g_running)) {
         if (MAKE_REQUEST_BAS) update_info_bas();
         sleep_ms_interruptible(SLEEP_MS_BAS);

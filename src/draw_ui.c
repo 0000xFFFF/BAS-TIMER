@@ -16,7 +16,7 @@
 
 // must copy these values they update from another thread
 static struct bas_info du_info = {0};
-static char du_wttrin_buffer[BIGBUFF] = {0};
+static struct wttrin_info du_wttrin = {0};
 
 #define TERM_BUFFER_SIZE 1024 * 2
 static char g_term_buffer[TERM_BUFFER_SIZE] = {0};
@@ -172,13 +172,27 @@ static size_t draw_extra_warn(char* buffer, size_t size)
     return ctext_fg(buffer, size, 51, du_info.valid && du_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
 }
 
+static size_t weather_to_spinner(char* buffer, size_t size, enum Weather weather)
+{
+    switch (weather) {
+        default:
+        case WEATHER_UNKNOWN: return ctext_fg(buffer, size, 255, get_frame(&spinner_qm, 1)); break;
+        case WEATHER_CLEAR:   return ctext_fg(buffer, size, 214, get_frame(&spinner_sun, 1)); break;
+        case WEATHER_CLOUD:   return ctext_fg(buffer, size, 252, get_frame(&spinner_cloud, 1)); break;
+        case WEATHER_RAIN:    return ctext_fg(buffer, size, 45, get_frame(&spinner_rain, 1)); break;
+        case WEATHER_THUNDER: return ctext_fg(buffer, size, 226, get_frame(&spinner_thunder, 1)); break;
+        case WEATHER_SNOW:    return ctext_fg(buffer, size, 51, get_frame(&spinner_snow, 1)); break;
+        case WEATHER_FOG:     return ctext_fg(buffer, size, 231, get_frame(&spinner_fog, 1)); break;
+    }
+}
+
 static size_t draw_ui_unsafe()
 {
     int term_w = term_width();
 
     DPL("DRAW UI");
     update_info_bas_safe_io(&g_info, &du_info);
-    update_info_wttrin_safe_io(g_wttrin_buffer, du_wttrin_buffer);
+    update_info_wttrin_safe_io(&g_wttrin, &du_wttrin);
 
     D(print_bas_info(&du_info));
 
@@ -196,15 +210,21 @@ static size_t draw_ui_unsafe()
         return printf("%s", g_term_buffer);
     }
 
-    // clock + hour emoji + date-time
+    // clock + hour emoji
     int hour = localtime_hour();
     char* emoji_clock = hour_to_clock(hour);
     char* emoji_dayhr = hour_to_emoji(hour);
     t = 0;
-    t += snprintf(temp + t, sizeof(temp) - t, "%s %s %s", emoji_clock, emoji_dayhr, get_frame(&spinner_sun, 1));
+    t += snprintf(temp + t, sizeof(temp) - t, "%s %s", emoji_clock, emoji_dayhr);
     int color_hour = hour_to_color(hour);
     b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, color_hour, temp);
 
+    // weather emoji anim
+    t = 0;
+    t += weather_to_spinner(temp + t, sizeof(temp) - t, du_wttrin.weather);
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %s", temp);
+
+    // datetime
     t = 0;
     t += dt_full(temp + t, sizeof(temp) - t);
     b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " ");
@@ -213,7 +233,7 @@ static size_t draw_ui_unsafe()
 
     // weather
     t = 0;
-    t += ctext_fg(temp + t, sizeof(temp) - t, 181, du_wttrin_buffer);
+    t += ctext_fg(temp + t, sizeof(temp) - t, 181, du_wttrin.buffer);
     b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "%-*s", term_w, temp);
     b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
 

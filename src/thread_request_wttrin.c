@@ -10,6 +10,8 @@ void* th_request_wttrin(void* sig)
 {
     UNUSED(sig);
     DPL("THREAD START WTTRIN");
+
+    update_info_wttrin_init();
     while (atomic_load(&g_running)) {
         if (MAKE_REQUEST_WTTRIN) update_info_wttrin();
         sleep_ms_interruptible(SLEEP_MS_WTTRIN);

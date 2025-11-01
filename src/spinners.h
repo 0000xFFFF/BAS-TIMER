@@ -36,6 +36,9 @@ extern Spinner spinner_sunset;
 extern Spinner spinner_rain;
 extern Spinner spinner_cloud;
 extern Spinner spinner_sun;
+extern Spinner spinner_thunder;
+extern Spinner spinner_fog;
+extern Spinner spinner_qm;
 
 // slow emojis
 extern Spinner spinner_window;

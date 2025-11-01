@@ -125,13 +125,20 @@ bool update_info_bas()
 
 static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-char g_wttrin_buffer[BIGBUFF] = "...";
+struct wttrin_info g_wttrin = {0};
 
-void update_info_wttrin_safe_io(const char in[], char out[])
+void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out)
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    memcpy(out, in, sizeof(g_wttrin_buffer));
+    memcpy(out, in, sizeof(struct wttrin_info));
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+}
+
+void update_info_wttrin_init()
+{
+    struct wttrin_info wttrin = {0};
+    snprintf(wttrin.buffer, sizeof(wttrin.buffer), "...");
+    update_info_wttrin_safe_io(&wttrin, &g_wttrin);
 }
 
 bool update_info_wttrin()
@@ -146,17 +153,20 @@ bool update_info_wttrin()
 
     if (request.output.buf) {
 
-        char response[BIGBUFF] = {0};
+        struct wttrin_info wttrin = {0};
+        memset(wttrin.buffer, 0, sizeof(wttrin.buffer));
 
         size_t b = 0;
-        b += dt_HM(response + b, sizeof(response) - b); // append hour:minute
-        b += snprintf(response + b, sizeof(response) - b, " ");
-        b += snprintf(response + b, sizeof(response) - b, "%s", request.output.buf); // write response to buffer
-        size_t l = strlen(response);
-        if (response[l - 1] == '\n') { response[l - 1] = '\0'; }
+        b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b); // append hour:minute
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, " ");
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s", request.output.buf); // write wttrin.buffer to buffer
+        size_t l = strlen(wttrin.buffer);
+        if (wttrin.buffer[l - 1] == '\n') { wttrin.buffer[l - 1] = '\0'; }
         free((void*)request.output.buf);
 
-        update_info_wttrin_safe_io(response, g_wttrin_buffer);
+        wttrin.weather = detect_weather(wttrin.buffer);
+
+        update_info_wttrin_safe_io(&wttrin, &g_wttrin);
         return true;
     }
     return false;
