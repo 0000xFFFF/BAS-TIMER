@@ -12,7 +12,7 @@ static void update_history(struct bas_info* info)
     time(&current_time);
     struct tm* timeinfo = localtime(&current_time);
     char time_str[MIDBUFF] = {0};
-    strftime_YmdHMS(time_str, sizeof(time_str), timeinfo);
+    strftime_HMS(time_str, sizeof(time_str), timeinfo);
 
     if (info->history_mode == -1 || info->history_mode != info->mod_rada) {
         info->history_mode = info->mod_rada;
@@ -76,7 +76,7 @@ static void do_logic_timer(struct bas_info* info)
     time(&current_time);
     struct tm* timeinfo = localtime(&current_time);
     char time_str[MIDBUFF] = {0};
-    strftime_YmdHMS(time_str, sizeof(time_str), timeinfo);
+    strftime_HMS(time_str, sizeof(time_str), timeinfo);
 
     if (info->opt_auto_timer && info->mod_rada) {
         if (info->opt_auto_timer_started) {
