@@ -58,6 +58,7 @@ struct bas_info {
 
     // other calced values
     double Tmid;
+    int TmaxGE;
     int TmidGE;
     int TminLT;
 
