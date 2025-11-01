@@ -58,8 +58,9 @@ struct bas_info {
 
     // other calced values
     double Tmid;
-    int TmidGE;
     int TminLT;
+    int TmidGE;
+    int TmaxGE;
 
     bool peaks_valid;
     double peak_min_solar;

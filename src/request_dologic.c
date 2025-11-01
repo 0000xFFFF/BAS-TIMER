@@ -109,12 +109,12 @@ static void do_logic_gas(struct bas_info* info)
     char time_str[MIDBUFF] = {0};
     strftime_YmdHMS(time_str, sizeof(time_str), timeinfo);
 
-    if (info->opt_auto_gas && info->StatusPumpe4 == 0 && info->TminLT) {
+    if (info->opt_auto_gas && info->StatusPumpe4 == 0 && info->TminLT && !info->TmidGE && !info->TmaxGE) {
         snprintf(info->opt_auto_gas_status, sizeof(info->opt_auto_gas_status), "%s ", time_str);
         request_send_quick(URL_GAS_ON);
     }
 
-    if (info->opt_auto_gas && info->StatusPumpe4 == 3 && info->TmidGE) {
+    if (info->opt_auto_gas && info->StatusPumpe4 == 3 && (info->TmidGE || info->TmaxGE)) {
         snprintf(info->opt_auto_gas_status, sizeof(info->opt_auto_gas_status), "%s 󰙇", time_str);
         if (info->history_gas_time_on && info->history_gas_time_off) {
             char elap[SMALLBUFF] = {0};

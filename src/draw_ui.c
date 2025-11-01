@@ -162,7 +162,12 @@ static size_t draw_extra_eye_gas(char* buffer, size_t size)
     return ctext_fg(buffer, size, COLOR_ON, du_info.opt_auto_gas ? get_frame(&spinner_eye_left, 0) : " ");
 }
 
-static size_t draw_extra_check(char* buffer, size_t size)
+static size_t draw_extra_max_check(char* buffer, size_t size)
+{
+    return ctext_fg(buffer, size, 82, du_info.valid && du_info.TmaxGE ? get_frame(&spinner_check, 1) : " ");
+}
+
+static size_t draw_extra_mid_check(char* buffer, size_t size)
 {
     return ctext_fg(buffer, size, 82, du_info.valid && du_info.TmidGE ? get_frame(&spinner_check, 1) : " ");
 }
@@ -268,8 +273,8 @@ static size_t draw_ui_unsafe()
     c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Out", get_frame(&spinner_window, 1),      213, "  ", du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tspv), NULL);
     c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, " ", "Room", get_frame(&spinner_house, 1),        76, "  ", du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tsobna), NULL);
     c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Set", get_frame(&spinner_cog, 1),         154, "  ", du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tzadata), NULL);
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Max", "",                                214, "  ", du_info.Tmax,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", NULL);
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Mid", "",                                220, "  ", du_info.Tmid,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_check);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Max", "",                                214, "  ", du_info.Tmax,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_max_check);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Mid", "",                                220, "  ", du_info.Tmid,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_mid_check);
     c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Min", "",                                226, "  ", du_info.Tmin,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_warn);
     c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "Circ.", get_frame(&spinner_recycle, 1),     110, "  ", du_info.Tfs,     du_info.peak_min_circ,  du_info.peak_max_circ,  "", NULL);
     // clang-format on
