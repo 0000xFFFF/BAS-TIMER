@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 void term_clear()
 {
@@ -41,18 +42,22 @@ void term_blank()
     term_clear();
 }
 
-#define FIXED_TERM_WIDTH 50
-#define ENABLE_FIXED_TERM_WIDTH 1
 
 int term_width()
 {
-#if ENABLE_FIXED_TERM_WIDTH
-    return FIXED_TERM_WIDTH;
-#else
     struct winsize w;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1)
-        return FIXED_TERM_WIDTH; // fallback if detection fails
+        return 50; // fallback if detection fails
 
     return w.ws_col;
-#endif
+}
+
+int term_height()
+{
+    struct winsize w;
+
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1)
+        return 10;
+
+    return w.ws_row;
 }

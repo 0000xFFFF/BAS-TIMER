@@ -186,9 +186,21 @@ static size_t weather_to_spinner(char* buffer, size_t size, enum Weather weather
     }
 }
 
+int g_term_w;
+int g_term_h;
+
 static size_t draw_ui_unsafe()
 {
     int term_w = term_width();
+    int term_h = term_height();
+    if (term_w != g_term_w) {
+        g_term_w = term_w;
+        term_clear();
+    }
+    if (term_h != g_term_h) {
+        g_term_h = term_h;
+        term_clear();
+    }
 
     DPL("DRAW UI");
     update_info_bas_safe_io(&g_info, &du_info);
@@ -229,7 +241,9 @@ static size_t draw_ui_unsafe()
     t += dt_full(temp + t, sizeof(temp) - t);
     b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " ");
     b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 182, temp);
-    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
+
+    // term width + height
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %d %d\n", term_w, term_h);
 
     // weather
     t = 0;
