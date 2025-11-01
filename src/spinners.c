@@ -62,20 +62,20 @@ Spinner spinner_sunrise;
 char* spinner_sunrise_frames[] = {"󰖚", "󰖜"};
 Spinner spinner_sunset;
 char* spinner_sunset_frames[] = {"󰖚", "󰖛"};
-Spinner spinner_rain;
-//char* spinner_rain_frames[] = {"", "", "", "", ""};
-//char* spinner_rain_frames[] = {"", "", ""};
-char* spinner_rain_frames[] = {"", ""};
-Spinner spinner_cloud;
-char* spinner_cloud_frames[] = {"", "󰅟", ""};
-Spinner spinner_sun;
-char* spinner_sun_frames[] = {"", "", "", "󰖙"};
-Spinner spinner_thunder;
-char* spinner_thunder_frames[] = {"󰖓", "󰖐"};
-Spinner spinner_fog;
-char* spinner_fog_frames[] = {"", "󰖑"};
+
+// weather
 Spinner spinner_qm;
 char* spinner_qm_frames[] = {"", ""};
+Spinner spinner_sun;
+char* spinner_sun_frames[] = {"", "", "", "󰖙"};
+Spinner spinner_cloud;
+char* spinner_cloud_frames[] = {"", "󰅟", ""};
+Spinner spinner_fog;
+char* spinner_fog_frames[] = {"", "󰖑"};
+Spinner spinner_rain;
+char* spinner_rain_frames[] = {"", "", "", "", ""};
+Spinner spinner_thunder;
+char* spinner_thunder_frames[] = {"󰖓", "󰖐"};
 
 // SLOW EMOJI
 Spinner spinner_window;
@@ -108,12 +108,14 @@ void init_spinners()
     init_spinner(&spinner_lightning, spinner_lightning_frames, sizeof(spinner_lightning_frames) / sizeof(spinner_lightning_frames[0]), 1);
     init_spinner(&spinner_sunrise, spinner_sunrise_frames, sizeof(spinner_sunrise_frames) / sizeof(spinner_sunrise_frames[0]), 1);
     init_spinner(&spinner_sunset, spinner_sunset_frames, sizeof(spinner_sunset_frames) / sizeof(spinner_sunset_frames[0]), 1);
-    init_spinner(&spinner_rain, spinner_rain_frames, sizeof(spinner_rain_frames) / sizeof(spinner_rain_frames[0]), 1);
-    init_spinner(&spinner_cloud, spinner_cloud_frames, sizeof(spinner_cloud_frames) / sizeof(spinner_cloud_frames[0]), 1);
-    init_spinner(&spinner_sun, spinner_sun_frames, sizeof(spinner_sun_frames) / sizeof(spinner_sun_frames[0]), 1);
-    init_spinner(&spinner_thunder, spinner_thunder_frames, sizeof(spinner_thunder_frames) / sizeof(spinner_thunder_frames[0]), 1);
-    init_spinner(&spinner_fog, spinner_fog_frames, sizeof(spinner_fog_frames) / sizeof(spinner_fog_frames[0]), 1);
-    init_spinner(&spinner_qm, spinner_qm_frames, sizeof(spinner_qm_frames) / sizeof(spinner_qm_frames[0]), 1);
+
+    // weather
+    init_spinner(&spinner_qm, spinner_qm_frames, sizeof(spinner_qm_frames) / sizeof(spinner_qm_frames[0]), 3);
+    init_spinner(&spinner_sun, spinner_sun_frames, sizeof(spinner_sun_frames) / sizeof(spinner_sun_frames[0]), 3);
+    init_spinner(&spinner_cloud, spinner_cloud_frames, sizeof(spinner_cloud_frames) / sizeof(spinner_cloud_frames[0]), 3);
+    init_spinner(&spinner_fog, spinner_fog_frames, sizeof(spinner_fog_frames) / sizeof(spinner_fog_frames[0]), 3);
+    init_spinner(&spinner_rain, spinner_rain_frames, sizeof(spinner_rain_frames) / sizeof(spinner_rain_frames[0]), 3);
+    init_spinner(&spinner_thunder, spinner_thunder_frames, sizeof(spinner_thunder_frames) / sizeof(spinner_thunder_frames[0]), 3);
 
 #define SLOW_EMOJI_DELAY 20
     init_spinner(&spinner_window, spinner_window_frames, sizeof(spinner_window_frames) / sizeof(spinner_window_frames[0]), SLOW_EMOJI_DELAY);

@@ -94,10 +94,10 @@ enum Weather {
     WEATHER_UNKNOWN,
     WEATHER_CLEAR,
     WEATHER_CLOUD,
+    WEATHER_FOG,
     WEATHER_RAIN,
     WEATHER_THUNDER,
     WEATHER_SNOW,
-    WEATHER_FOG,
 };
 
 extern const char* weather_keywords[][5];

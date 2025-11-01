@@ -221,6 +221,7 @@ static size_t draw_ui_unsafe()
 
     // weather emoji anim
     t = 0;
+    du_wttrin.weather = WEATHER_RAIN;
     t += weather_to_spinner(temp + t, sizeof(temp) - t, du_wttrin.weather);
     b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %s", temp);
 
