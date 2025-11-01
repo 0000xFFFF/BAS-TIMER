@@ -11,6 +11,7 @@
         - make a marquee terminal scrolling col for weather?
             - also maybe make a version which scrolls left stops then scrolls back
                 - kinda like a neon sign
+        - add solar anim, when on, next to temp (like check/warn)
 
 # app state struct
     - contains bas_info
