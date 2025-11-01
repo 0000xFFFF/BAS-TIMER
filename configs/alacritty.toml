@@ -30,11 +30,10 @@ text = "#eaeaea"
 TERM = "alacritty"
 
 [font]
-size = 42
+size = 30
 
 [font.normal]
 family = "GohuFont 11 Nerd Font Mono"
-
 style = "Regular"
 
 [window]
