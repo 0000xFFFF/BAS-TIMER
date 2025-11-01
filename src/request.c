@@ -154,7 +154,6 @@ bool update_info_wttrin()
     if (request.output.buf) {
 
         struct wttrin_info wttrin = {0};
-        memset(wttrin.buffer, 0, sizeof(wttrin.buffer));
 
         size_t b = 0;
         b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b); // append hour:minute
