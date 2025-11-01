@@ -248,7 +248,8 @@ static size_t draw_ui_unsafe()
     b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 182, temp);
 
     // term width + height
-    //b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %d %d\n", term_w, term_h);
+    //b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %d %d", term_w, term_h);
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
 
     // weather
     t = 0;
