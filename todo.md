@@ -17,3 +17,12 @@
     - contains wttrin_info
 - save app state every 15 min
 - load app state on boot
+
+# web ui
+    - make on/off buttons look like this:
+        icon  [on | off]
+              [*  |    ]  -- make this a color
+               ^     ^-- clicking on this side of button turns it off
+               |-------- clicking on this side will turn it on
+    - need to fix mobile padding/margin for buttons
+        - when i click them they become huge hitting the border of other buttons
