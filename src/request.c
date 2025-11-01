@@ -159,9 +159,11 @@ bool update_info_wttrin()
         b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b); // append hour:minute
         b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, " ");
         b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s", request.output.buf); // write wttrin.buffer to buffer
+                                                                                               //
+        free((void*)request.output.buf);
+
         size_t l = strlen(wttrin.buffer);
         if (wttrin.buffer[l - 1] == '\n') { wttrin.buffer[l - 1] = '\0'; }
-        free((void*)request.output.buf);
 
         wttrin.weather = detect_weather(wttrin.buffer);
 
