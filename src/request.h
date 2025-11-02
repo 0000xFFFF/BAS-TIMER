@@ -3,6 +3,7 @@
 
 #include "globals.h"
 #include "mongoose.h"
+#include "marquee.h"
 #include <stdatomic.h>
 
 extern const char* URL_VARS;
@@ -110,8 +111,10 @@ enum Weather {
 extern const char* weather_keywords[][5];
 
 struct wttrin_info {
+    bool valid;
     char buffer[BIGBUFF];
     enum Weather weather;
+    Marquee marquee;
 };
 
 #define TEMP_MIN_SOLAR 10

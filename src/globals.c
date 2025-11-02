@@ -43,6 +43,8 @@ const int TEMP_BUF_MAX = 60;
 const int TEMP_CIRC_MIN = 0;
 const int TEMP_CIRC_MAX = 60;
 
+const int MAX_TERM_WIDTH = 20;
+
 atomic_bool g_running = true;
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t g_cond = PTHREAD_COND_INITIALIZER;

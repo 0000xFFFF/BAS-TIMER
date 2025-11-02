@@ -5,6 +5,7 @@
 #include "request.h"
 #include "serve_websocket.h"
 #include "spinners.h"
+#include "marquee.h"
 #include "term.h"
 #include "utils.h"
 #include <locale.h>
@@ -417,8 +418,6 @@ static int utf8_display_width(const char* s)
     return width;
 }
 
-#define TARGET_WIDTH 20
-
 static void print_buffer_padded()
 {
     setlocale(LC_ALL, ""); // ensure correct UTF-8 width
@@ -441,7 +440,7 @@ static void print_buffer_padded()
             int w = utf8_display_width(line);
 
             // pad spaces
-            for (; w < TARGET_WIDTH; w++)
+            for (; w < MAX_TERM_WIDTH; w++)
                 fputc(' ', stdout);
 
             fputc('\n', stdout);
@@ -465,11 +464,21 @@ static void print_buffer_padded()
         fputs(line, stdout);
 
         int w = utf8_display_width(line);
-        for (; w < TARGET_WIDTH; w++)
+        for (; w < MAX_TERM_WIDTH; w++)
             fputc(' ', stdout);
 
         fputc('\n', stdout);
     }
+}
+
+static char* dut_wttrin()
+{
+    if (du_wttrin.valid) {
+        render_marquee(&du_wttrin.marquee, g_temp, sizeof(g_temp));
+        scroll_marquee(&du_wttrin.marquee);
+        return g_temp;
+    }
+    return du_wttrin.buffer;
 }
 
 size_t draw_ui_unsafe()
@@ -501,7 +510,7 @@ size_t draw_ui_unsafe()
     sc(0, 5, dut_status_to_emoji(du_info.status));
 
     // row 1
-    scc(1, 0, 181, du_wttrin.buffer);
+    scc(1, 0, 181, dut_wttrin());
 
     // row 2
     scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, dut_ip());

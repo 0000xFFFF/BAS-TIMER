@@ -1,6 +1,7 @@
+#include "debug.h"
 #include "globals.h"
+#include "marquee.h"
 #include "mongoose.h"
-#include "src/debug.h"
 #include "utils.h"
 #include <float.h>
 #include <pthread.h>
@@ -166,6 +167,10 @@ enum RequestStatus update_info_wttrin()
         if (wttrin.buffer[l - 1] == '\n') { wttrin.buffer[l - 1] = '\0'; }
 
         wttrin.weather = detect_weather(wttrin.buffer);
+
+        init_marquee(&wttrin.marquee, wttrin.buffer, 40, 1);
+
+        wttrin.valid = true;
 
         update_info_wttrin_safe_io(&wttrin, &g_wttrin);
     }

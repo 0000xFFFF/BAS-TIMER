@@ -85,6 +85,7 @@ static int print_next_char_buf(Marquee* m, const char* str, int* idx, char* buf,
 // Initialize marquee
 void init_marquee(Marquee* m, const char* text, int width, int scroll_on)
 {
+
     setlocale(LC_ALL, ""); // UTF-8
     m->text = text;
     m->width = width;
@@ -94,6 +95,8 @@ void init_marquee(Marquee* m, const char* text, int width, int scroll_on)
     m->i = 0;
     m->scroll_on = scroll_on > 0 ? scroll_on : 1;
     m->ansi_state[0] = '\0';
+
+    asm("int3");
 }
 
 // Scroll marquee (updates position based on scroll_on)

@@ -38,6 +38,8 @@ extern int TEMP_BUF_MAX;
 extern int TEMP_CIRC_MIN;
 extern int TEMP_CIRC_MAX;
 
+extern const int MAX_TERM_WIDTH;
+
 extern atomic_bool g_running;
 extern pthread_mutex_t g_mutex;
 extern pthread_cond_t g_cond;
