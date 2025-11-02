@@ -32,6 +32,8 @@ char* spinner_basic_frames[] = {"-", "\\", "|", "/"};
 Spinner spinner_bars;
 char* spinner_bars_frames[] = {"▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃", "▂", "▁"};
 // clock old: "🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"};
+Spinner spinner_bars_hori;
+char* spinner_bars_hori_frames[] = { "▏", "▎", "▍", "▌", "▋", "▊", "▉", "█", "▉", "▊", "▋", "▌", "▍", "▎", "▏" };
 Spinner spinner_clock;
 char* spinner_clock_frames[] = {"", "", "", "", "", "", "", "", "", "", "", ""};
 Spinner spinner_lights;
@@ -93,6 +95,7 @@ void init_spinners()
 {
     init_spinner(&spinner_basic, spinner_basic_frames, sizeof(spinner_basic_frames) / sizeof(spinner_basic_frames[0]), 1);
     init_spinner(&spinner_bars, spinner_bars_frames, sizeof(spinner_bars_frames) / sizeof(spinner_bars_frames[0]), 1);
+    init_spinner(&spinner_bars_hori, spinner_bars_hori_frames, sizeof(spinner_bars_hori_frames) / sizeof(spinner_bars_hori_frames[0]), 1);
     init_spinner(&spinner_clock, spinner_clock_frames, sizeof(spinner_clock_frames) / sizeof(spinner_clock_frames[0]), 1);
     init_spinner(&spinner_lights, spinner_lights_frames, sizeof(spinner_lights_frames) / sizeof(spinner_lights_frames[0]), 1);
     init_spinner(&spinner_check, spinner_check_frames, sizeof(spinner_check_frames) / sizeof(spinner_check_frames[0]), 1);

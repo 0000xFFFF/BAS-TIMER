@@ -18,6 +18,7 @@ extern void init_spinners();
 // Declare external spinners
 extern Spinner spinner_basic;
 extern Spinner spinner_bars;
+extern Spinner spinner_bars_hori;
 extern Spinner spinner_clock;
 extern Spinner spinner_lights;
 extern Spinner spinner_check;

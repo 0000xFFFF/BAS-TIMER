@@ -18,32 +18,34 @@
 static struct bas_info du_info = {0};
 static struct wttrin_info du_wttrin = {0};
 
-#define MAX_ROWS 5
-#define MAX_COLS 5
-#define MAX_CELL 50 // enough for UTF-8 + ANSI color
+#define MAX_ROWS 10
+#define MAX_COLS 10
+#define MAX_CELL 64 // enough for UTF-8 + ANSI color
 static char g_screen[MAX_ROWS][MAX_COLS][MAX_CELL];
 
-void clear_screen()
+static void clear_screen()
 {
     for (int r = 0; r < MAX_ROWS; r++)
         for (int c = 0; c < MAX_COLS; c++)
             g_screen[r][c][0] = '\0';
 }
 
-void set_cell(int r, int c, const char* text)
+// set cell
+static void sc(int r, int c, const char* text)
 {
     if (r < MAX_ROWS && c < MAX_COLS)
         snprintf(g_screen[r][c], MAX_CELL, "%s", text);
 }
 
-void set_cell_color(int r, int c, int color, const char* text)
+// set cell color
+static void scc(int r, int c, int color, const char* text)
 {
     char temp[BIGBUFF] = {0};
     ctext_fg(temp, sizeof(temp), color, text);
-    set_cell(r, c, temp);
+    sc(r, c, temp);
 }
 
-void print_screen()
+static void print_screen()
 {
     for (int r = 0; r < MAX_ROWS; r++) {
         int empty_row = 1;
@@ -108,114 +110,12 @@ static int hour_to_color(int hour)
     return 33;                               // Deep Blue (Night)
 }
 
-static size_t draw_heat(char* buffer, size_t size, int value)
-{
-    return value ? ctext_fg(buffer, size, COLOR_ON, get_frame(&spinner_heat, 1)) : ctext_fg(buffer, size, COLOR_OFF, "󱪯");
-}
-
-static size_t draw_regime(char* buffer, size_t size, int value)
-{
-    return cnum_fg(buffer, size, 192, value);
-}
-
 enum PUMP_STATUS {
     PUMP_STATUS_AUTO_OFF = 0,
     PUMP_STATUS_AUTO_ON = 1,
     PUMP_STATUS_MANUAL_OFF = 2,
     PUMP_STATUS_MANUAL_ON = 3
 };
-
-static int pump_is_on(int value)
-{
-    return value == PUMP_STATUS_AUTO_ON || value == PUMP_STATUS_MANUAL_ON;
-}
-
-static size_t draw_pump_bars(char* buffer, size_t size, int value)
-{
-
-    switch (value) {
-
-        case PUMP_STATUS_AUTO_ON:    return ctext_fg_con(buffer, size, COLOR_ON_AUTO, get_frame(&spinner_bars, 0)); break;
-        case PUMP_STATUS_MANUAL_ON:  return ctext_fg_con(buffer, size, COLOR_ON_MANUAL, get_frame(&spinner_bars, 0)); break;
-
-        default:
-        case PUMP_STATUS_AUTO_OFF:   return ctext_fg(buffer, size, COLOR_OFF_AUTO, ""); break;
-        case PUMP_STATUS_MANUAL_OFF: return ctext_fg(buffer, size, COLOR_OFF_MANUAL, ""); break;
-    }
-}
-
-typedef size_t (*func_draw_with_value)(char* buffer, size_t size, int value);
-typedef size_t (*func_draw_extra)(char* buffer, size_t size);
-
-// static size_t bool_to_check(char* buffer, size_t size, int value)
-// {
-//     return value ? ctext_fg(buffer, size, COLOR_ON, "") : ctext_fg(buffer, size, COLOR_OFF, "");
-// }
-
-static size_t draw_col1(char* buffer, size_t size, char* prelabel, char* icon, int color, char* gap, double value, double min, double max, char* end, func_draw_extra extra)
-{
-    size_t c = 0;
-    c += snprintf(buffer + c, size - c, "%s", prelabel);
-    char temp[MIDBUFF] = {0};
-    snprintf(temp, sizeof(temp), "%s", icon);
-    c += ctext_fg(buffer + c, size - c, color, temp);
-    c += snprintf(buffer + c, size - c, "%s", gap);
-    c += temp_to_ctext_bg_con(buffer + c, size - c, value, min, max);
-    if (end) c += snprintf(buffer + c, size - c, " %s", end);
-    if (extra) c += extra(buffer + c, size - c);
-    c += snprintf(buffer + c, size - c, "\n");
-    return c;
-}
-
-static size_t draw_col2(char* buffer, size_t size, char* icon, int color, char* gap, int value, func_draw_with_value func, char* end, func_draw_extra extra)
-{
-    size_t c = 0;
-    char temp[MIDBUFF] = {0};
-    snprintf(temp, sizeof(temp), "%s", icon);                 // make label with color
-    c += ctext_fg(buffer + c, size - c, color, temp);         // draw label with color
-    c += snprintf(buffer + c, size - c, "%s", gap);           // draw gap
-    if (func) c += func(buffer + c, size - c, value);         // draw function pump_bars or heat
-    if (end) c += snprintf(buffer + c, size - c, " %s", end); // draw end
-    if (extra) c += extra(buffer + c, size);                  // draw extra function (eye)
-    c += snprintf(buffer + c, size - c, "\n");                // newline
-    return c;
-}
-
-static size_t draw_extra_eye_timer(char* buffer, size_t size)
-{
-    size_t b = 0;
-    b += ctext_fg(buffer + b, size - b, COLOR_ON, du_info.opt_auto_timer ? get_frame(&spinner_eye_left, 0) : " ");
-    if (du_info.opt_auto_timer) {
-        if (du_info.opt_auto_timer_started)
-            b += ctext_fg(buffer + b, size - b, COLOR_ON, get_frame(&spinner_clock, 0));
-        else
-            b += ctext_fg(buffer + b, size - b, COLOR_OFF, "󱎫");
-    }
-    else {
-        b += ctext_fg(buffer + b, size - b, COLOR_OFF, " ");
-    }
-    return b;
-}
-
-static size_t draw_extra_eye_gas(char* buffer, size_t size)
-{
-    return ctext_fg(buffer, size, COLOR_ON, du_info.opt_auto_gas ? get_frame(&spinner_eye_left, 0) : " ");
-}
-
-static size_t draw_extra_max_check(char* buffer, size_t size)
-{
-    return ctext_fg(buffer, size, 82, du_info.valid && du_info.TmaxGE ? get_frame(&spinner_check, 1) : " ");
-}
-
-static size_t draw_extra_mid_check(char* buffer, size_t size)
-{
-    return ctext_fg(buffer, size, 82, du_info.valid && du_info.TmidGE ? get_frame(&spinner_check, 1) : " ");
-}
-
-static size_t draw_extra_warn(char* buffer, size_t size)
-{
-    return ctext_fg(buffer, size, 51, du_info.valid && du_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
-}
 
 static size_t weather_to_spinner(char* buffer, size_t size, enum Weather weather)
 {
@@ -242,202 +142,222 @@ const char* status_to_emoji(enum RequestStatus status)
     return "";
 }
 
-// int g_term_w;
-// int g_term_h;
-//  static size_t draw_ui_unsafe()
-//{
-//      int term_w = term_width();
-//      int term_h = term_height();
-//      if (term_w != g_term_w) {
-//          g_term_w = term_w;
-//          term_clear();
-//      }
-//      if (term_h != g_term_h) {
-//          g_term_h = term_h;
-//          term_clear();
-//      }
-//
-//      DPL("DRAW UI");
-//      update_info_bas_safe_io(&g_info, &du_info);
-//      update_info_wttrin_safe_io(&g_wttrin, &du_wttrin);
-//
-//      D(print_bas_info(&du_info));
-//
-//      // init draw buffers
-//      char temp[MIDBUFF] = {0};
-//      size_t t = 0;
-//      size_t b = 0;
-//      memset(g_term_buffer, 0, sizeof(g_term_buffer));
-//
-//      // check if we have values
-//      if (!du_info.valid) {
-//          t = 0;
-//          t += get_local_ip(temp, sizeof(temp) - t);
-//          b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "@ %s\n> no values to draw.\n> %s\n", temp, request_status_to_str(du_info.status));
-//          return printf("%s", g_term_buffer);
-//      }
-//
-//      // clock + hour emoji
-//      int hour = localtime_hour();
-//      char* emoji_clock = hour_to_clock(hour);
-//      char* emoji_dayhr = hour_to_emoji(hour);
-//      t = 0;
-//      t += snprintf(temp + t, sizeof(temp) - t, "%s %s", emoji_clock, emoji_dayhr);
-//      int color_hour = hour_to_color(hour);
-//      b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, color_hour, temp);
-//
-//      // weather emoji anim
-//      t = 0;
-//      t += weather_to_spinner(temp + t, sizeof(temp) - t, du_wttrin.weather);
-//      b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %s", temp);
-//
-//      // datetime
-//      t = 0;
-//      t += dt_full(temp + t, sizeof(temp) - t);
-//      b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " ");
-//      b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 182, temp);
-//
-//      // term width + height
-//      // b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %d %d", term_w, term_h);
-//      b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
-//
-//      // weather
-//      t = 0;
-//      t += ctext_fg(temp + t, sizeof(temp) - t, 181, du_wttrin.buffer);
-//      b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "%-*s", term_w, temp);
-//      b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
-//
-//      // light + send + conn count + ip
-//      b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 228, get_frame(&spinner_lights, 1));
-//      b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %s %3d ", status_to_emoji(du_info.status), atomic_load(&g_ws_conn_count));
-//      t = 0;
-//      t += get_local_ip(temp, sizeof(temp) - t);
-//      b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, temp);
-//      if (request_status_failed(du_info.status)) b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %-16s", request_status_to_smallstr(du_info.status));
-//      b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
-//
-//      char col_l[sizeof(g_term_buffer)] = {0};
-//      size_t cl = 0;
-//      // clang-format off
-//      cl += draw_col1(col_l+cl, sizeof(g_term_buffer) - cl, "", get_frame(&spinner_solar_panel, 1), 230, " ", du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar, temp_to_emoji(du_info.Tsolar), NULL);
-//      cl += draw_col1(col_l+cl, sizeof(g_term_buffer) - cl, "", get_frame(&spinner_window, 1),      213, " ", du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tspv), NULL);
-//      cl += draw_col1(col_l+cl, sizeof(g_term_buffer) - cl, "", get_frame(&spinner_house, 1),        76, " ", du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tsobna), NULL);
-//      cl += draw_col1(col_l+cl, sizeof(g_term_buffer) - cl, "", get_frame(&spinner_cog, 1),         154, " ", du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tzadata), NULL);
-//      // clang-format on
-//
-//      char col_r[sizeof(g_term_buffer)] = {0};
-//      size_t cr = 0;
-//      // clang-format off
-//      cr += draw_col1(col_r+cr, sizeof(g_term_buffer) - cr, "  ", "",                                214, " ", du_info.Tmax,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_max_check);
-//      cr += draw_col1(col_r+cr, sizeof(g_term_buffer) - cr, "  ", "",                                220, " ", du_info.Tmid,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_mid_check);
-//      cr += draw_col1(col_r+cr, sizeof(g_term_buffer) - cr, "  ", "",                                226, " ", du_info.Tmin,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_warn);
-//      cr += draw_col1(col_r+cr, sizeof(g_term_buffer) - cr, "  ", get_frame(&spinner_recycle, 1),     110, " ", du_info.Tfs,     du_info.peak_min_circ,  du_info.peak_max_circ,  "", NULL);
-//      // clang-format on
-//
-//      char combined[BIGBUFF * 2];
-//      combine_cols(combined, sizeof(combined), col_l, col_r);
-//
-//      // clang-format off
-//      char col2[sizeof(g_term_buffer)] = {0};
-//      size_t c2 = 0;
-//      c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "󱪯",                                                                       222, " ", du_info.mod_rada,     draw_heat,      "", draw_extra_eye_timer);
-//      c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "󱖫",                                                                       192, " ", du_info.mod_rada,     draw_regime,    "", NULL);
-//      c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃", 212, " ", du_info.StatusPumpe6, draw_pump_bars, "", NULL);
-//      c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇",      203, " ", du_info.StatusPumpe4, draw_pump_bars, "", draw_extra_eye_gas);
-//      c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",    168, " ", du_info.StatusPumpe3, draw_pump_bars, "", NULL);
-//      c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",     224, " ", du_info.StatusPumpe7, draw_pump_bars, "", NULL);
-//      c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠",  78, " ", du_info.StatusPumpe5, draw_pump_bars, "", NULL);
-//      // clang-format on
-//
-//      b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "%s", combined);
-//
-//      if (du_info.opt_auto_timer_started) {
-//          time_t current_time;
-//          time(&current_time);
-//          du_info.opt_auto_timer_seconds_elapsed = difftime(current_time, du_info.history_mode_time_on);
-//          snprintf(du_info.opt_auto_timer_status, sizeof(du_info.opt_auto_timer_status), "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
-//      }
-//
-//      // clang-format off
-//      if (du_info.opt_auto_timer) { b += ctext_fg(g_term_buffer+b, sizeof(g_term_buffer) - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
-//      else                        { b += ctext_fg(g_term_buffer+b, sizeof(g_term_buffer) - b, COLOR_OFF, ""); }
-//      b += snprintf(g_term_buffer+b, sizeof(g_term_buffer) - b,"󱪯 %-*s\n", term_w-3, du_info.opt_auto_timer_status);
-//
-//      if (du_info.opt_auto_gas) { b += ctext_fg(g_term_buffer+b, sizeof(g_term_buffer) - b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
-//      else                            { b += ctext_fg(g_term_buffer+b, sizeof(g_term_buffer) - b, COLOR_OFF, ""); }
-//      b += snprintf(g_term_buffer+b, sizeof(g_term_buffer) - b,"󰙇 %-*s\n", term_w-3, du_info.opt_auto_gas_status);
-//      // clang-format on
-//
-//      spin_spinner(&spinner_circle);
-//      spin_spinner(&spinner_eye_left);
-//      spin_spinner(&spinner_eye_right);
-//      spin_spinner(&spinner_bars);
-//      spin_spinner(&spinner_clock);
-//
-//      DPL("===[ OUTPUT BEGIN ]===");
-//      size_t r = printf("%s", g_term_buffer);
-//      DPL("===[ OUTPUT END ]===");
-//
-//      return r;
-//  }
-//
+static int g_term_w;
+static int g_term_h;
 
-int g_term_w;
-int g_term_h;
+static char g_temp[MAX_CELL];
+static size_t g_temp_b = 0;
+
+static char* time_text()
+{
+    g_temp_b = 0;
+    g_temp_b += dt_full(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b);
+    return g_temp;
+}
+
+static char* wttrin_spinner()
+{
+    g_temp_b = 0;
+    g_temp_b += weather_to_spinner(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, du_wttrin.weather);
+    return g_temp;
+}
+
+static char* ip()
+{
+    g_temp_b = 0;
+    g_temp_b += get_local_ip(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b);
+    return g_temp;
+}
+
+static char* conns()
+{
+    g_temp_b = 0;
+    g_temp_b += snprintf(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, "%d", atomic_load(&g_ws_conn_count));
+    return g_temp;
+}
+
+static char* temp_to_clr(double value, double min, double max)
+{
+    g_temp_b = 0;
+    g_temp_b += temp_to_ctext_bg_con(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, value, min, max);
+    return g_temp;
+}
+
+char* eye_timer()
+{
+    g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, du_info.opt_auto_timer ? get_frame(&spinner_eye_left, 0) : " ");
+    if (du_info.opt_auto_timer) {
+        if (du_info.opt_auto_timer_started)
+            g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_clock, 0));
+        else
+            g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "󱎫");
+    }
+    else {
+        g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, " ");
+    }
+    return g_temp;
+}
+
+static char* draw_max_check()
+{
+    g_temp_b = 0;
+    ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 82, du_info.valid && du_info.TmaxGE ? get_frame(&spinner_check, 1) : " ");
+    return g_temp;
+}
+
+static char* draw_mid_check()
+{
+    g_temp_b = 0;
+    g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 82, du_info.valid && du_info.TmidGE ? get_frame(&spinner_check, 1) : " ");
+    return g_temp;
+}
+
+static char* draw_min_warn()
+{
+    g_temp_b = 0;
+    g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 51, du_info.valid && du_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
+    return g_temp;
+}
+
+static char* draw_heat(int value)
+{
+    g_temp_b = 0;
+    g_temp_b += value ? ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_heat, 1)) : ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "󱪯");
+    return g_temp;
+}
+
+static char* draw_regime(int value)
+{
+    g_temp_b = 0;
+    g_temp_b += cnum_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 192, value);
+    return g_temp;
+}
+
+static int pump_is_on(int value)
+{
+    return value == PUMP_STATUS_AUTO_ON || value == PUMP_STATUS_MANUAL_ON;
+}
+
+static char* draw_pump_bars(int value)
+{
+
+    g_temp_b = 0;
+    switch (value) {
+
+        case PUMP_STATUS_AUTO_ON:    g_temp_b += ctext_fg_con(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON_AUTO, get_frame(&spinner_bars, 0)); break;
+        case PUMP_STATUS_MANUAL_ON:  g_temp_b += ctext_fg_con(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON_MANUAL, get_frame(&spinner_bars, 0)); break;
+
+        default:
+        case PUMP_STATUS_AUTO_OFF:   g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF_AUTO, ""); break;
+        case PUMP_STATUS_MANUAL_OFF: g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF_MANUAL, ""); break;
+    }
+    return g_temp;
+}
+
+static char* draw_label_heat()
+{
+    return pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃";
+}
+
+static char* draw_label_gas()
+{
+    return pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇";
+}
+
+static char* draw_label_circ()
+{
+    return pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "";
+}
+
+static char* draw_label_solar()
+{
+    return pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "";
+}
+
+static char* draw_label_elec()
+{
+    return pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠";
+}
+
+static char* draw_selected(char* text, int is_selected)
+{
+    if (is_selected) {
+        g_temp_b = 0;
+        g_temp_b += ctext_bg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 236, text);
+        return g_temp;
+    }
+    return text;
+}
 
 size_t draw_ui_unsafe()
 {
     clear_screen();
 
-      int term_w = term_width();
-      int term_h = term_height();
-      if (term_w != g_term_w) {
-          g_term_w = term_w;
-          term_clear();
-      }
-      if (term_h != g_term_h) {
-          g_term_h = term_h;
-          term_clear();
-      }
-
-    char temp[MIDBUFF] = {0};
-    size_t t = 0;
+    int term_w = term_width();
+    int term_h = term_height();
+    if (term_w != g_term_w) {
+        g_term_w = term_w;
+        term_clear();
+    }
+    if (term_h != g_term_h) {
+        g_term_h = term_h;
+        term_clear();
+    }
 
     update_info_bas_safe_io(&g_info, &du_info);
     update_info_wttrin_safe_io(&g_wttrin, &du_wttrin);
 
     // row 0
     int hour = localtime_hour();
-    char* emoji_clock = hour_to_clock(hour);
-    char* emoji_dayhr = hour_to_emoji(hour);
     int color_hour = hour_to_color(hour);
-
-    set_cell_color(0, 0, color_hour, emoji_clock);
-    set_cell_color(0, 1, color_hour, emoji_dayhr);
-
-    t = 0;
-    t += dt_full(temp + t, sizeof(temp) - t);
-    set_cell_color(0, 2, 182, temp);
-
-    t = 0;
-    t += weather_to_spinner(temp + t, sizeof(temp) - t, du_wttrin.weather);
-    set_cell(0, 3, temp);
-
-    t = 0;
-    t += weather_to_spinner(temp + t, sizeof(temp) - t, du_wttrin.weather);
-    set_cell_color(0, 4, 228, get_frame(&spinner_lights, 1));
-    set_cell(0, 5, status_to_emoji(du_info.status));
+    scc(0, 0, color_hour, hour_to_clock(hour));
+    scc(0, 1, color_hour, hour_to_emoji(hour));
+    scc(0, 2, 182, time_text());
+    sc(0, 3, wttrin_spinner());
+    scc(0, 4, 228, get_frame(&spinner_lights, 1));
+    sc(0, 5, status_to_emoji(du_info.status));
 
     // row 1
-    set_cell_color(1, 0, 181, du_wttrin.buffer);
+    scc(1, 0, 181, du_wttrin.buffer);
 
     // row 2
-    t = 0;
-    t += get_local_ip(temp, sizeof(temp) - t);
-    set_cell_color(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, temp);
-    t = 0;
-    t += snprintf(temp + t, sizeof(temp) - t, "%d", atomic_load(&g_ws_conn_count));
-    set_cell(2, 1, temp);
+    scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, ip());
+    sc(2, 1, conns());
+
+    // clang-format off
+    scc(3, 0, 230, get_frame(&spinner_solar_panel, 1)); sc(3, 1, temp_to_clr(du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar)); sc(3, 2, temp_to_emoji(du_info.Tsolar));
+    scc(4, 0, 213, get_frame(&spinner_window, 1));      sc(4, 1, temp_to_clr(du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human)); sc(4, 2, temp_to_emoji(du_info.Tspv));
+    scc(5, 0,  76, get_frame(&spinner_house, 1));       sc(5, 1, temp_to_clr(du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human)); sc(5, 2, temp_to_emoji(du_info.Tsobna));
+    scc(6, 0, 154, get_frame(&spinner_cog, 1));         sc(6, 1, temp_to_clr(du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human)); sc(6, 2, temp_to_emoji(du_info.Tzadata));
+
+    sc(3, 3, " "); scc(3, 4, 214, "");                            sc(3, 5, temp_to_clr(du_info.Tmax,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(3, 6, draw_max_check());
+    sc(4, 3, " "); scc(4, 4, 220, "");                            sc(4, 5, temp_to_clr(du_info.Tmid,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(4, 6, draw_mid_check());
+    sc(5, 3, " "); scc(5, 4, 226, "");                            sc(5, 5, temp_to_clr(du_info.Tmin,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(5, 6, draw_min_warn());
+    sc(6, 3, " "); scc(6, 4, 110, get_frame(&spinner_recycle, 1)); sc(6, 5, temp_to_clr(du_info.Tfs,   du_info.peak_min_circ, du_info.peak_max_circ)); sc(6, 6, " ");
+
+    const char* pad = " ";
+    sc(7, 0, pad);
+    sc(8, 0, pad);
+
+    scc(8, 1, 222, draw_selected("󱪯", du_info.opt_auto_timer));               sc(7, 1, draw_heat(du_info.mod_rada));
+    scc(8, 2, 192, "󱖫");                                                      sc(7, 2, draw_regime(du_info.mod_rada));
+
+    const char* pad2 = "           ";
+    sc(7, 3, pad2);
+    sc(8, 3, pad2);
+    scc(8, 4, 212, draw_label_heat());                                        sc(7, 4, draw_pump_bars(du_info.StatusPumpe6));
+    scc(8, 5, 203, draw_selected(draw_label_gas(), du_info.opt_auto_gas));    sc(7, 5, draw_pump_bars(du_info.StatusPumpe4));
+    scc(8, 6, 168, draw_label_circ());                                        sc(7, 6, draw_pump_bars(du_info.StatusPumpe3));
+    scc(8, 7, 224, draw_label_solar());                                       sc(7, 7, draw_pump_bars(du_info.StatusPumpe7));
+    scc(8, 8,  78, draw_label_elec());                                        sc(7, 8, draw_pump_bars(du_info.StatusPumpe5));
+
+    // clang-format on
+
+    spin_spinner(&spinner_circle);
+    spin_spinner(&spinner_eye_left);
+    spin_spinner(&spinner_eye_right);
+    spin_spinner(&spinner_bars);
+    spin_spinner(&spinner_clock);
 
     print_screen();
 

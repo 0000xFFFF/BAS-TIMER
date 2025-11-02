@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 #define COLOR_ON_AUTO 48
-#define COLOR_ON_MANUAL 46
+#define COLOR_ON_MANUAL 123
 
 #define COLOR_OFF_AUTO 255
 #define COLOR_OFF_MANUAL 203
