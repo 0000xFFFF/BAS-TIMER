@@ -30,8 +30,9 @@ const int SLEEP_MS_DRAW =
 #else
     250;
 #endif
-const int SLEEP_MS_BAS = 3000;              // every 3 seconds
+const int SLEEP_MS_BAS = 3000;              // 3 sec
 const int SLEEP_MS_WTTRIN = 60 * 15 * 1000; // 15 min
+const int SLEEP_MS_WTTRIN_RETRY = 5000;     // 5 sec
 
 const int TEMP_SOLAR_MIN = 0;
 const int TEMP_SOLAR_MAX = 100;

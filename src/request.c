@@ -45,8 +45,8 @@ void update_info_bas_init()
     info.opt_auto_timer_seconds = AUTO_TIMER_SECONDS;
     info.opt_auto_timer_started = 0;
     info.opt_auto_timer_seconds_elapsed = 0;
-    snprintf(info.opt_auto_timer_status, MIDBUFF, "...");
-    snprintf(info.opt_auto_gas_status, MIDBUFF, "...");
+    snprintf(info.opt_auto_timer_status, SMALLBUFF, "...");
+    snprintf(info.opt_auto_gas_status, SMALLBUFF, "...");
 
     info.history_mode = -1;
     info.history_mode_time_changed = 0;
@@ -61,7 +61,7 @@ void update_info_bas_init()
 }
 
 // must update_info_bas_init before running this
-bool update_info_bas()
+enum RequestStatus update_info_bas()
 {
     g_global_unix_counter++;
     char request_url[BIGBUFF];
@@ -120,7 +120,7 @@ bool update_info_bas()
 
     update_info_bas_safe_io(&info, &g_info);
 
-    return info.valid;
+    return request.status;
 }
 
 static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -141,7 +141,7 @@ void update_info_wttrin_init()
     update_info_wttrin_safe_io(&wttrin, &g_wttrin);
 }
 
-bool update_info_wttrin()
+enum RequestStatus update_info_wttrin()
 {
     struct Request request = {0};
     request.status = REQUEST_STATUS_RUNNING;
@@ -168,7 +168,7 @@ bool update_info_wttrin()
         wttrin.weather = detect_weather(wttrin.buffer);
 
         update_info_wttrin_safe_io(&wttrin, &g_wttrin);
-        return true;
     }
-    return false;
+
+    return request.status;
 }

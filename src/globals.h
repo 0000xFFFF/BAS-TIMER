@@ -23,6 +23,7 @@ extern int MAKE_REQUEST_WTTRIN;
 extern int SLEEP_MS_DRAW;
 extern int SLEEP_MS_BAS;
 extern int SLEEP_MS_WTTRIN;
+extern int SLEEP_MS_WTTRIN_RETRY;
 
 extern int ENABLE_AUTO_TIMER;
 extern int ENABLE_AUTO_GAS;

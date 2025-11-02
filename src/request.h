@@ -128,10 +128,10 @@ struct wttrin_info {
 
 // request.c
 extern void update_info_bas_init();
-extern bool update_info_bas();
+extern enum RequestStatus update_info_bas();
 extern void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* out);
 extern void update_info_wttrin_init();
-extern bool update_info_wttrin();
+extern enum RequestStatus update_info_wttrin();
 extern void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out);
 
 // request_send.c
