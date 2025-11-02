@@ -1,5 +1,5 @@
 
-#define _XOPEN_SOURCE 700   // needed for wcwidth
+#define _XOPEN_SOURCE 700 // needed for wcwidth
 
 #include "draw_ui.h"
 #include "colors.h"
@@ -9,13 +9,13 @@
 #include "spinners.h"
 #include "term.h"
 #include "utils.h"
+#include <locale.h>
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <locale.h>
 #include <wchar.h>
 
 // must copy these values they update from another thread
@@ -87,7 +87,7 @@ static char* hour_to_clock(int hour)
 // void print_screen()
 // {
 //     for (int r = 0; r < MAX_ROWS; r++) {
-// 
+//
 //         // find last used column in this row
 //         int last_col = -1;
 //         for (int c = MAX_COLS - 1; c >= 0; c--) {
@@ -96,11 +96,11 @@ static char* hour_to_clock(int hour)
 //                 break;
 //             }
 //         }
-// 
+//
 //         // entire row empty? skip
 //         if (last_col == -1)
 //             continue;
-// 
+//
 //         // print only used columns
 //         for (int c = 0; c <= last_col; c++) {
 //             if (g_screen[r][c][0])
@@ -187,7 +187,6 @@ static size_t make_term_buffer()
     return g_term_buffer_b;
 }
 
-
 static char* dut_hour_to_emoji(int hour)
 {
     if (hour >= 5 && hour <= 7) return get_frame(&spinner_sunrise, 1); // Sunrise
@@ -233,7 +232,6 @@ const char* dut_status_to_emoji(enum RequestStatus status)
     return "";
 }
 
-
 static char* dut_time()
 {
     g_temp_b = 0;
@@ -268,8 +266,6 @@ static char* dut_temp_to_color(double value, double min, double max)
     g_temp_b += temp_to_ctext_bg_con(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, value, min, max);
     return g_temp;
 }
-
-
 
 static char* dut_max_check()
 {
@@ -360,6 +356,28 @@ static char* dut_selected(char* text, int is_selected)
         return g_temp;
     }
     return text;
+}
+
+static char* dut_label_auto_timer_status()
+{
+    g_temp_b = 0;
+    if (du_info.opt_auto_timer) { g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
+    else {
+        g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "");
+    }
+    g_temp_b += snprintf(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, "󱪯");
+    return g_temp;
+}
+
+static char* dut_label_auto_gas_status()
+{
+    g_temp_b = 0;
+    if (du_info.opt_auto_gas) { g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
+    else {
+        g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "");
+    }
+    g_temp_b += snprintf(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, "󰙇");
+    return g_temp;
 }
 
 static int utf8_display_width(const char* s)
@@ -499,8 +517,8 @@ size_t draw_ui_unsafe()
     scc(8, 8,  78, dut_lbl_elec());                                    sc(7, 8, dut_draw_pump_bars(du_info.StatusPumpe5));
 
     // statuses
-    sc(9,  0, du_info.opt_auto_timer_status);
-    sc(10, 0, du_info.opt_auto_gas_status);
+    sc(9,  0, dut_label_auto_timer_status()); sc(9,  1, du_info.opt_auto_timer_status);
+    sc(10, 0, dut_label_auto_gas_status());   sc(10, 1, du_info.opt_auto_gas_status);
     // clang-format on
 
     spin_spinner(&spinner_circle);
