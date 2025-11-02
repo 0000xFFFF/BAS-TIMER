@@ -48,19 +48,30 @@ static void scc(int r, int c, int color, const char* text)
 static void print_screen()
 {
     for (int r = 0; r < MAX_ROWS; r++) {
-        int empty_row = 1;
-        for (int c = 0; c < MAX_COLS; c++) {
+
+        // find last used column in this row
+        int last_col = -1;
+        for (int c = MAX_COLS - 1; c >= 0; c--) {
             if (g_screen[r][c][0]) {
-                empty_row = 0;
-                fputs(g_screen[r][c], stdout);
+                last_col = c;
+                break;
             }
-            else {
-                fputc(' ', stdout); // blank cell
-            }
-            fputc(' ', stdout); // optional space between columns
         }
-        if (!empty_row)
-            fputc('\n', stdout);
+
+        // entire row empty? skip
+        if (last_col == -1)
+            continue;
+
+        // print only used columns
+        for (int c = 0; c <= last_col; c++) {
+            if (g_screen[r][c][0])
+                fputs(g_screen[r][c], stdout);
+            else
+                fputc(' ', stdout);
+            if (c != last_col)
+                fputc(' ', stdout); // space between columns
+        }
+        fputc('\n', stdout);
     }
 }
 
