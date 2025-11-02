@@ -281,14 +281,14 @@ static size_t draw_ui_unsafe()
     size_t c1 = 0;
 
     // clang-format off
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "Solar", get_frame(&spinner_solar_panel, 1), 230, "  ", du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar, temp_to_emoji(du_info.Tsolar), NULL);
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Out", get_frame(&spinner_window, 1),      213, "  ", du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tspv), NULL);
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, " ", "Room", get_frame(&spinner_house, 1),        76, "  ", du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tsobna), NULL);
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Set", get_frame(&spinner_cog, 1),         154, "  ", du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tzadata), NULL);
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Max", "",                                214, "  ", du_info.Tmax,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_max_check);
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Mid", "",                                220, "  ", du_info.Tmid,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_mid_check);
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "  ", "Min", "",                                226, "  ", du_info.Tmin,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_warn);
-    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "Circ.", get_frame(&spinner_recycle, 1),     110, "  ", du_info.Tfs,     du_info.peak_min_circ,  du_info.peak_max_circ,  "", NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "", get_frame(&spinner_solar_panel, 1), 230, "  ", du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar, temp_to_emoji(du_info.Tsolar), NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "", get_frame(&spinner_window, 1),      213, "  ", du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tspv), NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "", get_frame(&spinner_house, 1),        76, "  ", du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tsobna), NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "", get_frame(&spinner_cog, 1),         154, "  ", du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human, temp_to_emoji(du_info.Tzadata), NULL);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "", "",                                214, "  ", du_info.Tmax,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_max_check);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "", "",                                220, "  ", du_info.Tmid,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_mid_check);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "", "",                                226, "  ", du_info.Tmin,    du_info.peak_min_buf,   du_info.peak_max_buf,   "", draw_extra_warn);
+    c1 += draw_col1(col1+c1, sizeof(g_term_buffer) - c1, "", "", get_frame(&spinner_recycle, 1),     110, "  ", du_info.Tfs,     du_info.peak_min_circ,  du_info.peak_max_circ,  "", NULL);
     // clang-format on
 
     // DPL("COL1");
@@ -297,13 +297,13 @@ static size_t draw_ui_unsafe()
     // clang-format off
     char col2[sizeof(g_term_buffer)] = {0};
     size_t c2 = 0;
-    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "   ", "Mode", "󱪯",                                                                        222, "  ", du_info.mod_rada,     draw_heat,      "", draw_extra_eye_timer);
-    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, " ", "Regime", "󱖫",                                                                        192, "  ", du_info.mod_rada,     draw_regime,    "", NULL);
-    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "   ", "Heat", pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃", 212, "  ", du_info.StatusPumpe6, draw_pump_bars, "", NULL);
-    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "    ", "Gas", pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇",      203, "  ", du_info.StatusPumpe4, draw_pump_bars, "", draw_extra_eye_gas);
-    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "  ", "Circ.", pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",   168, "  ", du_info.StatusPumpe3, draw_pump_bars, "", NULL);
-    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "  ", "Solar", pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",     224, "  ", du_info.StatusPumpe7, draw_pump_bars, "", NULL);
-    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "  ", "Elec.", pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠", 78,  "  ", du_info.StatusPumpe5, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "", "", "󱪯",                                                                        222, "  ", du_info.mod_rada,     draw_heat,      "", draw_extra_eye_timer);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "", "", "󱖫",                                                                        192, "  ", du_info.mod_rada,     draw_regime,    "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "", "", pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃", 212, "  ", du_info.StatusPumpe6, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "", "", pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇",      203, "  ", du_info.StatusPumpe4, draw_pump_bars, "", draw_extra_eye_gas);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "", "", pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "",   168, "  ", du_info.StatusPumpe3, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "", "", pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "",     224, "  ", du_info.StatusPumpe7, draw_pump_bars, "", NULL);
+    c2 += draw_col2(col2+c2, sizeof(g_term_buffer) - c2, "", "", pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠", 78,  "  ", du_info.StatusPumpe5, draw_pump_bars, "", NULL);
     // clang-format on
     // DPL("COL2");
     // D(printf("%s\n", col2));
