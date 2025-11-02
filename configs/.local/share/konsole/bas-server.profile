@@ -1,6 +1,6 @@
 [Appearance]
 ColorScheme=Linux
-Font=DepartureMono Nerd Font Mono,40,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+Font=DepartureMono Nerd Font Mono,50,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
 
 [General]
 Name=bas-server
