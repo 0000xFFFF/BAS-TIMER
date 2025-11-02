@@ -1,6 +1,4 @@
-
 #define _XOPEN_SOURCE 700 // needed for wcwidth
-
 #include "draw_ui.h"
 #include "colors.h"
 #include "globals.h"
@@ -396,7 +394,7 @@ static int utf8_display_width(const char* s)
     return width;
 }
 
-#define TARGET_WIDTH 29
+#define TARGET_WIDTH 35
 
 static void print_buffer_padded()
 {
