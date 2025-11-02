@@ -315,4 +315,4 @@ bindsym $alt+n exec --no-startup-id ~/.config/i3/scripts/i3bg
 
 exec --no-startup-id ~/.config/i3/scripts/i3bg
 
-exec_always --no-startup-id alacritty -e bas-server --hold
+exec_always --no-startup-id konsole -e bas-server
