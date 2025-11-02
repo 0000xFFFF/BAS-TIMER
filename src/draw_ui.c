@@ -484,19 +484,19 @@ size_t draw_ui_unsafe()
     sc(8, 0, pad);
 
     scc(8, 1, 222, dut_selected("󱪯", du_info.opt_auto_timer)); sc(7, 1, dut_heat(du_info.mod_rada));
-    scc(8, 2, 192, "󱖫");                                        sc(7, 2, dut_regime(du_info.mod_rada));
+    scc(8, 2, 192, "󱖫");                                       sc(7, 2, dut_regime(du_info.mod_rada));
 
     scc(7, 3, 222, dut_selected("󱪯", du_info.opt_auto_timer)); sc(7, 1, dut_heat(du_info.mod_rada));
-    scc(8, 3, 192, "󱖫");                                        sc(7, 2, dut_regime(du_info.mod_rada));
+    scc(8, 3, 192, "󱖫");                                       sc(7, 2, dut_regime(du_info.mod_rada));
 
     const char* pad2 = "           ";
     sc(7, 3, pad2);
     sc(8, 3, pad2);
-    scc(8, 4, 212, dut_lbl_heat());                                     sc(7, 4, dut_draw_pump_bars(du_info.StatusPumpe6));
+    scc(8, 4, 212, dut_lbl_heat());                                    sc(7, 4, dut_draw_pump_bars(du_info.StatusPumpe6));
     scc(8, 5, 203, dut_selected(dut_lbl_gas(), du_info.opt_auto_gas)); sc(7, 5, dut_draw_pump_bars(du_info.StatusPumpe4));
-    scc(8, 6, 168, dut_lbl_circ());                                     sc(7, 6, dut_draw_pump_bars(du_info.StatusPumpe3));
-    scc(8, 7, 224, dut_lbl_solar());                                    sc(7, 7, dut_draw_pump_bars(du_info.StatusPumpe7));
-    scc(8, 8,  78, dut_lbl_elec());                                     sc(7, 8, dut_draw_pump_bars(du_info.StatusPumpe5));
+    scc(8, 6, 168, dut_lbl_circ());                                    sc(7, 6, dut_draw_pump_bars(du_info.StatusPumpe3));
+    scc(8, 7, 224, dut_lbl_solar());                                   sc(7, 7, dut_draw_pump_bars(du_info.StatusPumpe7));
+    scc(8, 8,  78, dut_lbl_elec());                                    sc(7, 8, dut_draw_pump_bars(du_info.StatusPumpe5));
 
     // statuses
     sc(9,  0, du_info.opt_auto_timer_status);
