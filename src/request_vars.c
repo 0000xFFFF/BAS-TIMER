@@ -11,7 +11,7 @@ const char* URL_GAS_OFF = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4
 const char* URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1";
 
 // wttr.in
-const char* URL_WTTRIN = "https://wttr.in/?format=%C+%c%t+(%f)+%w+🕶+%u+💧+%h";
+const char* URL_WTTRIN = "https://wttr.in/?format=%C+%c%t+%u+%h";
 
 const char* REQUEST_FORMAT_BAS =
     "GET %s HTTP/1.0\r\n"
