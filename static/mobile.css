@@ -52,14 +52,15 @@ input {
 
 #termcont {
     padding: 5px;
-    font-size: 12px;
+    font-size: 20px;
     width: auto;
     height: auto;
-    min-width: 300px;
-    min-height: 300px;
+    min-width: 100px;
+    min-height: 100px;
 }
 
-#term, #sumtime {
+#term,
+#sumtime {
     margin: 5px;
 }
 
