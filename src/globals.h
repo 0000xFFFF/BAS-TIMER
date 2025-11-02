@@ -42,7 +42,8 @@ extern atomic_bool g_running;
 extern pthread_mutex_t g_mutex;
 extern pthread_cond_t g_cond;
 
-#define SMALLBUFF 64
+#define TINYBUFF 32
+#define SMALLBUFF 128
 #define MIDBUFF   256
 #define BIGBUFF   1024
 

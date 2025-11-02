@@ -11,7 +11,7 @@ static void update_history(struct bas_info* info)
     time_t current_time;
     time(&current_time);
     struct tm* timeinfo = localtime(&current_time);
-    char time_str[MIDBUFF] = {0};
+    char time_str[10] = {0};
     strftime_HMS(time_str, sizeof(time_str), timeinfo);
 
     if (info->history_mode == -1 || info->history_mode != info->mod_rada) {
@@ -25,10 +25,10 @@ static void update_history(struct bas_info* info)
         }
         else {
             info->history_mode_time_off = info->history_mode_time_changed;
-            char e[MIDBUFF] = "\n";
-            char p[MIDBUFF] = "";
+            char e[TINYBUFF] = "\n";
+            char p[TINYBUFF] = "";
             if (info->history_mode_time_on && info->history_mode_time_off) {
-                char elap[SMALLBUFF];
+                char elap[10];
                 elapsed_str(elap, sizeof(elap), info->history_mode_time_off, info->history_mode_time_on);
                 snprintf(e, sizeof(e), " -- %s\n", elap);
                 snprintf(p, sizeof(p), " 󱫐 %s", elap);
@@ -55,10 +55,10 @@ static void update_history(struct bas_info* info)
         }
         else {
             info->history_gas_time_off = info->history_gas_time_changed;
-            char e[MIDBUFF] = "\n";
-            char p[MIDBUFF] = "";
+            char e[TINYBUFF] = "\n";
+            char p[TINYBUFF] = "";
             if (info->history_gas_time_on && info->history_gas_time_off) {
-                char elap[SMALLBUFF] = {0};
+                char elap[10] = {0};
                 elapsed_str(elap, sizeof(elap), info->history_gas_time_off, info->history_gas_time_on);
                 snprintf(e, sizeof(e), " -- %s\n", elap);
                 snprintf(p, sizeof(p), " 󱫐 %s", elap);
@@ -75,7 +75,7 @@ static void do_logic_timer(struct bas_info* info)
     time_t current_time;
     time(&current_time);
     struct tm* timeinfo = localtime(&current_time);
-    char time_str[MIDBUFF] = {0};
+    char time_str[10] = {0};
     strftime_HMS(time_str, sizeof(time_str), timeinfo);
 
     if (info->opt_auto_timer && info->mod_rada) {
@@ -87,8 +87,8 @@ static void do_logic_timer(struct bas_info* info)
                 info->opt_auto_timer_started = 0;
                 snprintf(info->opt_auto_timer_status, sizeof(info->opt_auto_timer_status), "%s 󱪯", time_str);
                 if (info->history_mode_time_on) {
-                    char elap[SMALLBUFF] = {0};
-                    elapsed_str(elap, SMALLBUFF, current_time, info->history_mode_time_on);
+                    char elap[10] = {0};
+                    elapsed_str(elap, TINYBUFF, current_time, info->history_mode_time_on);
                     snprintf(info->opt_auto_timer_status, sizeof(info->opt_auto_timer_status), "󱫐 %s 󱪯", elap);
                 }
                 request_send_quick(URL_HEAT_OFF);
@@ -106,7 +106,7 @@ static void do_logic_gas(struct bas_info* info)
     time_t current_time;
     time(&current_time);
     struct tm* timeinfo = localtime(&current_time);
-    char time_str[MIDBUFF] = {0};
+    char time_str[TINYBUFF] = {0};
     strftime_YmdHMS(time_str, sizeof(time_str), timeinfo);
 
     if (info->opt_auto_gas && info->StatusPumpe4 == 0 && info->TminLT && !info->TmidGE && !info->TmaxGE) {
@@ -117,7 +117,7 @@ static void do_logic_gas(struct bas_info* info)
     if (info->opt_auto_gas && info->StatusPumpe4 == 3 && (info->TmidGE || info->TmaxGE)) {
         snprintf(info->opt_auto_gas_status, sizeof(info->opt_auto_gas_status), "%s 󰙇", time_str);
         if (info->history_gas_time_on && info->history_gas_time_off) {
-            char elap[SMALLBUFF] = {0};
+            char elap[10] = {0};
             elapsed_str(elap, sizeof(elap), current_time, info->history_gas_time_on);
             snprintf(info->opt_auto_gas_status, sizeof(info->opt_auto_gas_status), "󱫐 %s 󰙇", elap);
         }
