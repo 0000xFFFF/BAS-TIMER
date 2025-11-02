@@ -10,6 +10,19 @@ size_t ctext_fg(char* buffer, size_t size, int color, const char* text)
     return snprintf(buffer, size, "\033[38;5;%dm%s\033[0m", color, text);
 }
 
+size_t ctext_u(char* buffer, size_t size, const char* text)
+{
+    return snprintf(buffer, size, "\033[4m%s\033[0m", text);
+}
+
+size_t ctext_uc(char* buffer, size_t size, int underline_color, const char* text)
+{
+    return snprintf(buffer, size,
+                    "\033[4:1:%dm%s\033[0m",
+                    underline_color,
+                    text);
+}
+
 size_t cnum_fg(char* buffer, size_t size, int color, const int number)
 {
     return snprintf(buffer, size, "\033[38;5;%dm%d\033[0m", color, number);

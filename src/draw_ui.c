@@ -1,6 +1,8 @@
+
+#define _XOPEN_SOURCE 700   // needed for wcwidth
+
 #include "draw_ui.h"
 #include "colors.h"
-#include "debug.h"
 #include "globals.h"
 #include "request.h"
 #include "serve_websocket.h"
@@ -13,15 +15,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <locale.h>
+#include <wchar.h>
 
 // must copy these values they update from another thread
 static struct bas_info du_info = {0};
 static struct wttrin_info du_wttrin = {0};
 
-#define MAX_ROWS 10
-#define MAX_COLS 10
-#define MAX_CELL 64 // enough for UTF-8 + ANSI color
+#define MAX_ROWS 11
+#define MAX_COLS 11
+#define MAX_CELL SMALLBUFF // enough for UTF-8 + ANSI color
 static char g_screen[MAX_ROWS][MAX_COLS][MAX_CELL];
+
+static char g_term_buffer[MAX_ROWS * MAX_COLS * MAX_CELL];
+static size_t g_term_buffer_b = 0;
+
+static int g_term_w;
+static int g_term_h;
+
+static char g_temp[MAX_CELL];
+static size_t g_temp_b = 0;
 
 static void clear_screen()
 {
@@ -45,8 +58,81 @@ static void scc(int r, int c, int color, const char* text)
     sc(r, c, temp);
 }
 
-static void print_screen()
+static char* human_temp_emojis[] = {
+    CTEXT_FG(196, ""),
+    CTEXT_FG(208, ""),
+    CTEXT_FG(208, "󰖨"),
+    CTEXT_FG(214, ""),
+    CTEXT_FG(75, ""),
+    CTEXT_FG(81, ""),
+    CTEXT_FG(87, "")};
+
+static char* human_temp_to_emoji(double temp)
 {
+    if (temp > 40.0) return human_temp_emojis[0];  //  super hot
+    if (temp >= 30.0) return human_temp_emojis[1]; //  really hot
+    if (temp >= 25.0) return human_temp_emojis[2]; // 󰖨 hot
+    if (temp >= 15.0) return human_temp_emojis[3]; //  mild
+    if (temp >= 5.0) return human_temp_emojis[4];  //  cold
+    if (temp >= -5.0) return human_temp_emojis[5]; //  really cold
+    return human_temp_emojis[6];                   //  super cold
+}
+
+static char* clock_hours[] = {"", "", "", "", "", "", "", "", "", "", "", ""};
+static char* hour_to_clock(int hour)
+{
+    return clock_hours[hour % 12];
+}
+
+// void print_screen()
+// {
+//     for (int r = 0; r < MAX_ROWS; r++) {
+// 
+//         // find last used column in this row
+//         int last_col = -1;
+//         for (int c = MAX_COLS - 1; c >= 0; c--) {
+//             if (g_screen[r][c][0]) {
+//                 last_col = c;
+//                 break;
+//             }
+//         }
+// 
+//         // entire row empty? skip
+//         if (last_col == -1)
+//             continue;
+// 
+//         // print only used columns
+//         for (int c = 0; c <= last_col; c++) {
+//             if (g_screen[r][c][0])
+//                 fputs(g_screen[r][c], stdout);
+//             else
+//                 fputc(' ', stdout);
+//             if (c != last_col)
+//                 fputc(' ', stdout); // space between columns
+//         }
+//         fputc('\n', stdout);
+//     }
+// }
+
+// char* eye_timer()
+// {
+//     g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, du_info.opt_auto_timer ? get_frame(&spinner_eye_left, 0) : " ");
+//     if (du_info.opt_auto_timer) {
+//         if (du_info.opt_auto_timer_started)
+//             g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_clock, 0));
+//         else
+//             g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "󱎫");
+//     }
+//     else {
+//         g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, " ");
+//     }
+//     return g_temp;
+// }
+
+static size_t make_term_buffer()
+{
+    g_term_buffer_b = 0; // reset
+
     for (int r = 0; r < MAX_ROWS; r++) {
 
         // find last used column in this row
@@ -58,50 +144,51 @@ static void print_screen()
             }
         }
 
-        // entire row empty? skip
         if (last_col == -1)
             continue;
 
-        // print only used columns
         for (int c = 0; c <= last_col; c++) {
-            if (g_screen[r][c][0])
-                fputs(g_screen[r][c], stdout);
-            else
-                fputc(' ', stdout);
-            if (c != last_col)
-                fputc(' ', stdout); // space between columns
+
+            if (g_screen[r][c][0]) {
+                // append UTF-8 string
+                size_t len = strlen(g_screen[r][c]);
+                if (g_term_buffer_b + len < sizeof(g_term_buffer)) {
+                    memcpy(&g_term_buffer[g_term_buffer_b], g_screen[r][c], len);
+                    g_term_buffer_b += len;
+                }
+            }
+            else {
+                // append a plain space
+                if (g_term_buffer_b + 1 < sizeof(g_term_buffer)) {
+                    g_term_buffer[g_term_buffer_b++] = ' ';
+                }
+            }
+
+            // space between cells
+            if (c != last_col) {
+                if (g_term_buffer_b + 1 < sizeof(g_term_buffer)) {
+                    g_term_buffer[g_term_buffer_b++] = ' ';
+                }
+            }
         }
-        fputc('\n', stdout);
+
+        // newline
+        if (g_term_buffer_b + 1 < sizeof(g_term_buffer)) {
+            g_term_buffer[g_term_buffer_b++] = '\n';
+        }
     }
+
+    // null-terminate (safe even if buffer is full)
+    if (g_term_buffer_b < sizeof(g_term_buffer))
+        g_term_buffer[g_term_buffer_b] = '\0';
+    else
+        g_term_buffer[sizeof(g_term_buffer) - 1] = '\0';
+
+    return g_term_buffer_b;
 }
 
-static char* weather[] = {
-    CTEXT_FG(196, ""),
-    CTEXT_FG(208, ""),
-    CTEXT_FG(208, "󰖨"),
-    CTEXT_FG(214, ""),
-    CTEXT_FG(75, ""),
-    CTEXT_FG(81, ""),
-    CTEXT_FG(87, "")};
 
-static char* temp_to_emoji(double temp)
-{
-    if (temp > 40.0) return weather[0];  //  super hot
-    if (temp >= 30.0) return weather[1]; //  really hot
-    if (temp >= 25.0) return weather[2]; // 󰖨 hot
-    if (temp >= 15.0) return weather[3]; //  mild
-    if (temp >= 5.0) return weather[4];  //  cold
-    if (temp >= -5.0) return weather[5]; //  really cold
-    return weather[6];                   //  super cold
-}
-
-static char* clock_hours[] = {"", "", "", "", "", "", "", "", "", "", "", ""};
-static char* hour_to_clock(int hour)
-{
-    return clock_hours[hour % 12];
-}
-
-static char* hour_to_emoji(int hour)
+static char* dut_hour_to_emoji(int hour)
 {
     if (hour >= 5 && hour <= 7) return get_frame(&spinner_sunrise, 1); // Sunrise
     if (hour >= 7 && hour < 12) return "";                          // Morning
@@ -111,7 +198,7 @@ static char* hour_to_emoji(int hour)
     return "󰖔";                                                     // Night
 }
 
-static int hour_to_color(int hour)
+static int dut_hour_to_color(int hour)
 {
     if (hour >= 5 && hour < 7) return 214;   // Orange (Sunrise)
     if (hour >= 7 && hour < 12) return 220;  // Bright Yellow (Morning)
@@ -121,14 +208,7 @@ static int hour_to_color(int hour)
     return 33;                               // Deep Blue (Night)
 }
 
-enum PUMP_STATUS {
-    PUMP_STATUS_AUTO_OFF = 0,
-    PUMP_STATUS_AUTO_ON = 1,
-    PUMP_STATUS_MANUAL_OFF = 2,
-    PUMP_STATUS_MANUAL_ON = 3
-};
-
-static size_t weather_to_spinner(char* buffer, size_t size, enum Weather weather)
+static size_t dut_weather_to_spinner(char* buffer, size_t size, enum Weather weather)
 {
     switch (weather) {
         default:
@@ -142,7 +222,7 @@ static size_t weather_to_spinner(char* buffer, size_t size, enum Weather weather
     }
 }
 
-const char* status_to_emoji(enum RequestStatus status)
+const char* dut_status_to_emoji(enum RequestStatus status)
 {
     switch (status) {
         case REQUEST_STATUS_RUNNING:       return CTEXT_FG(211, ""); break;
@@ -153,103 +233,85 @@ const char* status_to_emoji(enum RequestStatus status)
     return "";
 }
 
-static int g_term_w;
-static int g_term_h;
 
-static char g_temp[MAX_CELL];
-static size_t g_temp_b = 0;
-
-static char* time_text()
+static char* dut_time()
 {
     g_temp_b = 0;
     g_temp_b += dt_full(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b);
     return g_temp;
 }
 
-static char* wttrin_spinner()
+static char* dut_wttrin_emoji()
 {
     g_temp_b = 0;
-    g_temp_b += weather_to_spinner(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, du_wttrin.weather);
+    g_temp_b += dut_weather_to_spinner(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, du_wttrin.weather);
     return g_temp;
 }
 
-static char* ip()
+static char* dut_ip()
 {
     g_temp_b = 0;
     g_temp_b += get_local_ip(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b);
     return g_temp;
 }
 
-static char* conns()
+static char* dut_conns()
 {
     g_temp_b = 0;
     g_temp_b += snprintf(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, "%d", atomic_load(&g_ws_conn_count));
     return g_temp;
 }
 
-static char* temp_to_clr(double value, double min, double max)
+static char* dut_temp_to_color(double value, double min, double max)
 {
     g_temp_b = 0;
     g_temp_b += temp_to_ctext_bg_con(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, value, min, max);
     return g_temp;
 }
 
-char* eye_timer()
-{
-    g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, du_info.opt_auto_timer ? get_frame(&spinner_eye_left, 0) : " ");
-    if (du_info.opt_auto_timer) {
-        if (du_info.opt_auto_timer_started)
-            g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_clock, 0));
-        else
-            g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "󱎫");
-    }
-    else {
-        g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, " ");
-    }
-    return g_temp;
-}
 
-static char* draw_max_check()
+
+static char* dut_max_check()
 {
     g_temp_b = 0;
     ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 82, du_info.valid && du_info.TmaxGE ? get_frame(&spinner_check, 1) : " ");
     return g_temp;
 }
 
-static char* draw_mid_check()
+static char* dut_mid_check()
 {
     g_temp_b = 0;
     g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 82, du_info.valid && du_info.TmidGE ? get_frame(&spinner_check, 1) : " ");
     return g_temp;
 }
 
-static char* draw_min_warn()
+static char* dut_min_warn()
 {
     g_temp_b = 0;
     g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 51, du_info.valid && du_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
     return g_temp;
 }
 
-static char* draw_heat(int value)
+static char* dut_heat(int value)
 {
     g_temp_b = 0;
     g_temp_b += value ? ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_heat, 1)) : ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "󱪯");
     return g_temp;
 }
 
-static char* draw_regime(int value)
+static char* dut_regime(int value)
 {
     g_temp_b = 0;
     g_temp_b += cnum_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 192, value);
     return g_temp;
 }
 
-static int pump_is_on(int value)
+static int dut_pump_is_on(enum PumpStatus value)
 {
     return value == PUMP_STATUS_AUTO_ON || value == PUMP_STATUS_MANUAL_ON;
 }
 
-static char* draw_pump_bars(int value)
+static char* dut_draw_pump_bars(int value)
 {
 
     g_temp_b = 0;
@@ -265,39 +327,110 @@ static char* draw_pump_bars(int value)
     return g_temp;
 }
 
-static char* draw_label_heat()
+static char* dut_lbl_heat()
 {
-    return pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃";
+    return dut_pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃";
 }
 
-static char* draw_label_gas()
+static char* dut_lbl_gas()
 {
-    return pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇";
+    return dut_pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇";
 }
 
-static char* draw_label_circ()
+static char* dut_lbl_circ()
 {
-    return pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "";
+    return dut_pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "";
 }
 
-static char* draw_label_solar()
+static char* dut_lbl_solar()
 {
-    return pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "";
+    return dut_pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "";
 }
 
 static char* draw_label_elec()
 {
-    return pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠";
+    return dut_pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠";
 }
 
 static char* draw_selected(char* text, int is_selected)
 {
     if (is_selected) {
         g_temp_b = 0;
-        g_temp_b += ctext_bg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 236, text);
+        g_temp_b += ctext_u(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, text);
         return g_temp;
     }
     return text;
+}
+
+static int utf8_display_width(const char* s)
+{
+    mbstate_t ps = {0};
+    wchar_t wc;
+    const char* p = s;
+    int width = 0;
+    size_t n;
+
+    while ((n = mbrtowc(&wc, p, MB_CUR_MAX, &ps)) > 0) {
+        int w = wcwidth(wc);
+        if (w > 0) width += w;
+        p += n;
+    }
+    return width;
+}
+
+#define TARGET_WIDTH 29
+
+static void print_buffer_padded()
+{
+    setlocale(LC_ALL, ""); // ensure correct UTF-8 width
+
+    const char* p = g_term_buffer;
+    const char* line_start = p;
+
+    while (*p) {
+        if (*p == '\n') {
+            int line_bytes = p - line_start;
+
+            char line[4096]; // enough per line
+            memcpy(line, line_start, line_bytes);
+            line[line_bytes] = '\0';
+
+            // print line
+            fputs(line, stdout);
+
+            // measure display width
+            int w = utf8_display_width(line);
+
+            // pad spaces
+            for (; w < TARGET_WIDTH; w++)
+                fputc(' ', stdout);
+
+            fputc('\n', stdout);
+
+            p++;
+            line_start = p;
+        }
+        else {
+            p++;
+        }
+    }
+
+    // last line without trailing newline
+    if (line_start != p) {
+        int line_bytes = p - line_start;
+
+        char line[4096];
+        memcpy(line, line_start, line_bytes);
+        line[line_bytes] = '\0';
+
+        fputs(line, stdout);
+
+        int w = utf8_display_width(line);
+        for (; w < TARGET_WIDTH; w++)
+            fputc(' ', stdout);
+
+        fputc('\n', stdout);
+    }
 }
 
 size_t draw_ui_unsafe()
@@ -320,48 +453,51 @@ size_t draw_ui_unsafe()
 
     // row 0
     int hour = localtime_hour();
-    int color_hour = hour_to_color(hour);
+    int color_hour = dut_hour_to_color(hour);
     scc(0, 0, color_hour, hour_to_clock(hour));
-    scc(0, 1, color_hour, hour_to_emoji(hour));
-    scc(0, 2, 182, time_text());
-    sc(0, 3, wttrin_spinner());
+    scc(0, 1, color_hour, dut_hour_to_emoji(hour));
+    scc(0, 2, 182, dut_time());
+    sc(0, 3, dut_wttrin_emoji());
     scc(0, 4, 228, get_frame(&spinner_lights, 1));
-    sc(0, 5, status_to_emoji(du_info.status));
+    sc(0, 5, dut_status_to_emoji(du_info.status));
 
     // row 1
     scc(1, 0, 181, du_wttrin.buffer);
 
     // row 2
-    scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, ip());
-    sc(2, 1, conns());
+    scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, dut_ip());
+    sc(2, 1, dut_conns());
 
     // clang-format off
-    scc(3, 0, 230, get_frame(&spinner_solar_panel, 1)); sc(3, 1, temp_to_clr(du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar)); sc(3, 2, temp_to_emoji(du_info.Tsolar));
-    scc(4, 0, 213, get_frame(&spinner_window, 1));      sc(4, 1, temp_to_clr(du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human)); sc(4, 2, temp_to_emoji(du_info.Tspv));
-    scc(5, 0,  76, get_frame(&spinner_house, 1));       sc(5, 1, temp_to_clr(du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human)); sc(5, 2, temp_to_emoji(du_info.Tsobna));
-    scc(6, 0, 154, get_frame(&spinner_cog, 1));         sc(6, 1, temp_to_clr(du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human)); sc(6, 2, temp_to_emoji(du_info.Tzadata));
+    scc(3, 0, 230, get_frame(&spinner_solar_panel, 1)); sc(3, 1, dut_temp_to_color(du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar)); sc(3, 2, human_temp_to_emoji(du_info.Tsolar));
+    scc(4, 0, 213, get_frame(&spinner_window, 1));      sc(4, 1, dut_temp_to_color(du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human)); sc(4, 2, human_temp_to_emoji(du_info.Tspv));
+    scc(5, 0,  76, get_frame(&spinner_house, 1));       sc(5, 1, dut_temp_to_color(du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human)); sc(5, 2, human_temp_to_emoji(du_info.Tsobna));
+    scc(6, 0, 154, get_frame(&spinner_cog, 1));         sc(6, 1, dut_temp_to_color(du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human)); sc(6, 2, human_temp_to_emoji(du_info.Tzadata));
 
-    sc(3, 3, " "); scc(3, 4, 214, "");                            sc(3, 5, temp_to_clr(du_info.Tmax,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(3, 6, draw_max_check());
-    sc(4, 3, " "); scc(4, 4, 220, "");                            sc(4, 5, temp_to_clr(du_info.Tmid,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(4, 6, draw_mid_check());
-    sc(5, 3, " "); scc(5, 4, 226, "");                            sc(5, 5, temp_to_clr(du_info.Tmin,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(5, 6, draw_min_warn());
-    sc(6, 3, " "); scc(6, 4, 110, get_frame(&spinner_recycle, 1)); sc(6, 5, temp_to_clr(du_info.Tfs,   du_info.peak_min_circ, du_info.peak_max_circ)); sc(6, 6, " ");
+    sc(3, 3, " "); scc(3, 4, 214, "");                            sc(3, 5, dut_temp_to_color(du_info.Tmax,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(3, 6, dut_max_check());
+    sc(4, 3, " "); scc(4, 4, 220, "");                            sc(4, 5, dut_temp_to_color(du_info.Tmid,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(4, 6, dut_mid_check());
+    sc(5, 3, " "); scc(5, 4, 226, "");                            sc(5, 5, dut_temp_to_color(du_info.Tmin,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(5, 6, dut_min_warn());
+    sc(6, 3, " "); scc(6, 4, 110, get_frame(&spinner_recycle, 1)); sc(6, 5, dut_temp_to_color(du_info.Tfs,   du_info.peak_min_circ, du_info.peak_max_circ)); sc(6, 6, " ");
 
     const char* pad = " ";
     sc(7, 0, pad);
     sc(8, 0, pad);
 
-    scc(8, 1, 222, draw_selected("󱪯", du_info.opt_auto_timer));               sc(7, 1, draw_heat(du_info.mod_rada));
-    scc(8, 2, 192, "󱖫");                                                      sc(7, 2, draw_regime(du_info.mod_rada));
+    scc(8, 1, 222, draw_selected("󱪯", du_info.opt_auto_timer)); sc(7, 1, dut_heat(du_info.mod_rada));
+    scc(8, 2, 192, "󱖫");                                        sc(7, 2, dut_regime(du_info.mod_rada));
 
     const char* pad2 = "           ";
     sc(7, 3, pad2);
     sc(8, 3, pad2);
-    scc(8, 4, 212, draw_label_heat());                                        sc(7, 4, draw_pump_bars(du_info.StatusPumpe6));
-    scc(8, 5, 203, draw_selected(draw_label_gas(), du_info.opt_auto_gas));    sc(7, 5, draw_pump_bars(du_info.StatusPumpe4));
-    scc(8, 6, 168, draw_label_circ());                                        sc(7, 6, draw_pump_bars(du_info.StatusPumpe3));
-    scc(8, 7, 224, draw_label_solar());                                       sc(7, 7, draw_pump_bars(du_info.StatusPumpe7));
-    scc(8, 8,  78, draw_label_elec());                                        sc(7, 8, draw_pump_bars(du_info.StatusPumpe5));
+    scc(8, 4, 212, dut_lbl_heat());                                     sc(7, 4, dut_draw_pump_bars(du_info.StatusPumpe6));
+    scc(8, 5, 203, draw_selected(dut_lbl_gas(), du_info.opt_auto_gas)); sc(7, 5, dut_draw_pump_bars(du_info.StatusPumpe4));
+    scc(8, 6, 168, dut_lbl_circ());                                     sc(7, 6, dut_draw_pump_bars(du_info.StatusPumpe3));
+    scc(8, 7, 224, dut_lbl_solar());                                    sc(7, 7, dut_draw_pump_bars(du_info.StatusPumpe7));
+    scc(8, 8,  78, draw_label_elec());                                     sc(7, 8, dut_draw_pump_bars(du_info.StatusPumpe5));
 
+    // statuses
+    sc(9,  0, du_info.opt_auto_timer_status);
+    sc(10, 0, du_info.opt_auto_gas_status);
     // clang-format on
 
     spin_spinner(&spinner_circle);
@@ -370,7 +506,8 @@ size_t draw_ui_unsafe()
     spin_spinner(&spinner_bars);
     spin_spinner(&spinner_clock);
 
-    print_screen();
+    make_term_buffer();
+    print_buffer_padded();
 
     return 0;
 }
@@ -385,31 +522,31 @@ size_t draw_ui_and_front()
     term_cursor_reset();
 #endif
     size_t r = draw_ui_unsafe();
-    // char html_buffer[1024 * 16] = {0};
-    // ansi_to_html(g_term_buffer, html_buffer);
-    // char html_buffer_escaped[1024 * 16 * 2] = {0};
-    // escape_quotes(html_buffer, html_buffer_escaped);
+    char html_buffer[1024 * 16] = {0};
+    ansi_to_html(g_term_buffer, html_buffer);
+    char html_buffer_escaped[1024 * 16 * 2] = {0};
+    escape_quotes(html_buffer, html_buffer_escaped);
 
-    // char emit_buffer[1024 * 16 * 2] = {0};
-    // int b = snprintf(emit_buffer, 1024 * 8 * 2,
-    //                  "{"
-    //                  "\"term\": \"%s\""
-    //                  ","
-    //                  "\"Tmin\": %f"
-    //                  ","
-    //                  "\"Tmax\": %f"
-    //                  ","
-    //                  "\"mod_rada\": %d"
-    //                  ","
-    //                  "\"StatusPumpe4\": %d"
-    //                  "}",
-    //                  html_buffer_escaped,
-    //                  du_info.Tmin,
-    //                  du_info.Tmax,
-    //                  du_info.mod_rada,    // heat
-    //                  du_info.StatusPumpe4 // gas pump
-    // );
-    // websocket_emit(emit_buffer, b);
+    char emit_buffer[1024 * 16 * 2] = {0};
+    int b = snprintf(emit_buffer, 1024 * 8 * 2,
+                     "{"
+                     "\"term\": \"%s\""
+                     ","
+                     "\"Tmin\": %f"
+                     ","
+                     "\"Tmax\": %f"
+                     ","
+                     "\"mod_rada\": %d"
+                     ","
+                     "\"StatusPumpe4\": %d"
+                     "}",
+                     html_buffer_escaped,
+                     du_info.Tmin,
+                     du_info.Tmax,
+                     du_info.mod_rada,    // heat
+                     du_info.StatusPumpe4 // gas pump
+    );
+    websocket_emit(emit_buffer, b);
     pthread_mutex_unlock(&s_du_mutex);
     return r;
 }

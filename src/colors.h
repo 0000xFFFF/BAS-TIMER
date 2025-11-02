@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 #define COLOR_ON_AUTO 48
-#define COLOR_ON_MANUAL 123
+#define COLOR_ON_MANUAL 46
 
 #define COLOR_OFF_AUTO 255
 #define COLOR_OFF_MANUAL 203
@@ -14,6 +14,8 @@
 #define CTEXT_FG(color, text) "\033[38;5;" #color "m" text "\033[0m"
 
 extern size_t ctext_fg(char* buffer, size_t size, int color, const char* text);
+extern size_t ctext_u(char* buffer, size_t size, const char* text);
+extern size_t ctext_uc(char* buffer, size_t size, int underline_color, const char* text);
 extern size_t cnum_fg(char* buffer, size_t size, int color, const int number);
 extern size_t ctext_bg(char* buffer, size_t size, int color, const char* text);
 extern int contrast_color(int color);

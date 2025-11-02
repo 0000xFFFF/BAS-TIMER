@@ -33,6 +33,13 @@ struct Request {
     struct mg_str output;
 };
 
+enum PumpStatus {
+    PUMP_STATUS_AUTO_OFF = 0,
+    PUMP_STATUS_AUTO_ON = 1,
+    PUMP_STATUS_MANUAL_OFF = 2,
+    PUMP_STATUS_MANUAL_ON = 3
+};
+
 struct bas_info {
 
     bool valid; // is not empty
@@ -76,9 +83,9 @@ struct bas_info {
     int opt_auto_timer_seconds_old;
     int opt_auto_timer_started;
     int opt_auto_timer_seconds_elapsed;
-    char opt_auto_timer_status[BIGBUFF];
+    char opt_auto_timer_status[SMALLBUFF];
     int opt_auto_gas;
-    char opt_auto_gas_status[BIGBUFF];
+    char opt_auto_gas_status[SMALLBUFF];
 
     int history_mode;
     int history_mode_time_changed;
