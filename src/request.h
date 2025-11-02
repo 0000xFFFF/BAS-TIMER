@@ -23,7 +23,6 @@ enum RequestStatus {
 };
 
 struct Request {
-    bool valid;
     bool log;
     enum RequestStatus status;
     const char* url;
