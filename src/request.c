@@ -31,7 +31,6 @@ void update_info_bas_init()
 
     struct bas_info info = {0};
 
-    info.peaks_valid = true;
     info.peak_min_solar = TEMP_MIN_SOLAR;
     info.peak_max_solar = TEMP_MAX_SOLAR;
     info.peak_min_human = TEMP_MIN_HUMAN;
@@ -77,13 +76,12 @@ bool update_info_bas()
     request_send(&request);
 
     struct bas_info info = {0};
+    update_info_bas_safe_io(&g_info, &info);
+    info.status = request.status;
 
     if (request.output.buf) {
 
-        update_info_bas_safe_io(&g_info, &info);
-
         info.valid = true;
-        info.status = request.status;
         info.mod_rada = extract_json_label(request.output, "$.mod_rada", 0);
         info.mod_rezim = extract_json_label(request.output, "$.mod_rezim", 0);
         info.StatusPumpe3 = extract_json_label(request.output, "$.StatusPumpe3", 0);
@@ -117,9 +115,10 @@ bool update_info_bas()
 
         D(print_bas_info(&info));
 
-        update_info_bas_safe_io(&info, &g_info);
         free((void*)request.output.buf);
     }
+
+    update_info_bas_safe_io(&info, &g_info);
 
     return info.valid;
 }

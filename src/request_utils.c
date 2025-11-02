@@ -73,7 +73,6 @@ void print_bas_info(const struct bas_info* b)
     printf("TmidGE: %d\n", b->TmidGE);
     printf("TminLT: %d\n", b->TminLT);
 
-    printf("peaks_valid: %s\n", b->peaks_valid ? "true" : "false");
     printf("peak_min_solar: %.2f\n", b->peak_min_solar);
     printf("peak_max_solar: %.2f\n", b->peak_max_solar);
     printf("peak_min_human: %.2f\n", b->peak_min_human);

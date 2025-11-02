@@ -62,7 +62,6 @@ struct bas_info {
     int TmidGE;
     int TmaxGE;
 
-    bool peaks_valid;
     double peak_min_solar;
     double peak_max_solar;
     double peak_min_human;

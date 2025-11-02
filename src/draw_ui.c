@@ -191,6 +191,17 @@ static size_t weather_to_spinner(char* buffer, size_t size, enum Weather weather
     }
 }
 
+const char* status_to_emoji(enum RequestStatus status)
+{
+    switch (status) {
+        case REQUEST_STATUS_RUNNING:       return CTEXT_FG(211, ""); break;
+        case REQUEST_STATUS_DONE:          return CTEXT_FG(82, "󰌘"); break;
+        case REQUEST_STATUS_ERROR_TIMEOUT: return CTEXT_FG(202, "󱫎"); break;
+        case REQUEST_STATUS_ERROR_CONN:    return CTEXT_FG(196, "󰌙"); break;
+    }
+    return "";
+}
+
 int g_term_w;
 int g_term_h;
 
@@ -248,7 +259,7 @@ static size_t draw_ui_unsafe()
     b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 182, temp);
 
     // term width + height
-    //b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %d %d", term_w, term_h);
+    // b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %d %d", term_w, term_h);
     b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, "\n");
 
     // weather
@@ -259,7 +270,7 @@ static size_t draw_ui_unsafe()
 
     // light + send + conn count + ip
     b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, 228, get_frame(&spinner_lights, 1));
-    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %s %3d ", du_info.status == REQUEST_STATUS_RUNNING ? CTEXT_FG(211, "") : " ", atomic_load(&g_ws_conn_count));
+    b += snprintf(g_term_buffer + b, sizeof(g_term_buffer) - b, " %s %3d ", status_to_emoji(du_info.status), atomic_load(&g_ws_conn_count));
     t = 0;
     t += get_local_ip(temp, sizeof(temp) - t);
     b += ctext_fg(g_term_buffer + b, sizeof(g_term_buffer) - b, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, temp);
