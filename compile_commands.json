@@ -137,6 +137,30 @@
       "MG_ENABLE_OPENSSL=1",
       "-o",
       "bas-server",
+      "src/marquee.c"
+    ],
+    "directory": "/home/user/.vip/mytools/BAS-TIMER",
+    "file": "/home/user/.vip/mytools/BAS-TIMER/src/marquee.c",
+    "output": "/home/user/.vip/mytools/BAS-TIMER/bas-server"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-O2",
+      "-W",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-I.",
+      "-DMG_ENABLE_LINES=1",
+      "-DMG_ENABLE_PACKED_FS=1",
+      "-D",
+      "MG_TLS=MG_TLS_OPENSSL",
+      "-D",
+      "MG_ENABLE_OPENSSL=1",
+      "-o",
+      "bas-server",
       "src/mongoose.c"
     ],
     "directory": "/home/user/.vip/mytools/BAS-TIMER",
