@@ -87,9 +87,11 @@ void init_marquee(Marquee* m, const char* text, int width) {
 
 // Render frame
 void render_marquee(Marquee* m) {
-    printf("\r");
+    printf("\r"); // go to start of line
+
     if (!m->scroll_needed) {
         printf("%s", m->text);
+        printf("\033[K"); // clear rest of line
         fflush(stdout);
         return;
     }
@@ -99,7 +101,7 @@ void render_marquee(Marquee* m) {
     int byte_idx = 0;
     char last_ansi[128] = {0};
 
-    // Skip to current scroll position (count visible chars)
+    // Skip to scroll position (count visible chars)
     while (vis_idx < m->pos) {
         if (!m->text[byte_idx]) byte_idx = 0;
 
@@ -107,7 +109,6 @@ void render_marquee(Marquee* m) {
             int start = byte_idx;
             while (m->text[byte_idx] && m->text[byte_idx] != 'm') byte_idx++;
             if (m->text[byte_idx]) byte_idx++;
-            // store active ANSI so we can prepend on wrap
             strncpy(last_ansi, &m->text[start], byte_idx - start);
             last_ansi[byte_idx - start] = '\0';
         } else {
@@ -121,7 +122,7 @@ void render_marquee(Marquee* m) {
         }
     }
 
-    // Prepend active ANSI codes
+    // Prepend active ANSI
     if (last_ansi[0]) fputs(last_ansi, stdout);
 
     // Print visible width
@@ -129,6 +130,8 @@ void render_marquee(Marquee* m) {
         if (!m->text[byte_idx]) byte_idx = 0;
         displayed += print_next_char(m, m->text, &byte_idx);
     }
+
+    printf("\033[K"); // clear leftover characters
     fflush(stdout);
 }
 
