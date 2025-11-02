@@ -513,6 +513,14 @@ size_t draw_ui_unsafe()
     scc(8, 7, 224, dut_lbl_solar());                                   sc(7, 7, dut_draw_pump_bars(du_info.StatusPumpe7));
     scc(8, 8,  78, dut_lbl_elec());                                    sc(7, 8, dut_draw_pump_bars(du_info.StatusPumpe5));
 
+
+    if (du_info.opt_auto_timer_started) {
+        time_t current_time;
+        time(&current_time);
+        du_info.opt_auto_timer_seconds_elapsed = difftime(current_time, du_info.history_mode_time_on);
+        snprintf(du_info.opt_auto_timer_status, sizeof(du_info.opt_auto_timer_status), "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
+    }
+
     // statuses
     sc(9,  0, dut_label_auto_timer_status()); scc(9,  1, 255, du_info.opt_auto_timer_status);
     sc(10, 0, dut_label_auto_gas_status());   scc(10, 1, 255, du_info.opt_auto_gas_status);
