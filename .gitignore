@@ -6,3 +6,4 @@ test
 pack
 .env
 *.log
+a.out
