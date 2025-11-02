@@ -504,9 +504,6 @@ size_t draw_ui_unsafe()
     scc(8, 1, 222, dut_selected("󱪯", du_info.opt_auto_timer)); sc(7, 1, dut_heat(du_info.mod_rada));
     scc(8, 2, 192, "󱖫");                                       sc(7, 2, dut_regime(du_info.mod_rada));
 
-    scc(7, 3, 222, dut_selected("󱪯", du_info.opt_auto_timer)); sc(7, 1, dut_heat(du_info.mod_rada));
-    scc(8, 3, 192, "󱖫");                                       sc(7, 2, dut_regime(du_info.mod_rada));
-
     const char* pad2 = "           ";
     sc(7, 3, pad2);
     sc(8, 3, pad2);
@@ -517,8 +514,8 @@ size_t draw_ui_unsafe()
     scc(8, 8,  78, dut_lbl_elec());                                    sc(7, 8, dut_draw_pump_bars(du_info.StatusPumpe5));
 
     // statuses
-    sc(9,  0, dut_label_auto_timer_status()); sc(9,  1, du_info.opt_auto_timer_status);
-    sc(10, 0, dut_label_auto_gas_status());   sc(10, 1, du_info.opt_auto_gas_status);
+    sc(9,  0, dut_label_auto_timer_status()); scc(9,  1, 255, du_info.opt_auto_timer_status);
+    sc(10, 0, dut_label_auto_gas_status());   scc(10, 1, 255, du_info.opt_auto_gas_status);
     // clang-format on
 
     spin_spinner(&spinner_circle);
