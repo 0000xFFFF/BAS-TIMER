@@ -26,6 +26,7 @@ for_window [class="^.*"] border pixel 1
 #for_window [class="^.*"] floating enable
 for_window [class="Pavucontrol"] floating enable
 for_window [class="Alacritty"] fullscreen enable
+for_window [class="Konsole"] fullscreen enable
 #default_border pixel 1
 #default_floating_border pixel 1
 #gaps inner 15
