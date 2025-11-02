@@ -180,6 +180,7 @@ typedef struct {
     char color[8];
     char bg_color[8];
     bool bold;
+    bool underline;
     bool has_style;
 } StyleState;
 
@@ -237,6 +238,17 @@ void parse_ansi_sequence(const char* seq, StyleState* state)
             state->bold = true;
             state->has_style = true;
         }
+        else if (code == 4) {
+            // Underline
+            state->underline = true;
+            state->has_style = true;
+        }
+        else if (code == 24) {
+            // Underline off
+            state->underline = false;
+            // Update has_style if other styles exist
+            state->has_style = state->bold || state->color[0] || state->bg_color[0];
+        }
         else if (code == 38) {
             // Foreground color
             token = strtok(NULL, ";");
@@ -284,6 +296,10 @@ void generate_style_string(const StyleState* state, char* style_str, size_t max_
 
     if (state->bold) {
         strncat(style_str, "font-weight: bold; ", max_len - strlen(style_str) - 1);
+    }
+
+    if (state->underline) {
+        strncat(style_str, "text-decoration: underline; ", max_len - strlen(style_str) - 1);
     }
 }
 
