@@ -168,10 +168,3 @@ void render_marquee(Marquee* m, char* buffer, size_t buffer_size)
     }
     buffer[buf_pos] = '\0';
 }
-
-// Free marquee resources
-void free_marquee(Marquee* m)
-{
-    if (m->text) free(m->text);
-    m->text = NULL;
-}
