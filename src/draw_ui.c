@@ -382,19 +382,42 @@ static int utf8_display_width(const char* s)
 {
     mbstate_t ps = {0};
     wchar_t wc;
-    const char* p = s;
     int width = 0;
-    size_t n;
 
-    while ((n = mbrtowc(&wc, p, MB_CUR_MAX, &ps)) > 0) {
+    const char* p = s;
+
+    while (*p) {
+        // skip ANSI escape sequences (e.g., "\033[31m")
+        if (*p == '\033') {
+            if (*(p + 1) == '[') {
+                p += 2;
+                while (*p && (*p < '@' || *p > '~')) // skip until letter ending sequence
+                    p++;
+                if (*p) p++; // skip final letter
+                continue;
+            }
+        }
+
+        // convert next multibyte character
+        size_t n = mbrtowc(&wc, p, MB_CUR_MAX, &ps);
+        if (n == (size_t)-1 || n == (size_t)-2) {
+            // invalid UTF-8, skip a byte
+            p++;
+            continue;
+        }
+        else if (n == 0) {
+            break;
+        }
+
         int w = wcwidth(wc);
         if (w > 0) width += w;
         p += n;
     }
+
     return width;
 }
 
-#define TARGET_WIDTH 35
+#define TARGET_WIDTH 20
 
 static void print_buffer_padded()
 {
