@@ -33,7 +33,7 @@ TERM = "alacritty"
 size = 30
 
 [font.normal]
-family = "GohuFont 11 Nerd Font Mono"
+family = "DepartureMono Nerd Font Mono"
 style = "Regular"
 
 [window]
