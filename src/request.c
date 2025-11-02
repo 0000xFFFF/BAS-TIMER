@@ -155,12 +155,13 @@ enum RequestStatus update_info_wttrin()
     if (request.output.buf) {
 
         struct wttrin_info wttrin = {0};
+        wttrin.valid = true;
 
         size_t b = 0;
         b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b); // append hour:minute
         b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, " ");
         b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s", request.output.buf); // write wttrin.buffer to buffer
-                                                                                               //
+
         free((void*)request.output.buf);
 
         size_t l = strlen(wttrin.buffer);
@@ -170,7 +171,6 @@ enum RequestStatus update_info_wttrin()
 
         init_marquee(&wttrin.marquee, wttrin.buffer, 40, 1);
 
-        wttrin.valid = true;
 
         update_info_wttrin_safe_io(&wttrin, &g_wttrin);
     }
