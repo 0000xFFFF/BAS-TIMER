@@ -6,8 +6,8 @@ typedef struct {
     char** frames;    // Array of frames (strings)
     int frame_count;  // Number of frames
     int index;        // Current frame index
-    int i;            // 
-    int spin_on;      // Spin every i frames
+    int i;            // Iter for update_on
+    int update_on;    // Spin every i frames
 } Spinner;
 
 // Function prototypes

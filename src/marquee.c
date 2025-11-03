@@ -1,9 +1,9 @@
+#include "marquee.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <wchar.h>
-#include "marquee.h"
 
 // Compute visible length (ignore ANSI)
 int marquee_visible_length(const char* str)
@@ -86,7 +86,7 @@ static int write_next_char(Marquee* m, const char* str, int* idx, char** buf_ptr
 }
 
 // Initialize marquee
-void marquee_init(Marquee* m, const char* text, int width)
+void marquee_init(Marquee* m, const char* text, int width, int start_delay, int update_on)
 {
     m->text = text; // Store pointer directly, don't copy
     m->width = width;
@@ -94,6 +94,8 @@ void marquee_init(Marquee* m, const char* text, int width)
     m->text_len = marquee_visible_length(text);
     m->scroll_needed = m->text_len > width;
     m->ansi_state[0] = '\0';
+    m->update_on = update_on;
+    m->start_delay = start_delay;
 }
 
 // Render frame to buffer
@@ -166,6 +168,13 @@ int marquee_render(Marquee* m, char* buffer, size_t size)
 void marquee_scroll(Marquee* m)
 {
     if (!m->scroll_needed) return;
-    m->pos++;
-    if (m->pos >= m->text_len) m->pos = 0;
+    m->i++;
+
+    if (m->start_delay != 0 && m->pos == 0 && m->i < m->start_delay) { return; }
+
+    if (m->i >= m->update_on) {
+        m->i = 0;
+        m->pos++;
+        if (m->pos >= m->text_len) m->pos = 0;
+    }
 }

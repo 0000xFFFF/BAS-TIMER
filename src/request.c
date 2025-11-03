@@ -159,9 +159,11 @@ enum RequestStatus update_info_wttrin()
         wttrin.valid = true;
 
         size_t b = 0;
-        b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b); // append hour:minute
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, " ");
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "@ ");
+        b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b); // prepend hour:minute
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, ": ");
         b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s", request.output.buf); // write wttrin.buffer to buffer
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "  ");
 
         free((void*)request.output.buf);
 
@@ -170,7 +172,7 @@ enum RequestStatus update_info_wttrin()
 
         wttrin.weather = detect_weather(wttrin.buffer);
 
-        marquee_init(&wttrin.marquee, wttrin.buffer, MAX_TERM_WIDTH);
+        marquee_init(&wttrin.marquee, wttrin.buffer, MAX_TERM_WIDTH, 10, 1);
 
         update_info_wttrin_safe_io(&wttrin, &g_wttrin);
     }

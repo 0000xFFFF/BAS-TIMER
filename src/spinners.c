@@ -7,13 +7,13 @@ static void init_spinner(Spinner* spinner, char** frames, int frame_count, int s
     spinner->frame_count = frame_count;
     spinner->index = 0;
     spinner->i = 0;
-    spinner->spin_on = spin_on;
+    spinner->update_on = spin_on;
 }
 
 void spin_spinner(Spinner* spinner)
 {
     spinner->i++;
-    if (spinner->i >= spinner->spin_on) {
+    if (spinner->i >= spinner->update_on) {
         spinner->i = 0;
         spinner->index = (spinner->index + 1) % spinner->frame_count;
     }
