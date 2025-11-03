@@ -104,7 +104,7 @@ void print_bas_info(const struct bas_info* b)
 
 enum Weather detect_weather(const char* text)
 {
-    for (int w = WEATHER_CLEAR; w <= WEATHER_FOG; w++) {
+    for (int w = WEATHER_CLEAR; w <= WEATHER_SNOW; w++) {
         for (int k = 0; weather_keywords[w][k] != NULL; k++) {
             if (istrstr(text, weather_keywords[w][k])) {
                 return w;
