@@ -28,7 +28,7 @@ const int SLEEP_MS_DRAW =
 #ifdef DEBUG
     1000;
 #else
-    250;
+    100;
 #endif
 const int SLEEP_MS_BAS = 3000;              // 3 sec
 const int SLEEP_MS_WTTRIN = 60 * 15 * 1000; // 15 min
