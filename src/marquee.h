@@ -4,23 +4,18 @@
 #include <stddef.h>
 
 typedef struct {
-    const char* text;  // The text to scroll (ANSI + UTF-8 allowed)
-    int width;         // Terminal width for scrolling
-    int pos;           // Current scroll position in visible chars
-    int text_len;      // Visible length (excluding ANSI)
-    int scroll_needed; // True if scrolling required
-    int i;             // Internal counter
-    int scroll_on;     // Scroll every n calls
-    char ansi_state[128]; // Current ANSI codes
+    const char* text;
+    int width;
+    int pos;      // Scroll position in visible chars
+    int text_len; // Visible length
+    int scroll_needed;
+    char ansi_state[128]; // Active ANSI codes
 } Marquee;
 
-// Initialize a marquee
-void init_marquee(Marquee* m, const char* text, int width, int scroll_on);
 
-// Scroll the marquee (update internal position)
-void scroll_marquee(Marquee* m);
-
-// Render current frame into a buffer (does not print)
-void render_marquee(Marquee* m, char* buffer, size_t buffer_size);
+extern int marquee_visible_length(const char* str);
+extern void marquee_init(Marquee* m, const char* text, int width);
+extern int marquee_render(Marquee* m, char* buffer, size_t size);
+extern void marquee_scroll(Marquee* m);
 
 #endif // MARQUEE_H

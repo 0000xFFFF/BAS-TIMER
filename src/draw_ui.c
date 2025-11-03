@@ -2,10 +2,10 @@
 #include "draw_ui.h"
 #include "colors.h"
 #include "globals.h"
+#include "marquee.h"
 #include "request.h"
 #include "serve_websocket.h"
 #include "spinners.h"
-#include "marquee.h"
 #include "term.h"
 #include "utils.h"
 #include <locale.h>
@@ -447,6 +447,7 @@ static void print_buffer_padded()
 
             p++;
             line_start = p;
+            fflush(stdout);
         }
         else {
             p++;
@@ -474,8 +475,8 @@ static void print_buffer_padded()
 static char* dut_wttrin()
 {
     if (du_wttrin.valid) {
-        render_marquee(&du_wttrin.marquee, g_temp, sizeof(g_temp));
-        scroll_marquee(&du_wttrin.marquee);
+        marquee_render(&du_wttrin.marquee, g_temp, sizeof(g_temp));
+        update_info_wttrin_scroll_marquee();
         return g_temp;
     }
     return du_wttrin.buffer;

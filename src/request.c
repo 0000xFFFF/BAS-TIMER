@@ -128,6 +128,7 @@ static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct wttrin_info g_wttrin = {0};
 
+
 void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out)
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
@@ -169,11 +170,17 @@ enum RequestStatus update_info_wttrin()
 
         wttrin.weather = detect_weather(wttrin.buffer);
 
-        init_marquee(&wttrin.marquee, wttrin.buffer, 40, 1);
-
+        marquee_init(&wttrin.marquee, wttrin.buffer, MAX_TERM_WIDTH);
 
         update_info_wttrin_safe_io(&wttrin, &g_wttrin);
     }
 
     return request.status;
+}
+
+void update_info_wttrin_scroll_marquee()
+{
+    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    marquee_scroll(&g_wttrin.marquee);
+    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }
