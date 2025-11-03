@@ -172,7 +172,7 @@ enum RequestStatus update_info_wttrin()
 
         wttrin.weather = detect_weather(wttrin.buffer);
 
-        marquee_init(&wttrin.marquee, wttrin.buffer, MAX_TERM_WIDTH, 10, 1);
+        marquee_init(&wttrin.marquee, wttrin.buffer, MAX_TERM_WIDTH, 100, 1);
 
         update_info_wttrin_safe_io(&wttrin, &g_wttrin);
     }
@@ -183,6 +183,6 @@ enum RequestStatus update_info_wttrin()
 void update_info_wttrin_scroll_marquee()
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    marquee_scroll(&g_wttrin.marquee);
+    marquee_scroll_smart(&g_wttrin.marquee);
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }

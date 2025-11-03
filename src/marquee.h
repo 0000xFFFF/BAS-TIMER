@@ -19,5 +19,6 @@ extern int marquee_visible_length(const char* str);
 extern void marquee_init(Marquee* m, const char* text, int width, int start_delay, int update_on);
 extern int marquee_render(Marquee* m, char* buffer, size_t size);
 extern void marquee_scroll(Marquee* m);
+extern void marquee_scroll_smart(Marquee* m);
 
 #endif // MARQUEE_H

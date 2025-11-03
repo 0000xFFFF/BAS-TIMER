@@ -178,3 +178,59 @@ void marquee_scroll(Marquee* m)
         if (m->pos >= m->text_len) m->pos = 0;
     }
 }
+
+void marquee_scroll_smart(Marquee* m)
+{
+    if (!m->scroll_needed) return;
+
+    // Find the current first visible character (after skipping to m->pos)
+    int vis_idx = 0;
+    int byte_idx = 0;
+    char first_visible_char = '\0';
+
+    // Skip to current scroll position
+    while (vis_idx < m->pos) {
+        if (!m->text[byte_idx]) byte_idx = 0;
+
+        if (m->text[byte_idx] == '\033') {
+            // Skip ANSI escape sequence
+            while (m->text[byte_idx] && m->text[byte_idx] != 'm') byte_idx++;
+            if (m->text[byte_idx]) byte_idx++;
+        }
+        else {
+            mbstate_t state;
+            memset(&state, 0, sizeof(state));
+            wchar_t wc;
+            size_t bytes = mbrtowc(&wc, &m->text[byte_idx], MB_CUR_MAX, &state);
+            if (bytes == (size_t)-1 || bytes == (size_t)-2) bytes = 1;
+            byte_idx += bytes;
+            vis_idx++;
+        }
+    }
+
+    // Now find the first actual visible character at current position
+    if (!m->text[byte_idx]) byte_idx = 0;
+
+    // Skip any ANSI sequences at the current position
+    while (m->text[byte_idx] == '\033') {
+        while (m->text[byte_idx] && m->text[byte_idx] != 'm') byte_idx++;
+        if (m->text[byte_idx]) byte_idx++;
+        if (!m->text[byte_idx]) byte_idx = 0;
+    }
+
+    first_visible_char = m->text[byte_idx];
+
+    // If first visible char is '@', pause (similar to start_delay behavior)
+    if (first_visible_char == '@' && m->i < m->start_delay) {
+        m->i++;
+        return;
+    }
+
+    // Normal scrolling behavior
+    m->i++;
+    if (m->i >= m->update_on) {
+        m->i = 0;
+        m->pos++;
+        if (m->pos >= m->text_len) m->pos = 0;
+    }
+}
