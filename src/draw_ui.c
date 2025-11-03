@@ -472,11 +472,13 @@ static void print_buffer_padded()
     }
 }
 
-static char* dut_wttrin()
+static char* dut_wttrin(int term_width)
 {
     if (du_wttrin.valid) {
-        marquee_render(&du_wttrin.marquee, g_temp, sizeof(g_temp));
-        update_info_wttrin_scroll_marquee();
+        char temp[sizeof(g_temp) - 5];
+        marquee_render(&du_wttrin.marquee, temp, sizeof(temp));
+        snprintf(g_temp, sizeof(g_temp), "\r%s\033[K", temp);
+        update_info_wttrin_scroll_marquee(term_width);
         return g_temp;
     }
     return du_wttrin.buffer;
@@ -511,7 +513,7 @@ size_t draw_ui_unsafe()
     sc(0, 5, dut_status_to_emoji(du_info.status));
 
     // row 1
-    scc(1, 0, 181, dut_wttrin());
+    scc(1, 0, 181, dut_wttrin(term_w));
 
     // row 2
     scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, dut_ip());

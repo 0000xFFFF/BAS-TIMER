@@ -135,7 +135,8 @@ extern void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* 
 extern void update_info_wttrin_init();
 extern enum RequestStatus update_info_wttrin();
 extern void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out);
-extern void update_info_wttrin_scroll_marquee();
+extern void update_info_wttrin_scroll_marquee(int term_width);
+
 
 // request_send.c
 extern enum RequestStatus request_send(struct Request* request);

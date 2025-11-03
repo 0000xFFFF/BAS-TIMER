@@ -98,6 +98,13 @@ void marquee_init(Marquee* m, const char* text, int width, int start_delay, int 
     m->start_delay = start_delay;
 }
 
+void marquee_update_width(Marquee* m, int width)
+{
+    m->width = width;
+    m->text_len = marquee_visible_length(m->text);
+    m->scroll_needed = m->text_len > width;
+}
+
 // Render frame to buffer
 int marquee_render(Marquee* m, char* buffer, size_t size)
 {
