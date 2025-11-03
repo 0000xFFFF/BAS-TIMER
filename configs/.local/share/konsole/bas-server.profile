@@ -1,7 +1,7 @@
 [Appearance]
 AntiAliasFonts=true
 ColorScheme=WhiteOnBlack
-Font=InconsolataGo Nerd Font Mono,32,-1,5,700,0,0,0,0,0,0,0,0,0,0,1,Bold
+Font=GohuFont uni11 Nerd Font Mono,32,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Regular
 UseFontLineChararacters=true
 
 [General]
