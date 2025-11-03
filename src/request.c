@@ -180,10 +180,16 @@ enum RequestStatus update_info_wttrin()
     return request.status;
 }
 
-void update_info_wttrin_scroll_marquee(int term_width)
+void update_info_wttrin_marquee_scroll()
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
     marquee_scroll_smart(&g_wttrin.marquee);
+    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+}
+
+void update_info_wttrin_marquee_update_width(int term_width)
+{
+    pthread_mutex_lock(&g_update_info_wttrin_mutex);
     marquee_update_width(&g_wttrin.marquee, term_width);
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }

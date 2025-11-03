@@ -472,13 +472,13 @@ static void print_buffer_padded()
     }
 }
 
-static char* dut_wttrin(int term_width)
+static char* dut_wttrin()
 {
     if (du_wttrin.valid) {
         char temp[sizeof(g_temp) - 5];
         marquee_render(&du_wttrin.marquee, temp, sizeof(temp));
         snprintf(g_temp, sizeof(g_temp), "\r%s\033[K", temp);
-        update_info_wttrin_scroll_marquee(term_width);
+        update_info_wttrin_marquee_scroll();
         return g_temp;
     }
     return du_wttrin.buffer;
@@ -492,6 +492,9 @@ size_t draw_ui_unsafe()
     int term_h = term_height();
     if (term_w != g_term_w) {
         g_term_w = term_w;
+        if (du_wttrin.valid) {
+            update_info_wttrin_marquee_update_width(g_term_w);
+        }
         term_clear();
     }
     if (term_h != g_term_h) {
@@ -513,38 +516,73 @@ size_t draw_ui_unsafe()
     sc(0, 5, dut_status_to_emoji(du_info.status));
 
     // row 1
-    scc(1, 0, 181, dut_wttrin(term_w));
+    scc(1, 0, 181, dut_wttrin());
 
     // row 2
     scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, dut_ip());
     sc(2, 1, dut_conns());
 
-    // clang-format off
-    scc(3, 0, 230, get_frame(&spinner_solar_panel, 1)); sc(3, 1, dut_temp_to_color(du_info.Tsolar,  du_info.peak_min_solar, du_info.peak_max_solar)); sc(3, 2, human_temp_to_emoji(du_info.Tsolar));
-    scc(4, 0, 213, get_frame(&spinner_window, 1));      sc(4, 1, dut_temp_to_color(du_info.Tspv,    du_info.peak_min_human, du_info.peak_max_human)); sc(4, 2, human_temp_to_emoji(du_info.Tspv));
-    scc(5, 0,  76, get_frame(&spinner_house, 1));       sc(5, 1, dut_temp_to_color(du_info.Tsobna,  du_info.peak_min_human, du_info.peak_max_human)); sc(5, 2, human_temp_to_emoji(du_info.Tsobna));
-    scc(6, 0, 154, get_frame(&spinner_cog, 1));         sc(6, 1, dut_temp_to_color(du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human)); sc(6, 2, human_temp_to_emoji(du_info.Tzadata));
+    scc(3, 0, 214, "");
+    scc(4, 0, 220, "");
+    scc(5, 0, 226, "");
+    scc(6, 0, 110, get_frame(&spinner_recycle, 1));
 
-    sc(3, 3, " "); scc(3, 4, 214, "");                            sc(3, 5, dut_temp_to_color(du_info.Tmax,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(3, 6, dut_max_check());
-    sc(4, 3, " "); scc(4, 4, 220, "");                            sc(4, 5, dut_temp_to_color(du_info.Tmid,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(4, 6, dut_mid_check());
-    sc(5, 3, " "); scc(5, 4, 226, "");                            sc(5, 5, dut_temp_to_color(du_info.Tmin,  du_info.peak_min_buf,  du_info.peak_max_buf));  sc(5, 6, dut_min_warn());
-    sc(6, 3, " "); scc(6, 4, 110, get_frame(&spinner_recycle, 1)); sc(6, 5, dut_temp_to_color(du_info.Tfs,   du_info.peak_min_circ, du_info.peak_max_circ)); sc(6, 6, " ");
+    sc(3, 1, dut_temp_to_color(du_info.Tmax, du_info.peak_min_buf, du_info.peak_max_buf));
+    sc(4, 1, dut_temp_to_color(du_info.Tmid, du_info.peak_min_buf, du_info.peak_max_buf));
+    sc(5, 1, dut_temp_to_color(du_info.Tmin, du_info.peak_min_buf, du_info.peak_max_buf));
+    sc(6, 1, dut_temp_to_color(du_info.Tfs, du_info.peak_min_circ, du_info.peak_max_circ));
+
+    sc(3, 2, dut_max_check());
+    sc(4, 2, dut_mid_check());
+    sc(5, 2, dut_min_warn());
+    sc(6, 2, " ");
+
+    sc(3, 3, " ");
+    sc(4, 3, " ");
+    sc(5, 3, " ");
+    sc(6, 3, " ");
+
+    scc(3, 4, 230, get_frame(&spinner_solar_panel, 1));
+    scc(4, 4, 213, get_frame(&spinner_window, 1));
+    scc(5, 4, 76, get_frame(&spinner_house, 1));
+    scc(6, 4, 154, get_frame(&spinner_cog, 1));
+
+    sc(3, 5, dut_temp_to_color(du_info.Tsolar, du_info.peak_min_solar, du_info.peak_max_solar));
+    sc(4, 5, dut_temp_to_color(du_info.Tspv, du_info.peak_min_human, du_info.peak_max_human));
+    sc(5, 5, dut_temp_to_color(du_info.Tsobna, du_info.peak_min_human, du_info.peak_max_human));
+    sc(6, 5, dut_temp_to_color(du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human));
+
+    sc(3, 6, human_temp_to_emoji(du_info.Tsolar));
+    sc(4, 6, human_temp_to_emoji(du_info.Tspv));
+    sc(5, 6, human_temp_to_emoji(du_info.Tsobna));
+    sc(6, 6, human_temp_to_emoji(du_info.Tzadata));
+
 
     const char* pad = " ";
     sc(7, 0, pad);
     sc(8, 0, pad);
 
-    scc(8, 1, 222, dut_selected("󱪯", du_info.opt_auto_timer)); sc(7, 1, dut_heat(du_info.mod_rada));
-    scc(8, 2, 192, "󱖫");                                       sc(7, 2, dut_regime(du_info.mod_rada));
+    sc(7, 1, dut_draw_pump_bars(du_info.StatusPumpe6));
+    sc(7, 2, dut_draw_pump_bars(du_info.StatusPumpe4));
+    sc(7, 3, dut_draw_pump_bars(du_info.StatusPumpe3));
+    sc(7, 4, dut_draw_pump_bars(du_info.StatusPumpe7));
+    sc(7, 5, dut_draw_pump_bars(du_info.StatusPumpe5));
 
-    const char* pad2 = "           ";
-    sc(7, 3, pad2);
-    sc(8, 3, pad2);
-    scc(8, 4, 212, dut_lbl_heat());                                    sc(7, 4, dut_draw_pump_bars(du_info.StatusPumpe6));
-    scc(8, 5, 203, dut_selected(dut_lbl_gas(), du_info.opt_auto_gas)); sc(7, 5, dut_draw_pump_bars(du_info.StatusPumpe4));
-    scc(8, 6, 168, dut_lbl_circ());                                    sc(7, 6, dut_draw_pump_bars(du_info.StatusPumpe3));
-    scc(8, 7, 224, dut_lbl_solar());                                   sc(7, 7, dut_draw_pump_bars(du_info.StatusPumpe7));
-    scc(8, 8,  78, dut_lbl_elec());                                    sc(7, 8, dut_draw_pump_bars(du_info.StatusPumpe5));
+    scc(8, 1, 212, dut_lbl_heat());
+    scc(8, 2, 203, dut_selected(dut_lbl_gas(), du_info.opt_auto_gas));
+    scc(8, 3, 168, dut_lbl_circ());
+    scc(8, 4, 224, dut_lbl_solar());
+    scc(8, 5, 78, dut_lbl_elec());
+
+    const char* pad2 = "     ";
+    sc(7, 6, pad2);
+    sc(8, 6, pad2);
+
+    sc(7, 7, dut_heat(du_info.mod_rada));
+    scc(8, 7, 222, dut_selected("󱪯", du_info.opt_auto_timer));
+    sc(7, 8, dut_regime(du_info.mod_rada));
+    scc(8, 8, 192, "󱖫");
+
 
 
     if (du_info.opt_auto_timer_started) {
@@ -555,9 +593,10 @@ size_t draw_ui_unsafe()
     }
 
     // statuses
-    sc(9,  0, dut_label_auto_timer_status()); scc(9,  1, 255, du_info.opt_auto_timer_status);
-    sc(10, 0, dut_label_auto_gas_status());   scc(10, 1, 255, du_info.opt_auto_gas_status);
-    // clang-format on
+    sc(9, 0, dut_label_auto_timer_status());
+    scc(9, 1, 255, du_info.opt_auto_timer_status);
+    sc(10, 0, dut_label_auto_gas_status());
+    scc(10, 1, 255, du_info.opt_auto_gas_status);
 
     spin_spinner(&spinner_circle);
     spin_spinner(&spinner_eye_left);
