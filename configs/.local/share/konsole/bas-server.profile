@@ -1,6 +1,8 @@
 [Appearance]
-ColorScheme=Linux
-Font=DepartureMono Nerd Font Mono,50,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+AntiAliasFonts=true
+ColorScheme=WhiteOnBlack
+Font=InconsolataGo Nerd Font Mono,32,-1,5,700,0,0,0,0,0,0,0,0,0,0,1,Bold
+UseFontLineChararacters=true
 
 [General]
 Name=bas-server
