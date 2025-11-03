@@ -12,7 +12,7 @@ const char* URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=
 
 // wttr.in
 //const char* URL_WTTRIN = "https://wttr.in/?format=%C+%c+%t+%u+%h";
-const char* URL_WTTRIN = "https://wttr.in/?format=%40+%C+%c+%t+(%f)%2C+%40+UV:+%u%2C+Perc:+%h%2C+%40+Wind:+%w";
+const char* URL_WTTRIN = "https://wttr.in/?format=%40+%C+%c+%40+%t+(%f)%2C+%40+UV:+%u%2C+Perc:+%h%2C+%40+Wind:+%w";
 
 const char* REQUEST_FORMAT_BAS =
     "GET %s HTTP/1.0\r\n"
