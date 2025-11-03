@@ -38,7 +38,7 @@ const char* weather_keywords[][5] = {
     [WEATHER_SNOW] = {"snow", "blizzard", "ice", "sleet", NULL},
     [WEATHER_THUNDER] = {"thunder", "storm", "lightning", NULL},
     [WEATHER_RAIN] = {"rain", "drizzle", NULL},
-    [WEATHER_CLOUD] = {"cloud", "cloudy", NULL},
+    [WEATHER_CLOUD] = {"cloud", "cloudy", "overcast", NULL},
     [WEATHER_FOG] = {"fog", "mist", NULL},
     [WEATHER_CLEAR] = {"clear", "sunny", NULL},
 };
