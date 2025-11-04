@@ -1,7 +1,7 @@
 [Appearance]
 AntiAliasFonts=true
 ColorScheme=WhiteOnBlack
-Font=GohuFont 11 Nerd Font Mono,53,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Regular
+Font=GohuFont 11 Nerd Font Mono,50,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Regular
 UseFontLineChararacters=true
 
 [General]
