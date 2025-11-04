@@ -507,10 +507,10 @@ size_t draw_ui_unsafe()
     scc(0, 0, color_hour, hour_to_clock(hour));
     scc(0, 1, color_hour, dut_hour_to_emoji(hour));
     scc(0, 2, 182, dut_time());
-    sc(0, 3, dut_wttrin_emoji());
-    scc(0, 4, 228, get_frame(&spinner_lights, 1));
-    sc(0, 5, dut_status_to_emoji(du_info.status));
-    sc(0, 6, dut_status_to_emoji(du_wttrin.status));
+    sc(0, 3, dut_status_to_emoji(du_info.status));
+    sc(0, 4, dut_status_to_emoji(du_wttrin.status));
+    sc(0, 5, dut_wttrin_emoji());
+    sc(0, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_m]);
 
     // row 1
     scc(1, 0, 181, dut_wttrin());
@@ -570,14 +570,12 @@ size_t draw_ui_unsafe()
     scc(8, 5, 78, dut_lbl_elec());
 
 
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_h+1) sc(7, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_h]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_p+1) sc(7, 7, du_wttrin.csv[WTTRIN_CSV_FIELD_p]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_P+1) sc(7, 8, du_wttrin.csv[WTTRIN_CSV_FIELD_P]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_h+1) scc(7, 6, 123, du_wttrin.csv[WTTRIN_CSV_FIELD_h]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_p+1) scc(7, 7, 111, du_wttrin.csv[WTTRIN_CSV_FIELD_p]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_P+1) scc(7, 8, 177, du_wttrin.csv[WTTRIN_CSV_FIELD_P]);
 
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_u+1) sc(8, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_u]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_w+1) sc(8, 7, du_wttrin.csv[WTTRIN_CSV_FIELD_w]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_m+1) sc(8, 8, du_wttrin.csv[WTTRIN_CSV_FIELD_m]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_M+1) sc(8, 9, du_wttrin.csv[WTTRIN_CSV_FIELD_M]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_u+1) scc(8, 6, 226, du_wttrin.csv[WTTRIN_CSV_FIELD_u]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_w+1) scc(8, 7, 195, du_wttrin.csv[WTTRIN_CSV_FIELD_w]);
 
     if (du_info.opt_auto_timer_started) {
         time_t current_time;
