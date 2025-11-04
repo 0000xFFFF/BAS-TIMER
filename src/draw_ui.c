@@ -571,14 +571,13 @@ size_t draw_ui_unsafe()
 
 
     if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_h+1) sc(7, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_h]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_p+1) sc(7, 7, du_wttrin.csv[WTTRIN_CSV_FIELD_p]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_P+1) sc(7, 8, du_wttrin.csv[WTTRIN_CSV_FIELD_P]);
+
     if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_u+1) sc(8, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_u]);
-
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_w+1) sc(7, 7, du_wttrin.csv[WTTRIN_CSV_FIELD_w]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_p+1) sc(8, 7, du_wttrin.csv[WTTRIN_CSV_FIELD_p]);
-
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_m+1) sc(7, 8, du_wttrin.csv[WTTRIN_CSV_FIELD_m]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_M+1) sc(7, 9, du_wttrin.csv[WTTRIN_CSV_FIELD_M]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_P+1) sc(8, 8, du_wttrin.csv[WTTRIN_CSV_FIELD_P]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_w+1) sc(8, 7, du_wttrin.csv[WTTRIN_CSV_FIELD_w]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_m+1) sc(8, 8, du_wttrin.csv[WTTRIN_CSV_FIELD_m]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_M+1) sc(8, 9, du_wttrin.csv[WTTRIN_CSV_FIELD_M]);
 
     if (du_info.opt_auto_timer_started) {
         time_t current_time;
