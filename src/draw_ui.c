@@ -29,8 +29,6 @@ static char g_screen[MAX_ROWS][MAX_COLS][MAX_CELL];
 static char g_term_buffer[MAX_ROWS * MAX_COLS * MAX_CELL];
 static size_t g_term_buffer_b = 0;
 
-static int g_term_w;
-static int g_term_h;
 
 static char g_temp[MAX_CELL];
 static size_t g_temp_b = 0;
@@ -438,7 +436,7 @@ static void print_buffer_padded()
             int w = utf8_display_width(line);
 
             // pad spaces
-            for (; w < MAX_TERM_WIDTH; w++)
+            for (; w < g_term_w; w++)
                 fputc(' ', stdout);
 
             fputc('\n', stdout);
@@ -463,7 +461,7 @@ static void print_buffer_padded()
         fputs(line, stdout);
 
         int w = utf8_display_width(line);
-        for (; w < MAX_TERM_WIDTH; w++)
+        for (; w < g_term_w; w++)
             fputc(' ', stdout);
 
         fputc('\n', stdout);

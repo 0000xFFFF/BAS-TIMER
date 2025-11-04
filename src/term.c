@@ -13,6 +13,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+int g_term_w = 0;
+int g_term_h = 0;
+
 void term_clear()
 {
     system("clear");
@@ -42,7 +45,6 @@ void term_blank()
     term_clear();
 }
 
-
 int term_width()
 {
     struct winsize w;
@@ -60,4 +62,10 @@ int term_height()
         return 10;
 
     return w.ws_row;
+}
+
+void term_init()
+{
+    g_term_w = term_width();
+    g_term_h = term_height();
 }

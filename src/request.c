@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "marquee.h"
 #include "mongoose.h"
+#include "term.h"
 #include "utils.h"
 #include <float.h>
 #include <pthread.h>
@@ -128,7 +129,6 @@ static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct wttrin_info g_wttrin = {0};
 
-
 void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out)
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
@@ -178,11 +178,10 @@ enum RequestStatus update_info_wttrin()
         // make wttrin marquee
         size_t b = 0;
         b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "@ "); // pause on '@' char
-        b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b); // prepend hour:minute
+        b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b);          // prepend hour:minute
         b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, ": ");
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s %s", wttrin.csv[WTTRIN_CSV_FIELD_C], wttrin.csv[WTTRIN_CSV_FIELD_c]);
-        marquee_init(&wttrin.marquee, wttrin.buffer, MAX_TERM_WIDTH, 1000/SLEEP_MS_DRAW, 1); // 1 sec pause
-
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s %s  ", wttrin.csv[WTTRIN_CSV_FIELD_C], wttrin.csv[WTTRIN_CSV_FIELD_c]);
+        marquee_init(&wttrin.marquee, wttrin.buffer, g_term_w, 1000 / SLEEP_MS_DRAW, 1); // 1 sec pause
     }
 
     update_info_wttrin_safe_io(&wttrin, &g_wttrin);

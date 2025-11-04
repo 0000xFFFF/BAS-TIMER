@@ -28,7 +28,7 @@ const int SLEEP_MS_DRAW =
 #ifdef DEBUG
     1000;
 #else
-    50;
+    250;
 #endif
 const int SLEEP_MS_BAS = 3000;              // 3 sec
 const int SLEEP_MS_WTTRIN = 60 * 15 * 1000; // 15 min
@@ -42,8 +42,6 @@ const int TEMP_BUF_MIN = 45;
 const int TEMP_BUF_MAX = 60;
 const int TEMP_CIRC_MIN = 0;
 const int TEMP_CIRC_MAX = 60;
-
-const int MAX_TERM_WIDTH = 28;
 
 atomic_bool g_running = true;
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;

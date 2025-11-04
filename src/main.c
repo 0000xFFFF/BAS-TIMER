@@ -2,7 +2,6 @@
 #include "globals.h"
 #include "mongoose.h"
 #include "signals.h"
-#include "request.h"
 #include "term.h"
 #include "thread_print_loop.h"
 #include "thread_request_bas.h"
@@ -20,6 +19,7 @@ int main()
 {
     // init
     DPL("MAIN START");
+    term_init();
     change_to_bin_dir();
     mkdir_safe(VAR_DIR);
     signal(SIGINT, signals_sigint);
