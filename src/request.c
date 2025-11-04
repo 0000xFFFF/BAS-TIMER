@@ -170,7 +170,7 @@ static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
                   wttrin->csv[WTTRIN_CSV_FIELD_d]);
 
     const int marquee_pause = 3000; // 3 sec pause
-    marquee_init(&wttrin->marquee_times, wttrin->marquee_times_buf, g_term_w - 4, marquee_pause / SLEEP_MS_DRAW, 1);
+    marquee_init(&wttrin->marquee_times, wttrin->marquee_times_buf, g_term_w - 5, marquee_pause / SLEEP_MS_DRAW, 1);
 }
 
 enum RequestStatus update_info_wttrin()
