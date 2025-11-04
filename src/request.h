@@ -2,8 +2,8 @@
 #define REQUEST_H
 
 #include "globals.h"
-#include "mongoose.h"
 #include "marquee.h"
+#include "mongoose.h"
 #include <stdatomic.h>
 
 extern const char* URL_VARS;
@@ -11,9 +11,36 @@ extern const char* URL_HEAT_OFF;
 extern const char* URL_HEAT_ON;
 extern const char* URL_GAS_OFF;
 extern const char* URL_GAS_ON;
-extern const char* URL_WTTRIN;
 extern const char* REQUEST_FORMAT_BAS;
 extern const char* REQUEST_FORMAT_WTTRIN;
+
+#define URL_WTTRIN_OUTPUT_MAX_FIELDS    20
+#define URL_WTTRIN_OUTPUT_MAX_FIELD_LEN 64
+
+typedef enum {
+    WTTRIN_CSV_FIELD_c, //  Weather condition,
+    WTTRIN_CSV_FIELD_C, //  Weather condition textual name,
+    WTTRIN_CSV_FIELD_x, //  Weather condition, plain-text symbol,
+    WTTRIN_CSV_FIELD_h, //  Humidity,
+    WTTRIN_CSV_FIELD_t, //  Temperature (Actual),
+    WTTRIN_CSV_FIELD_f, //  Temperature (Feels Like),
+    WTTRIN_CSV_FIELD_w, //  Wind,
+    WTTRIN_CSV_FIELD_l, //  Location,
+    WTTRIN_CSV_FIELD_m, //  Moon phase 🌑🌒🌓🌔🌕🌖🌗🌘,
+    WTTRIN_CSV_FIELD_M, //  Moon day,
+    WTTRIN_CSV_FIELD_p, //  Precipitation (mm/3 hours),
+    WTTRIN_CSV_FIELD_P, //  Pressure (hPa),
+    WTTRIN_CSV_FIELD_u, //  UV index (1-12),
+    WTTRIN_CSV_FIELD_D, //  Dawn*,
+    WTTRIN_CSV_FIELD_S, //  Sunrise*,
+    WTTRIN_CSV_FIELD_z, //  Zenith*,
+    WTTRIN_CSV_FIELD_s, //  Sunset*,
+    WTTRIN_CSV_FIELD_d, //  Dusk*,
+    WTTRIN_CSV_FIELD_T, //  Current time*,
+    WTTRIN_CSV_FIELD_Z  //  Local timezone.
+} WttrinCsvField;
+
+extern const char* URL_WTTRIN;
 
 enum RequestStatus {
     REQUEST_STATUS_RUNNING = 0,
@@ -111,9 +138,13 @@ extern const char* weather_keywords[][5];
 
 struct wttrin_info {
     bool valid;
+    enum RequestStatus status;
     char buffer[BIGBUFF];
     enum Weather weather;
     Marquee marquee;
+
+    char csv[URL_WTTRIN_OUTPUT_MAX_FIELDS][URL_WTTRIN_OUTPUT_MAX_FIELD_LEN];
+    int csv_parsed;
 };
 
 #define TEMP_MIN_SOLAR 10
@@ -138,7 +169,6 @@ extern void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttr
 extern void update_info_wttrin_marquee_scroll();
 extern void update_info_wttrin_marquee_update_width(int term_width);
 
-
 // request_send.c
 extern enum RequestStatus request_send(struct Request* request);
 extern enum RequestStatus request_send_quick(const char* url);
@@ -153,6 +183,7 @@ extern char* request_status_to_smallstr(enum RequestStatus status);
 extern bool request_status_failed(enum RequestStatus status);
 extern void print_bas_info(const struct bas_info* b);
 extern enum Weather detect_weather(const char* text);
+extern int parse_csv(const char* input, int nfields, int field_size, char fields[][field_size]);
 
 #define ERROR_NONE    0
 #define ERROR_TIMEOUT 1

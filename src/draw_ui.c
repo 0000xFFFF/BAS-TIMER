@@ -514,6 +514,7 @@ size_t draw_ui_unsafe()
     sc(0, 3, dut_wttrin_emoji());
     scc(0, 4, 228, get_frame(&spinner_lights, 1));
     sc(0, 5, dut_status_to_emoji(du_info.status));
+    sc(0, 6, dut_status_to_emoji(du_wttrin.status));
 
     // row 1
     scc(1, 0, 181, dut_wttrin());

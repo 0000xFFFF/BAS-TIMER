@@ -153,29 +153,39 @@ enum RequestStatus update_info_wttrin()
     request.remember_response = 1;
     request_send(&request);
 
+    struct wttrin_info wttrin = {0};
+    update_info_wttrin_safe_io(&g_wttrin, &wttrin);
+    wttrin.status = request.status;
+
     if (request.output.buf) {
 
-        struct wttrin_info wttrin = {0};
         wttrin.valid = true;
 
-        size_t b = 0;
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "@ ");
-        b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b); // prepend hour:minute
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, ": ");
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s", request.output.buf); // write wttrin.buffer to buffer
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "  ");
-
+        // parse csv
+        wttrin.csv_parsed = parse_csv(request.output.buf, URL_WTTRIN_OUTPUT_MAX_FIELDS, URL_WTTRIN_OUTPUT_MAX_FIELD_LEN, wttrin.csv);
         free((void*)request.output.buf);
 
-        size_t l = strlen(wttrin.buffer);
-        if (wttrin.buffer[l - 1] == '\n') { wttrin.buffer[l - 1] = '\0'; }
+        D(printf("WTTRIN PARSED: %d\n", wttrin.csv_parsed));
 
-        wttrin.weather = detect_weather(wttrin.buffer);
+        if (wttrin.csv_parsed < URL_WTTRIN_OUTPUT_MAX_FIELDS) {
+            DPL("FAILED TO PARSE WTTRIN");
+            return request.status;
+        }
 
-        marquee_init(&wttrin.marquee, wttrin.buffer, MAX_TERM_WIDTH, 100, 1);
+        // wttrin emoji
+        wttrin.weather = detect_weather(wttrin.csv[WTTRIN_CSV_FIELD_c]);
 
-        update_info_wttrin_safe_io(&wttrin, &g_wttrin);
+        // make wttrin marquee
+        size_t b = 0;
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "@ "); // pause on '@' char
+        b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b); // prepend hour:minute
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, ": ");
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s %s", wttrin.csv[WTTRIN_CSV_FIELD_C], wttrin.csv[WTTRIN_CSV_FIELD_c]);
+        marquee_init(&wttrin.marquee, wttrin.buffer, MAX_TERM_WIDTH, 1000/SLEEP_MS_DRAW, 1); // 1 sec pause
+
     }
+
+    update_info_wttrin_safe_io(&wttrin, &g_wttrin);
 
     return request.status;
 }

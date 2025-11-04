@@ -25,8 +25,10 @@ int main()
     signal(SIGINT, signals_sigint);
     load_env(".env");
 
-    const char* url_wttrin = getenv("URL_WTTRIN");
-    if (url_wttrin != NULL) { URL_WTTRIN = url_wttrin; }
+    // set needed .env vars to globals here
+    // ...
+    // const char* url_wttrin = getenv("URL_WTTRIN"); // this is removed since we are parsing csv
+    // if (url_wttrin != NULL) { URL_WTTRIN = url_wttrin; }
 
 #ifdef DEBUG
     const char* log_level = getenv("LOG_LEVEL");
