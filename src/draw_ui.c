@@ -287,11 +287,9 @@ static char* dut_min_warn()
     return g_temp;
 }
 
-static char* dut_heat(int value)
+static char* dut_heat()
 {
-    g_temp_b = 0;
-    g_temp_b += value ? ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_heat, 1)) : ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "󱪯");
-    return g_temp;
+    return du_info.mod_rada ? get_frame(&spinner_heat, 1) : "󱪯";
 }
 
 static char* dut_regime(int value)
@@ -575,16 +573,8 @@ size_t draw_ui_unsafe()
     scc(8, 4, 224, dut_lbl_solar());
     scc(8, 5, 78, dut_lbl_elec());
 
-    const char* pad2 = "     ";
-    sc(7, 6, pad2);
-    sc(8, 6, pad2);
-
-    sc(7, 7, dut_heat(du_info.mod_rada));
-    scc(8, 7, 222, dut_selected("󱪯", du_info.opt_auto_timer));
-    sc(7, 8, dut_regime(du_info.mod_rada));
-    scc(8, 8, 192, "󱖫");
-
-
+    scc(7, 6, du_info.mod_rada ? COLOR_ON : COLOR_OFF, dut_selected(dut_heat(), du_info.opt_auto_timer));
+    sc(8, 6, dut_regime(du_info.mod_rada));
 
     if (du_info.opt_auto_timer_started) {
         time_t current_time;
