@@ -139,8 +139,38 @@ void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info
 void update_info_wttrin_init()
 {
     struct wttrin_info wttrin = {0};
-    snprintf(wttrin.buffer, sizeof(wttrin.buffer), "...");
+    snprintf(wttrin.marquee_conds_buf, sizeof(wttrin.marquee_conds_buf), "...");
+    snprintf(wttrin.marquee_times_buf, sizeof(wttrin.marquee_times_buf), "...");
     update_info_wttrin_safe_io(&wttrin, &g_wttrin);
+}
+
+static void make_wttrin_marquee_conds(struct wttrin_info* wttrin)
+{
+    size_t b = 0;
+    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, "@ "); // pause on '@' char
+    b += dt_HM(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b);          // prepend hour:minute
+    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, ": ");
+    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, "%s %s  ",
+                  wttrin->csv[WTTRIN_CSV_FIELD_C],
+                  wttrin->csv[WTTRIN_CSV_FIELD_c]);
+
+    const int marquee_pause = 1000; // 1 sec pause
+    marquee_init(&wttrin->marquee_conds, wttrin->marquee_conds_buf, g_term_w, marquee_pause / SLEEP_MS_DRAW, 1);
+}
+
+
+static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
+{
+    size_t b = 0;
+    b += snprintf(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, "@ Dawn 🌄 %s, @ Sunrise 🌅 %s, @ Zenith 🌞 %s, @ Sunset 🌇 %s, @ Dusk 🌆 %s  ",
+                  wttrin->csv[WTTRIN_CSV_FIELD_D],
+                  wttrin->csv[WTTRIN_CSV_FIELD_S],
+                  wttrin->csv[WTTRIN_CSV_FIELD_z],
+                  wttrin->csv[WTTRIN_CSV_FIELD_s],
+                  wttrin->csv[WTTRIN_CSV_FIELD_d]);
+
+    const int marquee_pause = 3000; // 3 sec pause
+    marquee_init(&wttrin->marquee_times, wttrin->marquee_times_buf, g_term_w - 4, marquee_pause / SLEEP_MS_DRAW, 1);
 }
 
 enum RequestStatus update_info_wttrin()
@@ -201,15 +231,9 @@ enum RequestStatus update_info_wttrin()
         // wttrin emoji
         wttrin.weather = detect_weather(wttrin.csv[WTTRIN_CSV_FIELD_C]);
 
-        // make wttrin marquee
-        size_t b = 0;
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "@ "); // pause on '@' char
-        b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b);          // prepend hour:minute
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, ": ");
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s %s  ",
-                      wttrin.csv[WTTRIN_CSV_FIELD_C],
-                      wttrin.csv[WTTRIN_CSV_FIELD_c]);
-        marquee_init(&wttrin.marquee, wttrin.buffer, g_term_w, 1000 / SLEEP_MS_DRAW, 1); // 1 sec pause
+        // make marquees
+        make_wttrin_marquee_conds(&wttrin);
+        make_wttrin_marquee_times(&wttrin);
     }
 
     update_info_wttrin_safe_io(&wttrin, &g_wttrin);
@@ -217,16 +241,30 @@ enum RequestStatus update_info_wttrin()
     return request.status;
 }
 
-void update_info_wttrin_marquee_scroll()
+void update_info_wttrin_marquee_conds_scroll()
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    marquee_scroll_smart(&g_wttrin.marquee);
+    marquee_scroll_smart(&g_wttrin.marquee_conds);
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }
 
-void update_info_wttrin_marquee_update_width(int term_width)
+void update_info_wttrin_marquee_conds_update_width(int term_width)
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    marquee_update_width(&g_wttrin.marquee, term_width);
+    marquee_update_width(&g_wttrin.marquee_conds, term_width);
+    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+}
+
+void update_info_wttrin_marquee_times_scroll()
+{
+    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    marquee_scroll_smart(&g_wttrin.marquee_times);
+    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+}
+
+void update_info_wttrin_marquee_times_update_width(int term_width)
+{
+    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    marquee_update_width(&g_wttrin.marquee_times, term_width);
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }

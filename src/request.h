@@ -18,26 +18,26 @@ extern const char* REQUEST_FORMAT_WTTRIN;
 #define URL_WTTRIN_OUTPUT_MAX_FIELDS    20
 #define URL_WTTRIN_OUTPUT_MAX_FIELD_LEN 64
 typedef enum {
-    WTTRIN_CSV_FIELD_c, //  Weather condition,
-    WTTRIN_CSV_FIELD_C, //  Weather condition textual name,
-    WTTRIN_CSV_FIELD_x, //  Weather condition, plain-text symbol,
-    WTTRIN_CSV_FIELD_h, //  Humidity,
-    WTTRIN_CSV_FIELD_t, //  Temperature (Actual),
-    WTTRIN_CSV_FIELD_f, //  Temperature (Feels Like),
-    WTTRIN_CSV_FIELD_w, //  Wind,
-    WTTRIN_CSV_FIELD_l, //  Location,
-    WTTRIN_CSV_FIELD_m, //  Moon phase 🌑🌒🌓🌔🌕🌖🌗🌘,
-    WTTRIN_CSV_FIELD_M, //  Moon day,
-    WTTRIN_CSV_FIELD_p, //  Precipitation (mm/3 hours),
-    WTTRIN_CSV_FIELD_P, //  Pressure (hPa),
-    WTTRIN_CSV_FIELD_u, //  UV index (1-12),
-    WTTRIN_CSV_FIELD_D, //  Dawn*,
-    WTTRIN_CSV_FIELD_S, //  Sunrise*,
-    WTTRIN_CSV_FIELD_z, //  Zenith*,
-    WTTRIN_CSV_FIELD_s, //  Sunset*,
-    WTTRIN_CSV_FIELD_d, //  Dusk*,
-    WTTRIN_CSV_FIELD_T, //  Current time*,
-    WTTRIN_CSV_FIELD_Z  //  Local timezone.
+    WTTRIN_CSV_FIELD_c, // c -- Weather condition,
+    WTTRIN_CSV_FIELD_C, // C -- Weather condition textual name,
+    WTTRIN_CSV_FIELD_x, // x -- Weather condition, plain-text symbol,
+    WTTRIN_CSV_FIELD_h, // h -- Humidity,
+    WTTRIN_CSV_FIELD_t, // t -- Temperature (Actual),
+    WTTRIN_CSV_FIELD_f, // f -- Temperature (Feels Like),
+    WTTRIN_CSV_FIELD_w, // w -- Wind,
+    WTTRIN_CSV_FIELD_l, // l -- Location,
+    WTTRIN_CSV_FIELD_m, // m -- Moon phase 🌑🌒🌓🌔🌕🌖🌗🌘,
+    WTTRIN_CSV_FIELD_M, // M -- Moon day,
+    WTTRIN_CSV_FIELD_p, // p -- Precipitation (mm/3 hours),
+    WTTRIN_CSV_FIELD_P, // P -- Pressure (hPa),
+    WTTRIN_CSV_FIELD_u, // u -- UV index (1-12),
+    WTTRIN_CSV_FIELD_D, // D -- Dawn*,
+    WTTRIN_CSV_FIELD_S, // S -- Sunrise*,
+    WTTRIN_CSV_FIELD_z, // z -- Zenith*,
+    WTTRIN_CSV_FIELD_s, // s -- Sunset*,
+    WTTRIN_CSV_FIELD_d, // d -- Dusk*,
+    WTTRIN_CSV_FIELD_T, // T -- Current time*,
+    WTTRIN_CSV_FIELD_Z  // Z -- Local timezone.
 } WttrinCsvField;
 
 extern const char* URL_WTTRIN;
@@ -138,10 +138,15 @@ extern const char* weather_keywords[][5];
 
 struct wttrin_info {
     bool valid;
+
     enum RequestStatus status;
-    char buffer[BIGBUFF];
     enum Weather weather;
-    Marquee marquee;
+
+    char marquee_conds_buf[BIGBUFF];
+    Marquee marquee_conds; // c -- Weather condition, C -- Weather condition textual name
+
+    char marquee_times_buf[BIGBUFF];
+    Marquee marquee_times; // D -- Dawn*, S -- Sunrise*, z -- Zenith*, s -- Sunset*, d -- Dusk*
 
     char csv[URL_WTTRIN_OUTPUT_MAX_FIELDS][URL_WTTRIN_OUTPUT_MAX_FIELD_LEN];
     int csv_parsed;
@@ -166,8 +171,10 @@ extern void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* 
 extern void update_info_wttrin_init();
 extern enum RequestStatus update_info_wttrin();
 extern void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out);
-extern void update_info_wttrin_marquee_scroll();
-extern void update_info_wttrin_marquee_update_width(int term_width);
+extern void update_info_wttrin_marquee_conds_scroll();
+extern void update_info_wttrin_marquee_conds_update_width(int term_width);
+extern void update_info_wttrin_marquee_times_scroll();
+extern void update_info_wttrin_marquee_times_update_width(int term_width);
 
 // request_send.c
 extern enum RequestStatus request_send(struct Request* request);

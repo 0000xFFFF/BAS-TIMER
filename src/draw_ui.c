@@ -21,7 +21,7 @@
 static struct bas_info du_info = {0};
 static struct wttrin_info du_wttrin = {0};
 
-#define MAX_ROWS 11
+#define MAX_ROWS 12
 #define MAX_COLS 11
 #define MAX_CELL SMALLBUFF // enough for UTF-8 + ANSI color
 static char g_screen[MAX_ROWS][MAX_COLS][MAX_CELL];
@@ -491,16 +491,28 @@ static void print_buffer_padded()
     }
 }
 
-static char* dut_wttrin()
+static char* dut_wttrin_marquee_conds()
 {
     if (du_wttrin.valid) {
         char temp[sizeof(g_temp) - 5];
-        marquee_render(&du_wttrin.marquee, temp, sizeof(temp));
+        marquee_render(&du_wttrin.marquee_conds, temp, sizeof(temp));
         snprintf(g_temp, sizeof(g_temp), "\r%s\033[K", temp);
-        update_info_wttrin_marquee_scroll();
+        update_info_wttrin_marquee_conds_scroll();
         return g_temp;
     }
-    return du_wttrin.buffer;
+    return "...";
+}
+
+static char* dut_wttrin_marquee_times()
+{
+    if (du_wttrin.valid) {
+        char temp[sizeof(g_temp) - 5];
+        marquee_render(&du_wttrin.marquee_times, temp, sizeof(temp));
+        snprintf(g_temp, sizeof(g_temp), "\r%s\033[K", temp);
+        update_info_wttrin_marquee_times_scroll();
+        return g_temp;
+    }
+    return "...";
 }
 
 size_t draw_ui_unsafe()
@@ -512,7 +524,8 @@ size_t draw_ui_unsafe()
     if (term_w != g_term_w) {
         g_term_w = term_w;
         if (du_wttrin.valid) {
-            update_info_wttrin_marquee_update_width(g_term_w);
+            update_info_wttrin_marquee_conds_update_width(g_term_w);
+            update_info_wttrin_marquee_times_update_width(g_term_w);
         }
         term_clear();
     }
@@ -536,7 +549,7 @@ size_t draw_ui_unsafe()
     sc(0, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_m]);
 
     // row 1
-    scc(1, 0, dut_weather_to_color(du_wttrin.weather), dut_wttrin());
+    scc(1, 0, dut_weather_to_color(du_wttrin.weather), dut_wttrin_marquee_conds());
 
     // row 2
     scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, dut_ip());
@@ -613,6 +626,9 @@ size_t draw_ui_unsafe()
     scc(9, 1, 255, du_info.opt_auto_timer_status);
     sc(10, 0, dut_label_auto_gas_status());
     scc(10, 1, 255, du_info.opt_auto_gas_status);
+
+    // dusk
+    scc(11, 0, 108, dut_wttrin_marquee_times());
 
     spin_spinner(&spinner_circle);
     spin_spinner(&spinner_eye_left);
