@@ -162,10 +162,36 @@ enum RequestStatus update_info_wttrin()
         wttrin.valid = true;
 
         // parse csv
-        wttrin.csv_parsed = parse_csv(request.output.buf, URL_WTTRIN_OUTPUT_MAX_FIELDS, URL_WTTRIN_OUTPUT_MAX_FIELD_LEN, wttrin.csv);
+        wttrin.csv_parsed = parse_csv(request.output.buf,
+                                      URL_WTTRIN_OUTPUT_CSV_SEP,
+                                      URL_WTTRIN_OUTPUT_MAX_FIELDS,
+                                      URL_WTTRIN_OUTPUT_MAX_FIELD_LEN,
+                                      wttrin.csv);
         free((void*)request.output.buf);
 
         D(printf("WTTRIN PARSED: %d\n", wttrin.csv_parsed));
+
+        D(
+            printf("Weather condition                    : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_c]);
+            printf("Weather condition textual name       : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_C]);
+            printf("Weather condition  plain-text symbol : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_x]);
+            printf("Humidity                             : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_h]);
+            printf("Temperature (Actual)                 : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_t]);
+            printf("Temperature (Feels Like)             : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_f]);
+            printf("Wind                                 : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_w]);
+            printf("Location                             : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_l]);
+            printf("Moon phase 🌑🌒🌓🌔🌕🌖🌗🌘          : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_m]);
+            printf("Moon day                             : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_M]);
+            printf("Precipitation (mm/3 hours)           : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_p]);
+            printf("Pressure (hPa)                       : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_P]);
+            printf("UV index (1-12)                      : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_u]);
+            printf("Dawn*                                : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_D]);
+            printf("Sunrise*                             : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_S]);
+            printf("Zenith*                              : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_z]);
+            printf("Sunset*                              : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_s]);
+            printf("Dusk*                                : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_d]);
+            printf("Current time*                        : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_T]);
+            printf("Local timezone.                      : %s\n", wttrin.csv[WTTRIN_CSV_FIELD_Z]););
 
         if (wttrin.csv_parsed < URL_WTTRIN_OUTPUT_MAX_FIELDS) {
             DPL("FAILED TO PARSE WTTRIN");

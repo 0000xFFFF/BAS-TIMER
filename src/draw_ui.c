@@ -554,10 +554,8 @@ size_t draw_ui_unsafe()
     sc(5, 6, human_temp_to_emoji(du_info.Tsobna));
     sc(6, 6, human_temp_to_emoji(du_info.Tzadata));
 
-
-    const char* pad = " ";
-    sc(7, 0, pad);
-    sc(8, 0, pad);
+    scc(7, 0, du_info.mod_rada ? COLOR_ON : COLOR_OFF, dut_selected(dut_heat(), du_info.opt_auto_timer));
+    sc(8, 0, dut_regime(du_info.mod_rada));
 
     sc(7, 1, dut_draw_pump_bars(du_info.StatusPumpe6));
     sc(7, 2, dut_draw_pump_bars(du_info.StatusPumpe4));
@@ -571,8 +569,16 @@ size_t draw_ui_unsafe()
     scc(8, 4, 224, dut_lbl_solar());
     scc(8, 5, 78, dut_lbl_elec());
 
-    scc(7, 6, du_info.mod_rada ? COLOR_ON : COLOR_OFF, dut_selected(dut_heat(), du_info.opt_auto_timer));
-    sc(8, 6, dut_regime(du_info.mod_rada));
+
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_h+1) sc(7, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_h]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_u+1) sc(8, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_u]);
+
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_w+1) sc(7, 7, du_wttrin.csv[WTTRIN_CSV_FIELD_w]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_p+1) sc(8, 7, du_wttrin.csv[WTTRIN_CSV_FIELD_p]);
+
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_m+1) sc(7, 8, du_wttrin.csv[WTTRIN_CSV_FIELD_m]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_M+1) sc(7, 9, du_wttrin.csv[WTTRIN_CSV_FIELD_M]);
+    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_P+1) sc(8, 8, du_wttrin.csv[WTTRIN_CSV_FIELD_P]);
 
     if (du_info.opt_auto_timer_started) {
         time_t current_time;

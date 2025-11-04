@@ -11,28 +11,28 @@ const char* URL_GAS_OFF = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4
 const char* URL_GAS_ON = "http://192.168.1.250/isc/set_var.aspx?RezimRadaPumpe4=3,-1&=&SESSIONID=-1";
 
 // wttr.in
-const char* URL_WTTRIN = "https://wttr.in/?format=%c%2C%C%2C%x%2C%h%2C%t%2C%f%2C%w%2C%l%2C%m%2C%M%2C%p%2C%P%2C%u%2C%D%2C%S%2C%z%2C%s%2C%d%2C%T%2C%Z";
-
-//    c    Weather condition,
-//    C    Weather condition textual name,
-//    x    Weather condition, plain-text symbol,
-//    h    Humidity,
-//    t    Temperature (Actual),
-//    f    Temperature (Feels Like),
-//    w    Wind,
-//    l    Location,
-//    m    Moon phase 🌑🌒🌓🌔🌕🌖🌗🌘,
-//    M    Moon day,
-//    p    Precipitation (mm/3 hours),
-//    P    Pressure (hPa),
-//    u    UV index (1-12),
-//    D    Dawn*,
-//    S    Sunrise*,
-//    z    Zenith*,
-//    s    Sunset*,
-//    d    Dusk*,
-//    T    Current time*,
-//    Z    Local timezone.
+#define CSV_SEP "%7C"
+const char* URL_WTTRIN = "https://wttr.in/?format="
+                         "%c" CSV_SEP //    c    Weather condition,
+                         "%C" CSV_SEP //    C    Weather condition textual name,
+                         "%x" CSV_SEP //    x    Weather condition, plain-text symbol,
+                         "%h" CSV_SEP //    h    Humidity,
+                         "%t" CSV_SEP //    t    Temperature (Actual),
+                         "%f" CSV_SEP //    f    Temperature (Feels Like),
+                         "%w" CSV_SEP //    w    Wind,
+                         "%l" CSV_SEP //    l    Location,
+                         "%m" CSV_SEP //    m    Moon phase 🌑🌒🌓🌔🌕🌖🌗🌘,
+                         "%M" CSV_SEP //    M    Moon day,
+                         "%p" CSV_SEP //    p    Precipitation (mm/3 hours),
+                         "%P" CSV_SEP //    P    Pressure (hPa),
+                         "%u" CSV_SEP //    u    UV index (1-12),
+                         "%D" CSV_SEP //    D    Dawn*,
+                         "%S" CSV_SEP //    S    Sunrise*,
+                         "%z" CSV_SEP //    z    Zenith*,
+                         "%s" CSV_SEP //    s    Sunset*,
+                         "%d" CSV_SEP //    d    Dusk*,
+                         "%T" CSV_SEP //    T    Current time*,
+                         "%Z";        //    Z    Local timezone.
 
 const char* REQUEST_FORMAT_BAS =
     "GET %s HTTP/1.0\r\n"

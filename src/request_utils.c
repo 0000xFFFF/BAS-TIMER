@@ -114,13 +114,13 @@ enum Weather detect_weather(const char* text)
     return WEATHER_UNKNOWN;
 }
 
-int parse_csv(const char* input, int nfields, int field_size, char fields[][field_size])
+int parse_csv(const char* input, char sep, int nfields, int field_size, char fields[][field_size])
 {
     int field = 0;
     int pos = 0;
 
     for (const char* p = input; *p && field < nfields; p++) {
-        if (*p == ',') {
+        if (*p == sep) {
             fields[field][pos] = '\0';
             field++;
             pos = 0;

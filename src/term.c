@@ -51,7 +51,7 @@ int term_width()
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1)
         return 50; // fallback if detection fails
 
-    return w.ws_col;
+    return w.ws_col - 1; // NOTE: some utf8 chars break term spacing so -1 to dirty fix that
 }
 
 int term_height()

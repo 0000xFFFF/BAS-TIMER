@@ -14,9 +14,9 @@ extern const char* URL_GAS_ON;
 extern const char* REQUEST_FORMAT_BAS;
 extern const char* REQUEST_FORMAT_WTTRIN;
 
+#define URL_WTTRIN_OUTPUT_CSV_SEP       '|' // can't use ',' --- WTTRIN_CSV_FIELD_l has ',' inside it
 #define URL_WTTRIN_OUTPUT_MAX_FIELDS    20
 #define URL_WTTRIN_OUTPUT_MAX_FIELD_LEN 64
-
 typedef enum {
     WTTRIN_CSV_FIELD_c, //  Weather condition,
     WTTRIN_CSV_FIELD_C, //  Weather condition textual name,
@@ -183,7 +183,7 @@ extern char* request_status_to_smallstr(enum RequestStatus status);
 extern bool request_status_failed(enum RequestStatus status);
 extern void print_bas_info(const struct bas_info* b);
 extern enum Weather detect_weather(const char* text);
-extern int parse_csv(const char* input, int nfields, int field_size, char fields[][field_size]);
+extern int parse_csv(const char* input, char sep, int nfields, int field_size, char fields[][field_size]);
 
 #define ERROR_NONE    0
 #define ERROR_TIMEOUT 1
