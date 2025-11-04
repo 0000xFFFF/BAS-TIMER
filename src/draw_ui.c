@@ -29,7 +29,6 @@ static char g_screen[MAX_ROWS][MAX_COLS][MAX_CELL];
 static char g_term_buffer[MAX_ROWS * MAX_COLS * MAX_CELL];
 static size_t g_term_buffer_b = 0;
 
-
 static char g_temp[MAX_CELL];
 static size_t g_temp_b = 0;
 
@@ -204,17 +203,31 @@ static int dut_hour_to_color(int hour)
     return 33;                               // Deep Blue (Night)
 }
 
+static int dut_weather_to_color(enum Weather weather)
+{
+    switch (weather) {
+        default:
+        case WEATHER_UNKNOWN: return 255;
+        case WEATHER_CLEAR:   return 214;
+        case WEATHER_CLOUD:   return 252;
+        case WEATHER_RAIN:    return 45;
+        case WEATHER_THUNDER: return 226;
+        case WEATHER_SNOW:    return 51;
+        case WEATHER_FOG:     return 231;
+    }
+}
+
 static size_t dut_weather_to_spinner(char* buffer, size_t size, enum Weather weather)
 {
     switch (weather) {
         default:
-        case WEATHER_UNKNOWN: return ctext_fg(buffer, size, 255, get_frame(&spinner_qm, 1)); break;
-        case WEATHER_CLEAR:   return ctext_fg(buffer, size, 214, get_frame(&spinner_sun, 1)); break;
-        case WEATHER_CLOUD:   return ctext_fg(buffer, size, 252, get_frame(&spinner_cloud, 1)); break;
-        case WEATHER_RAIN:    return ctext_fg(buffer, size, 45, get_frame(&spinner_rain, 1)); break;
-        case WEATHER_THUNDER: return ctext_fg(buffer, size, 226, get_frame(&spinner_thunder, 1)); break;
-        case WEATHER_SNOW:    return ctext_fg(buffer, size, 51, get_frame(&spinner_snow, 1)); break;
-        case WEATHER_FOG:     return ctext_fg(buffer, size, 231, get_frame(&spinner_fog, 1)); break;
+        case WEATHER_UNKNOWN: return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_qm, 1)); break;
+        case WEATHER_CLEAR:   return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_sun, 1)); break;
+        case WEATHER_CLOUD:   return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_cloud, 1)); break;
+        case WEATHER_RAIN:    return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_rain, 1)); break;
+        case WEATHER_THUNDER: return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_thunder, 1)); break;
+        case WEATHER_SNOW:    return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_snow, 1)); break;
+        case WEATHER_FOG:     return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_fog, 1)); break;
     }
 }
 
@@ -261,6 +274,16 @@ static char* dut_temp_to_color(double value, double min, double max)
 {
     g_temp_b = 0;
     g_temp_b += temp_to_ctext_bg_con(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, value, min, max);
+    return g_temp;
+}
+
+static char* dut_wttrin_temp_to_color(char* s, double max, double min)
+{
+    char* end;
+    double value = strtod(s, &end);
+
+    g_temp_b = 0;
+    g_temp_b += temp_to_ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, value, min, max);
     return g_temp;
 }
 
@@ -513,7 +536,7 @@ size_t draw_ui_unsafe()
     sc(0, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_m]);
 
     // row 1
-    scc(1, 0, 181, dut_wttrin());
+    scc(1, 0, dut_weather_to_color(du_wttrin.weather), dut_wttrin());
 
     // row 2
     scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, dut_ip());
@@ -569,13 +592,14 @@ size_t draw_ui_unsafe()
     scc(8, 4, 224, dut_lbl_solar());
     scc(8, 5, 78, dut_lbl_elec());
 
+    sc(7, 6, dut_wttrin_temp_to_color(du_wttrin.csv[WTTRIN_CSV_FIELD_t], du_info.peak_min_human, du_info.peak_max_human));
+    sc(7, 7, dut_wttrin_temp_to_color(du_wttrin.csv[WTTRIN_CSV_FIELD_f], du_info.peak_min_human, du_info.peak_max_human));
+    scc(7, 8, 226, du_wttrin.csv[WTTRIN_CSV_FIELD_u]);
+    scc(7, 9, 195, du_wttrin.csv[WTTRIN_CSV_FIELD_w]);
 
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_h+1) scc(7, 6, 123, du_wttrin.csv[WTTRIN_CSV_FIELD_h]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_p+1) scc(7, 7, 111, du_wttrin.csv[WTTRIN_CSV_FIELD_p]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_P+1) scc(7, 8, 177, du_wttrin.csv[WTTRIN_CSV_FIELD_P]);
-
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_u+1) scc(8, 6, 226, du_wttrin.csv[WTTRIN_CSV_FIELD_u]);
-    if (du_wttrin.csv_parsed >= WTTRIN_CSV_FIELD_w+1) scc(8, 7, 195, du_wttrin.csv[WTTRIN_CSV_FIELD_w]);
+    scc(8, 6, 123, du_wttrin.csv[WTTRIN_CSV_FIELD_h]);
+    scc(8, 7, 111, du_wttrin.csv[WTTRIN_CSV_FIELD_p]);
+    scc(8, 8, 177, du_wttrin.csv[WTTRIN_CSV_FIELD_P]);
 
     if (du_info.opt_auto_timer_started) {
         time_t current_time;

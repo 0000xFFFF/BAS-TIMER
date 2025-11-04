@@ -64,7 +64,7 @@ int temperature_to_color(double temp, double temp_min, double temp_max)
 size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double temp_min, double temp_max)
 {
     int color = temperature_to_color(temp, temp_min, temp_max);
-    return snprintf(buffer, size, "\033[38;5;%dm%7.2f 󰔄\033[0m", color, temp);
+    return snprintf(buffer, size, "\033[38;5;%dm%.0f󰔄\033[0m", color, temp);
 }
 
 size_t temp_to_ctext_bg(char* buffer, size_t size, double temp, double temp_min, double temp_max)

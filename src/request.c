@@ -206,11 +206,9 @@ enum RequestStatus update_info_wttrin()
         b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "@ "); // pause on '@' char
         b += dt_HM(wttrin.buffer + b, sizeof(wttrin.buffer) - b);          // prepend hour:minute
         b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, ": ");
-        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s %s %s (%s)",
+        b += snprintf(wttrin.buffer + b, sizeof(wttrin.buffer) - b, "%s %s  ",
                       wttrin.csv[WTTRIN_CSV_FIELD_C],
-                      wttrin.csv[WTTRIN_CSV_FIELD_c],
-                      wttrin.csv[WTTRIN_CSV_FIELD_t],
-                      wttrin.csv[WTTRIN_CSV_FIELD_f]);
+                      wttrin.csv[WTTRIN_CSV_FIELD_c]);
         marquee_init(&wttrin.marquee, wttrin.buffer, g_term_w, 1000 / SLEEP_MS_DRAW, 1); // 1 sec pause
     }
 
