@@ -157,7 +157,7 @@ static void make_wttrin_marquee_conds(struct wttrin_info* wttrin)
                   wttrin->csv[WTTRIN_CSV_FIELD_c]);
 
     const int marquee_pause = 1000; // 1 sec pause
-    marquee_init(&wttrin->marquee_conds, wttrin->marquee_conds_buf, g_term_w, marquee_pause / SLEEP_MS_DRAW, 1);
+    marquee_init(&wttrin->marquee_conds, wttrin->marquee_conds_buf, g_term_w, marquee_pause / SLEEP_MS_DRAW, 2);
 }
 
 static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
@@ -173,7 +173,7 @@ static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
                   wttrin->csv[WTTRIN_CSV_FIELD_d]);
 
     const int marquee_pause = 3000; // 3 sec pause
-    marquee_init(&wttrin->marquee_times, wttrin->marquee_times_buf, g_term_w - 3, marquee_pause / SLEEP_MS_DRAW, 1);
+    marquee_init(&wttrin->marquee_times, wttrin->marquee_times_buf, g_term_w - 3, marquee_pause / SLEEP_MS_DRAW, 3);
 }
 
 enum RequestStatus update_info_wttrin()
