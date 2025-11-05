@@ -17,7 +17,7 @@ const char* VAR_DIR_FILE_INFOS_BIN = VAR_DIR_ SEP_ "infos.bin";
 
 const int ENABLE_REQUEST_BAS = 1;
 const int ENABLE_REQUEST_WTTRIN = 1;
-const int ENABLE_SAVE_INFOS = 0;
+const int ENABLE_SAVE_INFOS = 1;
 const int ENABLE_AUTO_TIMER = 1;
 const int ENABLE_AUTO_GAS = 1;
 const int AUTO_TIMER_SECONDS = 8 * 60;
