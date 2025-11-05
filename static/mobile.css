@@ -6,11 +6,6 @@ input {
     font-size: 15px;
 }
 
-.btn_action {
-    font-size: 15px;
-}
-
-
 .fc,
 .fr {
     display: flex;
@@ -42,7 +37,7 @@ input {
 
 .btn_action {
     padding: 5px;
-    font-size: 24px;
+    font-size: 20px;
 }
 
 #status {
@@ -57,7 +52,6 @@ input {
 
 #term,
 #sumtime {
-    max-width: calc(100vw - 15px)
 }
 
 #term,

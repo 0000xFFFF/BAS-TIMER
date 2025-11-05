@@ -179,22 +179,6 @@ function perror(error) {
     }
 }
 
-function updateTermContent(newContent) {
-    // Update the content of the div
-    term.innerHTML = newContent;
-
-    // Get the computed width and height of the div
-    const computedStyle = window.getComputedStyle(term);
-
-    // Set the minimum size constraints based on the current size of the content
-    const minWidth = parseInt(computedStyle.minWidth, 10);
-    const minHeight = parseInt(computedStyle.minHeight, 10);
-
-    // Adjust the width and height of the div if necessary
-    term.style.width = Math.max(term.scrollWidth, minWidth) + 'px';
-    term.style.height = Math.max(term.scrollHeight, minHeight) + 'px';
-}
-
 function connect() {
     try {
         ws = new WebSocket("ws://" + document.domain + ":8001/ws");
@@ -209,7 +193,7 @@ function connect() {
 
         ws.onmessage = function(event) {
             const json = JSON.parse(event.data);
-            updateTermContent(json.term);
+            term.innerHTML = json.term;
             drawTemperatureGradient(json.Tmin, json.Tmax);
             colorButton(document.getElementById("bas_heat_off"), json.mod_rada == 0);
             colorButton(document.getElementById("bas_heat_on"), json.mod_rada == 1);
