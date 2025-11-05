@@ -178,7 +178,7 @@ static void make_wttrin_marquee_conds(struct WttrinInfo* wttrin)
 
 static int make_wttrin_marquee_times_width(int term_width)
 {
-    return term_width - 3;
+    return term_width;
 }
 
 static char g_temp[BIGBUFF];
