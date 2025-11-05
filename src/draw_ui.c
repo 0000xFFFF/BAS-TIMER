@@ -124,7 +124,7 @@ static size_t make_term_buffer()
         }
 
         // newline
-        if (g_term_buffer_b + 1 < sizeof(g_term_buffer)) {
+        if (r != MAX_ROWS - 1 && g_term_buffer_b + 1 < sizeof(g_term_buffer)) {
             g_term_buffer[g_term_buffer_b++] = '\n';
         }
     }
@@ -364,7 +364,6 @@ static void print_buffer_padded()
 
             p++;
             line_start = p;
-            fflush(stdout);
         }
         else {
             p++;
@@ -385,8 +384,10 @@ static void print_buffer_padded()
         for (; w < g_term_w; w++)
             fputc(' ', stdout);
 
-        fputc('\n', stdout);
+        //fputc('\n', stdout);
     }
+
+    fflush(stdout);
 }
 
 static const char* dut_wttrin_marquee_conds()
