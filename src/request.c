@@ -251,8 +251,8 @@ enum RequestStatus update_info_wttrin()
             return request.status;
         }
 
-        // override weather cond
-        snprintf(wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
+        // // override weather cond
+        // snprintf(wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
 
         // wttrin emoji
         wttrin.weather = detect_weather(wttrin.csv[WTTRIN_CSV_FIELD_C]);
