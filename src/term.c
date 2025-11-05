@@ -120,6 +120,15 @@ void escape_quotes(const char* input, char* output)
 
     // Iterate through each character in the input string
     while (input[i] != '\0') {
+
+        // Skip zero-width space (U+200B in UTF-8: 0xE2 0x80 0x8B)
+        if ((unsigned char)input[i] == 0xE2 &&
+            (unsigned char)input[i + 1] == 0x80 &&
+            (unsigned char)input[i + 2] == 0x8B) {
+            i += 3; // Skip all 3 bytes
+            continue;
+        }
+
         switch (input[i]) {
             case '"':
                 output[j++] = '\\';
@@ -293,7 +302,6 @@ size_t ansi_to_html(const char* text, char* result)
     if (result == NULL) return 0;
 
     size_t text_len = strlen(text);
-
     result[0] = '\0';
     size_t result_pos = 0;
 
@@ -301,25 +309,37 @@ size_t ansi_to_html(const char* text, char* result)
     bool in_span = false;
     StyleState current_style = {0};
 
-    // Initial span
     strcpy(result, "<span>");
     result_pos = 6;
     in_span = true;
 
     size_t i = 0;
     while (i < text_len) {
+        // Skip zero-width space (U+200B in UTF-8: 0xE2 0x80 0x8B)
+        if ((unsigned char)text[i] == 0xE2 &&
+            i + 2 < text_len &&
+            (unsigned char)text[i + 1] == 0x80 &&
+            (unsigned char)text[i + 2] == 0x8B) {
+            i += 3;
+            continue;
+        }
+
         // Handle ANSI escape sequence
         if (text[i] == '\033' && text[i + 1] == '[') {
-            i += 2; // Skip the '\033['
+            i += 2;
+
+            // Check for \033[K (clear to end of line) - just skip it
+            if (text[i] == 'K') {
+                i++;
+                continue;
+            }
 
             // Find the end of the escape sequence (marked by 'm')
             const char* seq_start = text + i;
             char* seq_end = strchr(seq_start, 'm');
-
             if (seq_end != NULL) {
                 size_t seq_len = seq_end - seq_start;
                 char* seq = (char*)malloc(seq_len + 1);
-
                 if (seq != NULL) {
                     strncpy(seq, seq_start, seq_len);
                     seq[seq_len] = '\0';
@@ -348,24 +368,20 @@ size_t ansi_to_html(const char* text, char* result)
                             result_pos += 7;
                             in_span = false;
                         }
-
                         parse_ansi_sequence(seq, &current_style);
 
                         // Only add a span if we have style to apply
                         if (current_style.has_style) {
                             char style_str[128] = {0};
                             generate_style_string(&current_style, style_str, sizeof(style_str));
-
                             result_pos += sprintf(result + result_pos, "<span style=\"%s\">", style_str);
                         }
                         else {
                             strcpy(result + result_pos, "<span>");
                             result_pos += 6;
                         }
-
                         in_span = true;
                     }
-
                     free(seq);
                 }
 
@@ -411,6 +427,5 @@ size_t ansi_to_html(const char* text, char* result)
 
     // Null-terminate the result
     result[result_pos] = '\0';
-
     return 1;
 }
