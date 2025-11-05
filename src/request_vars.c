@@ -62,3 +62,5 @@ const char* weather_keywords[][5] = {
     [WEATHER_FOG] = {"fog", "mist", NULL},
     [WEATHER_CLEAR] = {"clear", "sunny", NULL},
 };
+
+struct infos g_info = {0};

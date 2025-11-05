@@ -21,8 +21,6 @@ void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* out)
 
 static long long g_global_unix_counter = 0;
 
-struct bas_info g_info = {0};
-
 void update_info_bas_init()
 {
     g_global_unix_counter = timestamp();
@@ -55,7 +53,7 @@ void update_info_bas_init()
     info.history_gas_time_on = 0;
     info.history_gas_time_off = 0;
 
-    update_info_bas_safe_io(&info, &g_info);
+    update_info_bas_safe_io(&info, &g_info.bas_info);
 }
 
 // must update_info_bas_init before running this
@@ -74,7 +72,7 @@ enum RequestStatus update_info_bas()
     request_send(&request);
 
     struct bas_info info = {0};
-    update_info_bas_safe_io(&g_info, &info);
+    update_info_bas_safe_io(&g_info.bas_info, &info);
     info.status = request.status;
 
     if (request.output.buf) {
@@ -116,7 +114,7 @@ enum RequestStatus update_info_bas()
         free((void*)request.output.buf);
     }
 
-    update_info_bas_safe_io(&info, &g_info);
+    update_info_bas_safe_io(&info, &g_info.bas_info);
 
     return request.status;
 }

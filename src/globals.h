@@ -38,13 +38,11 @@ extern int TEMP_BUF_MAX;
 extern int TEMP_CIRC_MIN;
 extern int TEMP_CIRC_MAX;
 
-extern const int MAX_TERM_WIDTH;
-
 extern atomic_bool g_running;
 extern pthread_mutex_t g_mutex;
 extern pthread_cond_t g_cond;
 
-#define TINYBUFF 32
+#define TINYBUFF  32
 #define SMALLBUFF 128
 #define MIDBUFF   256
 #define BIGBUFF   1024
@@ -54,5 +52,6 @@ extern pthread_cond_t g_cond;
 #define ENABLE_AUTO_TIMER  1
 #define ENABLE_AUTO_GAS    1
 #define AUTO_TIMER_SECONDS 8 * 60
+
 
 #endif // GLOBALS_H

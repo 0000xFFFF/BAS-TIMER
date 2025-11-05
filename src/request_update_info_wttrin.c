@@ -15,8 +15,6 @@
 
 static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-struct wttrin_info g_wttrin = {0};
-
 void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out)
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
@@ -29,7 +27,7 @@ void update_info_wttrin_init()
     struct wttrin_info wttrin = {0};
     snprintf(wttrin.marquee_conds_buf, sizeof(wttrin.marquee_conds_buf), "...");
     snprintf(wttrin.marquee_times_buf, sizeof(wttrin.marquee_times_buf), "...");
-    update_info_wttrin_safe_io(&wttrin, &g_wttrin);
+    update_info_wttrin_safe_io(&wttrin, &g_info.wttrin);
 }
 
 #define MZWS MARQUEE_ZERO_WIDTH_SPACE
@@ -96,7 +94,7 @@ enum RequestStatus update_info_wttrin()
     request_send(&request);
 
     struct wttrin_info wttrin = {0};
-    update_info_wttrin_safe_io(&g_wttrin, &wttrin);
+    update_info_wttrin_safe_io(&g_info.wttrin, &wttrin);
     wttrin.status = request.status;
 
     if (request.output.buf) {
@@ -152,7 +150,7 @@ enum RequestStatus update_info_wttrin()
         make_wttrin_marquee_times(&wttrin);
     }
 
-    update_info_wttrin_safe_io(&wttrin, &g_wttrin);
+    update_info_wttrin_safe_io(&wttrin, &g_info.wttrin);
 
     return request.status;
 }
@@ -160,27 +158,27 @@ enum RequestStatus update_info_wttrin()
 void update_info_wttrin_marquee_conds_scroll()
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    marquee_scroll_smart(&g_wttrin.marquee_conds);
+    marquee_scroll_smart(&g_info.wttrin.marquee_conds);
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }
 
 void update_info_wttrin_marquee_conds_update_width(int term_width)
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    marquee_update_width(&g_wttrin.marquee_conds, make_wttrin_marquee_conds_width(term_width, &g_wttrin));
+    marquee_update_width(&g_info.wttrin.marquee_conds, make_wttrin_marquee_conds_width(term_width, &g_info.wttrin));
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }
 
 void update_info_wttrin_marquee_times_scroll()
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    marquee_scroll_smart(&g_wttrin.marquee_times);
+    marquee_scroll_smart(&g_info.wttrin.marquee_times);
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }
 
 void update_info_wttrin_marquee_times_update_width(int term_width)
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    marquee_update_width(&g_wttrin.marquee_times, term_width);
+    marquee_update_width(&g_info.wttrin.marquee_times, term_width);
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }

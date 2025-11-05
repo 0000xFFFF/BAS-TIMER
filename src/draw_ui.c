@@ -18,8 +18,7 @@
 #include <wchar.h>
 
 // must copy these values they update from another thread
-static struct bas_info du_info = {0};
-static struct wttrin_info du_wttrin = {0};
+static struct infos du_info = {0};
 
 #define MAX_ROWS 12
 #define MAX_COLS 11
@@ -79,51 +78,6 @@ static char* hour_to_clock(int hour)
 {
     return clock_hours[hour % 12];
 }
-
-// void print_screen()
-// {
-//     for (int r = 0; r < MAX_ROWS; r++) {
-//
-//         // find last used column in this row
-//         int last_col = -1;
-//         for (int c = MAX_COLS - 1; c >= 0; c--) {
-//             if (g_screen[r][c][0]) {
-//                 last_col = c;
-//                 break;
-//             }
-//         }
-//
-//         // entire row empty? skip
-//         if (last_col == -1)
-//             continue;
-//
-//         // print only used columns
-//         for (int c = 0; c <= last_col; c++) {
-//             if (g_screen[r][c][0])
-//                 fputs(g_screen[r][c], stdout);
-//             else
-//                 fputc(' ', stdout);
-//             if (c != last_col)
-//                 fputc(' ', stdout); // space between columns
-//         }
-//         fputc('\n', stdout);
-//     }
-// }
-
-// char* eye_timer()
-// {
-//     g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, du_info.opt_auto_timer ? get_frame(&spinner_eye_left, 0) : " ");
-//     if (du_info.opt_auto_timer) {
-//         if (du_info.opt_auto_timer_started)
-//             g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_clock, 0));
-//         else
-//             g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "󱎫");
-//     }
-//     else {
-//         g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, " ");
-//     }
-//     return g_temp;
-// }
 
 static size_t make_term_buffer()
 {
@@ -252,7 +206,7 @@ static char* dut_time()
 static char* dut_wttrin_emoji(int color)
 {
     g_temp_b = 0;
-    g_temp_b += dut_weather_to_spinner(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, color, du_wttrin.weather);
+    g_temp_b += dut_weather_to_spinner(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, color, du_info.wttrin.weather);
     return g_temp;
 }
 
@@ -290,27 +244,27 @@ static char* dut_wttrin_temp_to_color(char* s, double max, double min)
 static char* dut_max_check()
 {
     g_temp_b = 0;
-    ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 82, du_info.valid && du_info.TmaxGE ? get_frame(&spinner_check, 1) : " ");
+    ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 82, du_info.bas_info.valid && du_info.bas_info.TmaxGE ? get_frame(&spinner_check, 1) : " ");
     return g_temp;
 }
 
 static char* dut_mid_check()
 {
     g_temp_b = 0;
-    g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 82, du_info.valid && du_info.TmidGE ? get_frame(&spinner_check, 1) : " ");
+    g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 82, du_info.bas_info.valid && du_info.bas_info.TmidGE ? get_frame(&spinner_check, 1) : " ");
     return g_temp;
 }
 
 static char* dut_min_warn()
 {
     g_temp_b = 0;
-    g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 51, du_info.valid && du_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
+    g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, 51, du_info.bas_info.valid && du_info.bas_info.TminLT ? get_frame(&spinner_snow, 1) : " ");
     return g_temp;
 }
 
 static char* dut_heat()
 {
-    return du_info.mod_rada ? get_frame(&spinner_heat, 1) : "󱪯";
+    return du_info.bas_info.mod_rada ? get_frame(&spinner_heat, 1) : "󱪯";
 }
 
 static char* dut_regime(int value)
@@ -343,27 +297,27 @@ static char* dut_draw_pump_bars(int value)
 
 static char* dut_lbl_heat()
 {
-    return dut_pump_is_on(du_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃";
+    return dut_pump_is_on(du_info.bas_info.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃";
 }
 
 static char* dut_lbl_gas()
 {
-    return dut_pump_is_on(du_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇";
+    return dut_pump_is_on(du_info.bas_info.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇";
 }
 
 static char* dut_lbl_circ()
 {
-    return dut_pump_is_on(du_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "";
+    return dut_pump_is_on(du_info.bas_info.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "";
 }
 
 static char* dut_lbl_solar()
 {
-    return dut_pump_is_on(du_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "";
+    return dut_pump_is_on(du_info.bas_info.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "";
 }
 
 static char* dut_lbl_elec()
 {
-    return dut_pump_is_on(du_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠";
+    return dut_pump_is_on(du_info.bas_info.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠";
 }
 
 static char* dut_selected(char* text, int is_selected)
@@ -379,7 +333,7 @@ static char* dut_selected(char* text, int is_selected)
 static char* dut_label_auto_timer_status()
 {
     g_temp_b = 0;
-    if (du_info.opt_auto_timer) { g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
+    if (du_info.bas_info.opt_auto_timer) { g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
     else {
         g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "");
     }
@@ -390,7 +344,7 @@ static char* dut_label_auto_timer_status()
 static char* dut_label_auto_gas_status()
 {
     g_temp_b = 0;
-    if (du_info.opt_auto_gas) { g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
+    if (du_info.bas_info.opt_auto_gas) { g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
     else {
         g_temp_b += ctext_fg(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, COLOR_OFF, "");
     }
@@ -454,9 +408,9 @@ static void print_buffer_padded()
 
 static char* dut_wttrin_marquee_conds()
 {
-    if (du_wttrin.valid) {
+    if (du_info.wttrin.valid) {
         char temp[sizeof(g_temp)];
-        marquee_render(&du_wttrin.marquee_conds, temp, sizeof(temp));
+        marquee_render(&du_info.wttrin.marquee_conds, temp, sizeof(temp));
         snprintf(g_temp, sizeof(g_temp), "%s", temp);
         update_info_wttrin_marquee_conds_scroll();
         return g_temp;
@@ -466,9 +420,9 @@ static char* dut_wttrin_marquee_conds()
 
 static char* dut_wttrin_marquee_times()
 {
-    if (du_wttrin.valid) {
+    if (du_info.wttrin.valid) {
         char temp[sizeof(g_temp)];
-        marquee_render(&du_wttrin.marquee_times, temp, sizeof(temp));
+        marquee_render(&du_info.wttrin.marquee_times, temp, sizeof(temp));
         snprintf(g_temp, sizeof(g_temp), "%s", temp);
         update_info_wttrin_marquee_times_scroll();
         return g_temp;
@@ -484,7 +438,7 @@ size_t draw_ui_unsafe()
     int term_h = term_height();
     if (term_w != g_term_w) {
         g_term_w = term_w;
-        if (du_wttrin.valid) {
+        if (du_info.wttrin.valid) {
             update_info_wttrin_marquee_conds_update_width(g_term_w);
             update_info_wttrin_marquee_times_update_width(g_term_w);
         }
@@ -495,8 +449,8 @@ size_t draw_ui_unsafe()
         term_clear();
     }
 
-    update_info_bas_safe_io(&g_info, &du_info);
-    update_info_wttrin_safe_io(&g_wttrin, &du_wttrin);
+    update_info_bas_safe_io(&g_info.bas_info, &du_info.bas_info);
+    update_info_wttrin_safe_io(&g_info.wttrin, &du_info.wttrin);
 
     // row 0
     int hour = localtime_hour();
@@ -504,19 +458,19 @@ size_t draw_ui_unsafe()
     scc(0, 0, color_hour, hour_to_clock(hour));
     scc(0, 1, color_hour, dut_hour_to_emoji(hour));
     scc(0, 2, 182, dut_time());
-    sc(0, 3, dut_status_to_emoji(du_info.status));
-    sc(0, 4, dut_status_to_emoji(du_wttrin.status));
-    int wttrin_color = dut_weather_to_color(du_wttrin.weather);
+    sc(0, 3, dut_status_to_emoji(du_info.bas_info.status));
+    sc(0, 4, dut_status_to_emoji(du_info.wttrin.status));
+    int wttrin_color = dut_weather_to_color(du_info.wttrin.weather);
     sc(0, 5, dut_wttrin_emoji(wttrin_color));
-    sc(0, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_m]);
+    sc(0, 6, du_info.wttrin.csv[WTTRIN_CSV_FIELD_m]);
 
     // row 1
-    scc(1, 0, wttrin_color, du_wttrin.time);
-    scc(1, 1, wttrin_color, du_wttrin.csv[WTTRIN_CSV_FIELD_c]);
+    scc(1, 0, wttrin_color, du_info.wttrin.time);
+    scc(1, 1, wttrin_color, du_info.wttrin.csv[WTTRIN_CSV_FIELD_c]);
     scc(1, 2, wttrin_color, dut_wttrin_marquee_conds());
 
     // row 2
-    scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, dut_ip());
+    scc(2, 0, request_status_failed(du_info.bas_info.status) ? COLOR_OFF : COLOR_ON, dut_ip());
     sc(2, 1, dut_conns());
 
     scc(3, 0, 214, "");
@@ -524,10 +478,10 @@ size_t draw_ui_unsafe()
     scc(5, 0, 226, "");
     scc(6, 0, 110, get_frame(&spinner_recycle, 1));
 
-    sc(3, 1, dut_temp_to_color(du_info.Tmax, du_info.peak_min_buf, du_info.peak_max_buf));
-    sc(4, 1, dut_temp_to_color(du_info.Tmid, du_info.peak_min_buf, du_info.peak_max_buf));
-    sc(5, 1, dut_temp_to_color(du_info.Tmin, du_info.peak_min_buf, du_info.peak_max_buf));
-    sc(6, 1, dut_temp_to_color(du_info.Tfs, du_info.peak_min_circ, du_info.peak_max_circ));
+    sc(3, 1, dut_temp_to_color(du_info.bas_info.Tmax, du_info.bas_info.peak_min_buf, du_info.bas_info.peak_max_buf));
+    sc(4, 1, dut_temp_to_color(du_info.bas_info.Tmid, du_info.bas_info.peak_min_buf, du_info.bas_info.peak_max_buf));
+    sc(5, 1, dut_temp_to_color(du_info.bas_info.Tmin, du_info.bas_info.peak_min_buf, du_info.bas_info.peak_max_buf));
+    sc(6, 1, dut_temp_to_color(du_info.bas_info.Tfs, du_info.bas_info.peak_min_circ, du_info.bas_info.peak_max_circ));
 
     sc(3, 2, dut_max_check());
     sc(4, 2, dut_mid_check());
@@ -544,52 +498,52 @@ size_t draw_ui_unsafe()
     scc(5, 4, 76, get_frame(&spinner_house, 1));
     scc(6, 4, 154, get_frame(&spinner_cog, 1));
 
-    sc(3, 5, dut_temp_to_color(du_info.Tsolar, du_info.peak_min_solar, du_info.peak_max_solar));
-    sc(4, 5, dut_temp_to_color(du_info.Tspv, du_info.peak_min_human, du_info.peak_max_human));
-    sc(5, 5, dut_temp_to_color(du_info.Tsobna, du_info.peak_min_human, du_info.peak_max_human));
-    sc(6, 5, dut_temp_to_color(du_info.Tzadata, du_info.peak_min_human, du_info.peak_max_human));
+    sc(3, 5, dut_temp_to_color(du_info.bas_info.Tsolar, du_info.bas_info.peak_min_solar, du_info.bas_info.peak_max_solar));
+    sc(4, 5, dut_temp_to_color(du_info.bas_info.Tspv, du_info.bas_info.peak_min_human, du_info.bas_info.peak_max_human));
+    sc(5, 5, dut_temp_to_color(du_info.bas_info.Tsobna, du_info.bas_info.peak_min_human, du_info.bas_info.peak_max_human));
+    sc(6, 5, dut_temp_to_color(du_info.bas_info.Tzadata, du_info.bas_info.peak_min_human, du_info.bas_info.peak_max_human));
 
-    sc(3, 6, human_temp_to_emoji(du_info.Tsolar));
-    sc(4, 6, human_temp_to_emoji(du_info.Tspv));
-    sc(5, 6, human_temp_to_emoji(du_info.Tsobna));
-    sc(6, 6, human_temp_to_emoji(du_info.Tzadata));
+    sc(3, 6, human_temp_to_emoji(du_info.bas_info.Tsolar));
+    sc(4, 6, human_temp_to_emoji(du_info.bas_info.Tspv));
+    sc(5, 6, human_temp_to_emoji(du_info.bas_info.Tsobna));
+    sc(6, 6, human_temp_to_emoji(du_info.bas_info.Tzadata));
 
-    scc(7, 0, du_info.mod_rada ? COLOR_ON : COLOR_OFF, dut_selected(dut_heat(), du_info.opt_auto_timer));
-    sc(8, 0, dut_regime(du_info.mod_rada));
+    scc(7, 0, du_info.bas_info.mod_rada ? COLOR_ON : COLOR_OFF, dut_selected(dut_heat(), du_info.bas_info.opt_auto_timer));
+    sc(8, 0, dut_regime(du_info.bas_info.mod_rada));
 
-    sc(7, 1, dut_draw_pump_bars(du_info.StatusPumpe6));
-    sc(7, 2, dut_draw_pump_bars(du_info.StatusPumpe4));
-    sc(7, 3, dut_draw_pump_bars(du_info.StatusPumpe3));
-    sc(7, 4, dut_draw_pump_bars(du_info.StatusPumpe7));
-    sc(7, 5, dut_draw_pump_bars(du_info.StatusPumpe5));
+    sc(7, 1, dut_draw_pump_bars(du_info.bas_info.StatusPumpe6));
+    sc(7, 2, dut_draw_pump_bars(du_info.bas_info.StatusPumpe4));
+    sc(7, 3, dut_draw_pump_bars(du_info.bas_info.StatusPumpe3));
+    sc(7, 4, dut_draw_pump_bars(du_info.bas_info.StatusPumpe7));
+    sc(7, 5, dut_draw_pump_bars(du_info.bas_info.StatusPumpe5));
 
     scc(8, 1, 212, dut_lbl_heat());
-    scc(8, 2, 203, dut_selected(dut_lbl_gas(), du_info.opt_auto_gas));
+    scc(8, 2, 203, dut_selected(dut_lbl_gas(), du_info.bas_info.opt_auto_gas));
     scc(8, 3, 168, dut_lbl_circ());
     scc(8, 4, 224, dut_lbl_solar());
     scc(8, 5, 78, dut_lbl_elec());
 
-    sc(7, 6, dut_wttrin_temp_to_color(du_wttrin.csv[WTTRIN_CSV_FIELD_t], du_info.peak_min_human, du_info.peak_max_human));
-    sc(7, 7, dut_wttrin_temp_to_color(du_wttrin.csv[WTTRIN_CSV_FIELD_f], du_info.peak_min_human, du_info.peak_max_human));
-    scc(7, 8, 226, du_wttrin.csv[WTTRIN_CSV_FIELD_u]);
-    scc(7, 9, 195, du_wttrin.csv[WTTRIN_CSV_FIELD_w]);
+    sc(7, 6, dut_wttrin_temp_to_color(du_info.wttrin.csv[WTTRIN_CSV_FIELD_t], du_info.bas_info.peak_min_human, du_info.bas_info.peak_max_human));
+    sc(7, 7, dut_wttrin_temp_to_color(du_info.wttrin.csv[WTTRIN_CSV_FIELD_f], du_info.bas_info.peak_min_human, du_info.bas_info.peak_max_human));
+    scc(7, 8, 226, du_info.wttrin.csv[WTTRIN_CSV_FIELD_u]);
+    scc(7, 9, 195, du_info.wttrin.csv[WTTRIN_CSV_FIELD_w]);
 
-    scc(8, 6, 123, du_wttrin.csv[WTTRIN_CSV_FIELD_h]);
-    scc(8, 7, 111, du_wttrin.csv[WTTRIN_CSV_FIELD_p]);
-    scc(8, 8, 177, du_wttrin.csv[WTTRIN_CSV_FIELD_P]);
+    scc(8, 6, 123, du_info.wttrin.csv[WTTRIN_CSV_FIELD_h]);
+    scc(8, 7, 111, du_info.wttrin.csv[WTTRIN_CSV_FIELD_p]);
+    scc(8, 8, 177, du_info.wttrin.csv[WTTRIN_CSV_FIELD_P]);
 
-    if (du_info.opt_auto_timer_started) {
+    if (du_info.bas_info.opt_auto_timer_started) {
         time_t current_time;
         time(&current_time);
-        du_info.opt_auto_timer_seconds_elapsed = difftime(current_time, du_info.history_mode_time_on);
-        snprintf(du_info.opt_auto_timer_status, sizeof(du_info.opt_auto_timer_status), "%d/%d", du_info.opt_auto_timer_seconds_elapsed, du_info.opt_auto_timer_seconds);
+        du_info.bas_info.opt_auto_timer_seconds_elapsed = difftime(current_time, du_info.bas_info.history_mode_time_on);
+        snprintf(du_info.bas_info.opt_auto_timer_status, sizeof(du_info.bas_info.opt_auto_timer_status), "%d/%d", du_info.bas_info.opt_auto_timer_seconds_elapsed, du_info.bas_info.opt_auto_timer_seconds);
     }
 
     // statuses
     sc(9, 0, dut_label_auto_timer_status());
-    scc(9, 1, 255, du_info.opt_auto_timer_status);
+    scc(9, 1, 255, du_info.bas_info.opt_auto_timer_status);
     sc(10, 0, dut_label_auto_gas_status());
-    scc(10, 1, 255, du_info.opt_auto_gas_status);
+    scc(10, 1, 255, du_info.bas_info.opt_auto_gas_status);
 
     // times marquee
     scc(11, 0, 108, dut_wttrin_marquee_times());
@@ -635,10 +589,10 @@ size_t draw_ui_and_front()
                      "\"StatusPumpe4\": %d"
                      "}",
                      html_buffer_escaped,
-                     du_info.Tmin,
-                     du_info.Tmax,
-                     du_info.mod_rada,    // heat
-                     du_info.StatusPumpe4 // gas pump
+                     du_info.bas_info.Tmin,
+                     du_info.bas_info.Tmax,
+                     du_info.bas_info.mod_rada,    // heat
+                     du_info.bas_info.StatusPumpe4 // gas pump
     );
     websocket_emit(emit_buffer, b);
     pthread_mutex_unlock(&s_du_mutex);

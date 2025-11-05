@@ -154,6 +154,11 @@ struct wttrin_info {
     int csv_parsed;
 };
 
+struct infos {
+    struct bas_info bas_info;
+    struct wttrin_info wttrin;
+};
+
 #define TEMP_MIN_SOLAR 10
 #define TEMP_MAX_SOLAR 100
 #define TEMP_MIN_HUMAN 0
@@ -200,7 +205,6 @@ extern int parse_csv(const char* input, char sep, int nfields, int field_size, c
 #define ERROR_TIMEOUT 1
 #define ERROR_CONN    2
 
-extern struct bas_info g_info;
-extern struct wttrin_info g_wttrin;
+extern struct infos g_info;
 
 #endif // REQUEST_H

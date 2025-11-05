@@ -1,5 +1,6 @@
 #include "debug.h"
 #include "globals.h"
+#include "main_utils.h"
 #include "mongoose.h"
 #include "signals.h"
 #include "term.h"
@@ -8,7 +9,6 @@
 #include "thread_request_wttrin.h"
 #include "thread_serve.h"
 #include "thread_utils.h"
-#include "utils.h"
 #include <assert.h>
 #include <pthread.h>
 #include <signal.h>
