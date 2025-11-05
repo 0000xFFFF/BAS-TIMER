@@ -208,8 +208,10 @@ int load_infos(const char* filename, struct Infos* info)
     return read == 1;
 }
 
-enum TimeOfDay wttrin_timeofday(struct WttrinInfo* wttrin)
+enum TimeOfDay wttrin_to_timeofday(struct WttrinInfo* wttrin)
 {
+    if (!wttrin->valid) return TIME_OF_DAY_UNKNOWN;
+
     // clang-format off
     int now = now_seconds();
     if      (now < wttrin->dawn)    return TIME_OF_DAY_BEFORE_DAWN;
@@ -221,13 +223,26 @@ enum TimeOfDay wttrin_timeofday(struct WttrinInfo* wttrin)
     // clang-format on
 }
 
-int timeofday_color(enum TimeOfDay tod)
+enum TimeOfDay timeofday()
+{
+    // clang-format off
+    int hour = localtime_hour();
+    if      (hour >= 4 && hour < 6)   return TIME_OF_DAY_BEFORE_DAWN;
+    else if (hour >= 6 && hour < 7)   return TIME_OF_DAY_DAWN;
+    else if (hour >= 7 && hour < 12)  return TIME_OF_DAY_MORNING;
+    else if (hour >= 12 && hour < 17) return TIME_OF_DAY_AFTERNOON;
+    else if (hour >= 17 && hour < 19) return TIME_OF_DAY_SUNSET;
+    else                              return TIME_OF_DAY_NIGHT;
+    // clang-format on
+}
+
+int timeofday_to_color(enum TimeOfDay tod)
 {
     // clang-format off
     switch (tod) {
         case TIME_OF_DAY_BEFORE_DAWN: return 93;
         case TIME_OF_DAY_DAWN:        return 130;
-        case TIME_OF_DAY_MORNING:     return 220;
+        case TIME_OF_DAY_MORNING:     return 214;
         case TIME_OF_DAY_AFTERNOON:   return 226;
         case TIME_OF_DAY_SUNSET:      return 202;
         case TIME_OF_DAY_NIGHT:       return 105;
@@ -238,5 +253,5 @@ int timeofday_color(enum TimeOfDay tod)
 
 int wttrin_timeofday_color(struct WttrinInfo* wttrin)
 {
-    return timeofday_color(wttrin_timeofday(wttrin));
+    return timeofday_to_color(wttrin_to_timeofday(wttrin));
 }

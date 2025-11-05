@@ -135,6 +135,7 @@ enum Weather {
 };
 
 enum TimeOfDay {
+    TIME_OF_DAY_UNKNOWN,
     TIME_OF_DAY_BEFORE_DAWN,
     TIME_OF_DAY_DAWN,
     TIME_OF_DAY_MORNING,
@@ -217,9 +218,10 @@ extern enum Weather detect_weather(const char* text);
 extern int parse_csv(const char* input, char sep, int nfields, int field_size, char fields[][field_size]);
 extern int save_infos(const char* filename, const struct Infos* info);
 extern int load_infos(const char* filename, struct Infos* info);
-extern enum TimeOfDay wttrin_timeofday(struct WttrinInfo* wttrin);
-extern int timeofday_color(enum TimeOfDay tod);
+extern enum TimeOfDay wttrin_to_timeofday(struct WttrinInfo* wttrin);
+extern int timeofday_to_color(enum TimeOfDay tod);
 extern int wttrin_timeofday_color(struct WttrinInfo* wttrin);
+extern enum TimeOfDay timeofday();
 
 #define ERROR_NONE    0
 #define ERROR_TIMEOUT 1

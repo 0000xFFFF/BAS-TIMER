@@ -138,21 +138,7 @@ static size_t make_term_buffer()
     return g_term_buffer_b;
 }
 
-static char* dut_timeofday_emoji()
-{
-    enum TimeOfDay tod = wttrin_timeofday(&du_infos.wttrin);
-    // clang-format off
-    switch (tod) {
-        case TIME_OF_DAY_BEFORE_DAWN: return get_frame(&spinner_sunrise, 1); // Sunrise
-        case TIME_OF_DAY_DAWN:        return "";                            // Morning
-        case TIME_OF_DAY_MORNING:     return "󰖙";                            // Afternoon
-        case TIME_OF_DAY_AFTERNOON:   return get_frame(&spinner_sunset, 1);  // Sunset
-        case TIME_OF_DAY_SUNSET:      return "";                            // Evening
-        case TIME_OF_DAY_NIGHT:       return "󰖔";                            // Night
-        default:                      return "?";                            // Unknown
-    }
-    // clang-format on
-}
+
 
 static int dut_weather_to_color(enum Weather weather)
 {
@@ -427,6 +413,28 @@ static char* dut_wttrin_marquee_times()
     return du_infos.wttrin.marquee_times_buf;
 }
 
+enum TimeOfDay get_tod()
+{
+    return du_infos.wttrin.valid ? wttrin_to_timeofday(&du_infos.wttrin) : timeofday(); // fallback with timeofday if can't get wttrin
+}
+
+static char* dut_timeofday_emoji()
+{
+    enum TimeOfDay tod = get_tod();
+
+    // clang-format off
+    switch (tod) {
+        case TIME_OF_DAY_BEFORE_DAWN: return get_frame(&spinner_sunrise, 1); // Sunrise
+        case TIME_OF_DAY_DAWN:        return "";                            // Morning
+        case TIME_OF_DAY_MORNING:     return "󰖙";                            // Afternoon
+        case TIME_OF_DAY_AFTERNOON:   return get_frame(&spinner_sunset, 1);  // Sunset
+        case TIME_OF_DAY_SUNSET:      return "";                            // Evening
+        case TIME_OF_DAY_NIGHT:       return "󰖔";                            // Night
+        default:                      return "?";                            // Unknown
+    }
+    // clang-format on
+}
+
 size_t draw_ui_unsafe()
 {
     clear_screen();
@@ -450,8 +458,10 @@ size_t draw_ui_unsafe()
     infos_wttrin_update_safe_io(&g_infos.wttrin, &du_infos.wttrin);
 
     // row 0
+    enum TimeOfDay tod = get_tod();
     int hour = localtime_hour();
-    int tod_color = wttrin_timeofday_color(&du_infos.wttrin);
+    int tod_color = timeofday_to_color(tod);
+
     scc(0, 0, tod_color, hour_to_clock(hour));
     scc(0, 1, tod_color, dut_timeofday_emoji());
     scc(0, 2, tod_color, dut_time());
