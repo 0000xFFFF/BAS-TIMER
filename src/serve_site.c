@@ -26,7 +26,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
     if (mg_match(hm->uri, mg_str("/api/state"), NULL)) {
         struct bas_info info = {0};
-        update_info_bas_safe_io(&g_info.bas_info, &info);
+        infos_bas_safe_io(&g_info.bas_info, &info);
         if (!info.valid) {
             mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}");
             return;
@@ -52,13 +52,13 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         if (value <= 0) { return mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}"); }
 
         struct bas_info info = {0};
-        update_info_bas_safe_io(&g_info.bas_info, &info);
+        infos_bas_safe_io(&g_info.bas_info, &info);
         if (!info.valid) { return mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); }
 
         info.opt_auto_timer_seconds = value;
         snprintf(info.opt_auto_timer_status, MIDBUFF, "changed to: %d", info.opt_auto_timer_seconds);
 
-        update_info_bas_safe_io(&info, &g_info.bas_info);
+        infos_bas_safe_io(&info, &g_info.bas_info);
 
         mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", info.opt_auto_timer_seconds);
         draw_ui_and_front();
@@ -68,11 +68,11 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
     if (mg_match(hm->uri, mg_str("/api/toggle_auto_timer"), NULL)) {
 
         struct bas_info info = {0};
-        update_info_bas_safe_io(&g_info.bas_info, &info);
+        infos_bas_safe_io(&g_info.bas_info, &info);
         if (!info.valid) { return mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); }
 
         info.opt_auto_timer = !info.opt_auto_timer;
-        update_info_bas_safe_io(&info, &g_info.bas_info);
+        infos_bas_safe_io(&info, &g_info.bas_info);
         mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"auto_timer\": %d}", info.opt_auto_timer);
         draw_ui_and_front();
         return;
@@ -80,11 +80,11 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
     if (mg_match(hm->uri, mg_str("/api/toggle_auto_gas"), NULL)) {
         struct bas_info info = {0};
-        update_info_bas_safe_io(&g_info.bas_info, &info);
+        infos_bas_safe_io(&g_info.bas_info, &info);
         if (!info.valid) { return mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); }
 
         info.opt_auto_gas = !info.opt_auto_gas;
-        update_info_bas_safe_io(&info, &g_info.bas_info);
+        infos_bas_safe_io(&info, &g_info.bas_info);
         mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"auto_gas\": %d}", info.opt_auto_gas);
         draw_ui_and_front();
         return;

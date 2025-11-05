@@ -172,16 +172,16 @@ struct infos {
 #define TIMEOUT_WTTRIN 5000
 
 // request_infos.c
-extern void update_info_bas_init();
-extern enum RequestStatus update_info_bas();
-extern void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* out);
-extern void update_info_wttrin_init();
-extern enum RequestStatus update_info_wttrin();
-extern void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out);
-extern void update_info_wttrin_marquee_conds_scroll();
-extern void update_info_wttrin_marquee_conds_update_width(int term_width);
-extern void update_info_wttrin_marquee_times_scroll();
-extern void update_info_wttrin_marquee_times_update_width(int term_width);
+extern void infos_bas_init();
+extern enum RequestStatus infos_bas_update();
+extern void infos_bas_safe_io(const struct bas_info* in, struct bas_info* out);
+extern void infos_wttrin_init();
+extern enum RequestStatus infos_wttrin_update();
+extern void infos_wttrin_update_safe_io(const struct wttrin_info* in, struct wttrin_info* out);
+extern void infos_wttrin_marquee_conds_scroll();
+extern void infos_wttrin_marquee_conds_update_width(int term_width);
+extern void infos_wttrin_marquee_times_scroll();
+extern void infos_wttrin_marquee_times_update_width(int term_width);
 extern void infos_save();
 
 // request_send.c

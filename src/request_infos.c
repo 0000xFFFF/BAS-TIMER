@@ -13,18 +13,18 @@
 #include <string.h>
 #include <time.h>
 
-pthread_mutex_t g_update_info_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t g_infos_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* out)
+void infos_bas_safe_io(const struct bas_info* in, struct bas_info* out)
 {
-    pthread_mutex_lock(&g_update_info_bas_mutex);
+    pthread_mutex_lock(&g_infos_bas_mutex);
     memcpy(out, in, sizeof(struct bas_info));
-    pthread_mutex_unlock(&g_update_info_bas_mutex);
+    pthread_mutex_unlock(&g_infos_bas_mutex);
 }
 
 static long long g_global_unix_counter = 0;
 
-void update_info_bas_init()
+void infos_bas_init()
 {
     g_global_unix_counter = timestamp();
 
@@ -56,11 +56,11 @@ void update_info_bas_init()
     info.history_gas_time_on = 0;
     info.history_gas_time_off = 0;
 
-    update_info_bas_safe_io(&info, &g_info.bas_info);
+    infos_bas_safe_io(&info, &g_info.bas_info);
 }
 
-// must update_info_bas_init before running this
-enum RequestStatus update_info_bas()
+// must infos_bas_init before running this
+enum RequestStatus infos_bas_update()
 {
     g_global_unix_counter++;
     char request_url[BIGBUFF];
@@ -75,7 +75,7 @@ enum RequestStatus update_info_bas()
     request_send(&request);
 
     struct bas_info info = {0};
-    update_info_bas_safe_io(&g_info.bas_info, &info);
+    infos_bas_safe_io(&g_info.bas_info, &info);
     info.status = request.status;
 
     if (request.output.buf) {
@@ -117,26 +117,26 @@ enum RequestStatus update_info_bas()
         free((void*)request.output.buf);
     }
 
-    update_info_bas_safe_io(&info, &g_info.bas_info);
+    infos_bas_safe_io(&info, &g_info.bas_info);
 
     return request.status;
 }
 
-static pthread_mutex_t g_update_info_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t g_infos_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out)
+void infos_wttrin_update_safe_io(const struct wttrin_info* in, struct wttrin_info* out)
 {
-    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    pthread_mutex_lock(&g_infos_wttrin_mutex);
     memcpy(out, in, sizeof(struct wttrin_info));
-    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+    pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
-void update_info_wttrin_init()
+void infos_wttrin_init()
 {
     struct wttrin_info wttrin = {0};
     snprintf(wttrin.marquee_conds_buf, sizeof(wttrin.marquee_conds_buf), "...");
     snprintf(wttrin.marquee_times_buf, sizeof(wttrin.marquee_times_buf), "...");
-    update_info_wttrin_safe_io(&wttrin, &g_info.wttrin);
+    infos_wttrin_update_safe_io(&wttrin, &g_info.wttrin);
 }
 
 #define MZWS MARQUEE_ZERO_WIDTH_SPACE
@@ -192,7 +192,8 @@ static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
     marquee_init(&wttrin->marquee_times, wttrin->marquee_times_buf, width, marquee_pause / SLEEP_MS_DRAW, 3);
 }
 
-enum RequestStatus update_info_wttrin()
+// must infos_wttrin_init before running this
+enum RequestStatus infos_wttrin_update()
 {
     struct Request request = {0};
     request.status = REQUEST_STATUS_RUNNING;
@@ -203,7 +204,7 @@ enum RequestStatus update_info_wttrin()
     request_send(&request);
 
     struct wttrin_info wttrin = {0};
-    update_info_wttrin_safe_io(&g_info.wttrin, &wttrin);
+    infos_wttrin_update_safe_io(&g_info.wttrin, &wttrin);
     wttrin.status = request.status;
 
     if (request.output.buf) {
@@ -240,46 +241,46 @@ enum RequestStatus update_info_wttrin()
         make_wttrin_marquee_times(&wttrin);
     }
 
-    update_info_wttrin_safe_io(&wttrin, &g_info.wttrin);
+    infos_wttrin_update_safe_io(&wttrin, &g_info.wttrin);
 
     return request.status;
 }
 
-void update_info_wttrin_marquee_conds_scroll()
+void infos_wttrin_marquee_conds_scroll()
 {
-    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    pthread_mutex_lock(&g_infos_wttrin_mutex);
     marquee_scroll_smart(&g_info.wttrin.marquee_conds);
-    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+    pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
-void update_info_wttrin_marquee_conds_update_width(int term_width)
+void infos_wttrin_marquee_conds_update_width(int term_width)
 {
-    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    pthread_mutex_lock(&g_infos_wttrin_mutex);
     marquee_update_width(&g_info.wttrin.marquee_conds, make_wttrin_marquee_conds_width(term_width, &g_info.wttrin));
-    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+    pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
-void update_info_wttrin_marquee_times_scroll()
+void infos_wttrin_marquee_times_scroll()
 {
-    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    pthread_mutex_lock(&g_infos_wttrin_mutex);
     marquee_scroll_smart(&g_info.wttrin.marquee_times);
-    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+    pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
-void update_info_wttrin_marquee_times_update_width(int term_width)
+void infos_wttrin_marquee_times_update_width(int term_width)
 {
-    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    pthread_mutex_lock(&g_infos_wttrin_mutex);
     marquee_update_width(&g_info.wttrin.marquee_times, term_width);
-    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+    pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
 void infos_save()
 {
-    pthread_mutex_lock(&g_update_info_bas_mutex);
-    pthread_mutex_lock(&g_update_info_wttrin_mutex);
+    pthread_mutex_lock(&g_infos_bas_mutex);
+    pthread_mutex_lock(&g_infos_wttrin_mutex);
 
     save_infos(VAR_DIR_FILE_INFOS_BIN, &g_info);
 
-    pthread_mutex_unlock(&g_update_info_bas_mutex);
-    pthread_mutex_unlock(&g_update_info_wttrin_mutex);
+    pthread_mutex_unlock(&g_infos_bas_mutex);
+    pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }

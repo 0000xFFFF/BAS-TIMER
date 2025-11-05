@@ -412,7 +412,7 @@ static char* dut_wttrin_marquee_conds()
         char temp[sizeof(g_temp) - 5];
         marquee_render(&du_info.wttrin.marquee_conds, temp, sizeof(temp));
         snprintf(g_temp, sizeof(g_temp), "%s\033[K", temp);
-        update_info_wttrin_marquee_conds_scroll();
+        infos_wttrin_marquee_conds_scroll();
         return g_temp;
     }
     return "...";
@@ -424,7 +424,7 @@ static char* dut_wttrin_marquee_times()
         char temp[sizeof(g_temp) - 5];
         marquee_render(&du_info.wttrin.marquee_times, temp, sizeof(temp));
         snprintf(g_temp, sizeof(g_temp), "%s\033[K", temp);
-        update_info_wttrin_marquee_times_scroll();
+        infos_wttrin_marquee_times_scroll();
         return g_temp;
     }
     return "...";
@@ -439,8 +439,8 @@ size_t draw_ui_unsafe()
     if (term_w != g_term_w) {
         g_term_w = term_w;
         if (du_info.wttrin.valid) {
-            update_info_wttrin_marquee_conds_update_width(g_term_w);
-            update_info_wttrin_marquee_times_update_width(g_term_w);
+            infos_wttrin_marquee_conds_update_width(g_term_w);
+            infos_wttrin_marquee_times_update_width(g_term_w);
         }
         term_clear();
     }
@@ -449,8 +449,8 @@ size_t draw_ui_unsafe()
         term_clear();
     }
 
-    update_info_bas_safe_io(&g_info.bas_info, &du_info.bas_info);
-    update_info_wttrin_safe_io(&g_info.wttrin, &du_info.wttrin);
+    infos_bas_safe_io(&g_info.bas_info, &du_info.bas_info);
+    infos_wttrin_update_safe_io(&g_info.wttrin, &du_info.wttrin);
 
     // row 0
     int hour = localtime_hour();

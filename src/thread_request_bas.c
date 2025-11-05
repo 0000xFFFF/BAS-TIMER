@@ -12,9 +12,9 @@ void* th_request_bas(void* sig)
     DPL("THREAD START BAS");
     UNUSED(sig);
 
-    update_info_bas_init();
+    infos_bas_init();
     while (atomic_load(&g_running)) {
-        if (MAKE_REQUEST_BAS) update_info_bas();
+        if (MAKE_REQUEST_BAS) infos_bas_update();
         sleep_ms_interruptible(SLEEP_MS_BAS);
     }
 

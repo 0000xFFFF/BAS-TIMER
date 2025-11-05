@@ -1,6 +1,6 @@
+#include "debug.h"
 #include "mongoose.h"
 #include "request.h"
-#include "src/debug.h"
 #include "utils.h"
 #include <float.h>
 
