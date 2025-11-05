@@ -43,14 +43,14 @@ const int SLEEP_MS_SAVE_INFOS = 60 * 1000; // 1 min
 const int TIMEOUT_MS_BAS = 1500;
 const int TIMEOUT_MS_WTTRIN = 10000;
 
-const int TEMP_MIN_SOLAR = 0;
-const int TEMP_MAX_SOLAR = 100;
-const int TEMP_MIN_HUMAN = 0;
-const int TEMP_MAX_HUMAN = 30;
-const int TEMP_MIN_BUF  = 45;
-const int TEMP_MAX_BUF =  60;
-const int TEMP_MIN_CIRC = 0;
-const int TEMP_MAX_CIRC = 60;
+const double TEMP_MIN_SOLAR = 0;
+const double TEMP_MAX_SOLAR = 100;
+const double TEMP_MIN_HUMAN = 0;
+const double TEMP_MAX_HUMAN = 30;
+const double TEMP_MIN_BUF  = 45;
+const double TEMP_MAX_BUF =  60;
+const double TEMP_MIN_CIRC = 0;
+const double TEMP_MAX_CIRC = 60;
 
 atomic_bool g_running = true;
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;

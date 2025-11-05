@@ -32,14 +32,14 @@ extern const int SLEEP_MS_SAVE_INFOS;
 extern const int TIMEOUT_MS_BAS;
 extern const int TIMEOUT_MS_WTTRIN;
 
-extern const int TEMP_MIN_SOLAR;
-extern const int TEMP_MAX_SOLAR;
-extern const int TEMP_MIN_HUMAN;
-extern const int TEMP_MAX_HUMAN;
-extern const int TEMP_MIN_BUF;
-extern const int TEMP_MAX_BUF;
-extern const int TEMP_MIN_CIRC;
-extern const int TEMP_MAX_CIRC;
+extern const double TEMP_MIN_SOLAR;
+extern const double TEMP_MAX_SOLAR;
+extern const double TEMP_MIN_HUMAN;
+extern const double TEMP_MAX_HUMAN;
+extern const double TEMP_MIN_BUF;
+extern const double TEMP_MAX_BUF;
+extern const double TEMP_MIN_CIRC;
+extern const double TEMP_MAX_CIRC;
 
 extern atomic_bool g_running;
 extern pthread_mutex_t g_mutex;
