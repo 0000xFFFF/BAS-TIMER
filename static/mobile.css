@@ -51,17 +51,17 @@ input {
 }
 
 #termcont {
-    overflow: hidden;
     padding: 5px;
     font-size: 18px;
-    height: auto;
-    min-width: 100px;
-    min-height: 100px;
 }
 
 #term,
 #sumtime {
-    width: fit-content;
+    max-width: calc(100vw - 15px)
+}
+
+#term,
+#sumtime {
     margin: 5px;
 }
 
