@@ -71,7 +71,7 @@ enum RequestStatus infos_bas_update()
     request.status = REQUEST_STATUS_RUNNING;
     request.url = request_url;
     request.request_format = REQUEST_FORMAT_BAS;
-    request.timeout_ms = TIMEOUT_BAS;
+    request.timeout_ms = TIMEOUT_MS_BAS;;
     request.remember_response = 1;
 
     pthread_mutex_lock(&g_infos_bas_mutex);
@@ -213,7 +213,7 @@ enum RequestStatus infos_wttrin_update()
     request.status = REQUEST_STATUS_RUNNING;
     request.url = URL_WTTRIN;
     request.request_format = REQUEST_FORMAT_WTTRIN;
-    request.timeout_ms = TIMEOUT_WTTRIN;
+    request.timeout_ms = TIMEOUT_MS_WTTRIN;
     request.remember_response = 1;
 
     pthread_mutex_lock(&g_infos_wttrin_mutex);

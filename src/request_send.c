@@ -75,7 +75,7 @@ enum RequestStatus request_send_quick(const char* url)
     request.status = REQUEST_STATUS_RUNNING;
     request.url = url;
     request.request_format = REQUEST_FORMAT_BAS;
-    request.timeout_ms = TIMEOUT_BAS;
+    request.timeout_ms = TIMEOUT_MS_BAS;
     request.remember_response = 0;
     return request_send(&request);
 }

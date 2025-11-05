@@ -26,8 +26,6 @@ long long timestamp()
     return timestamp_ms;
 }
 
-#define TIME_BUFFER_SIZE 32
-
 size_t strftime_HM(char* buffer, size_t size, struct tm* timeinfo)
 {
     return strftime(buffer, size, "%H:%M", timeinfo);

@@ -175,18 +175,6 @@ struct Infos {
     struct WttrinInfo wttrin;
 };
 
-#define TEMP_MIN_SOLAR 10
-#define TEMP_MAX_SOLAR 100
-#define TEMP_MIN_HUMAN 0
-#define TEMP_MAX_HUMAN 30
-#define TEMP_MIN_BUF   45
-#define TEMP_MAX_BUF   70
-#define TEMP_MIN_CIRC  0
-#define TEMP_MAX_CIRC  30
-
-#define TIMEOUT_BAS    1500
-#define TIMEOUT_WTTRIN 5000
-
 // request_infos.c
 extern void infos_bas_init();
 extern enum RequestStatus infos_bas_update();
@@ -222,10 +210,6 @@ extern enum TimeOfDay wttrin_to_timeofday(struct WttrinInfo* wttrin);
 extern int timeofday_to_color(enum TimeOfDay tod);
 extern int wttrin_timeofday_color(struct WttrinInfo* wttrin);
 extern enum TimeOfDay timeofday();
-
-#define ERROR_NONE    0
-#define ERROR_TIMEOUT 1
-#define ERROR_CONN    2
 
 extern struct Infos g_infos;
 
