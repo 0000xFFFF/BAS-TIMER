@@ -217,17 +217,17 @@ static int dut_weather_to_color(enum Weather weather)
     }
 }
 
-static size_t dut_weather_to_spinner(char* buffer, size_t size, enum Weather weather)
+static size_t dut_weather_to_spinner(char* buffer, size_t size, int color, enum Weather weather)
 {
     switch (weather) {
         default:
-        case WEATHER_UNKNOWN: return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_qm, 1)); break;
-        case WEATHER_CLEAR:   return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_sun, 1)); break;
-        case WEATHER_CLOUD:   return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_cloud, 1)); break;
-        case WEATHER_RAIN:    return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_rain, 1)); break;
-        case WEATHER_THUNDER: return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_thunder, 1)); break;
-        case WEATHER_SNOW:    return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_snow, 1)); break;
-        case WEATHER_FOG:     return ctext_fg(buffer, size, dut_weather_to_color(weather), get_frame(&spinner_fog, 1)); break;
+        case WEATHER_UNKNOWN: return ctext_fg(buffer, size, color, get_frame(&spinner_qm, 1)); break;
+        case WEATHER_CLEAR:   return ctext_fg(buffer, size, color, get_frame(&spinner_sun, 1)); break;
+        case WEATHER_CLOUD:   return ctext_fg(buffer, size, color, get_frame(&spinner_cloud, 1)); break;
+        case WEATHER_RAIN:    return ctext_fg(buffer, size, color, get_frame(&spinner_rain, 1)); break;
+        case WEATHER_THUNDER: return ctext_fg(buffer, size, color, get_frame(&spinner_thunder, 1)); break;
+        case WEATHER_SNOW:    return ctext_fg(buffer, size, color, get_frame(&spinner_snow, 1)); break;
+        case WEATHER_FOG:     return ctext_fg(buffer, size, color, get_frame(&spinner_fog, 1)); break;
     }
 }
 
@@ -249,10 +249,10 @@ static char* dut_time()
     return g_temp;
 }
 
-static char* dut_wttrin_emoji()
+static char* dut_wttrin_emoji(int color)
 {
     g_temp_b = 0;
-    g_temp_b += dut_weather_to_spinner(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, du_wttrin.weather);
+    g_temp_b += dut_weather_to_spinner(g_temp + g_temp_b, sizeof(g_temp) - g_temp_b, color, du_wttrin.weather);
     return g_temp;
 }
 
@@ -398,45 +398,6 @@ static char* dut_label_auto_gas_status()
     return g_temp;
 }
 
-static int utf8_display_width(const char* s)
-{
-    mbstate_t ps = {0};
-    wchar_t wc;
-    int width = 0;
-
-    const char* p = s;
-
-    while (*p) {
-        // skip ANSI escape sequences (e.g., "\033[31m")
-        if (*p == '\033') {
-            if (*(p + 1) == '[') {
-                p += 2;
-                while (*p && (*p < '@' || *p > '~')) // skip until letter ending sequence
-                    p++;
-                if (*p) p++; // skip final letter
-                continue;
-            }
-        }
-
-        // convert next multibyte character
-        size_t n = mbrtowc(&wc, p, MB_CUR_MAX, &ps);
-        if (n == (size_t)-1 || n == (size_t)-2) {
-            // invalid UTF-8, skip a byte
-            p++;
-            continue;
-        }
-        else if (n == 0) {
-            break;
-        }
-
-        int w = wcwidth(wc);
-        if (w > 0) width += w;
-        p += n;
-    }
-
-    return width;
-}
-
 static void print_buffer_padded()
 {
     setlocale(LC_ALL, ""); // ensure correct UTF-8 width
@@ -494,9 +455,9 @@ static void print_buffer_padded()
 static char* dut_wttrin_marquee_conds()
 {
     if (du_wttrin.valid) {
-        char temp[sizeof(g_temp) - 5];
+        char temp[sizeof(g_temp)];
         marquee_render(&du_wttrin.marquee_conds, temp, sizeof(temp));
-        snprintf(g_temp, sizeof(g_temp), "\r%s\033[K", temp);
+        snprintf(g_temp, sizeof(g_temp), "%s", temp);
         update_info_wttrin_marquee_conds_scroll();
         return g_temp;
     }
@@ -506,9 +467,9 @@ static char* dut_wttrin_marquee_conds()
 static char* dut_wttrin_marquee_times()
 {
     if (du_wttrin.valid) {
-        char temp[sizeof(g_temp) - 5];
+        char temp[sizeof(g_temp)];
         marquee_render(&du_wttrin.marquee_times, temp, sizeof(temp));
-        snprintf(g_temp, sizeof(g_temp), "\r%s\033[K", temp);
+        snprintf(g_temp, sizeof(g_temp), "%s", temp);
         update_info_wttrin_marquee_times_scroll();
         return g_temp;
     }
@@ -545,11 +506,14 @@ size_t draw_ui_unsafe()
     scc(0, 2, 182, dut_time());
     sc(0, 3, dut_status_to_emoji(du_info.status));
     sc(0, 4, dut_status_to_emoji(du_wttrin.status));
-    sc(0, 5, dut_wttrin_emoji());
+    int wttrin_color = dut_weather_to_color(du_wttrin.weather);
+    sc(0, 5, dut_wttrin_emoji(wttrin_color));
     sc(0, 6, du_wttrin.csv[WTTRIN_CSV_FIELD_m]);
 
     // row 1
-    scc(1, 0, dut_weather_to_color(du_wttrin.weather), dut_wttrin_marquee_conds());
+    scc(1, 0, wttrin_color, du_wttrin.time);
+    scc(1, 1, wttrin_color, du_wttrin.csv[WTTRIN_CSV_FIELD_c]);
+    scc(1, 2, wttrin_color, dut_wttrin_marquee_conds());
 
     // row 2
     scc(2, 0, request_status_failed(du_info.status) ? COLOR_OFF : COLOR_ON, dut_ip());
@@ -627,7 +591,7 @@ size_t draw_ui_unsafe()
     sc(10, 0, dut_label_auto_gas_status());
     scc(10, 1, 255, du_info.opt_auto_gas_status);
 
-    // dusk
+    // times marquee
     scc(11, 0, 108, dut_wttrin_marquee_times());
 
     spin_spinner(&spinner_circle);

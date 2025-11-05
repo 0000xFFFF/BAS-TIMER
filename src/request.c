@@ -146,24 +146,43 @@ void update_info_wttrin_init()
 
 #define MZWS MARQUEE_ZERO_WIDTH_SPACE
 
+static void make_wttrin_time(struct wttrin_info* wttrin)
+{
+    size_t b = 0;
+    b += dt_HM(wttrin->time + b, sizeof(wttrin->time) - b); // prepend hour:minute
+    b += snprintf(wttrin->time + b, sizeof(wttrin->time) - b, ":");
+}
+
+static int make_wttrin_marquee_conds_width(int term_width, struct wttrin_info* wttrin)
+{
+    int other = utf8_display_width(wttrin->time)                      // time -- e.g. "12:12:"
+                + 1                                                   // space
+                + utf8_display_width(wttrin->csv[WTTRIN_CSV_FIELD_c]) // emojis -- e.g "☀ "
+                + 1;                                                  // space
+
+    int ret = term_width - other;
+    return ret;
+}
+
 static void make_wttrin_marquee_conds(struct wttrin_info* wttrin)
 {
     size_t b = 0;
     b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, MZWS); // pause on zero width space char
-    b += dt_HM(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b);          // prepend hour:minute
-    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, ": ");
-    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, "%s %s  ",
-                  wttrin->csv[WTTRIN_CSV_FIELD_C],
-                  wttrin->csv[WTTRIN_CSV_FIELD_c]);
+    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, "%s  ", wttrin->csv[WTTRIN_CSV_FIELD_C]);
 
     const int marquee_pause = 1000; // 1 sec pause
-    marquee_init(&wttrin->marquee_conds, wttrin->marquee_conds_buf, g_term_w, marquee_pause / SLEEP_MS_DRAW, 2);
+    const int width = make_wttrin_marquee_conds_width(g_term_w, wttrin);
+    marquee_init(&wttrin->marquee_conds, wttrin->marquee_conds_buf, width, marquee_pause / SLEEP_MS_DRAW, 2);
+}
+
+static int make_wttrin_marquee_times_width(int term_width)
+{
+    return term_width - 3;
 }
 
 static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
 {
     size_t b = 0;
-    // b += snprintf(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, "@ Dawn 🌄 %s, @ Sunrise 🌅 %s, @ Zenith 🌞 %s, @ Sunset 🌇 %s, @ Dusk 🌆 %s  ",
     b += snprintf(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b,
                   MZWS "🌄 Dawn %s, " MZWS "🌅 Sunrise %s, " MZWS "🌞 Zenith %s, " MZWS "🌇 Sunset %s, " MZWS "🌆 Dusk %s  ",
                   wttrin->csv[WTTRIN_CSV_FIELD_D],
@@ -173,7 +192,8 @@ static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
                   wttrin->csv[WTTRIN_CSV_FIELD_d]);
 
     const int marquee_pause = 3000; // 3 sec pause
-    marquee_init(&wttrin->marquee_times, wttrin->marquee_times_buf, g_term_w - 3, marquee_pause / SLEEP_MS_DRAW, 3);
+    const int width = make_wttrin_marquee_times_width(g_term_w);
+    marquee_init(&wttrin->marquee_times, wttrin->marquee_times_buf, width, marquee_pause / SLEEP_MS_DRAW, 3);
 }
 
 enum RequestStatus update_info_wttrin()
@@ -231,10 +251,14 @@ enum RequestStatus update_info_wttrin()
             return request.status;
         }
 
+        // override weather cond
+        snprintf(wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
+
         // wttrin emoji
         wttrin.weather = detect_weather(wttrin.csv[WTTRIN_CSV_FIELD_C]);
 
         // make marquees
+        make_wttrin_time(&wttrin);
         make_wttrin_marquee_conds(&wttrin);
         make_wttrin_marquee_times(&wttrin);
     }
@@ -254,7 +278,7 @@ void update_info_wttrin_marquee_conds_scroll()
 void update_info_wttrin_marquee_conds_update_width(int term_width)
 {
     pthread_mutex_lock(&g_update_info_wttrin_mutex);
-    marquee_update_width(&g_wttrin.marquee_conds, term_width);
+    marquee_update_width(&g_wttrin.marquee_conds, make_wttrin_marquee_conds_width(term_width, &g_wttrin));
     pthread_mutex_unlock(&g_update_info_wttrin_mutex);
 }
 

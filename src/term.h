@@ -11,5 +11,6 @@ extern void term_blank();
 extern int term_width();
 extern int term_height();
 extern void term_init();
+extern int utf8_display_width(const char* s);
 
 #endif // TERM_H

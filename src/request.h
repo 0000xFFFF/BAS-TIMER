@@ -142,6 +142,8 @@ struct wttrin_info {
     enum RequestStatus status;
     enum Weather weather;
 
+    char time[TINYBUFF];
+
     char marquee_conds_buf[BIGBUFF];
     Marquee marquee_conds; // c -- Weather condition, C -- Weather condition textual name
 
