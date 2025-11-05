@@ -124,8 +124,14 @@ static size_t make_term_buffer()
         }
 
         // newline
-        if (r != MAX_ROWS - 1 && g_term_buffer_b + 1 < sizeof(g_term_buffer)) {
+        if (g_term_buffer_b + 1 < sizeof(g_term_buffer)) {
+#if DEBUG
             g_term_buffer[g_term_buffer_b++] = '\n';
+#else // on relase don't add new line for last line
+            if (r != MAX_ROWS - 1) {
+                g_term_buffer[g_term_buffer_b++] = '\n';
+            }
+#endif
         }
     }
 
@@ -137,8 +143,6 @@ static size_t make_term_buffer()
 
     return g_term_buffer_b;
 }
-
-
 
 static int dut_weather_to_color(enum Weather weather)
 {
@@ -384,7 +388,9 @@ static void print_buffer_padded()
         for (; w < g_term_w; w++)
             fputc(' ', stdout);
 
-        //fputc('\n', stdout);
+#if DEBUG // last newline only in debug
+        fputc('\n', stdout);
+#endif
     }
 
     fflush(stdout);
@@ -570,6 +576,7 @@ size_t draw_ui_unsafe()
 
 static pthread_mutex_t s_du_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+#define HTML_BUFFER_SIZE 1024 * 6
 size_t draw_ui_and_front()
 {
     pthread_mutex_lock(&s_du_mutex);
@@ -578,13 +585,13 @@ size_t draw_ui_and_front()
     term_cursor_reset();
 #endif
     size_t r = draw_ui_unsafe();
-    char html_buffer[1024 * 16] = {0};
+    char html_buffer[HTML_BUFFER_SIZE] = {0};
     ansi_to_html(g_term_buffer, html_buffer);
-    char html_buffer_escaped[1024 * 16 * 2] = {0};
+    char html_buffer_escaped[HTML_BUFFER_SIZE] = {0};
     escape_quotes(html_buffer, html_buffer_escaped);
 
-    char emit_buffer[1024 * 16 * 2] = {0};
-    int b = snprintf(emit_buffer, 1024 * 8 * 2,
+    char emit_buffer[HTML_BUFFER_SIZE] = {0};
+    int b = snprintf(emit_buffer, HTML_BUFFER_SIZE,
                      "{"
                      "\"term\": \"%s\""
                      ","
