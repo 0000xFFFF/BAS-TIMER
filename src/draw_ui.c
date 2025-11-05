@@ -409,9 +409,9 @@ static void print_buffer_padded()
 static char* dut_wttrin_marquee_conds()
 {
     if (du_info.wttrin.valid) {
-        char temp[sizeof(g_temp)];
+        char temp[sizeof(g_temp) - 5];
         marquee_render(&du_info.wttrin.marquee_conds, temp, sizeof(temp));
-        snprintf(g_temp, sizeof(g_temp), "%s", temp);
+        snprintf(g_temp, sizeof(g_temp), "%s\033[K", temp);
         update_info_wttrin_marquee_conds_scroll();
         return g_temp;
     }
@@ -421,9 +421,9 @@ static char* dut_wttrin_marquee_conds()
 static char* dut_wttrin_marquee_times()
 {
     if (du_info.wttrin.valid) {
-        char temp[sizeof(g_temp)];
+        char temp[sizeof(g_temp) - 5];
         marquee_render(&du_info.wttrin.marquee_times, temp, sizeof(temp));
-        snprintf(g_temp, sizeof(g_temp), "%s", temp);
+        snprintf(g_temp, sizeof(g_temp), "%s\033[K", temp);
         update_info_wttrin_marquee_times_scroll();
         return g_temp;
     }
