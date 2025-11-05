@@ -186,6 +186,7 @@ void marquee_scroll(Marquee* m)
     }
 }
 
+// pause marquee scroll on zero width space
 void marquee_scroll_smart(Marquee* m)
 {
     if (!m->scroll_needed) return;
@@ -193,7 +194,6 @@ void marquee_scroll_smart(Marquee* m)
     // Find the current first visible character (after skipping to m->pos)
     int vis_idx = 0;
     int byte_idx = 0;
-    char first_visible_char = '\0';
 
     // Skip to current scroll position
     while (vis_idx < m->pos) {
@@ -225,12 +225,23 @@ void marquee_scroll_smart(Marquee* m)
         if (!m->text[byte_idx]) byte_idx = 0;
     }
 
-    first_visible_char = m->text[byte_idx];
+    // Decode next Unicode character
+    mbstate_t state;
+    memset(&state, 0, sizeof(state));
+    wchar_t wc;
+    size_t bytes = mbrtowc(&wc, &m->text[byte_idx], MB_CUR_MAX, &state);
 
-    // If first visible char is '@', pause (similar to start_delay behavior)
-    if (first_visible_char == '@' && m->i < m->start_delay) {
-        m->i++;
-        return;
+    // Pause on zero width space MARQUEE_ZERO_WIDTH_SPACE
+    if (bytes == (size_t)-1 || bytes == (size_t)-2) {
+        // Invalid — treat as byte, no pause
+        bytes = 1;
+    }
+    else {
+        // U+200B Zero Width Space?
+        if (wc == 0x200B && m->i < m->start_delay) {
+            m->i++;
+            return;
+        }
     }
 
     // Normal scrolling behavior

@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#define MARQUEE_ZERO_WIDTH_SPACE "\xE2\x80\x8B"
+
 typedef struct {
     const char* text;
     int width;

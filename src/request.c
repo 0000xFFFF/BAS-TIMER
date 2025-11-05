@@ -144,10 +144,12 @@ void update_info_wttrin_init()
     update_info_wttrin_safe_io(&wttrin, &g_wttrin);
 }
 
+#define MZWS MARQUEE_ZERO_WIDTH_SPACE
+
 static void make_wttrin_marquee_conds(struct wttrin_info* wttrin)
 {
     size_t b = 0;
-    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, "@ "); // pause on '@' char
+    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, MZWS); // pause on zero width space char
     b += dt_HM(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b);          // prepend hour:minute
     b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, ": ");
     b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, "%s %s  ",
@@ -158,11 +160,12 @@ static void make_wttrin_marquee_conds(struct wttrin_info* wttrin)
     marquee_init(&wttrin->marquee_conds, wttrin->marquee_conds_buf, g_term_w, marquee_pause / SLEEP_MS_DRAW, 1);
 }
 
-
 static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
 {
     size_t b = 0;
-    b += snprintf(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, "@ Dawn 🌄 %s, @ Sunrise 🌅 %s, @ Zenith 🌞 %s, @ Sunset 🌇 %s, @ Dusk 🌆 %s  ",
+    // b += snprintf(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, "@ Dawn 🌄 %s, @ Sunrise 🌅 %s, @ Zenith 🌞 %s, @ Sunset 🌇 %s, @ Dusk 🌆 %s  ",
+    b += snprintf(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b,
+                  MZWS "🌄 Dawn %s, " MZWS "🌅 Sunrise %s, " MZWS "🌞 Zenith %s, " MZWS "🌇 Sunset %s, " MZWS "🌆 Dusk %s  ",
                   wttrin->csv[WTTRIN_CSV_FIELD_D],
                   wttrin->csv[WTTRIN_CSV_FIELD_S],
                   wttrin->csv[WTTRIN_CSV_FIELD_z],
