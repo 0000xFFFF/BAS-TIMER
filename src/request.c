@@ -184,7 +184,8 @@ static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
 {
     size_t b = 0;
     b += snprintf(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b,
-                  MZWS "🌄 Dawn %s, " MZWS "🌅 Sunrise %s, " MZWS "🌞 Zenith %s, " MZWS "🌇 Sunset %s, " MZWS "🌆 Dusk %s  ",
+                  //MZWS "🌄 Dawn %s, " MZWS "🌅 Sunrise %s, " MZWS "🌞 Zenith %s, " MZWS "🌇 Sunset %s, " MZWS "🌆 Dusk %s  ",
+                  MZWS "🌄 %s " MZWS "🌅 %s " MZWS "🌞 %s " MZWS "🌇 %s " MZWS "🌆 %s ",
                   wttrin->csv[WTTRIN_CSV_FIELD_D],
                   wttrin->csv[WTTRIN_CSV_FIELD_S],
                   wttrin->csv[WTTRIN_CSV_FIELD_z],
