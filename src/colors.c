@@ -57,7 +57,8 @@ int temperature_to_color(double temp, double temp_min, double temp_max)
 {
     if (temp <= temp_min) { return TEMP_COLORS[0]; }
     if (temp >= temp_max) { return TEMP_COLORS[TEMP_COLORS_SIZE - 1]; }
-    int index = (temp - temp_min) * (TEMP_COLORS_SIZE - 1) / (temp_max - temp_min);
+    int diff = temp_max - temp_min;
+    int index = (temp - temp_min) * (TEMP_COLORS_SIZE - 1) / (diff > 0 ? diff : 1);
     return TEMP_COLORS[index];
 }
 
