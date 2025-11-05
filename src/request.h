@@ -17,7 +17,7 @@ extern const char* REQUEST_FORMAT_WTTRIN;
 #define URL_WTTRIN_OUTPUT_CSV_SEP       '|' // can't use ',' --- WTTRIN_CSV_FIELD_l has ',' inside it
 #define URL_WTTRIN_OUTPUT_MAX_FIELDS    20
 #define URL_WTTRIN_OUTPUT_MAX_FIELD_LEN 64
-typedef enum {
+enum WttrinCsvField {
     WTTRIN_CSV_FIELD_c, // c -- Weather condition,
     WTTRIN_CSV_FIELD_C, // C -- Weather condition textual name,
     WTTRIN_CSV_FIELD_x, // x -- Weather condition, plain-text symbol,
@@ -38,7 +38,7 @@ typedef enum {
     WTTRIN_CSV_FIELD_d, // d -- Dusk*,
     WTTRIN_CSV_FIELD_T, // T -- Current time*,
     WTTRIN_CSV_FIELD_Z  // Z -- Local timezone.
-} WttrinCsvField;
+};
 
 extern const char* URL_WTTRIN;
 
@@ -145,10 +145,10 @@ struct wttrin_info {
     char time[TINYBUFF];
 
     char marquee_conds_buf[BIGBUFF];
-    Marquee marquee_conds; // c -- Weather condition, C -- Weather condition textual name
+    struct Marquee marquee_conds; // c -- Weather condition, C -- Weather condition textual name
 
     char marquee_times_buf[BIGBUFF];
-    Marquee marquee_times; // D -- Dawn*, S -- Sunrise*, z -- Zenith*, s -- Sunset*, d -- Dusk*
+    struct Marquee marquee_times; // D -- Dawn*, S -- Sunrise*, z -- Zenith*, s -- Sunset*, d -- Dusk*
 
     char csv[URL_WTTRIN_OUTPUT_MAX_FIELDS][URL_WTTRIN_OUTPUT_MAX_FIELD_LEN];
     int csv_parsed;

@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 // Function to initialize a spinner
-static void init_spinner(Spinner* spinner, char** frames, int frame_count, int spin_on)
+static void init_spinner(struct Spinner* spinner, char** frames, int frame_count, int spin_on)
 {
     spinner->frames = frames;
     spinner->frame_count = frame_count;
@@ -12,7 +12,7 @@ static void init_spinner(Spinner* spinner, char** frames, int frame_count, int s
     spinner->update_on = spin_on;
 }
 
-void spin_spinner(Spinner* spinner)
+void spin_spinner(struct Spinner* spinner)
 {
     spinner->i++;
     if (spinner->i >= spinner->update_on) {
@@ -22,75 +22,75 @@ void spin_spinner(Spinner* spinner)
 }
 
 // Function to get the current frame
-char* get_frame(Spinner* spinner, int also_spin)
+char* get_frame(struct Spinner* spinner, int also_spin)
 {
     char* frame = spinner->frames[(int)spinner->index];
     if (also_spin) { spin_spinner(spinner); }
     return frame;
 }
 
-Spinner spinner_basic;
+struct Spinner spinner_basic;
 char* spinner_basic_frames[] = {"-", "\\", "|", "/"};
-Spinner spinner_bars;
+struct Spinner spinner_bars;
 char* spinner_bars_frames[] = {"▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃", "▂", "▁"};
 // clock old: "🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"};
-Spinner spinner_bars_hori;
+struct Spinner spinner_bars_hori;
 char* spinner_bars_hori_frames[] = { "▏", "▎", "▍", "▌", "▋", "▊", "▉", "█", "▉", "▊", "▋", "▌", "▍", "▎", "▏" };
-Spinner spinner_clock;
+struct Spinner spinner_clock;
 char* spinner_clock_frames[] = {"", "", "", "", "", "", "", "", "", "", "", ""};
-Spinner spinner_lights;
+struct Spinner spinner_lights;
 char* spinner_lights_frames[] = {"󱩎", "󱩏", "󱩐", "󱩑", "󱩒", "󱩓", "󱩔", "󱩕", "󱩖", "󰛨"};
-Spinner spinner_check;
+struct Spinner spinner_check;
 char* spinner_check_frames[] = {"", "", "󰄬", "", "", "󰄭", "󰸞", "󰡕"};
-Spinner spinner_warn;
+struct Spinner spinner_warn;
 char* spinner_warn_frames[] = {"", ""};
-Spinner spinner_snow;
+struct Spinner spinner_snow;
 char* spinner_snow_frames[] = {"", "󰜗", "", "󰼪"};
-Spinner spinner_heat;
+struct Spinner spinner_heat;
 char* spinner_heat_frames[] = {"󰐸", "󰫗"};
-Spinner spinner_heat_pump;
+struct Spinner spinner_heat_pump;
 char* spinner_heat_pump_frames[] = {"󱩃", "󱩄"};
-Spinner spinner_eye_left;
+struct Spinner spinner_eye_left;
 char* spinner_eye_left_frames[] = {"󰛐", "󱣾"};
-Spinner spinner_eye_right;
+struct Spinner spinner_eye_right;
 char* spinner_eye_right_frames[] = {"󰛐", "󱤀"};
-Spinner spinner_circle;
+struct Spinner spinner_circle;
 char* spinner_circle_frames[] = {"󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"};
-Spinner spinner_solar;
+struct Spinner spinner_solar;
 char* spinner_solar_frames[] = {"󱩳", "󱩴"};
-Spinner spinner_fire;
+struct Spinner spinner_fire;
 char* spinner_fire_frames[] = {"", "", "󰈸", ""};
-Spinner spinner_lightning;
+struct Spinner spinner_lightning;
 char* spinner_lightning_frames[] = {"󱐌", "󱐋"};
-Spinner spinner_sunrise;
+struct Spinner spinner_sunrise;
 char* spinner_sunrise_frames[] = {"󰖚", "󰖜"};
-Spinner spinner_sunset;
+struct Spinner spinner_sunset;
 char* spinner_sunset_frames[] = {"󰖚", "󰖛"};
 
 // weather
-Spinner spinner_qm;
+struct Spinner spinner_qm;
 char* spinner_qm_frames[] = {"", ""};
-Spinner spinner_sun;
+struct Spinner spinner_sun;
 char* spinner_sun_frames[] = {"", "", "", "󰖙"};
-Spinner spinner_cloud;
+struct Spinner spinner_cloud;
 char* spinner_cloud_frames[] = {"", "󰅟", ""};
-Spinner spinner_fog;
+struct Spinner spinner_fog;
 char* spinner_fog_frames[] = {"", "󰖑"};
-Spinner spinner_rain;
+struct Spinner spinner_rain;
 char* spinner_rain_frames[] = {"", "", "", "", ""};
-Spinner spinner_thunder;
+struct Spinner spinner_thunder;
 char* spinner_thunder_frames[] = {"󰖓", "󰖐"};
 
 // SLOW EMOJI
-Spinner spinner_window;
+struct Spinner spinner_window;
 char* spinner_window_frames[] = {"󱇜", "󱇛"};
-Spinner spinner_solar_panel;
+struct Spinner spinner_solar_panel;
 char* spinner_solar_panel_frames[] = {"", "󰶛"};
-Spinner spinner_cog;
+struct Spinner spinner_cog;
 char* spinner_cog_frames[] = {"󰒓", "󰢻"};
-Spinner spinner_house;
+struct Spinner spinner_house;
 char* spinner_house_frames[] = {"", ""};
-Spinner spinner_recycle;
+struct Spinner spinner_recycle;
 char* spinner_recycle_frames[] = {"", "󰑌", "󱎝"};
 
 void init_spinners()

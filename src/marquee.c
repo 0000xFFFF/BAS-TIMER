@@ -34,7 +34,7 @@ int marquee_visible_length(const char* str)
 }
 
 // Update ANSI state
-static void update_ansi_state(Marquee* m, const char* start, int len)
+static void update_ansi_state(struct Marquee* m, const char* start, int len)
 {
     if (len >= (int)sizeof(m->ansi_state)) return;
     strncpy(m->ansi_state, start, len);
@@ -42,7 +42,7 @@ static void update_ansi_state(Marquee* m, const char* start, int len)
 }
 
 // Write next visible character or ANSI code to buffer
-static int write_next_char(Marquee* m, const char* str, int* idx, char** buf_ptr, size_t* remaining)
+static int write_next_char(struct Marquee* m, const char* str, int* idx, char** buf_ptr, size_t* remaining)
 {
     if (!str[*idx]) return 0;
 
@@ -86,7 +86,7 @@ static int write_next_char(Marquee* m, const char* str, int* idx, char** buf_ptr
 }
 
 // Initialize marquee
-void marquee_init(Marquee* m, const char* text, int width, int start_delay, int update_on)
+void marquee_init(struct Marquee* m, const char* text, int width, int start_delay, int update_on)
 {
     m->text = text; // Store pointer directly, don't copy
     m->width = width;
@@ -98,7 +98,7 @@ void marquee_init(Marquee* m, const char* text, int width, int start_delay, int 
     m->start_delay = start_delay;
 }
 
-void marquee_update_width(Marquee* m, int width)
+void marquee_update_width(struct Marquee* m, int width)
 {
     m->width = width;
     m->text_len = marquee_visible_length(m->text);
@@ -106,7 +106,7 @@ void marquee_update_width(Marquee* m, int width)
 }
 
 // Render frame to buffer
-int marquee_render(Marquee* m, char* buffer, size_t size)
+int marquee_render(struct Marquee* m, char* buffer, size_t size)
 {
     if (!buffer || size == 0) return -1;
 
@@ -172,7 +172,7 @@ int marquee_render(Marquee* m, char* buffer, size_t size)
 }
 
 // Scroll one step
-void marquee_scroll(Marquee* m)
+void marquee_scroll(struct Marquee* m)
 {
     if (!m->scroll_needed) return;
     m->i++;
@@ -187,7 +187,7 @@ void marquee_scroll(Marquee* m)
 }
 
 // pause marquee scroll on zero width space
-void marquee_scroll_smart(Marquee* m)
+void marquee_scroll_smart(struct Marquee* m)
 {
     if (!m->scroll_needed) return;
 
