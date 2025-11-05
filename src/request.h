@@ -171,12 +171,10 @@ struct infos {
 #define TIMEOUT_BAS    1500
 #define TIMEOUT_WTTRIN 5000
 
-// request_update_info_bas.c
+// request_infos.c
 extern void update_info_bas_init();
 extern enum RequestStatus update_info_bas();
 extern void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* out);
-
-// request_update_info_wttrin.c
 extern void update_info_wttrin_init();
 extern enum RequestStatus update_info_wttrin();
 extern void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out);
@@ -184,6 +182,7 @@ extern void update_info_wttrin_marquee_conds_scroll();
 extern void update_info_wttrin_marquee_conds_update_width(int term_width);
 extern void update_info_wttrin_marquee_times_scroll();
 extern void update_info_wttrin_marquee_times_update_width(int term_width);
+extern void infos_save();
 
 // request_send.c
 extern enum RequestStatus request_send(struct Request* request);
@@ -198,8 +197,11 @@ extern char* request_status_to_str(enum RequestStatus status);
 extern char* request_status_to_smallstr(enum RequestStatus status);
 extern bool request_status_failed(enum RequestStatus status);
 extern void print_bas_info(const struct bas_info* b);
+extern void print_wttrin_info(const struct wttrin_info* info);
 extern enum Weather detect_weather(const char* text);
 extern int parse_csv(const char* input, char sep, int nfields, int field_size, char fields[][field_size]);
+extern int save_infos(const char* filename, const struct infos* info);
+extern int load_infos(const char* filename, struct infos* info);
 
 #define ERROR_NONE    0
 #define ERROR_TIMEOUT 1

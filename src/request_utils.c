@@ -1,5 +1,6 @@
 #include "mongoose.h"
 #include "request.h"
+#include "src/debug.h"
 #include "utils.h"
 #include <float.h>
 
@@ -50,6 +51,7 @@ void print_bas_info(const struct bas_info* b)
 {
     if (!b) return;
 
+    printf("===[ info.bas\n");
     printf("valid: %s\n", b->valid ? "true" : "false");
     printf("status: %d\n", (int)b->status);
 
@@ -102,6 +104,46 @@ void print_bas_info(const struct bas_info* b)
     printf("history_gas_time_off: %d\n", b->history_gas_time_off);
 }
 
+void print_wttrin_info(const struct wttrin_info* info)
+{
+    if (!info) return;
+
+    printf("===[ info.wttrin\n");
+    printf("valid: %s\n", info->valid ? "true" : "false");
+    printf("status: %d\n", (int)info->status);
+    printf("weather: %d\n", (int)info->weather);
+    printf("time: %s\n", info->time);
+    printf("marquee_conds_buf: %s\n", info->marquee_conds_buf);
+    printf("marquee_times_buf: %s\n", info->marquee_times_buf);
+    printf("Weather condition                    : %s\n", info->csv[WTTRIN_CSV_FIELD_c]);
+    printf("Weather condition textual name       : %s\n", info->csv[WTTRIN_CSV_FIELD_C]);
+    printf("Weather condition  plain-text symbol : %s\n", info->csv[WTTRIN_CSV_FIELD_x]);
+    printf("Humidity                             : %s\n", info->csv[WTTRIN_CSV_FIELD_h]);
+    printf("Temperature (Actual)                 : %s\n", info->csv[WTTRIN_CSV_FIELD_t]);
+    printf("Temperature (Feels Like)             : %s\n", info->csv[WTTRIN_CSV_FIELD_f]);
+    printf("Wind                                 : %s\n", info->csv[WTTRIN_CSV_FIELD_w]);
+    printf("Location                             : %s\n", info->csv[WTTRIN_CSV_FIELD_l]);
+    printf("Moon phase 🌑🌒🌓🌔🌕🌖🌗🌘          : %s\n", info->csv[WTTRIN_CSV_FIELD_m]);
+    printf("Moon day                             : %s\n", info->csv[WTTRIN_CSV_FIELD_M]);
+    printf("Precipitation (mm/3 hours)           : %s\n", info->csv[WTTRIN_CSV_FIELD_p]);
+    printf("Pressure (hPa)                       : %s\n", info->csv[WTTRIN_CSV_FIELD_P]);
+    printf("UV index (1-12)                      : %s\n", info->csv[WTTRIN_CSV_FIELD_u]);
+    printf("Dawn*                                : %s\n", info->csv[WTTRIN_CSV_FIELD_D]);
+    printf("Sunrise*                             : %s\n", info->csv[WTTRIN_CSV_FIELD_S]);
+    printf("Zenith*                              : %s\n", info->csv[WTTRIN_CSV_FIELD_z]);
+    printf("Sunset*                              : %s\n", info->csv[WTTRIN_CSV_FIELD_s]);
+    printf("Dusk*                                : %s\n", info->csv[WTTRIN_CSV_FIELD_d]);
+    printf("Current time*                        : %s\n", info->csv[WTTRIN_CSV_FIELD_T]);
+    printf("Local timezone.                      : %s\n", info->csv[WTTRIN_CSV_FIELD_Z]);
+    printf("csv_parsed: %d\n", info->csv_parsed);
+}
+
+void print_infos(const struct infos* info)
+{
+    print_bas_info(&info->bas_info);
+    print_wttrin_info(&info->wttrin);
+}
+
 enum Weather detect_weather(const char* text)
 {
     for (int w = WEATHER_CLEAR; w <= WEATHER_SNOW; w++) {
@@ -136,4 +178,32 @@ int parse_csv(const char* input, char sep, int nfields, int field_size, char fie
     }
 
     return field;
+}
+
+int save_infos(const char* filename, const struct infos* info)
+{
+    FILE* fp = fopen(filename, "wb");
+    if (!fp) return 0;
+
+    DPL("SAVED INFOS TO DISK");
+    D(print_infos(info));
+
+    size_t written = fwrite(info, sizeof(struct infos), 1, fp);
+    fclose(fp);
+
+    return written == 1;
+}
+
+int load_infos(const char* filename, struct infos* info)
+{
+    FILE* fp = fopen(filename, "rb");
+    if (!fp) return 0;
+
+    size_t read = fread(info, sizeof(struct infos), 1, fp);
+    fclose(fp);
+
+    DPL("LOADED INFOS FROM DISK");
+    D(print_infos(info));
+
+    return read == 1;
 }

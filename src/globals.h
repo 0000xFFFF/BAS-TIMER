@@ -4,30 +4,29 @@
 #include <pthread.h>
 #include <stdatomic.h>
 
-extern char* ADDR_HTTP;
-extern char* ADDR_HTTPS;
-extern char* ADDR_WS;
-extern char* STATIC_DIR;
+extern const char* ADDR_HTTP;
+extern const char* ADDR_HTTPS;
+extern const char* ADDR_WS;
+extern const char* STATIC_DIR;
 
 extern const char* VAR_DIR;
 extern const char* VAR_DIR_FILE_CHANGES_LOG;
 extern const char* VAR_DIR_FILE_REQUESTS_LOG;
 extern const char* VAR_DIR_FILE_ERRORS_LOG;
+extern const char* VAR_DIR_FILE_INFOS_BIN;
 
-extern int POLL_TIME;
+extern const int POLL_TIME;
 
-extern int WS_MAX_CONN;
-extern int MAKE_REQUEST_BAS;
-extern int MAKE_REQUEST_WTTRIN;
+#define WS_MAX_CONN MIDBUFF
 
-extern int SLEEP_MS_DRAW;
-extern int SLEEP_MS_BAS;
-extern int SLEEP_MS_WTTRIN;
-extern int SLEEP_MS_WTTRIN_RETRY;
+extern const int MAKE_REQUEST_BAS;
+extern const int MAKE_REQUEST_WTTRIN;
 
-extern int ENABLE_AUTO_TIMER;
-extern int ENABLE_AUTO_GAS;
-extern int AUTO_TIMER_SECONDS;
+extern const int SLEEP_MS_DRAW;
+extern const int SLEEP_MS_BAS;
+extern const int SLEEP_MS_WTTRIN;
+extern const int SLEEP_MS_WTTRIN_RETRY;
+extern const int SLEEP_MS_SAVE_INFOS;
 
 extern int TEMP_SOLAR_MIN;
 extern int TEMP_SOLAR_MAX;
@@ -47,11 +46,8 @@ extern pthread_cond_t g_cond;
 #define MIDBUFF   256
 #define BIGBUFF   1024
 
-#define WS_MAX_CONN MIDBUFF
-
-#define ENABLE_AUTO_TIMER  1
-#define ENABLE_AUTO_GAS    1
-#define AUTO_TIMER_SECONDS 8 * 60
-
+extern const int ENABLE_AUTO_TIMER;
+extern const int ENABLE_AUTO_GAS;
+extern const int AUTO_TIMER_SECONDS;
 
 #endif // GLOBALS_H

@@ -13,6 +13,7 @@ const char* VAR_DIR = VAR_DIR_;
 const char* VAR_DIR_FILE_CHANGES_LOG = VAR_DIR_ SEP_ "changes.log";
 const char* VAR_DIR_FILE_REQUESTS_LOG = VAR_DIR_ SEP_ "requests.log";
 const char* VAR_DIR_FILE_ERRORS_LOG = VAR_DIR_ SEP_ "errors.log";
+const char* VAR_DIR_FILE_INFOS_BIN = VAR_DIR_ SEP_ "infos.bin";
 
 const int POLL_TIME =
 #ifdef DEBUG
@@ -33,6 +34,7 @@ const int SLEEP_MS_DRAW =
 const int SLEEP_MS_BAS = 3000;              // 3 sec
 const int SLEEP_MS_WTTRIN = 60 * 15 * 1000; // 15 min
 const int SLEEP_MS_WTTRIN_RETRY = 5000;     // 5 sec
+const int SLEEP_MS_SAVE_INFOS = 60 * 1000;  // 1 min
 
 const int TEMP_SOLAR_MIN = 0;
 const int TEMP_SOLAR_MAX = 100;
@@ -46,4 +48,7 @@ const int TEMP_CIRC_MAX = 60;
 atomic_bool g_running = true;
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t g_cond = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t g_mutex_file_changes = PTHREAD_MUTEX_INITIALIZER;
+
+const int ENABLE_AUTO_TIMER = 1;
+const int ENABLE_AUTO_GAS = 1;
+const int AUTO_TIMER_SECONDS = 8 * 60;

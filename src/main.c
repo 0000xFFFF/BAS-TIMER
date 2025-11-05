@@ -2,11 +2,13 @@
 #include "globals.h"
 #include "main_utils.h"
 #include "mongoose.h"
+#include "request.h"
 #include "signals.h"
 #include "term.h"
 #include "thread_print_loop.h"
 #include "thread_request_bas.h"
 #include "thread_request_wttrin.h"
+#include "thread_save_infos.h"
 #include "thread_serve.h"
 #include "thread_utils.h"
 #include <assert.h>
@@ -22,8 +24,9 @@ int main()
     term_init();
     change_to_bin_dir();
     mkdir_safe(VAR_DIR);
-    signal(SIGINT, signals_sigint);
     load_env(".env");
+    signal(SIGINT, signals_sigint);
+    load_infos(VAR_DIR_FILE_INFOS_BIN, &g_info);
 
     // set needed .env vars to globals here
     // ...
@@ -49,15 +52,19 @@ int main()
     assert(!pthread_create(&t3, NULL, th_request_wttrin, NULL));
 
     pthread_t t4;
-    assert(!pthread_create(&t4, NULL, th_print_loop, NULL));
+    assert(!pthread_create(&t4, NULL, th_save_infos, NULL));
 
-    pthread_join(t4, NULL);
+    pthread_t t5;
+    assert(!pthread_create(&t5, NULL, th_print_loop, NULL));
+
+    pthread_join(t5, NULL);
 
     stop_all_threads();
 
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
     pthread_join(t3, NULL);
+    pthread_join(t4, NULL);
 
     DPL("MAIN STOP");
     return 0;

@@ -1,5 +1,5 @@
 .cache
-state/*
+var/*
 server
 bas-server
 test
