@@ -73,6 +73,11 @@ enum RequestStatus infos_bas_update()
     request.request_format = REQUEST_FORMAT_BAS;
     request.timeout_ms = TIMEOUT_BAS;
     request.remember_response = 1;
+
+    pthread_mutex_lock(&g_infos_bas_mutex);
+    g_infos.bas.status = REQUEST_STATUS_RUNNING;
+    pthread_mutex_unlock(&g_infos_bas_mutex);
+
     request_send(&request);
 
     struct BasInfo info = {0};
@@ -210,6 +215,11 @@ enum RequestStatus infos_wttrin_update()
     request.request_format = REQUEST_FORMAT_WTTRIN;
     request.timeout_ms = TIMEOUT_WTTRIN;
     request.remember_response = 1;
+
+    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    g_infos.wttrin.status = REQUEST_STATUS_RUNNING;
+    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+
     request_send(&request);
 
     struct WttrinInfo wttrin = {0};
