@@ -153,10 +153,10 @@ struct WttrinInfo {
 
     char time[TINYBUFF];
 
-    char marquee_conds_buf[BIGBUFF];
+    char marquee_conds_buf[MIDBUFF];
     struct Marquee marquee_conds; // c -- Weather condition, C -- Weather condition textual name
 
-    char marquee_times_buf[BIGBUFF];
+    char marquee_times_buf[MIDBUFF];
     struct Marquee marquee_times; // D -- Dawn*, S -- Sunrise*, z -- Zenith*, s -- Sunset*, d -- Dusk*
 
     char csv[URL_WTTRIN_OUTPUT_MAX_FIELDS][URL_WTTRIN_OUTPUT_MAX_FIELD_LEN];
@@ -217,6 +217,9 @@ extern enum Weather detect_weather(const char* text);
 extern int parse_csv(const char* input, char sep, int nfields, int field_size, char fields[][field_size]);
 extern int save_infos(const char* filename, const struct Infos* info);
 extern int load_infos(const char* filename, struct Infos* info);
+extern enum TimeOfDay wttrin_timeofday(struct WttrinInfo* wttrin);
+extern int timeofday_color(enum TimeOfDay tod);
+extern int wttrin_timeofday_color(struct WttrinInfo* wttrin);
 
 #define ERROR_NONE    0
 #define ERROR_TIMEOUT 1

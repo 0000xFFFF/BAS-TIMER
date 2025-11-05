@@ -22,8 +22,9 @@ const int POLL_TIME =
     10;
 #endif
 
-const int MAKE_REQUEST_BAS = 1;
-const int MAKE_REQUEST_WTTRIN = 1;
+const int ENABLE_REQUEST_BAS = 1;
+const int ENABLE_REQUEST_WTTRIN = 1;
+const int ENABLE_SAVE_INFOS = 0;
 
 const int SLEEP_MS_DRAW =
 #ifdef DEBUG

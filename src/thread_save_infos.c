@@ -10,7 +10,7 @@ void* th_save_infos(void* sig)
     UNUSED(sig);
 
     while (atomic_load(&g_running)) {
-        infos_save();
+        if (ENABLE_SAVE_INFOS) { infos_save(); }
         sleep_ms_interruptible(SLEEP_MS_SAVE_INFOS);
     }
 

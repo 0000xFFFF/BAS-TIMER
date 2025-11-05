@@ -88,6 +88,7 @@ static int write_next_char(struct Marquee* m, const char* str, int* idx, char** 
 // Initialize marquee
 void marquee_init(struct Marquee* m, const char* text, int width, int start_delay, int update_on)
 {
+    m->valid = 1;
     m->text = text; // Store pointer directly, don't copy
     m->width = width;
     m->pos = 0;

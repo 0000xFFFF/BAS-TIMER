@@ -21,8 +21,8 @@
 static struct Infos du_infos = {0};
 
 #define MAX_ROWS 12
-#define MAX_COLS 11
-#define MAX_CELL SMALLBUFF // enough for UTF-8 + ANSI color
+#define MAX_COLS 12
+#define MAX_CELL MIDBUFF // enough for UTF-8 + ANSI color
 static char g_screen[MAX_ROWS][MAX_COLS][MAX_CELL];
 
 static char g_term_buffer[MAX_ROWS * MAX_COLS * MAX_CELL];
@@ -41,8 +41,9 @@ static void clear_screen()
 // set cell
 static void sc(int r, int c, const char* text)
 {
-    if (r < MAX_ROWS && c < MAX_COLS)
+    if (r < MAX_ROWS && c < MAX_COLS) {
         snprintf(g_screen[r][c], MAX_CELL, "%s", text);
+    }
 }
 
 // set cell color
@@ -137,22 +138,9 @@ static size_t make_term_buffer()
     return g_term_buffer_b;
 }
 
-static enum TimeOfDay get_timeofday()
-{
-    // clang-format off
-    int now = now_seconds();
-    if      (now < du_infos.wttrin.dawn)    return TIME_OF_DAY_BEFORE_DAWN;
-    else if (now < du_infos.wttrin.sunrise) return TIME_OF_DAY_DAWN;
-    else if (now < du_infos.wttrin.zenith)  return TIME_OF_DAY_MORNING;
-    else if (now < du_infos.wttrin.sunset)  return TIME_OF_DAY_AFTERNOON;
-    else if (now < du_infos.wttrin.dusk)    return TIME_OF_DAY_SUNSET;
-    else                                    return TIME_OF_DAY_NIGHT;
-    // clang-format on
-}
-
 static char* dut_timeofday_emoji()
 {
-    enum TimeOfDay tod = get_timeofday();
+    enum TimeOfDay tod = wttrin_timeofday(&du_infos.wttrin);
     // clang-format off
     switch (tod) {
         case TIME_OF_DAY_BEFORE_DAWN: return get_frame(&spinner_sunrise, 1); // Sunrise
@@ -162,23 +150,6 @@ static char* dut_timeofday_emoji()
         case TIME_OF_DAY_SUNSET:      return "";                            // Evening
         case TIME_OF_DAY_NIGHT:       return "󰖔";                            // Night
         default:                      return "?";                            // Unknown
-    }
-    // clang-format on
-}
-
-static int dut_timeofday_color()
-{
-    enum TimeOfDay tod = get_timeofday();
-
-    // clang-format off
-    switch (tod) {
-        case TIME_OF_DAY_BEFORE_DAWN: return 214; // Orange (Sunrise)
-        case TIME_OF_DAY_DAWN:        return 220; // Bright Yellow (Morning)
-        case TIME_OF_DAY_MORNING:     return 208; // Deep Orange (Afternoon)
-        case TIME_OF_DAY_AFTERNOON:   return 202; // Red-Orange (Sunset)
-        case TIME_OF_DAY_SUNSET:      return 99;  // Purple-Pink (Evening)
-        case TIME_OF_DAY_NIGHT:       return 33;  // Deep Blue (Night)
-        default:                      return 255; // White (Unknown)
     }
     // clang-format on
 }
@@ -432,28 +403,28 @@ static void print_buffer_padded()
     }
 }
 
-static char* dut_wttrin_marquee_conds()
+static const char* dut_wttrin_marquee_conds()
 {
-    if (du_infos.wttrin.valid) {
+    if (du_infos.wttrin.marquee_conds.valid) {
         char temp[sizeof(g_temp) - 5];
         marquee_render(&du_infos.wttrin.marquee_conds, temp, sizeof(temp));
         snprintf(g_temp, sizeof(g_temp), "%s\033[K", temp);
         infos_wttrin_marquee_conds_scroll();
         return g_temp;
     }
-    return "...";
+    return du_infos.wttrin.marquee_conds_buf;
 }
 
 static char* dut_wttrin_marquee_times()
 {
-    if (du_infos.wttrin.valid) {
+    if (du_infos.wttrin.marquee_times.valid) {
         char temp[sizeof(g_temp) - 5];
         marquee_render(&du_infos.wttrin.marquee_times, temp, sizeof(temp));
         snprintf(g_temp, sizeof(g_temp), "%s\033[K", temp);
         infos_wttrin_marquee_times_scroll();
         return g_temp;
     }
-    return "...";
+    return du_infos.wttrin.marquee_times_buf;
 }
 
 size_t draw_ui_unsafe()
@@ -480,7 +451,7 @@ size_t draw_ui_unsafe()
 
     // row 0
     int hour = localtime_hour();
-    int tod_color = dut_timeofday_color();
+    int tod_color = wttrin_timeofday_color(&du_infos.wttrin);
     scc(0, 0, tod_color, hour_to_clock(hour));
     scc(0, 1, tod_color, dut_timeofday_emoji());
     scc(0, 2, tod_color, dut_time());
@@ -572,7 +543,7 @@ size_t draw_ui_unsafe()
     scc(10, 1, 255, du_infos.bas.opt_auto_gas_status);
 
     // times marquee
-    scc(11, 0, 108, dut_wttrin_marquee_times());
+    sc(11, 0, dut_wttrin_marquee_times());
 
     spin_spinner(&spinner_circle);
     spin_spinner(&spinner_eye_left);

@@ -19,8 +19,9 @@ extern const int POLL_TIME;
 
 #define WS_MAX_CONN MIDBUFF
 
-extern const int MAKE_REQUEST_BAS;
-extern const int MAKE_REQUEST_WTTRIN;
+extern const int ENABLE_REQUEST_BAS;
+extern const int ENABLE_REQUEST_WTTRIN;
+extern const int ENABLE_SAVE_INFOS;
 
 extern const int SLEEP_MS_DRAW;
 extern const int SLEEP_MS_BAS;

@@ -15,7 +15,7 @@ void* th_request_wttrin(void* sig)
 
     infos_wttrin_init();
     while (atomic_load(&g_running)) {
-        if (MAKE_REQUEST_WTTRIN) {
+        if (ENABLE_REQUEST_WTTRIN) {
             sleep = request_status_failed(infos_wttrin_update()) ? SLEEP_MS_WTTRIN_RETRY : SLEEP_MS_WTTRIN;
         }
         sleep_ms_interruptible(sleep);

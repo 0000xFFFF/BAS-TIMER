@@ -1,11 +1,13 @@
 #ifndef MARQUEE_H
 #define MARQUEE_H
 
+#include <stdbool.h>
 #include <stddef.h>
 
 #define MARQUEE_ZERO_WIDTH_SPACE "\xE2\x80\x8B"
 
 struct Marquee {
+    bool valid;
     const char* text;
     int width;
     int pos;              // Scroll position in visible chars

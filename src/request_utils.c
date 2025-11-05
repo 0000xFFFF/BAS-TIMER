@@ -207,3 +207,36 @@ int load_infos(const char* filename, struct Infos* info)
 
     return read == 1;
 }
+
+enum TimeOfDay wttrin_timeofday(struct WttrinInfo* wttrin)
+{
+    // clang-format off
+    int now = now_seconds();
+    if      (now < wttrin->dawn)    return TIME_OF_DAY_BEFORE_DAWN;
+    else if (now < wttrin->sunrise) return TIME_OF_DAY_DAWN;
+    else if (now < wttrin->zenith)  return TIME_OF_DAY_MORNING;
+    else if (now < wttrin->sunset)  return TIME_OF_DAY_AFTERNOON;
+    else if (now < wttrin->dusk)    return TIME_OF_DAY_SUNSET;
+    else                            return TIME_OF_DAY_NIGHT;
+    // clang-format on
+}
+
+int timeofday_color(enum TimeOfDay tod)
+{
+    // clang-format off
+    switch (tod) {
+        case TIME_OF_DAY_BEFORE_DAWN: return 93;
+        case TIME_OF_DAY_DAWN:        return 130;
+        case TIME_OF_DAY_MORNING:     return 220;
+        case TIME_OF_DAY_AFTERNOON:   return 226;
+        case TIME_OF_DAY_SUNSET:      return 202;
+        case TIME_OF_DAY_NIGHT:       return 105;
+        default:                      return 255;
+    }
+    // clang-format on
+}
+
+int wttrin_timeofday_color(struct WttrinInfo* wttrin)
+{
+    return timeofday_color(wttrin_timeofday(wttrin));
+}

@@ -3,6 +3,7 @@
 #include "marquee.h"
 #include "mongoose.h"
 #include "request.h"
+#include "colors.h"
 #include "term.h"
 #include "utils.h"
 #include <float.h>
@@ -175,17 +176,25 @@ static int make_wttrin_marquee_times_width(int term_width)
     return term_width - 3;
 }
 
+static char g_temp[BIGBUFF];
+static size_t g_temp_b = 0;
+
+static char* mk_str(const char* format, char* param)
+{
+    g_temp_b += snprintf(g_temp, sizeof(g_temp) - g_temp_b, format, param);
+    return g_temp;
+}
+
 static void make_wttrin_marquee_times(struct WttrinInfo* wttrin)
 {
     size_t b = 0;
-    b += snprintf(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b,
-                  // MZWS "🌄 Dawn %s, " MZWS "🌅 Sunrise %s, " MZWS "🌞 Zenith %s, " MZWS "🌇 Sunset %s, " MZWS "🌆 Dusk %s  ",
-                  MZWS "🌄 %s " MZWS "🌅 %s " MZWS "🌞 %s " MZWS "🌇 %s " MZWS "🌆 %s ",
-                  wttrin->csv[WTTRIN_CSV_FIELD_D],
-                  wttrin->csv[WTTRIN_CSV_FIELD_S],
-                  wttrin->csv[WTTRIN_CSV_FIELD_z],
-                  wttrin->csv[WTTRIN_CSV_FIELD_s],
-                  wttrin->csv[WTTRIN_CSV_FIELD_d]);
+    // clang-format on
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_color(TIME_OF_DAY_DAWN),      mk_str(MZWS "🌄 %s ", wttrin->csv[WTTRIN_CSV_FIELD_D]));
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_color(TIME_OF_DAY_MORNING),   mk_str(MZWS "🌅 %s ", wttrin->csv[WTTRIN_CSV_FIELD_S]));
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_color(TIME_OF_DAY_AFTERNOON), mk_str(MZWS "🌞 %s ", wttrin->csv[WTTRIN_CSV_FIELD_z]));
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_color(TIME_OF_DAY_SUNSET),    mk_str(MZWS "🌇 %s ", wttrin->csv[WTTRIN_CSV_FIELD_s]));
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_color(TIME_OF_DAY_NIGHT),     mk_str(MZWS "🌆 %s ", wttrin->csv[WTTRIN_CSV_FIELD_d]));
+    // clang-format off
 
     const int marquee_pause = 3000; // 3 sec pause
     const int width = make_wttrin_marquee_times_width(g_term_w);
@@ -221,7 +230,6 @@ enum RequestStatus infos_wttrin_update()
 
         D(printf("WTTRIN PARSED: %d\n", wttrin.csv_parsed));
 
-
         if (wttrin.csv_parsed < URL_WTTRIN_OUTPUT_MAX_FIELDS) {
             DPL("FAILED TO PARSE WTTRIN");
             return request.status;
@@ -236,11 +244,11 @@ enum RequestStatus infos_wttrin_update()
         wttrin.weather = detect_weather(wttrin.csv[WTTRIN_CSV_FIELD_C]);
 
         // parse seconds for TimeOfDay
-        wttrin.dawn    = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_D]);
+        wttrin.dawn = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_D]);
         wttrin.sunrise = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_S]);
-        wttrin.zenith  = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_z]);
-        wttrin.sunset  = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_s]);
-        wttrin.dusk    = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_d]);
+        wttrin.zenith = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_z]);
+        wttrin.sunset = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_s]);
+        wttrin.dusk = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_d]);
 
         // make marquees
         make_wttrin_time(&wttrin);
