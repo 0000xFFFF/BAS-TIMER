@@ -108,8 +108,9 @@ button:active {
     margin: 0;
     padding: 0;
     width: 560px;
-    overflow: hidden;
-    overflow-wrap: anywhere;
+    overflow: clip;
+    overflow-wrap: break-word;
+    text-overflow: clip;
 }
 
 #sumtime {

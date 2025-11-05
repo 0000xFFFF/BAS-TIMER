@@ -1,26 +1,37 @@
 function zoomOutOnMobile() {
     if (/Mobi|Android/i.test(navigator.userAgent)) {
-        const body = document.body;
-        const html = document.documentElement;
+        const mainDiv = document.querySelector('main') || document.querySelector('#main') || document.querySelector('.main');
 
-        const pageWidth = Math.max(body.scrollWidth, html.scrollWidth);
-        const pageHeight = Math.max(body.scrollHeight, html.scrollHeight);
+        if (!mainDiv) {
+            console.warn('Main div not found');
+            return;
+        }
 
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
+        const divWidth = mainDiv.scrollWidth;
+        const divHeight = mainDiv.scrollHeight;
 
-        // Calculate scale factor so the entire page fits in viewport
-        const scaleFactor = Math.min(viewportWidth / pageWidth, viewportHeight / pageHeight);
+        // Calculate scale factor to fit the main div in viewport
+        const scaleFactor = Math.min(viewportWidth / divWidth, viewportHeight / divHeight);
 
         // Apply zoom using transform
-        document.body.style.transform = `scale(${scaleFactor})`;
-        document.body.style.transformOrigin = "top left";
+        mainDiv.style.transform = `scale(${scaleFactor})`;
+        mainDiv.style.transformOrigin = "top left";
+        mainDiv.style.width = `${100 / scaleFactor}%`;
+        mainDiv.style.height = `${100 / scaleFactor}%`;
 
-        // Adjust body width to prevent clipping
-        document.body.style.width = `${100 / scaleFactor}%`;
-        document.body.style.height = `${100 / scaleFactor}%`;
+        // Allow scrolling for swipe-to-refresh
+        document.body.style.overflow = 'auto';
+        document.body.style.overscrollBehavior = 'auto';
     }
 }
 
+// Only run on initial load
 window.addEventListener('load', zoomOutOnMobile);
-window.addEventListener('resize', zoomOutOnMobile);
+
+// Add viewport meta tag to prevent user scaling but allow refresh
+const metaViewport = document.createElement('meta');
+metaViewport.name = 'viewport';
+metaViewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+document.head.appendChild(metaViewport);wport);

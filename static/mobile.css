@@ -51,9 +51,9 @@ input {
 }
 
 #termcont {
+    overflow: hidden;
     padding: 5px;
-    font-size: 20px;
-    width: auto;
+    font-size: 18px;
     height: auto;
     min-width: 100px;
     min-height: 100px;
@@ -61,6 +61,7 @@ input {
 
 #term,
 #sumtime {
+    width: fit-content;
     margin: 5px;
 }
 
