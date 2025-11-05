@@ -20,3 +20,6 @@
                |-------- clicking on this side will turn it on
     - need to fix mobile padding/margin for buttons
         - when i click them they become huge hitting the border of other buttons
+
+
+// TODO: request_send_quick can fail --> print/handle that
