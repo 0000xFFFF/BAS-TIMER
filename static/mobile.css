@@ -52,6 +52,8 @@ input {
 
 #term,
 #sumtime {
+    width: calc(100vw - 100px);
+    min-width: calc(100vw - 100px);
 }
 
 #term,
