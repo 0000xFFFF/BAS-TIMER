@@ -47,7 +47,7 @@ bool request_status_failed(enum RequestStatus status)
     return false;
 }
 
-void print_bas_info(const struct bas_info* b)
+void print_bas_info(const struct BasInfo* b)
 {
     if (!b) return;
 
@@ -104,7 +104,7 @@ void print_bas_info(const struct bas_info* b)
     printf("history_gas_time_off: %d\n", b->history_gas_time_off);
 }
 
-void print_wttrin_info(const struct wttrin_info* info)
+void print_wttrin_info(const struct WttrinInfo* info)
 {
     if (!info) return;
 
@@ -138,9 +138,9 @@ void print_wttrin_info(const struct wttrin_info* info)
     printf("csv_parsed: %d\n", info->csv_parsed);
 }
 
-void print_infos(const struct infos* info)
+void print_infos(const struct Infos* info)
 {
-    print_bas_info(&info->bas_info);
+    print_bas_info(&info->bas);
     print_wttrin_info(&info->wttrin);
 }
 
@@ -180,7 +180,7 @@ int parse_csv(const char* input, char sep, int nfields, int field_size, char fie
     return field;
 }
 
-int save_infos(const char* filename, const struct infos* info)
+int save_infos(const char* filename, const struct Infos* info)
 {
     FILE* fp = fopen(filename, "wb");
     if (!fp) return 0;
@@ -188,18 +188,18 @@ int save_infos(const char* filename, const struct infos* info)
     DPL("SAVED INFOS TO DISK");
     D(print_infos(info));
 
-    size_t written = fwrite(info, sizeof(struct infos), 1, fp);
+    size_t written = fwrite(info, sizeof(struct Infos), 1, fp);
     fclose(fp);
 
     return written == 1;
 }
 
-int load_infos(const char* filename, struct infos* info)
+int load_infos(const char* filename, struct Infos* info)
 {
     FILE* fp = fopen(filename, "rb");
     if (!fp) return 0;
 
-    size_t read = fread(info, sizeof(struct infos), 1, fp);
+    size_t read = fread(info, sizeof(struct Infos), 1, fp);
     fclose(fp);
 
     DPL("LOADED INFOS FROM DISK");

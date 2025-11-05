@@ -63,4 +63,4 @@ const char* weather_keywords[][5] = {
     [WEATHER_CLEAR] = {"clear", "sunny", NULL},
 };
 
-struct infos g_info = {0};
+struct Infos g_infos = {0};

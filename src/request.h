@@ -67,7 +67,7 @@ enum PumpStatus {
     PUMP_STATUS_MANUAL_ON = 3
 };
 
-struct bas_info {
+struct BasInfo {
 
     bool valid; // is not empty
     enum RequestStatus status;
@@ -136,7 +136,7 @@ enum Weather {
 
 extern const char* weather_keywords[][5];
 
-struct wttrin_info {
+struct WttrinInfo {
     bool valid;
 
     enum RequestStatus status;
@@ -154,9 +154,9 @@ struct wttrin_info {
     int csv_parsed;
 };
 
-struct infos {
-    struct bas_info bas_info;
-    struct wttrin_info wttrin;
+struct Infos {
+    struct BasInfo bas;
+    struct WttrinInfo wttrin;
 };
 
 #define TEMP_MIN_SOLAR 10
@@ -174,10 +174,10 @@ struct infos {
 // request_infos.c
 extern void infos_bas_init();
 extern enum RequestStatus infos_bas_update();
-extern void infos_bas_safe_io(const struct bas_info* in, struct bas_info* out);
+extern void infos_bas_safe_io(const struct BasInfo* in, struct BasInfo* out);
 extern void infos_wttrin_init();
 extern enum RequestStatus infos_wttrin_update();
-extern void infos_wttrin_update_safe_io(const struct wttrin_info* in, struct wttrin_info* out);
+extern void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo* out);
 extern void infos_wttrin_marquee_conds_scroll();
 extern void infos_wttrin_marquee_conds_update_width(int term_width);
 extern void infos_wttrin_marquee_times_scroll();
@@ -189,24 +189,24 @@ extern enum RequestStatus request_send(struct Request* request);
 extern enum RequestStatus request_send_quick(const char* url);
 
 // request_dologic.c
-extern void remember_vars_do_action(struct bas_info* info);
+extern void remember_vars_do_action(struct BasInfo* info);
 
 // request_utils.c
 extern double extract_json_label(struct mg_str json_body, const char* label, double fallback);
 extern char* request_status_to_str(enum RequestStatus status);
 extern char* request_status_to_smallstr(enum RequestStatus status);
 extern bool request_status_failed(enum RequestStatus status);
-extern void print_bas_info(const struct bas_info* b);
-extern void print_wttrin_info(const struct wttrin_info* info);
+extern void print_bas_info(const struct BasInfo* b);
+extern void print_wttrin_info(const struct WttrinInfo* info);
 extern enum Weather detect_weather(const char* text);
 extern int parse_csv(const char* input, char sep, int nfields, int field_size, char fields[][field_size]);
-extern int save_infos(const char* filename, const struct infos* info);
-extern int load_infos(const char* filename, struct infos* info);
+extern int save_infos(const char* filename, const struct Infos* info);
+extern int load_infos(const char* filename, struct Infos* info);
 
 #define ERROR_NONE    0
 #define ERROR_TIMEOUT 1
 #define ERROR_CONN    2
 
-extern struct infos g_info;
+extern struct Infos g_infos;
 
 #endif // REQUEST_H

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <time.h>
 
-static void update_history(struct bas_info* info)
+static void update_history(struct BasInfo* info)
 {
     DPL("UPDATE HISTORY");
     time_t current_time;
@@ -70,7 +70,7 @@ static void update_history(struct bas_info* info)
     }
 }
 
-static void do_logic_timer(struct bas_info* info)
+static void do_logic_timer(struct BasInfo* info)
 {
     time_t current_time;
     time(&current_time);
@@ -101,7 +101,7 @@ static void do_logic_timer(struct bas_info* info)
     }
 }
 
-static void do_logic_gas(struct bas_info* info)
+static void do_logic_gas(struct BasInfo* info)
 {
     time_t current_time;
     time(&current_time);
@@ -127,7 +127,7 @@ static void do_logic_gas(struct bas_info* info)
 
 // TODO: request_send_quick can fail --> print/handle that
 
-void remember_vars_do_action(struct bas_info* info)
+void remember_vars_do_action(struct BasInfo* info)
 {
     update_history(info);
     do_logic_timer(info);

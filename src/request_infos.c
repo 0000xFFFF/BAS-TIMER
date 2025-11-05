@@ -15,10 +15,10 @@
 
 pthread_mutex_t g_infos_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void infos_bas_safe_io(const struct bas_info* in, struct bas_info* out)
+void infos_bas_safe_io(const struct BasInfo* in, struct BasInfo* out)
 {
     pthread_mutex_lock(&g_infos_bas_mutex);
-    memcpy(out, in, sizeof(struct bas_info));
+    memcpy(out, in, sizeof(struct BasInfo));
     pthread_mutex_unlock(&g_infos_bas_mutex);
 }
 
@@ -28,7 +28,7 @@ void infos_bas_init()
 {
     g_global_unix_counter = timestamp();
 
-    struct bas_info info = {0};
+    struct BasInfo info = {0};
 
     info.peak_min_solar = TEMP_MIN_SOLAR;
     info.peak_max_solar = TEMP_MAX_SOLAR;
@@ -56,7 +56,7 @@ void infos_bas_init()
     info.history_gas_time_on = 0;
     info.history_gas_time_off = 0;
 
-    infos_bas_safe_io(&info, &g_info.bas_info);
+    infos_bas_safe_io(&info, &g_infos.bas);
 }
 
 // must infos_bas_init before running this
@@ -74,8 +74,8 @@ enum RequestStatus infos_bas_update()
     request.remember_response = 1;
     request_send(&request);
 
-    struct bas_info info = {0};
-    infos_bas_safe_io(&g_info.bas_info, &info);
+    struct BasInfo info = {0};
+    infos_bas_safe_io(&g_infos.bas, &info);
     info.status = request.status;
 
     if (request.output.buf) {
@@ -117,38 +117,38 @@ enum RequestStatus infos_bas_update()
         free((void*)request.output.buf);
     }
 
-    infos_bas_safe_io(&info, &g_info.bas_info);
+    infos_bas_safe_io(&info, &g_infos.bas);
 
     return request.status;
 }
 
 static pthread_mutex_t g_infos_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void infos_wttrin_update_safe_io(const struct wttrin_info* in, struct wttrin_info* out)
+void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo* out)
 {
     pthread_mutex_lock(&g_infos_wttrin_mutex);
-    memcpy(out, in, sizeof(struct wttrin_info));
+    memcpy(out, in, sizeof(struct WttrinInfo));
     pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
 void infos_wttrin_init()
 {
-    struct wttrin_info wttrin = {0};
+    struct WttrinInfo wttrin = {0};
     snprintf(wttrin.marquee_conds_buf, sizeof(wttrin.marquee_conds_buf), "...");
     snprintf(wttrin.marquee_times_buf, sizeof(wttrin.marquee_times_buf), "...");
-    infos_wttrin_update_safe_io(&wttrin, &g_info.wttrin);
+    infos_wttrin_update_safe_io(&wttrin, &g_infos.wttrin);
 }
 
 #define MZWS MARQUEE_ZERO_WIDTH_SPACE
 
-static void make_wttrin_time(struct wttrin_info* wttrin)
+static void make_wttrin_time(struct WttrinInfo* wttrin)
 {
     size_t b = 0;
     b += dt_HM(wttrin->time + b, sizeof(wttrin->time) - b); // prepend hour:minute
     b += snprintf(wttrin->time + b, sizeof(wttrin->time) - b, ":");
 }
 
-static int make_wttrin_marquee_conds_width(int term_width, struct wttrin_info* wttrin)
+static int make_wttrin_marquee_conds_width(int term_width, struct WttrinInfo* wttrin)
 {
     int other = utf8_display_width(wttrin->time)                      // time -- e.g. "12:12:"
                 + 1                                                   // space
@@ -159,7 +159,7 @@ static int make_wttrin_marquee_conds_width(int term_width, struct wttrin_info* w
     return ret;
 }
 
-static void make_wttrin_marquee_conds(struct wttrin_info* wttrin)
+static void make_wttrin_marquee_conds(struct WttrinInfo* wttrin)
 {
     size_t b = 0;
     b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, MZWS); // pause on zero width space char
@@ -175,7 +175,7 @@ static int make_wttrin_marquee_times_width(int term_width)
     return term_width - 3;
 }
 
-static void make_wttrin_marquee_times(struct wttrin_info* wttrin)
+static void make_wttrin_marquee_times(struct WttrinInfo* wttrin)
 {
     size_t b = 0;
     b += snprintf(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b,
@@ -203,8 +203,8 @@ enum RequestStatus infos_wttrin_update()
     request.remember_response = 1;
     request_send(&request);
 
-    struct wttrin_info wttrin = {0};
-    infos_wttrin_update_safe_io(&g_info.wttrin, &wttrin);
+    struct WttrinInfo wttrin = {0};
+    infos_wttrin_update_safe_io(&g_infos.wttrin, &wttrin);
     wttrin.status = request.status;
 
     if (request.output.buf) {
@@ -241,7 +241,7 @@ enum RequestStatus infos_wttrin_update()
         make_wttrin_marquee_times(&wttrin);
     }
 
-    infos_wttrin_update_safe_io(&wttrin, &g_info.wttrin);
+    infos_wttrin_update_safe_io(&wttrin, &g_infos.wttrin);
 
     return request.status;
 }
@@ -249,28 +249,28 @@ enum RequestStatus infos_wttrin_update()
 void infos_wttrin_marquee_conds_scroll()
 {
     pthread_mutex_lock(&g_infos_wttrin_mutex);
-    marquee_scroll_smart(&g_info.wttrin.marquee_conds);
+    marquee_scroll_smart(&g_infos.wttrin.marquee_conds);
     pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
 void infos_wttrin_marquee_conds_update_width(int term_width)
 {
     pthread_mutex_lock(&g_infos_wttrin_mutex);
-    marquee_update_width(&g_info.wttrin.marquee_conds, make_wttrin_marquee_conds_width(term_width, &g_info.wttrin));
+    marquee_update_width(&g_infos.wttrin.marquee_conds, make_wttrin_marquee_conds_width(term_width, &g_infos.wttrin));
     pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
 void infos_wttrin_marquee_times_scroll()
 {
     pthread_mutex_lock(&g_infos_wttrin_mutex);
-    marquee_scroll_smart(&g_info.wttrin.marquee_times);
+    marquee_scroll_smart(&g_infos.wttrin.marquee_times);
     pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
 void infos_wttrin_marquee_times_update_width(int term_width)
 {
     pthread_mutex_lock(&g_infos_wttrin_mutex);
-    marquee_update_width(&g_info.wttrin.marquee_times, term_width);
+    marquee_update_width(&g_infos.wttrin.marquee_times, term_width);
     pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
@@ -279,7 +279,7 @@ void infos_save()
     pthread_mutex_lock(&g_infos_bas_mutex);
     pthread_mutex_lock(&g_infos_wttrin_mutex);
 
-    save_infos(VAR_DIR_FILE_INFOS_BIN, &g_info);
+    save_infos(VAR_DIR_FILE_INFOS_BIN, &g_infos);
 
     pthread_mutex_unlock(&g_infos_bas_mutex);
     pthread_mutex_unlock(&g_infos_wttrin_mutex);

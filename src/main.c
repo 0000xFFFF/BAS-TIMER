@@ -26,7 +26,7 @@ int main()
     mkdir_safe(VAR_DIR);
     load_env(".env");
     signal(SIGINT, signals_sigint);
-    load_infos(VAR_DIR_FILE_INFOS_BIN, &g_info);
+    load_infos(VAR_DIR_FILE_INFOS_BIN, &g_infos);
 
     // set needed .env vars to globals here
     // ...
