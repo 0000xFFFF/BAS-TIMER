@@ -235,6 +235,13 @@ enum RequestStatus infos_wttrin_update()
         // wttrin emoji
         wttrin.weather = detect_weather(wttrin.csv[WTTRIN_CSV_FIELD_C]);
 
+        // parse seconds for TimeOfDay
+        wttrin.dawn    = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_D]);
+        wttrin.sunrise = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_S]);
+        wttrin.zenith  = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_z]);
+        wttrin.sunset  = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_s]);
+        wttrin.dusk    = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_d]);
+
         // make marquees
         make_wttrin_time(&wttrin);
         make_wttrin_marquee_conds(&wttrin);

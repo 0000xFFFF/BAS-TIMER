@@ -137,24 +137,50 @@ static size_t make_term_buffer()
     return g_term_buffer_b;
 }
 
-static char* dut_hour_to_emoji(int hour)
+static enum TimeOfDay get_timeofday()
 {
-    if (hour >= 5 && hour <= 7) return get_frame(&spinner_sunrise, 1); // Sunrise
-    if (hour >= 7 && hour < 12) return "";                          // Morning
-    if (hour >= 12 && hour < 17) return "󰖙";                        // Afternoon
-    if (hour >= 17 && hour < 19) return get_frame(&spinner_sunset, 1); // Sunset
-    if (hour >= 19 && hour < 21) return "";                         // Evening
-    return "󰖔";                                                     // Night
+    // clang-format off
+    int now = now_seconds();
+    if      (now < du_infos.wttrin.dawn)    return TIME_OF_DAY_BEFORE_DAWN;
+    else if (now < du_infos.wttrin.sunrise) return TIME_OF_DAY_DAWN;
+    else if (now < du_infos.wttrin.zenith)  return TIME_OF_DAY_MORNING;
+    else if (now < du_infos.wttrin.sunset)  return TIME_OF_DAY_AFTERNOON;
+    else if (now < du_infos.wttrin.dusk)    return TIME_OF_DAY_SUNSET;
+    else                                    return TIME_OF_DAY_NIGHT;
+    // clang-format on
 }
 
-static int dut_hour_to_color(int hour)
+static char* dut_timeofday_emoji()
 {
-    if (hour >= 5 && hour < 7) return 214;   // Orange (Sunrise)
-    if (hour >= 7 && hour < 12) return 220;  // Bright Yellow (Morning)
-    if (hour >= 12 && hour < 17) return 208; // Deep Orange (Afternoon)
-    if (hour >= 17 && hour < 19) return 202; // Red-Orange (Sunset)
-    if (hour >= 19 && hour < 21) return 99;  // Purple-Pink (Evening)
-    return 33;                               // Deep Blue (Night)
+    enum TimeOfDay tod = get_timeofday();
+    // clang-format off
+    switch (tod) {
+        case TIME_OF_DAY_BEFORE_DAWN: return get_frame(&spinner_sunrise, 1); // Sunrise
+        case TIME_OF_DAY_DAWN:        return "";                            // Morning
+        case TIME_OF_DAY_MORNING:     return "󰖙";                            // Afternoon
+        case TIME_OF_DAY_AFTERNOON:   return get_frame(&spinner_sunset, 1);  // Sunset
+        case TIME_OF_DAY_SUNSET:      return "";                            // Evening
+        case TIME_OF_DAY_NIGHT:       return "󰖔";                            // Night
+        default:                      return "?";                            // Unknown
+    }
+    // clang-format on
+}
+
+static int dut_timeofday_color()
+{
+    enum TimeOfDay tod = get_timeofday();
+
+    // clang-format off
+    switch (tod) {
+        case TIME_OF_DAY_BEFORE_DAWN: return 214; // Orange (Sunrise)
+        case TIME_OF_DAY_DAWN:        return 220; // Bright Yellow (Morning)
+        case TIME_OF_DAY_MORNING:     return 208; // Deep Orange (Afternoon)
+        case TIME_OF_DAY_AFTERNOON:   return 202; // Red-Orange (Sunset)
+        case TIME_OF_DAY_SUNSET:      return 99;  // Purple-Pink (Evening)
+        case TIME_OF_DAY_NIGHT:       return 33;  // Deep Blue (Night)
+        default:                      return 255; // White (Unknown)
+    }
+    // clang-format on
 }
 
 static int dut_weather_to_color(enum Weather weather)
@@ -454,10 +480,10 @@ size_t draw_ui_unsafe()
 
     // row 0
     int hour = localtime_hour();
-    int color_hour = dut_hour_to_color(hour);
-    scc(0, 0, color_hour, hour_to_clock(hour));
-    scc(0, 1, color_hour, dut_hour_to_emoji(hour));
-    scc(0, 2, 182, dut_time());
+    int tod_color = dut_timeofday_color();
+    scc(0, 0, tod_color, hour_to_clock(hour));
+    scc(0, 1, tod_color, dut_timeofday_emoji());
+    scc(0, 2, tod_color, dut_time());
     sc(0, 3, dut_status_to_emoji(du_infos.bas.status));
     sc(0, 4, dut_status_to_emoji(du_infos.wttrin.status));
     int wttrin_color = dut_weather_to_color(du_infos.wttrin.weather);

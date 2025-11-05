@@ -151,3 +151,17 @@ char* istrstr(const char* haystack, const char* needle)
     }
     return NULL;
 }
+
+int hms_to_seconds(const char* str)
+{
+    int h, m, s;
+    sscanf(str, "%d:%d:%d", &h, &m, &s);
+    return h * 3600 + m * 60 + s;
+}
+
+int now_seconds()
+{
+    time_t t = time(NULL);
+    struct tm* tm = localtime(&t);
+    return tm->tm_hour * 3600 + tm->tm_min * 60 + tm->tm_sec;
+}

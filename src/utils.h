@@ -17,5 +17,7 @@ extern size_t get_local_ips(char* buffer, size_t size);
 extern double min_dv(int count, ...);
 extern double max_dv(int count, ...);
 extern char* istrstr(const char* haystack, const char* needle);
+extern int hms_to_seconds(const char* str);
+extern int now_seconds();
 
 #endif // UTILS_HPP

@@ -134,6 +134,15 @@ enum Weather {
     WEATHER_SNOW,
 };
 
+enum TimeOfDay {
+    TIME_OF_DAY_BEFORE_DAWN,
+    TIME_OF_DAY_DAWN,
+    TIME_OF_DAY_MORNING,
+    TIME_OF_DAY_AFTERNOON,
+    TIME_OF_DAY_SUNSET,
+    TIME_OF_DAY_NIGHT
+};
+
 extern const char* weather_keywords[][5];
 
 struct WttrinInfo {
@@ -152,6 +161,12 @@ struct WttrinInfo {
 
     char csv[URL_WTTRIN_OUTPUT_MAX_FIELDS][URL_WTTRIN_OUTPUT_MAX_FIELD_LEN];
     int csv_parsed;
+
+    int dawn;
+    int sunrise;
+    int zenith;
+    int sunset;
+    int dusk;
 };
 
 struct Infos {
