@@ -1,7 +1,7 @@
-#include "src/debug.h"
-#include "src/logger.h"
-#include "src/request.h"
-#include "src/utils.h"
+#include "debug.h"
+#include "logger.h"
+#include "request.h"
+#include "utils.h"
 #include <stdio.h>
 #include <time.h>
 

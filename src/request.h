@@ -166,10 +166,12 @@ struct wttrin_info {
 #define TIMEOUT_BAS    1500
 #define TIMEOUT_WTTRIN 5000
 
-// request.c
+// request_update_info_bas.c
 extern void update_info_bas_init();
 extern enum RequestStatus update_info_bas();
 extern void update_info_bas_safe_io(const struct bas_info* in, struct bas_info* out);
+
+// request_update_info_wttrin.c
 extern void update_info_wttrin_init();
 extern enum RequestStatus update_info_wttrin();
 extern void update_info_wttrin_safe_io(const struct wttrin_info* in, struct wttrin_info* out);

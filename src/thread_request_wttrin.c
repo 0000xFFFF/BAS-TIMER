@@ -1,6 +1,6 @@
 #include "debug.h"
 #include "globals.h"
-#include "src/request.h"
+#include "request.h"
 #include "thread_utils.h"
 #include <pthread.h>
 #include <stdatomic.h>
