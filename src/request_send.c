@@ -15,14 +15,15 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
     }
 
     if (ev == MG_EV_POLL) {
-        if (mg_millis() > request->timeout_ms_start && (c->is_connecting || c->is_resolving)) {
-            mg_error(c, "Connect timeout");
+        if (request->timeout_ms && request->timeout_ms_start && mg_millis() > request->timeout_ms_start) {
+            mg_error(c, "Timeout"); /* generates MG_EV_ERROR too */
             request->status = REQUEST_STATUS_ERROR_TIMEOUT;
         }
         return;
     }
 
     if (ev == MG_EV_CONNECT) {
+        if (!request->timeout_ms_start) { request->timeout_ms_start = mg_millis() + request->timeout_ms; }
         struct mg_str host = mg_url_host(request->url);
 
         if (mg_url_is_ssl(request->url)) {
@@ -55,9 +56,11 @@ enum RequestStatus request_send(struct Request* request)
 {
     if (request->log) { logger_requests_write("%s\n", request->url); }
 
+
     struct mg_mgr mgr;
     mg_mgr_init(&mgr);
-    //mgr.dns4.url = "udp://8.8.8.8:53";
+    // mgr.dns4.url = "udp://8.8.8.8:53";
+    if (request->timeout_ms) { request->timeout_ms_start = mg_millis() + request->timeout_ms; } // ensure timeout is set before calling connect
     mg_http_connect(&mgr, request->url, fn, request);
     while (atomic_load(&g_running) && request->status == REQUEST_STATUS_RUNNING) mg_mgr_poll(&mgr, 50);
     mg_mgr_free(&mgr);

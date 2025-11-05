@@ -1,9 +1,9 @@
+#include "colors.h"
 #include "debug.h"
 #include "globals.h"
 #include "marquee.h"
 #include "mongoose.h"
 #include "request.h"
-#include "colors.h"
 #include "term.h"
 #include "utils.h"
 #include <float.h>
@@ -194,11 +194,11 @@ static void make_wttrin_marquee_times(struct WttrinInfo* wttrin)
 {
     size_t b = 0;
     // clang-format on
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_DAWN),      mk_str(MZWS "🌄 %s ", wttrin->csv[WTTRIN_CSV_FIELD_D]));
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_MORNING),   mk_str(MZWS "🌅 %s ", wttrin->csv[WTTRIN_CSV_FIELD_S]));
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_DAWN), mk_str(MZWS "🌄 %s ", wttrin->csv[WTTRIN_CSV_FIELD_D]));
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_MORNING), mk_str(MZWS "🌅 %s ", wttrin->csv[WTTRIN_CSV_FIELD_S]));
     b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_AFTERNOON), mk_str(MZWS "🌞 %s ", wttrin->csv[WTTRIN_CSV_FIELD_z]));
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_SUNSET),    mk_str(MZWS "🌇 %s ", wttrin->csv[WTTRIN_CSV_FIELD_s]));
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_NIGHT),     mk_str(MZWS "🌆 %s ", wttrin->csv[WTTRIN_CSV_FIELD_d]));
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_SUNSET), mk_str(MZWS "🌇 %s ", wttrin->csv[WTTRIN_CSV_FIELD_s]));
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_NIGHT), mk_str(MZWS "🌆 %s ", wttrin->csv[WTTRIN_CSV_FIELD_d]));
     // clang-format off
 
     const int marquee_pause = 3000; // 3 sec pause
@@ -227,9 +227,6 @@ enum RequestStatus infos_wttrin_update()
     wttrin.status = request.status;
 
     if (request.output.buf) {
-
-        wttrin.valid = true;
-
         // parse csv
         wttrin.csv_parsed = parse_csv(request.output.buf,
                                       URL_WTTRIN_OUTPUT_CSV_SEP,
@@ -245,6 +242,7 @@ enum RequestStatus infos_wttrin_update()
             return request.status;
         }
 
+        wttrin.valid = true;
         D(print_wttrin_info(&wttrin));
 
         // // override weather cond
