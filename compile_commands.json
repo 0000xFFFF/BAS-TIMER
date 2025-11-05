@@ -281,34 +281,10 @@
       "MG_ENABLE_OPENSSL=1",
       "-o",
       "bas-server",
-      "src/request_update_info_bas.c"
+      "src/request_update_info.c"
     ],
     "directory": "/home/user/.vip/mytools/BAS-TIMER",
-    "file": "/home/user/.vip/mytools/BAS-TIMER/src/request_update_info_bas.c",
-    "output": "/home/user/.vip/mytools/BAS-TIMER/bas-server"
-  },
-  {
-    "arguments": [
-      "/usr/bin/cc",
-      "-c",
-      "-O2",
-      "-W",
-      "-Wall",
-      "-Wextra",
-      "-g",
-      "-I.",
-      "-DMG_ENABLE_LINES=1",
-      "-DMG_ENABLE_PACKED_FS=1",
-      "-D",
-      "MG_TLS=MG_TLS_OPENSSL",
-      "-D",
-      "MG_ENABLE_OPENSSL=1",
-      "-o",
-      "bas-server",
-      "src/request_update_info_wttrin.c"
-    ],
-    "directory": "/home/user/.vip/mytools/BAS-TIMER",
-    "file": "/home/user/.vip/mytools/BAS-TIMER/src/request_update_info_wttrin.c",
+    "file": "/home/user/.vip/mytools/BAS-TIMER/src/request_update_info.c",
     "output": "/home/user/.vip/mytools/BAS-TIMER/bas-server"
   },
   {
@@ -549,6 +525,30 @@
     ],
     "directory": "/home/user/.vip/mytools/BAS-TIMER",
     "file": "/home/user/.vip/mytools/BAS-TIMER/src/thread_request_wttrin.c",
+    "output": "/home/user/.vip/mytools/BAS-TIMER/bas-server"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-O2",
+      "-W",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-I.",
+      "-DMG_ENABLE_LINES=1",
+      "-DMG_ENABLE_PACKED_FS=1",
+      "-D",
+      "MG_TLS=MG_TLS_OPENSSL",
+      "-D",
+      "MG_ENABLE_OPENSSL=1",
+      "-o",
+      "bas-server",
+      "src/thread_save_infos.c"
+    ],
+    "directory": "/home/user/.vip/mytools/BAS-TIMER",
+    "file": "/home/user/.vip/mytools/BAS-TIMER/src/thread_save_infos.c",
     "output": "/home/user/.vip/mytools/BAS-TIMER/bas-server"
   },
   {
