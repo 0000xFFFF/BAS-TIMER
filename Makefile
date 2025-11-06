@@ -7,8 +7,8 @@ SOURCES = src/*.c                 # Source code files, packed_fs.c contains ca.p
 CFLAGS = -W -Wall -Wextra -g -I.  # Build options
 
 DEBUG_ARGS     = -g -D DEBUG
-QUICK_ARGS     = -g -D DEBUG -D QUICK
 RELEASE_ARGS   = -O2 -s
+TESTING_ARGS   = -g
 
 # Mongoose build options. See https://mongoose.ws/documentation/#build-options
 CFLAGS_MONGOOSE += -DMG_ENABLE_LINES=1 -DMG_ENABLE_PACKED_FS=1
@@ -27,11 +27,11 @@ endif
 debug:
 	$(CC) $(DEBUG_ARGS) $(SOURCES) $(CFLAGS) $(CFLAGS_MONGOOSE) $(CFLAGS_EXTRA) $(OUT)
 
-quick:
-	$(CC) $(QUICK_ARGS) $(SOURCES) $(CFLAGS) $(CFLAGS_MONGOOSE) $(CFLAGS_EXTRA) $(OUT)
-
 release:
 	$(CC) $(RELEASE_ARGS) $(SOURCES) $(CFLAGS) $(CFLAGS_MONGOOSE) $(CFLAGS_EXTRA) $(OUT)
+
+testing:
+	$(CC) $(TESTING_ARGS) $(SOURCES) $(CFLAGS) $(CFLAGS_MONGOOSE) $(CFLAGS_EXTRA) $(OUT)
 
 clean:                    # Cleanup. Delete built program and all build artifacts
 	$(DELETE) $(PROG) *.o *.obj *.exe *.dSYM mbedtls $(PACK)
