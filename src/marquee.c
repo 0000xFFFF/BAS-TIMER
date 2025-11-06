@@ -129,7 +129,10 @@ int marquee_render(struct Marquee* m, char* buffer, size_t size)
 
     // Skip to scroll position (count visible chars)
     while (vis_idx < m->pos) {
-        if (!m->text[byte_idx]) byte_idx = 0;
+        if (!m->text[byte_idx]) {
+            byte_idx = 0;
+            last_ansi[0] = '\0';  // ← Reset ANSI state on wrap
+        }
 
         if (m->text[byte_idx] == '\033') {
             int start = byte_idx;
