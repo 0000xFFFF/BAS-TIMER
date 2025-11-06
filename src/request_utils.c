@@ -214,12 +214,13 @@ enum TimeOfDay wttrin_to_timeofday(struct WttrinInfo* wttrin)
 
     // clang-format off
     int now = now_seconds();
-    if      (now < wttrin->dawn)    return TIME_OF_DAY_BEFORE_DAWN;
-    else if (now < wttrin->sunrise) return TIME_OF_DAY_DAWN;
-    else if (now < wttrin->zenith)  return TIME_OF_DAY_MORNING;
-    else if (now < wttrin->sunset)  return TIME_OF_DAY_AFTERNOON;
-    else if (now < wttrin->dusk)    return TIME_OF_DAY_SUNSET;
-    else                            return TIME_OF_DAY_NIGHT;
+    if      (now < wttrin->dawn)                                      return TIME_OF_DAY_BEFORE_DAWN;
+    else if (now < wttrin->sunrise)                                   return TIME_OF_DAY_DAWN;
+    else if (now < wttrin->zenith)                                    return TIME_OF_DAY_MORNING;
+    else if (now >= wttrin->zenith && now <= wttrin->zenith_duration) return TIME_OF_DAY_ZENITH;
+    else if (now < wttrin->sunset)                                    return TIME_OF_DAY_AFTERNOON;
+    else if (now < wttrin->dusk)                                      return TIME_OF_DAY_SUNSET;
+    else                                                              return TIME_OF_DAY_NIGHT;
     // clang-format on
 }
 
@@ -230,7 +231,8 @@ enum TimeOfDay timeofday()
     if      (hour >= 4 && hour < 6)   return TIME_OF_DAY_BEFORE_DAWN;
     else if (hour >= 6 && hour < 7)   return TIME_OF_DAY_DAWN;
     else if (hour >= 7 && hour < 12)  return TIME_OF_DAY_MORNING;
-    else if (hour >= 12 && hour < 17) return TIME_OF_DAY_AFTERNOON;
+    else if (hour >= 12 && hour < 13) return TIME_OF_DAY_ZENITH;
+    else if (hour >= 13 && hour < 17) return TIME_OF_DAY_AFTERNOON;
     else if (hour >= 17 && hour < 19) return TIME_OF_DAY_SUNSET;
     else                              return TIME_OF_DAY_NIGHT;
     // clang-format on
@@ -240,10 +242,11 @@ int timeofday_to_color(enum TimeOfDay tod)
 {
     // clang-format off
     switch (tod) {
-        case TIME_OF_DAY_BEFORE_DAWN: return 93;
+        case TIME_OF_DAY_BEFORE_DAWN: return 99;
         case TIME_OF_DAY_DAWN:        return 130;
         case TIME_OF_DAY_MORNING:     return 214;
-        case TIME_OF_DAY_AFTERNOON:   return 226;
+        case TIME_OF_DAY_ZENITH:      return 226;
+        case TIME_OF_DAY_AFTERNOON:   return 220;
         case TIME_OF_DAY_SUNSET:      return 202;
         case TIME_OF_DAY_NIGHT:       return 105;
         default:                      return 255;

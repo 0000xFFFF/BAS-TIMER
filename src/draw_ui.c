@@ -176,8 +176,8 @@ const char* dut_status_to_emoji(enum RequestStatus status)
 {
     switch (status) {
         case REQUEST_STATUS_RUNNING:       return CTEXT_FG(211, ""); break;
-        case REQUEST_STATUS_DONE:          return CTEXT_FG(82, "󰌘"); break;
-        case REQUEST_STATUS_ERROR_TIMEOUT: return CTEXT_FG(202, "󱫎"); break;
+        case REQUEST_STATUS_DONE:          return CTEXT_FG(82,  "󰌘"); break;
+        case REQUEST_STATUS_ERROR_TIMEOUT: return CTEXT_FG(197, "󱫎"); break;
         case REQUEST_STATUS_ERROR_CONN:    return CTEXT_FG(196, "󰌙"); break;
     }
     return "";
@@ -431,13 +431,14 @@ static char* dut_timeofday_emoji()
 
     // clang-format off
     switch (tod) {
-        case TIME_OF_DAY_BEFORE_DAWN: return get_frame(&spinner_sunrise, 1); // Sunrise
-        case TIME_OF_DAY_DAWN:        return "";                            // Morning
-        case TIME_OF_DAY_MORNING:     return "󰖙";                            // Afternoon
-        case TIME_OF_DAY_AFTERNOON:   return get_frame(&spinner_sunset, 1);  // Sunset
-        case TIME_OF_DAY_SUNSET:      return "";                            // Evening
-        case TIME_OF_DAY_NIGHT:       return "󰖔";                            // Night
-        default:                      return "?";                            // Unknown
+        case TIME_OF_DAY_BEFORE_DAWN: return "";
+        case TIME_OF_DAY_DAWN:        return get_frame(&spinner_sunrise, 1);
+        case TIME_OF_DAY_MORNING:     return "";
+        case TIME_OF_DAY_ZENITH:      return "󰖙";
+        case TIME_OF_DAY_AFTERNOON:   return "";
+        case TIME_OF_DAY_SUNSET:      return get_frame(&spinner_sunset, 1);
+        case TIME_OF_DAY_NIGHT:       return "󰖔";
+        default:                      return "?";
     }
     // clang-format on
 }

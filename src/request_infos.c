@@ -196,7 +196,7 @@ static void make_wttrin_marquee_times(struct WttrinInfo* wttrin)
     // clang-format on
     b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_DAWN), mk_str(MZWS "🌄 %s ", wttrin->csv[WTTRIN_CSV_FIELD_D]));
     b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_MORNING), mk_str(MZWS "🌅 %s ", wttrin->csv[WTTRIN_CSV_FIELD_S]));
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_AFTERNOON), mk_str(MZWS "🌞 %s ", wttrin->csv[WTTRIN_CSV_FIELD_z]));
+    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_ZENITH), mk_str(MZWS "🌞 %s ", wttrin->csv[WTTRIN_CSV_FIELD_z]));
     b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_SUNSET), mk_str(MZWS "🌇 %s ", wttrin->csv[WTTRIN_CSV_FIELD_s]));
     b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_NIGHT), mk_str(MZWS "🌆 %s ", wttrin->csv[WTTRIN_CSV_FIELD_d]));
     // clang-format off
@@ -255,6 +255,7 @@ enum RequestStatus infos_wttrin_update()
         wttrin.dawn = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_D]);
         wttrin.sunrise = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_S]);
         wttrin.zenith = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_z]);
+        wttrin.zenith_duration = wttrin.zenith + 1 * 3600; // duration 1 hour
         wttrin.sunset = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_s]);
         wttrin.dusk = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_d]);
 

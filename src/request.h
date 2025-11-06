@@ -139,6 +139,7 @@ enum TimeOfDay {
     TIME_OF_DAY_BEFORE_DAWN,
     TIME_OF_DAY_DAWN,
     TIME_OF_DAY_MORNING,
+    TIME_OF_DAY_ZENITH,
     TIME_OF_DAY_AFTERNOON,
     TIME_OF_DAY_SUNSET,
     TIME_OF_DAY_NIGHT
@@ -166,6 +167,7 @@ struct WttrinInfo {
     int dawn;
     int sunrise;
     int zenith;
+    int zenith_duration; // zenith + 1 hour
     int sunset;
     int dusk;
 };
