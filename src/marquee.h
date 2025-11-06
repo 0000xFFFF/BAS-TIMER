@@ -1,6 +1,7 @@
 #ifndef MARQUEE_H
 #define MARQUEE_H
 
+#include "globals.h"
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -8,7 +9,7 @@
 
 struct Marquee {
     bool valid;
-    const char* text;
+    char text[MIDBUFF];
     int width;
     int pos;              // Scroll position in visible chars
     int text_len;         // Visible length

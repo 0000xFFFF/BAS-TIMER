@@ -27,37 +27,38 @@ static long long g_global_unix_counter = 0;
 
 void infos_bas_init()
 {
+    pthread_mutex_lock(&g_infos_bas_mutex);
+
     g_global_unix_counter = timestamp();
 
-    struct BasInfo info = {0};
+    g_infos.bas.peak_min_solar = TEMP_MIN_SOLAR;
+    g_infos.bas.peak_max_solar = TEMP_MAX_SOLAR;
+    g_infos.bas.peak_min_human = TEMP_MIN_HUMAN;
+    g_infos.bas.peak_max_human = TEMP_MAX_HUMAN;
+    g_infos.bas.peak_min_buf = TEMP_MIN_BUF;
+    g_infos.bas.peak_max_buf = TEMP_MAX_BUF;
+    g_infos.bas.peak_min_circ = TEMP_MIN_CIRC;
+    g_infos.bas.peak_max_circ = TEMP_MAX_CIRC;
 
-    info.peak_min_solar = TEMP_MIN_SOLAR;
-    info.peak_max_solar = TEMP_MAX_SOLAR;
-    info.peak_min_human = TEMP_MIN_HUMAN;
-    info.peak_max_human = TEMP_MAX_HUMAN;
-    info.peak_min_buf = TEMP_MIN_BUF;
-    info.peak_max_buf = TEMP_MAX_BUF;
-    info.peak_min_circ = TEMP_MIN_CIRC;
-    info.peak_max_circ = TEMP_MAX_CIRC;
+    g_infos.bas.opt_auto_timer = ENABLE_AUTO_TIMER;
+    g_infos.bas.opt_auto_gas = ENABLE_AUTO_GAS;
+    g_infos.bas.opt_auto_timer_seconds = AUTO_TIMER_SECONDS;
+    g_infos.bas.opt_auto_timer_started = 0;
+    g_infos.bas.opt_auto_timer_seconds_elapsed = 0;
+    snprintf(g_infos.bas.opt_auto_timer_status, SMALLBUFF, "...");
+    snprintf(g_infos.bas.opt_auto_gas_status, SMALLBUFF, "...");
 
-    info.opt_auto_timer = ENABLE_AUTO_TIMER;
-    info.opt_auto_gas = ENABLE_AUTO_GAS;
-    info.opt_auto_timer_seconds = AUTO_TIMER_SECONDS;
-    info.opt_auto_timer_started = 0;
-    info.opt_auto_timer_seconds_elapsed = 0;
-    snprintf(info.opt_auto_timer_status, SMALLBUFF, "...");
-    snprintf(info.opt_auto_gas_status, SMALLBUFF, "...");
+    g_infos.bas.history_mode = -1;
+    g_infos.bas.history_mode_time_changed = 0;
+    g_infos.bas.history_mode_time_on = 0;
+    g_infos.bas.history_mode_time_off = 0;
+    g_infos.bas.history_gas = -1;
+    g_infos.bas.history_gas_time_changed = 0;
+    g_infos.bas.history_gas_time_on = 0;
+    g_infos.bas.history_gas_time_off = 0;
 
-    info.history_mode = -1;
-    info.history_mode_time_changed = 0;
-    info.history_mode_time_on = 0;
-    info.history_mode_time_off = 0;
-    info.history_gas = -1;
-    info.history_gas_time_changed = 0;
-    info.history_gas_time_on = 0;
-    info.history_gas_time_off = 0;
+    pthread_mutex_unlock(&g_infos_bas_mutex);
 
-    infos_bas_safe_io(&info, &g_infos.bas);
 }
 
 // must infos_bas_init before running this
@@ -139,41 +140,41 @@ void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo*
 
 void infos_wttrin_init()
 {
-    struct WttrinInfo wttrin = {0};
-    snprintf(wttrin.marquee_conds_buf, sizeof(wttrin.marquee_conds_buf), "...");
-    snprintf(wttrin.marquee_times_buf, sizeof(wttrin.marquee_times_buf), "...");
-    infos_wttrin_update_safe_io(&wttrin, &g_infos.wttrin);
+    snprintf(g_infos.wttrin.marquee_conds.text, sizeof(g_infos.wttrin.marquee_conds.text), "...");
+    snprintf(g_infos.wttrin.marquee_times.text, sizeof(g_infos.wttrin.marquee_times.text), "...");
 }
 
 #define MZWS MARQUEE_ZERO_WIDTH_SPACE
 
-static void make_wttrin_time(struct WttrinInfo* wttrin)
+static void make_wttrin_time(struct WttrinInfo* wi)
 {
     size_t b = 0;
-    b += dt_HM(wttrin->time + b, sizeof(wttrin->time) - b); // prepend hour:minute
-    b += snprintf(wttrin->time + b, sizeof(wttrin->time) - b, ":");
+    b += dt_HM(wi->time + b, sizeof(wi->time) - b); // prepend hour:minute
+    b += snprintf(wi->time + b, sizeof(wi->time) - b, ":");
 }
 
-static int make_wttrin_marquee_conds_width(int term_width, struct WttrinInfo* wttrin)
+static int make_wttrin_marquee_conds_width(int term_width, struct WttrinInfo* wi)
 {
-    int other = utf8_display_width(wttrin->time)                      // time -- e.g. "12:12:"
+    int other = utf8_display_width(wi->time)                      // time -- e.g. "12:12:"
                 + 1                                                   // space
-                + utf8_display_width(wttrin->csv[WTTRIN_CSV_FIELD_c]) // emojis -- e.g "☀ "
+                + utf8_display_width(wi->csv[WTTRIN_CSV_FIELD_c]) // emojis -- e.g "☀ "
                 + 1;                                                  // space
 
     int ret = term_width - other;
     return ret;
 }
 
-static void make_wttrin_marquee_conds(struct WttrinInfo* wttrin)
+static void make_wttrin_marquee_conds(struct WttrinInfo* wi)
 {
+    char buf[MIDBUFF];
+
     size_t b = 0;
-    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, MZWS); // pause on zero width space char
-    b += snprintf(wttrin->marquee_conds_buf + b, sizeof(wttrin->marquee_conds_buf) - b, "%s  ", wttrin->csv[WTTRIN_CSV_FIELD_C]);
+    b += snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
+    b += snprintf(buf + b, sizeof(buf) - b, "%s  ", wi->csv[WTTRIN_CSV_FIELD_C]);
 
     const int marquee_pause = 1000; // 1 sec pause
-    const int width = make_wttrin_marquee_conds_width(g_term_w, wttrin);
-    marquee_init(&wttrin->marquee_conds, wttrin->marquee_conds_buf, width, marquee_pause / SLEEP_MS_DRAW, 2);
+    const int width = make_wttrin_marquee_conds_width(g_term_w, wi);
+    marquee_init(&wi->marquee_conds, buf, width, marquee_pause / SLEEP_MS_DRAW, 2);
 }
 
 static int make_wttrin_marquee_times_width(int term_width)
@@ -190,20 +191,23 @@ static char* mk_str(const char* format, char* param)
     return g_temp;
 }
 
-static void make_wttrin_marquee_times(struct WttrinInfo* wttrin)
+static void make_wttrin_marquee_times(struct WttrinInfo* wi)
 {
+    char buf[MIDBUFF];
+
     size_t b = 0;
     // clang-format on
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_DAWN), mk_str(MZWS "🌄%s", wttrin->csv[WTTRIN_CSV_FIELD_D]));
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_MORNING), mk_str(MZWS "🌅%s", wttrin->csv[WTTRIN_CSV_FIELD_S]));
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_ZENITH), mk_str(MZWS "🌞%s", wttrin->csv[WTTRIN_CSV_FIELD_z]));
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_SUNSET), mk_str(MZWS "🌇%s", wttrin->csv[WTTRIN_CSV_FIELD_s]));
-    b += ctext_fg(wttrin->marquee_times_buf + b, sizeof(wttrin->marquee_times_buf) - b, timeofday_to_color(TIME_OF_DAY_NIGHT), mk_str(MZWS "🌆%s", wttrin->csv[WTTRIN_CSV_FIELD_d]));
+    b += ctext_fg(buf + b, sizeof(buf) - b, timeofday_to_color(TIME_OF_DAY_DAWN), mk_str(MZWS "🌄%s", wi->csv[WTTRIN_CSV_FIELD_D]));
+    b += ctext_fg(buf + b, sizeof(buf) - b, timeofday_to_color(TIME_OF_DAY_MORNING), mk_str(MZWS "🌅%s", wi->csv[WTTRIN_CSV_FIELD_S]));
+    b += ctext_fg(buf + b, sizeof(buf) - b, timeofday_to_color(TIME_OF_DAY_ZENITH), mk_str(MZWS "🌞%s", wi->csv[WTTRIN_CSV_FIELD_z]));
+    b += ctext_fg(buf + b, sizeof(buf) - b, timeofday_to_color(TIME_OF_DAY_SUNSET), mk_str(MZWS "🌇%s", wi->csv[WTTRIN_CSV_FIELD_s]));
+    b += ctext_fg(buf + b, sizeof(buf) - b, timeofday_to_color(TIME_OF_DAY_NIGHT), mk_str(MZWS "🌆%s", wi->csv[WTTRIN_CSV_FIELD_d]));
     // clang-format off
 
     const int marquee_pause = 3000; // 3 sec pause
     const int width = make_wttrin_marquee_times_width(g_term_w);
-    marquee_init(&wttrin->marquee_times, wttrin->marquee_times_buf, width, marquee_pause / SLEEP_MS_DRAW, 3);
+    marquee_init(&wi->marquee_times, buf, width, marquee_pause / SLEEP_MS_DRAW, 3);
+
 }
 
 // must infos_wttrin_init before running this
@@ -222,51 +226,51 @@ enum RequestStatus infos_wttrin_update()
 
     request_send(&request);
 
-    struct WttrinInfo wttrin = {0};
-    infos_wttrin_update_safe_io(&g_infos.wttrin, &wttrin);
-    wttrin.status = request.status;
+    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    g_infos.wttrin.status = request.status;
 
     if (request.output.buf) {
         // parse csv
-        wttrin.csv_parsed = parse_csv(request.output.buf,
+        g_infos.wttrin.csv_parsed = parse_csv(request.output.buf,
                                       URL_WTTRIN_OUTPUT_CSV_SEP,
                                       URL_WTTRIN_OUTPUT_MAX_FIELDS,
                                       URL_WTTRIN_OUTPUT_MAX_FIELD_LEN,
-                                      wttrin.csv);
+                                      g_infos.wttrin.csv);
         free((void*)request.output.buf);
 
-        D(printf("WTTRIN PARSED: %d\n", wttrin.csv_parsed));
+        D(printf("WTTRIN PARSED: %d\n", g_infos.wttrin.csv_parsed));
 
-        if (wttrin.csv_parsed < URL_WTTRIN_OUTPUT_MAX_FIELDS) {
+        if (g_infos.wttrin.csv_parsed < URL_WTTRIN_OUTPUT_MAX_FIELDS) {
+
+            pthread_mutex_unlock(&g_infos_wttrin_mutex);
             DPL("FAILED TO PARSE WTTRIN");
             return request.status;
         }
 
-        wttrin.valid = true;
-        D(print_wttrin_info(&wttrin));
+        g_infos.wttrin.valid = true;
+        D(print_wttrin_info(&g_infos.wttrin));
 
         // // override weather cond
-        // snprintf(wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
-
-        // wttrin emoji
-        wttrin.weather = detect_weather(wttrin.csv[WTTRIN_CSV_FIELD_C]);
-
-        // parse seconds for TimeOfDay
-        wttrin.dawn = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_D]);
-        wttrin.sunrise = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_S]);
-        wttrin.zenith = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_z]);
-        wttrin.zenith_duration = wttrin.zenith + 1 * 3600; // duration 1 hour
-        wttrin.sunset = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_s]);
-        wttrin.dusk = hms_to_seconds(wttrin.csv[WTTRIN_CSV_FIELD_d]);
+        // snprintf(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
 
         // make marquees
-        make_wttrin_time(&wttrin);
-        make_wttrin_marquee_conds(&wttrin);
-        make_wttrin_marquee_times(&wttrin);
+        make_wttrin_time(&g_infos.wttrin);
+        g_infos.wttrin.weather = detect_weather(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]); // wttrin emoji
+        make_wttrin_marquee_conds(&g_infos.wttrin);
+
+        make_wttrin_marquee_times(&g_infos.wttrin);
+
+        // parse seconds for wttrin_to_timeofday
+        g_infos.wttrin.dawn = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_D]);
+        g_infos.wttrin.sunrise = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_S]);
+        g_infos.wttrin.zenith = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_z]);
+        g_infos.wttrin.zenith_duration = g_infos.wttrin.zenith + 1 * 3600; // duration 1 hour
+        g_infos.wttrin.sunset = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s]);
+        g_infos.wttrin.dusk = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d]);
+
     }
 
-    infos_wttrin_update_safe_io(&wttrin, &g_infos.wttrin);
-
+    pthread_mutex_unlock(&g_infos_wttrin_mutex);
     return request.status;
 }
 

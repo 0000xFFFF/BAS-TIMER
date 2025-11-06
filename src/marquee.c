@@ -89,7 +89,7 @@ static int write_next_char(struct Marquee* m, const char* str, int* idx, char** 
 void marquee_init(struct Marquee* m, const char* text, int width, int start_delay, int update_on)
 {
     m->valid = 1;
-    m->text = text; // Store pointer directly, don't copy
+    strlcpy(m->text, text, MIDBUFF);
     m->width = width;
     m->pos = 0;
     m->i = 0;
@@ -118,7 +118,7 @@ int marquee_render(struct Marquee* m, char* buffer, size_t size)
     if (!m->scroll_needed) {
         size_t len = strlen(m->text);
         if (len >= remaining) return -1;
-        strcpy(buffer, m->text);
+        strlcpy(buffer, m->text, size);
         return len;
     }
 

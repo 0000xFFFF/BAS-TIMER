@@ -405,7 +405,7 @@ static const char* dut_wttrin_marquee_conds()
         infos_wttrin_marquee_conds_scroll();
         return g_temp;
     }
-    return du_infos.wttrin.marquee_conds_buf;
+    return du_infos.wttrin.marquee_conds.text;
 }
 
 static char* dut_wttrin_marquee_times()
@@ -417,7 +417,7 @@ static char* dut_wttrin_marquee_times()
         infos_wttrin_marquee_times_scroll();
         return g_temp;
     }
-    return du_infos.wttrin.marquee_times_buf;
+    return du_infos.wttrin.marquee_times.text;
 }
 
 enum TimeOfDay get_tod()

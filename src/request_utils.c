@@ -113,8 +113,8 @@ void print_wttrin_info(const struct WttrinInfo* info)
     printf("status: %d\n", (int)info->status);
     printf("weather: %d\n", (int)info->weather);
     printf("time: %s\n", info->time);
-    printf("marquee_conds_buf: %s\n", info->marquee_conds_buf);
-    printf("marquee_times_buf: %s\n", info->marquee_times_buf);
+    printf("marquee_conds.text: %s\n", info->marquee_conds.text);
+    printf("marquee_times.text: %s\n", info->marquee_times.text);
     printf("Weather condition                    : %s\n", info->csv[WTTRIN_CSV_FIELD_c]);
     printf("Weather condition textual name       : %s\n", info->csv[WTTRIN_CSV_FIELD_C]);
     printf("Weather condition  plain-text symbol : %s\n", info->csv[WTTRIN_CSV_FIELD_x]);

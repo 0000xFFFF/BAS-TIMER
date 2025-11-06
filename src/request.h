@@ -151,25 +151,22 @@ struct WttrinInfo {
     bool valid;
 
     enum RequestStatus status;
-    enum Weather weather;
-
-    char time[TINYBUFF];
-
-    char marquee_conds_buf[MIDBUFF];
-    struct Marquee marquee_conds; // c -- Weather condition, C -- Weather condition textual name
-
-    char marquee_times_buf[MIDBUFF];
-    struct Marquee marquee_times; // D -- Dawn*, S -- Sunrise*, z -- Zenith*, s -- Sunset*, d -- Dusk*
 
     char csv[URL_WTTRIN_OUTPUT_MAX_FIELDS][URL_WTTRIN_OUTPUT_MAX_FIELD_LEN];
     int csv_parsed;
 
+    char time[TINYBUFF];
+    enum Weather weather;
     int dawn;
     int sunrise;
     int zenith;
     int zenith_duration; // zenith + 1 hour
     int sunset;
     int dusk;
+
+    struct Marquee marquee_conds; // c -- Weather condition, C -- Weather condition textual name
+    struct Marquee marquee_times; // D -- Dawn*, S -- Sunrise*, z -- Zenith*, s -- Sunset*, d -- Dusk*
+
 };
 
 struct Infos {

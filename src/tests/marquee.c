@@ -4,9 +4,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <wchar.h>
+#include "
 
 typedef struct {
-    const char* text;
+    char text[BIFBUFF];
     int width;
     int pos;      // Scroll position in visible chars
     int text_len; // Visible length
