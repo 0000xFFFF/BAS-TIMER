@@ -92,6 +92,7 @@ void marquee_init(struct Marquee* m, const char* text, int width, int start_dela
     m->text = text; // Store pointer directly, don't copy
     m->width = width;
     m->pos = 0;
+    m->i = 0;
     m->text_len = marquee_visible_length(text);
     m->scroll_needed = m->text_len > width;
     m->ansi_state[0] = '\0';
