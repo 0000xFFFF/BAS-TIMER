@@ -183,7 +183,7 @@ static int make_wttrin_marquee_times_width(int term_width)
     return term_width;
 }
 
-static char s_mk_str_temp_buff[BIGBUFF];
+static char s_mk_str_temp_buff[TINYBUFF];
 static char* mk_str(const char* format, char* param)
 {
     snprintf(s_mk_str_temp_buff, sizeof(s_mk_str_temp_buff), format, param);
