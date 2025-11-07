@@ -7,6 +7,10 @@
 
 #define MARQUEE_ZERO_WIDTH_SPACE "\xE2\x80\x8B"
 
+#ifndef MIDBUFF
+#define MIDBUFF   256
+#endif
+
 struct Marquee {
     bool valid;
     char text[MIDBUFF];
