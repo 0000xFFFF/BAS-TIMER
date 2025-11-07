@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/index.css">
     <link rel="stylesheet" href="/desktop.css">
     <link rel="stylesheet" href="/ButtonSwitch.css">
+    <link rel="stylesheet" href="/ButtonSlider.css">
     <script defer type="text/javascript" src="/index.js"></script>
 </head>
 
@@ -47,27 +48,13 @@
                 </div>
 
                 <div class="fr">
-                    <button class="btn_action" id="toggleTimerButton" onclick="toggleAutoTimer()">󱎫 Auto Timer</button>
-                    <button class="btn_action" id="toggleGasButton" onclick="toggleAutoGas()">󰙇 Auto Gas</button>
+
                 </div>
 
                 <div class="fr">
+                    <!-- 󰐸󰫗  -->
                     <div class="fc">
-                        <label id="btn_gas" class="switch">
-                            <input id="btn_gas_cb" type="checkbox">
-                            <div class="button">
-                                <div class="light"></div>
-                                <div class="dots"></div>
-                                <div class="characters"></div>
-                                <div class="shine"></div>
-                                <div class="shadow"></div>
-                            </div>
-                        </label>
-                        <span class="text">󰈸 Gas</span>
-                        <!-- 󰈸󰙇 -->
-                    </div>
-
-                    <div class="fc">
+                        <span class="text">󰐸 Heat</span>
                         <label id="btn_heat" class="switch">
                             <input id="btn_heat_cb" type="checkbox">
                             <div class="button">
@@ -78,8 +65,34 @@
                                 <div class="shadow"></div>
                             </div>
                         </label>
-                        <span class="text">󰐸 Heat</span>
-                        <!-- 󰐸󰫗  -->
+                        <div id="btn_auto_timer" class="switch_slider">
+                            <input id="btn_auto_timer_cb" type="checkbox" />
+                            <label class="toggle" for="toggle">
+                                Auto
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 󰈸󰙇 -->
+                    <div class="fc">
+                        <span class="text">󰈸 Gas</span>
+                        <label id="btn_gas" class="switch">
+                            <input id="btn_gas_cb" type="checkbox">
+                            <div class="button">
+                                <div class="light"></div>
+                                <div class="dots"></div>
+                                <div class="characters"></div>
+                                <div class="shine"></div>
+                                <div class="shadow"></div>
+                            </div>
+                        </label>
+
+                        <div id="btn_auto_gas" class="switch_slider">
+                            <input id="btn_auto_gas_cb" type="checkbox" />
+                            <label class="toggle" for="toggle">
+                                Auto
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>

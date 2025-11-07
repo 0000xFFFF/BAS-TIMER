@@ -8,10 +8,10 @@ function bas_gas_off() { fetch('/api/bas_gas_off').then(response => response.jso
 const btn_heat = document.getElementById("btn_heat");
 const btn_heat_cb = document.getElementById("btn_heat_cb");
 
-btn_heat.addEventListener("click", (e) => {
+btn_heat.addEventListener("click", (event) => {
     event.preventDefault();
 
-    const rect = e.target.getBoundingClientRect();
+    const rect = event.target.getBoundingClientRect();
     const clickY = event.clientY - rect.top;
 
     if (clickY < rect.height / 2) { bas_heat_on(); }
@@ -21,16 +21,24 @@ btn_heat.addEventListener("click", (e) => {
 const btn_gas = document.getElementById("btn_gas");
 const btn_gas_cb = document.getElementById("btn_gas_cb");
 
-btn_gas.addEventListener("click", (e) => {
+btn_gas.addEventListener("click", (event) => {
     event.preventDefault();
 
-    const rect = e.target.getBoundingClientRect();
+    const rect = event.target.getBoundingClientRect();
     const clickY = event.clientY - rect.top;
 
     if (clickY < rect.height / 2) { bas_gas_on(); }
     else { bas_gas_off(); }
 });
 
+
+const btn_auto_timer = document.getElementById("btn_auto_timer");
+const btn_auto_timer_cb = document.getElementById("btn_auto_timer_cb");
+btn_auto_timer.addEventListener("click", (event) => { event.preventDefault(); toggle_auto_timer(); });
+
+const btn_auto_gas = document.getElementById("btn_auto_gas");
+const btn_auto_gas_cb = document.getElementById("btn_auto_gas_cb");
+btn_auto_gas.addEventListener("click", (event) => { event.preventDefault(); toggle_auto_gas(); });
 
 function fetch_state() {
     fetch("/api/state")
@@ -40,8 +48,8 @@ function fetch_state() {
             txt_input.value = data.seconds;
             colorButtons();
 
-            document.getElementById("toggleTimerButton").classList.toggle("on", data.auto_timer);
-            document.getElementById("toggleGasButton").classList.toggle("on", data.auto_gas);
+            btn_auto_timer_cb.checked = data.auto_timer;
+            btn_auto_gas_cb.checked = data.auto_gas;
         });
 }
 
@@ -112,22 +120,16 @@ function colorButtons() {
     });
 }
 
-function toggleAutoTimer() {
+function toggle_auto_timer() {
     fetch('/api/toggle_auto_timer', { method: 'POST' })
         .then(response => response.json())
-        .then(data => {
-            const button = document.getElementById('toggleTimerButton');
-            button.classList.toggle('on', data.auto_timer);
-        });
+        .then(data => { btn_auto_timer_cb.checked = data.value; });
 }
 
-function toggleAutoGas() {
+function toggle_auto_gas() {
     fetch('/api/toggle_auto_gas', { method: 'POST' })
         .then(response => response.json())
-        .then(data => {
-            const button = document.getElementById('toggleGasButton');
-            button.classList.toggle('on', data.auto_gas);
-        });
+        .then(data => { btn_auto_gas_cb.checked = data.value; });
 }
 
 
