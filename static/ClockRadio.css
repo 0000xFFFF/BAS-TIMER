@@ -1,5 +1,4 @@
-/* From Uiverse.io by Pradeepsaranbishnoi */
-/* SWITCH --------------------------------------------- */
+/* From Uiverse.io by Pradeepsaranbishnoi (with mods by 0000xFFFF) */
 
 .ClockRadioContainer {
     display: flex;
@@ -208,14 +207,37 @@
 
 /* LIGHT POSITIONS */
 
-.den #crs_1:checked~.light { transform: rotate(-90deg); }
-.den #crs_2:checked~.light { transform: rotate(-45deg); }
-.den #crs_3:checked~.light { transform: rotate(0deg); }
-.den #crs_4:checked~.light { transform: rotate(45deg); }
-.den #crs_5:checked~.light { transform: rotate(90deg); }
-.den #crs_6:checked~.light { transform: rotate(135deg); }
-.den #crs_7:checked~.light { transform: rotate(180deg); }
-.den #crs_8:checked~.light { transform: rotate(-135deg); }
+.den #crs_1:checked~.light {
+    transform: rotate(-90deg);
+}
+
+.den #crs_2:checked~.light {
+    transform: rotate(-45deg);
+}
+
+.den #crs_3:checked~.light {
+    transform: rotate(0deg);
+}
+
+.den #crs_4:checked~.light {
+    transform: rotate(45deg);
+}
+
+.den #crs_5:checked~.light {
+    transform: rotate(90deg);
+}
+
+.den #crs_6:checked~.light {
+    transform: rotate(135deg);
+}
+
+.den #crs_7:checked~.light {
+    transform: rotate(180deg);
+}
+
+.den #crs_8:checked~.light {
+    transform: rotate(-135deg);
+}
 
 /* DOT */
 
@@ -240,14 +262,37 @@
 }
 
 /* DOT POSITIONS */
-.den #crs_1:checked~.dot { transform: rotate(-90deg); }
-.den #crs_2:checked~.dot { transform: rotate(-45deg); }
-.den #crs_3:checked~.dot { transform: rotate(0deg); }
-.den #crs_4:checked~.dot { transform: rotate(45deg); }
-.den #crs_5:checked~.dot { transform: rotate(90deg); }
-.den #crs_6:checked~.dot { transform: rotate(135deg); }
-.den #crs_7:checked~.dot { transform: rotate(180deg); }
-.den #crs_8:checked~.dot { transform: rotate(-135deg); }
+.den #crs_1:checked~.dot {
+    transform: rotate(-90deg);
+}
+
+.den #crs_2:checked~.dot {
+    transform: rotate(-45deg);
+}
+
+.den #crs_3:checked~.dot {
+    transform: rotate(0deg);
+}
+
+.den #crs_4:checked~.dot {
+    transform: rotate(45deg);
+}
+
+.den #crs_5:checked~.dot {
+    transform: rotate(90deg);
+}
+
+.den #crs_6:checked~.dot {
+    transform: rotate(135deg);
+}
+
+.den #crs_7:checked~.dot {
+    transform: rotate(180deg);
+}
+
+.den #crs_8:checked~.dot {
+    transform: rotate(-135deg);
+}
 
 /* LINES */
 .den hr.line {
@@ -263,7 +308,7 @@
 }
 
 .den hr.line:nth-child(1) {
-    transform: rotate(-20deg);
+    transform: rotate(-25deg);
 }
 
 .den hr.line:nth-child(2) {
@@ -275,7 +320,7 @@
 }
 
 .den hr.line:nth-child(4) {
-    transform: rotate(20deg);
+    transform: rotate(25deg);
 }
 
 .ClockRadio_label {
