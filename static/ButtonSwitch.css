@@ -1,4 +1,4 @@
-/* From Uiverse.io by Nawsome */
+/* From Uiverse.io by Nawsome (with my mods) */
 .switch {
     display: block;
     background-color: black;
@@ -136,4 +136,11 @@
     80% {
         opacity: 0;
     }
+}
+
+.switch_header {
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    font-size: xx-large;
 }

@@ -1,9 +1,5 @@
-a {
+a, input, .text {
     font-size: 10px;
-}
-
-input {
-    font-size: 15px;
 }
 
 .fc,
@@ -64,4 +60,12 @@ input {
 #canv {
     width: 10px;
     height: auto;
+}
+
+#coolbuttons {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transform-origin: center;
+    zoom: 0.5;
 }

@@ -9,6 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <link rel="stylesheet" href="/index.css">
     <link rel="stylesheet" href="/mobile.css">
+    <link rel="stylesheet" href="/ButtonSwitch.css">
+    <link rel="stylesheet" href="/ButtonSlider.css">
     <script defer type="text/javascript" src="/index.js"></script>
     <script defer type="text/javascript" src="/mobile.js"></script>
 </head>
@@ -62,22 +64,51 @@
                 <button class="btn_action btn_time" id="button_20min" onclick="setTime(this)">20 min</button>
             </span>
 
-            <span class="fr">
-                <button class="btn_action" id="toggleTimerButton" onclick="toggleAutoTimer()">󱎫 Auto Timer</button>
-                <button class="btn_action" id="toggleGasButton" onclick="toggleAutoGas()">󰙇 Auto Gas</button>
-            </span>
+            <div class="fr" id="coolbuttons">
+                <!-- 󰐸󰫗  -->
+                <div class="fc">
+                    <div class="switch_header">󰐸 Heat</div>
+                    <label id="btn_heat" class="switch">
+                        <input id="btn_heat_cb" type="checkbox">
+                        <div class="button">
+                            <div class="light"></div>
+                            <div class="dots"></div>
+                            <div class="characters"></div>
+                            <div class="shine"></div>
+                            <div class="shadow"></div>
+                        </div>
+                    </label>
+                    <div id="btn_auto_timer" class="switch_slider">
+                        <input id="btn_auto_timer_cb" type="checkbox" />
+                        <label class="toggle" for="btn_auto_timer">
+                            Auto
+                        </label>
+                    </div>
+                </div>
 
-            <span class="fr">
-                <button class="btn_action" id="bas_heat_on" onclick="bas_heat_on()">󰐸 Heat On</button>
-                <button class="btn_action" id="bas_heat_off" onclick="bas_heat_off()">󰫗 Heat Off</button>
-            </span>
+                <!-- 󰈸󰙇 -->
+                <div class="fc">
+                    <div class="switch_header">󰈸 Gas</div>
+                    <label id="btn_gas" class="switch">
+                        <input id="btn_gas_cb" type="checkbox">
+                        <div class="button">
+                            <div class="light"></div>
+                            <div class="dots"></div>
+                            <div class="characters"></div>
+                            <div class="shine"></div>
+                            <div class="shadow"></div>
+                        </div>
+                    </label>
 
-            <span class="fr">
-                <button class="btn_action" id="bas_gas_on" onclick="bas_gas_on()">󰈸 Gas On</button>
-                <button class="btn_action" id="bas_gas_off" onclick="bas_gas_off()">󰙇 Gas Off</button>
-            </span>
+                    <div id="btn_auto_gas" class="switch_slider">
+                        <input id="btn_auto_gas_cb" type="checkbox" />
+                        <label class="toggle" for="btn_auto_gas">
+                            Auto
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
 </body>
 
