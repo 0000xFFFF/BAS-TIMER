@@ -358,6 +358,7 @@
     max-height: 0;
     align-content: stretch;
     width: fit-content;
+    height: fit-content;
 }
 
 .ClockRadio_extra_label {
@@ -369,6 +370,7 @@
 #ClockRadio_extra.show {
     transform: scaleY(1);
     opacity: 1;
+    max-height: unset;
 }
 
 .ClockRadio_extra_buttons {

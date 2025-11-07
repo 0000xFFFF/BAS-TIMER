@@ -58,24 +58,3 @@ a {
     width: 60px;
     height: auto;
 }
-
-#ClockRadio_extra {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    transform-origin: top;
-    transform: scaleY(0);
-    transition: transform 0.5s ease, opacity 0.5s ease;
-    opacity: 0;
-    overflow: hidden;
-    padding: 20px;
-    max-height: 0;
-}
-
-#ClockRadio_extra.show {
-    transform: scaleY(1);
-    opacity: 1;
-    min-height: fit-content;
-}

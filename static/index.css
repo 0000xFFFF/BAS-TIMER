@@ -17,10 +17,6 @@ a {
 }
 
 
-#controls,
-#status {
-    display: inline-block;
-}
 
 .text {
     color: #DB2828;
@@ -42,15 +38,6 @@ input::-moz-selection {
     color: #1c87c9;
     background: red;
     border: 2px solid red;
-}
-
-.on {
-    color: green;
-    background-color: #001000;
-    border-top: 2px double #00ff00;
-    border-left: 2px double #00ff00;
-    border-right: 2px double #008000;
-    border-bottom: 2px double #008000;
 }
 
 button {

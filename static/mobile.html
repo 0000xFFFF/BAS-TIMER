@@ -7,17 +7,17 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <title>BAS CTRL SERVER</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <link rel="stylesheet" href="/index.css">
-    <link rel="stylesheet" href="/mobile.css">
     <link rel="stylesheet" href="/ButtonSwitch.css">
     <link rel="stylesheet" href="/ButtonSlider.css">
+    <link rel="stylesheet" href="/ClockRadio.css">
+    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/mobile.css">
     <script defer type="text/javascript" src="/index.js"></script>
     <script defer type="text/javascript" src="/mobile.js"></script>
 </head>
 
 <body>
     <div id="main">
-
         <div class="frc">
             <a href="/errors">errors.log</a>
             <a href="/requests">requests.log</a>
@@ -43,28 +43,60 @@
         </div>
 
         <div id="controls">
-            <div id="seconds">
-                <div class="frc input_cont">
-                    <span class="text">Seconds:</span>
+            <div id="settings_time">
+                <div class="ClockRadioContainer">
+                    <div class="de">
+                        <div class="den">
+                            <hr class="line">
+                            <hr class="line">
+                            <hr class="line">
+                            <hr class="line">
+
+                            <div class="ClockRadio">
+                                <label for="crs_1"><span>*</span></label>
+                                <label for="crs_2"><span>1</span></label>
+                                <label for="crs_3"><span>2</span></label>
+                                <label for="crs_4"><span>3</span></label>
+                                <label for="crs_5"><span>5</span></label>
+                                <label for="crs_6"><span>8</span></label>
+                                <label for="crs_7"><span>10</span></label>
+                                <label for="crs_8"><span>15</span></label>
+
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="*" id="crs_1">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="1" id="crs_2">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="2" id="crs_3">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="3" id="crs_4">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="5" id="crs_5"
+                                    checked>
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="8" id="crs_6">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="10" id="crs_7">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="15" id="crs_8">
+
+                                <div class="light"><span></span></div>
+                                <div class="dot"><span></span></div>
+
+                                <div class="dene">
+                                    <div class="denem">
+                                        <div class="deneme"></div>
+                                    </div>
+                                </div>
+
+                                <span class="ClockRadio_label">Min<span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ClockRadio_extra" class="hidden">
+                    <div class="ClockRadio_extra_label">Seconds:</div>
                     <input type="text" id="txt_input">
-                    <button id="button_update" onclick="updateTime()">Update</button>
+                    <div class="ClockRadio_extra_buttons">
+                        <button id="button_update" onclick="updateTime()">Update</button>
+                    </div>
                 </div>
             </div>
 
-            <span class="fr">
-                <button class="btn_action btn_time" id="button_1min" onclick="setTime(this)">1 min</button>
-                <button class="btn_action btn_time" id="button_2min" onclick="setTime(this)">2 min</button>
-                <button class="btn_action btn_time" id="button_3min" onclick="setTime(this)">3 min</button>
-                <button class="btn_action btn_time" id="button_5min" onclick="setTime(this)">5 min</button>
-            </span>
-            <span class="fr">
-                <button class="btn_action btn_time" id="button_8min" onclick="setTime(this)">8 min</button>
-                <button class="btn_action btn_time" id="button_10min" onclick="setTime(this)">10 min</button>
-                <button class="btn_action btn_time" id="button_15min" onclick="setTime(this)">15 min</button>
-                <button class="btn_action btn_time" id="button_20min" onclick="setTime(this)">20 min</button>
-            </span>
-
-            <div class="fr" id="coolbuttons">
+            <div id="settings_buttons">
                 <!-- 󰐸󰫗  -->
                 <div class="fc">
                     <div class="switch_header">󰐸 Heat</div>

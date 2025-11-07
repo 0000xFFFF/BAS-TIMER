@@ -1,4 +1,16 @@
-a, input, .text {
+#main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: fit-content;
+    box-sizing: border-box;
+    gap: 20px;
+}
+
+
+a,
+input,
+.text {
     font-size: 10px;
 }
 
@@ -31,11 +43,6 @@ a, input, .text {
     font-size: 10px;
 }
 
-.btn_action {
-    padding: 5px;
-    font-size: 20px;
-}
-
 #status {
     gap: 3px;
     margin-bottom: 15px;
@@ -48,21 +55,40 @@ a, input, .text {
 
 #term,
 #sumtime {
+    margin: 5px;
     width: calc(100vw - 100px);
     min-width: calc(100vw - 100px);
 }
 
-#term,
-#sumtime {
-    margin: 5px;
-}
 
 #canv {
     width: 10px;
     height: auto;
 }
 
-#coolbuttons {
+#controls {
+    display: flex;
+    gap: 5px;
+    margin: 3px;
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+
+#settings_time {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transform-origin: center;
+    zoom: 0.5;
+}
+
+#settings_buttons {
+    display: flex;
+    flex-direction: row;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
