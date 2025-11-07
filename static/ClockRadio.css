@@ -208,37 +208,14 @@
 
 /* LIGHT POSITIONS */
 
-.den #switch_1:checked~.light {
-    transform: rotate(-90deg);
-}
-
-.den #switch_2:checked~.light {
-    transform: rotate(-45deg);
-}
-
-.den #switch_3:checked~.light {
-    transform: rotate(0deg);
-}
-
-.den #switch_4:checked~.light {
-    transform: rotate(45deg);
-}
-
-.den #switch_5:checked~.light {
-    transform: rotate(90deg);
-}
-
-.den #switch_6:checked~.light {
-    transform: rotate(135deg);
-}
-
-.den #switch_7:checked~.light {
-    transform: rotate(180deg);
-}
-
-.den #switch_8:checked~.light {
-    transform: rotate(-135deg);
-}
+.den #crs_1:checked~.light { transform: rotate(-90deg); }
+.den #crs_2:checked~.light { transform: rotate(-45deg); }
+.den #crs_3:checked~.light { transform: rotate(0deg); }
+.den #crs_4:checked~.light { transform: rotate(45deg); }
+.den #crs_5:checked~.light { transform: rotate(90deg); }
+.den #crs_6:checked~.light { transform: rotate(135deg); }
+.den #crs_7:checked~.light { transform: rotate(180deg); }
+.den #crs_8:checked~.light { transform: rotate(-135deg); }
 
 /* DOT */
 
@@ -263,37 +240,14 @@
 }
 
 /* DOT POSITIONS */
-.den #switch_1:checked~.dot {
-    transform: rotate(-90deg);
-}
-
-.den #switch_2:checked~.dot {
-    transform: rotate(-45deg);
-}
-
-.den #switch_3:checked~.dot {
-    transform: rotate(0deg);
-}
-
-.den #switch_4:checked~.dot {
-    transform: rotate(45deg);
-}
-
-.den #switch_5:checked~.dot {
-    transform: rotate(90deg);
-}
-
-.den #switch_6:checked~.dot {
-    transform: rotate(135deg);
-}
-
-.den #switch_7:checked~.dot {
-    transform: rotate(180deg);
-}
-
-.den #switch_8:checked~.dot {
-    transform: rotate(-135deg);
-}
+.den #crs_1:checked~.dot { transform: rotate(-90deg); }
+.den #crs_2:checked~.dot { transform: rotate(-45deg); }
+.den #crs_3:checked~.dot { transform: rotate(0deg); }
+.den #crs_4:checked~.dot { transform: rotate(45deg); }
+.den #crs_5:checked~.dot { transform: rotate(90deg); }
+.den #crs_6:checked~.dot { transform: rotate(135deg); }
+.den #crs_7:checked~.dot { transform: rotate(180deg); }
+.den #crs_8:checked~.dot { transform: rotate(-135deg); }
 
 /* LINES */
 .den hr.line {
@@ -322,4 +276,16 @@
 
 .den hr.line:nth-child(4) {
     transform: rotate(20deg);
+}
+
+.ClockRadio_label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    pointer-events: none;
 }

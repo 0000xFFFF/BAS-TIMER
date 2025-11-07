@@ -45,23 +45,23 @@
 
                             <div class="ClockRadio">
 
-                                <label for="ClockRadio_switch_1"><span>1</span></label>
-                                <label for="ClockRadio_switch_2"><span>2</span></label>
-                                <label for="ClockRadio_switch_3"><span>3</span></label>
-                                <label for="ClockRadio_switch_5"><span>5</span></label>
-                                <label for="ClockRadio_switch_8"><span>8</span></label>
-                                <label for="ClockRadio_switch_10"><span>10</span></label>
-                                <label for="ClockRadio_switch_15"><span>15</span></label>
-                                <label for="ClockRadio_switch_20"><span>20</span></label>
+                                <label for="crs_1"><span>1</span></label>
+                                <label for="crs_2"><span>2</span></label>
+                                <label for="crs_3"><span>3</span></label>
+                                <label for="crs_4"><span>5</span></label>
+                                <label for="crs_5"><span>8</span></label>
+                                <label for="crs_6"><span>10</span></label>
+                                <label for="crs_7"><span>15</span></label>
+                                <label for="crs_8"><span>20</span></label>
 
-                                <input onclick="setTime(this)" type="radio" name="switch" id="button_1min">
-                                <input onclick="setTime(this)" type="radio" name="switch" id="button_2min">
-                                <input onclick="setTime(this)" type="radio" name="switch" id="button_3min">
-                                <input onclick="setTime(this)" type="radio" name="switch" id="button_5min">
-                                <input onclick="setTime(this)" type="radio" name="switch" id="button_8min" checked>
-                                <input onclick="setTime(this)" type="radio" name="switch" id="button_10min">
-                                <input onclick="setTime(this)" type="radio" name="switch" id="button_15min">
-                                <input onclick="setTime(this)" type="radio" name="switch" id="button_20min">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="1" id="crs_1">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="2" id="crs_2">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="3" id="crs_3">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="5" id="crs_4">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="8" id="crs_5" checked>
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="10" id="crs_6">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="15" id="crs_7">
+                                <input onclick="setTime(this)" type="radio" name="switch" data-minutes="20" id="crs_8">
 
                                 <div class="light"><span></span></div>
                                 <div class="dot"><span></span></div>
@@ -71,6 +71,8 @@
                                         <div class="deneme"></div>
                                     </div>
                                 </div>
+
+                                <span class="ClockRadio_label">Min<span>
                             </div>
                         </div>
                     </div>
