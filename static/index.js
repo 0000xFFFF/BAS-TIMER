@@ -94,12 +94,19 @@ txt_input.addEventListener("keydown", function(event) {
     }
 });
 
+const ClockRadio_extra = document.getElementById("ClockRadio_extra");
 
 function setTime(rb) {
-    const seconds = parseInt(rb.dataset.minutes) * 60;
-    txt_input.value = seconds;
-    updateTime(seconds);
-    rb.checked = true;
+
+    if (rb.dataset.minutes == "*") {
+        ClockRadio_extra.classList.toggle('show', true);
+    }
+    else {
+        ClockRadio_extra.classList.toggle('show', false);
+        const seconds = parseInt(rb.dataset.minutes) * 60;
+        txt_input.value = seconds;
+        updateTime(seconds);
+    }
 }
 
 

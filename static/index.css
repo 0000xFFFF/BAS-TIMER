@@ -22,14 +22,6 @@ a {
     display: inline-block;
 }
 
-.input_cont {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: left;
-
-}
-
 .text {
     color: #DB2828;
     text-shadow: 3px 3px 0 black;

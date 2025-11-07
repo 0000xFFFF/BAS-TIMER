@@ -11,17 +11,8 @@
 }
 
 a {
-    font-size: 40px;
+    font-size: 30px;
 }
-
-input {
-    font-size: 40px;
-}
-
-.btn_action {
-    font-size: 50px;
-}
-
 
 .fc,
 .fr {
@@ -48,20 +39,6 @@ input {
     gap: 15px;
 }
 
-.text {
-    font-size: 30px;
-}
-
-button {
-    padding: 5px;
-    font-size: 20px;
-}
-
-.btn_action {
-    padding: 5px;
-    font-size: 50px;
-}
-
 #status {
     gap: 20px;
 }
@@ -80,4 +57,25 @@ button {
 #canv {
     width: 60px;
     height: auto;
+}
+
+#ClockRadio_extra {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transform-origin: top;
+    transform: scaleY(0);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    opacity: 0;
+    overflow: hidden;
+    padding: 20px;
+    max-height: 0;
+}
+
+#ClockRadio_extra.show {
+    transform: scaleY(1);
+    opacity: 1;
+    min-height: fit-content;
 }

@@ -2,7 +2,7 @@
 
 .ClockRadioContainer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 .ClockRadioContainer .origin {
@@ -334,3 +334,10 @@
     font-weight: bold;
     pointer-events: none;
 }
+
+#settings_time {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+}
+
