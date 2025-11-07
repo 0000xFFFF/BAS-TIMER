@@ -1,33 +1,36 @@
 const txt_input = document.getElementById('txt_input');
 
+function bas_heat_on() { fetch('/api/bas_heat_on').then(response => response.json()).then(data => console.log(data)).catch(error => console.error('Error fetching data:', error)); }
+function bas_heat_off() { fetch('/api/bas_heat_off').then(response => response.json()).then(data => console.log(data)).catch(error => console.error('Error fetching data:', error)); }
+function bas_gas_on() { fetch('/api/bas_gas_on').then(response => response.json()).then(data => console.log(data)).catch(error => console.error('Error fetching data:', error)); }
+function bas_gas_off() { fetch('/api/bas_gas_off').then(response => response.json()).then(data => console.log(data)).catch(error => console.error('Error fetching data:', error)); }
 
-function bas_heat_on() {
-    fetch('/api/bas_heat_on')
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error('Error fetching data:', error));
-}
+const btn_heat = document.getElementById("btn_heat");
+const btn_heat_cb = document.getElementById("btn_heat_cb");
 
-function bas_heat_off() {
-    fetch('/api/bas_heat_off')
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error('Error fetching data:', error));
-}
+btn_heat.addEventListener("click", (e) => {
+    event.preventDefault();
 
-function bas_gas_on() {
-    fetch('/api/bas_gas_on')
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error('Error fetching data:', error));
-}
+    const rect = e.target.getBoundingClientRect();
+    const clickY = event.clientY - rect.top;
 
-function bas_gas_off() {
-    fetch('/api/bas_gas_off')
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error('Error fetching data:', error));
-}
+    if (clickY < rect.height / 2) { bas_heat_on(); }
+    else { bas_heat_off(); }
+});
+
+const btn_gas = document.getElementById("btn_gas");
+const btn_gas_cb = document.getElementById("btn_gas_cb");
+
+btn_gas.addEventListener("click", (e) => {
+    event.preventDefault();
+
+    const rect = e.target.getBoundingClientRect();
+    const clickY = event.clientY - rect.top;
+
+    if (clickY < rect.height / 2) { bas_gas_on(); }
+    else { bas_gas_off(); }
+});
+
 
 function fetch_state() {
     fetch("/api/state")
@@ -195,10 +198,8 @@ function connect() {
             const json = JSON.parse(event.data);
             term.innerHTML = json.term;
             drawTemperatureGradient(json.Tmin, json.Tmax);
-            colorButton(document.getElementById("bas_heat_off"), json.mod_rada == 0);
-            colorButton(document.getElementById("bas_heat_on"), json.mod_rada == 1);
-            colorButton(document.getElementById("bas_gas_off"), json.StatusPumpe4 == 0 || json.StatusPumpe4 == 2);
-            colorButton(document.getElementById("bas_gas_on"), json.StatusPumpe4 == 1 || json.StatusPumpe4 == 3);
+            btn_heat_cb.checked = json.mod_rada == 1;
+            btn_gas_cb.checked = json.StatusPumpe4 == 1 || json.StatusPumpe4 == 3;
         };
 
         ws.onerror = function(error) { perror(error); };

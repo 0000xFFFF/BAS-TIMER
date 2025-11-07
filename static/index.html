@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <link rel="stylesheet" href="/index.css">
     <link rel="stylesheet" href="/desktop.css">
+    <link rel="stylesheet" href="/ButtonSwitch.css">
     <script defer type="text/javascript" src="/index.js"></script>
 </head>
 
@@ -51,13 +52,35 @@
                 </div>
 
                 <div class="fr">
-                    <button class="btn_action" id="bas_heat_on" onclick="bas_heat_on()">󰐸 Heat On</button>
-                    <button class="btn_action" id="bas_heat_off" onclick="bas_heat_off()">󰫗 Heat Off</button>
-                </div>
+                    <div class="fc">
+                        <label id="btn_gas" class="switch">
+                            <input id="btn_gas_cb" type="checkbox">
+                            <div class="button">
+                                <div class="light"></div>
+                                <div class="dots"></div>
+                                <div class="characters"></div>
+                                <div class="shine"></div>
+                                <div class="shadow"></div>
+                            </div>
+                        </label>
+                        <span class="text">󰈸 Gas</span>
+                        <!-- 󰈸󰙇 -->
+                    </div>
 
-                <div class="fr">
-                    <button class="btn_action" id="bas_gas_on" onclick="bas_gas_on()">󰈸 Gas On</button>
-                    <button class="btn_action" id="bas_gas_off" onclick="bas_gas_off()">󰙇 Gas Off</button>
+                    <div class="fc">
+                        <label id="btn_heat" class="switch">
+                            <input id="btn_heat_cb" type="checkbox">
+                            <div class="button">
+                                <div class="light"></div>
+                                <div class="dots"></div>
+                                <div class="characters"></div>
+                                <div class="shine"></div>
+                                <div class="shadow"></div>
+                            </div>
+                        </label>
+                        <span class="text">󰐸 Heat</span>
+                        <!-- 󰐸󰫗  -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -80,6 +103,10 @@
             <canvas id="canv"></canvas>
         </div>
     </div>
+
+
+
+
 </body>
 
 </html>
