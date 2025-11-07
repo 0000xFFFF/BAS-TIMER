@@ -94,6 +94,7 @@
     height: 70px;
     margin-top: -35px;
     transform-origin: 0% 50%;
+    cursor: pointer;
 }
 
 .den .ClockRadio label span {
