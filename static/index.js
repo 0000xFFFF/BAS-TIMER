@@ -1,3 +1,5 @@
+const DELAY_MS_PAUSE_UPDATE = 5000;
+
 const txt_input = document.getElementById('txt_input');
 
 function bas_heat_on() { fetch('/api/bas_heat_on').then(response => response.json()).then(data => console.log(data)).catch(error => console.error('Error fetching data:', error)); }
@@ -5,6 +7,7 @@ function bas_heat_off() { fetch('/api/bas_heat_off').then(response => response.j
 function bas_gas_on() { fetch('/api/bas_gas_on').then(response => response.json()).then(data => console.log(data)).catch(error => console.error('Error fetching data:', error)); }
 function bas_gas_off() { fetch('/api/bas_gas_off').then(response => response.json()).then(data => console.log(data)).catch(error => console.error('Error fetching data:', error)); }
 
+let btn_heat_pause_updating = false;
 const btn_heat = document.getElementById("btn_heat");
 const btn_heat_cb = document.getElementById("btn_heat_cb");
 
@@ -14,10 +17,15 @@ btn_heat.addEventListener("click", (event) => {
     const rect = event.target.getBoundingClientRect();
     const clickY = event.clientY - rect.top;
 
-    if (clickY < rect.height / 2) { bas_heat_on(); }
-    else { bas_heat_off(); }
+    btn_heat_pause_updating = true;
+    setTimeout(() => { btn_heat_pause_updating = false; }, DELAY_MS_PAUSE_UPDATE);
+
+    if (clickY < rect.height / 2) { btn_heat_cb.checked = true; bas_heat_on(); }
+    else { btn_heat_cb.checked = false; bas_heat_off(); }
 });
 
+
+let btn_gas_pause_updating = false;
 const btn_gas = document.getElementById("btn_gas");
 const btn_gas_cb = document.getElementById("btn_gas_cb");
 
@@ -27,8 +35,11 @@ btn_gas.addEventListener("click", (event) => {
     const rect = event.target.getBoundingClientRect();
     const clickY = event.clientY - rect.top;
 
-    if (clickY < rect.height / 2) { bas_gas_on(); }
-    else { bas_gas_off(); }
+    btn_gas_pause_updating = true;
+    setTimeout(() => { btn_gas_pause_updating = false; }, DELAY_MS_PAUSE_UPDATE);
+
+    if (clickY < rect.height / 2) { btn_gas_cb.checked = true; bas_gas_on(); }
+    else { btn_gas_cb.checked = false; bas_gas_off(); }
 });
 
 
@@ -203,8 +214,8 @@ function connect() {
             const json = JSON.parse(event.data);
             term.innerHTML = json.term;
             drawTemperatureGradient(json.Tmin, json.Tmax);
-            btn_heat_cb.checked = json.mod_rada == 1;
-            btn_gas_cb.checked = json.StatusPumpe4 == 1 || json.StatusPumpe4 == 3;
+            if (!btn_heat_pause_updating) btn_heat_cb.checked = json.mod_rada == 1;
+            if (!btn_gas_pause_updating) btn_gas_cb.checked = json.StatusPumpe4 == 1 || json.StatusPumpe4 == 3;
         };
 
         ws.onerror = function(error) { perror(error); };
