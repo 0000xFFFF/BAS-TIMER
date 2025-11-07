@@ -188,6 +188,7 @@ static size_t g_temp_b = 0;
 
 static char* mk_str(const char* format, char* param)
 {
+    size_t g_temp_b = 0;
     g_temp_b += snprintf(g_temp, sizeof(g_temp) - g_temp_b, format, param);
     return g_temp;
 }
