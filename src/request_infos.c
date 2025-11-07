@@ -58,7 +58,6 @@ void infos_bas_init()
     g_infos.bas.history_gas_time_off = 0;
 
     pthread_mutex_unlock(&g_infos_bas_mutex);
-
 }
 
 // must infos_bas_init before running this
@@ -72,7 +71,7 @@ enum RequestStatus infos_bas_update()
     request.status = REQUEST_STATUS_RUNNING;
     request.url = request_url;
     request.request_format = REQUEST_FORMAT_BAS;
-    request.timeout_ms = TIMEOUT_MS_BAS;;
+    request.timeout_ms = TIMEOUT_MS_BAS;
     request.remember_response = 1;
 
     pthread_mutex_lock(&g_infos_bas_mutex);
@@ -140,8 +139,10 @@ void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo*
 
 void infos_wttrin_init()
 {
+    pthread_mutex_lock(&g_infos_wttrin_mutex);
     snprintf(g_infos.wttrin.marquee_conds.text, sizeof(g_infos.wttrin.marquee_conds.text), "...");
     snprintf(g_infos.wttrin.marquee_times.text, sizeof(g_infos.wttrin.marquee_times.text), "...");
+    pthread_mutex_unlock(&g_infos_wttrin_mutex);
 }
 
 #define MZWS MARQUEE_ZERO_WIDTH_SPACE
@@ -156,9 +157,9 @@ static void make_wttrin_time(struct WttrinInfo* wi)
 static int make_wttrin_marquee_conds_width(int term_width, struct WttrinInfo* wi)
 {
     int other = utf8_display_width(wi->time)                      // time -- e.g. "12:12:"
-                + 1                                                   // space
+                + 1                                               // space
                 + utf8_display_width(wi->csv[WTTRIN_CSV_FIELD_c]) // emojis -- e.g "☀ "
-                + 1;                                                  // space
+                + 1;                                              // space
 
     int ret = term_width - other;
     return ret;
