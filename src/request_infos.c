@@ -14,22 +14,22 @@
 #include <string.h>
 #include <time.h>
 
-pthread_mutex_t g_infos_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t s_infos_bas_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void infos_bas_safe_io(const struct BasInfo* in, struct BasInfo* out)
 {
-    pthread_mutex_lock(&g_infos_bas_mutex);
+    pthread_mutex_lock(&s_infos_bas_mutex);
     memcpy(out, in, sizeof(struct BasInfo));
-    pthread_mutex_unlock(&g_infos_bas_mutex);
+    pthread_mutex_unlock(&s_infos_bas_mutex);
 }
 
-static long long g_global_unix_counter = 0;
+static long long s_unix_counter = 0;
 
 void infos_bas_init()
 {
-    pthread_mutex_lock(&g_infos_bas_mutex);
+    pthread_mutex_lock(&s_infos_bas_mutex);
 
-    g_global_unix_counter = timestamp();
+    s_unix_counter = timestamp();
 
     g_infos.bas.peak_min_solar = TEMP_MIN_SOLAR;
     g_infos.bas.peak_max_solar = TEMP_MAX_SOLAR;
@@ -57,15 +57,15 @@ void infos_bas_init()
     g_infos.bas.history_gas_time_on = 0;
     g_infos.bas.history_gas_time_off = 0;
 
-    pthread_mutex_unlock(&g_infos_bas_mutex);
+    pthread_mutex_unlock(&s_infos_bas_mutex);
 }
 
 // must infos_bas_init before running this
 enum RequestStatus infos_bas_update()
 {
-    g_global_unix_counter++;
+    s_unix_counter++;
     char request_url[BIGBUFF];
-    snprintf(request_url, sizeof(request_url), "%s&_=%lld", URL_VARS, g_global_unix_counter);
+    snprintf(request_url, sizeof(request_url), "%s&_=%lld", URL_VARS, s_unix_counter);
 
     struct Request request = {0};
     request.status = REQUEST_STATUS_RUNNING;
@@ -74,9 +74,9 @@ enum RequestStatus infos_bas_update()
     request.timeout_ms = TIMEOUT_MS_BAS;
     request.remember_response = 1;
 
-    pthread_mutex_lock(&g_infos_bas_mutex);
+    pthread_mutex_lock(&s_infos_bas_mutex);
     g_infos.bas.status = REQUEST_STATUS_RUNNING;
-    pthread_mutex_unlock(&g_infos_bas_mutex);
+    pthread_mutex_unlock(&s_infos_bas_mutex);
 
     request_send(&request);
 
@@ -128,21 +128,21 @@ enum RequestStatus infos_bas_update()
     return request.status;
 }
 
-static pthread_mutex_t g_infos_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t s_infos_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo* out)
 {
-    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
     memcpy(out, in, sizeof(struct WttrinInfo));
-    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
 void infos_wttrin_init()
 {
-    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
     snprintf(g_infos.wttrin.marquee_conds.text, sizeof(g_infos.wttrin.marquee_conds.text), "...");
     snprintf(g_infos.wttrin.marquee_times.text, sizeof(g_infos.wttrin.marquee_times.text), "...");
-    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
 #define MZWS MARQUEE_ZERO_WIDTH_SPACE
@@ -183,7 +183,7 @@ static int make_wttrin_marquee_times_width(int term_width)
     return term_width;
 }
 
-static char s_mk_str_temp_buff[TINYBUFF];
+static char s_mk_str_temp_buff[SMALLBUFF];
 static char* mk_str(const char* format, char* param)
 {
     snprintf(s_mk_str_temp_buff, sizeof(s_mk_str_temp_buff), format, param);
@@ -219,13 +219,13 @@ enum RequestStatus infos_wttrin_update()
     request.timeout_ms = TIMEOUT_MS_WTTRIN;
     request.remember_response = 1;
 
-    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
     g_infos.wttrin.status = REQUEST_STATUS_RUNNING;
-    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
 
     request_send(&request);
 
-    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
     g_infos.wttrin.status = request.status;
 
     if (request.output.buf) {
@@ -241,7 +241,7 @@ enum RequestStatus infos_wttrin_update()
 
         if (g_infos.wttrin.csv_parsed < URL_WTTRIN_OUTPUT_MAX_FIELDS) {
 
-            pthread_mutex_unlock(&g_infos_wttrin_mutex);
+            pthread_mutex_unlock(&s_infos_wttrin_mutex);
             DPL("FAILED TO PARSE WTTRIN");
             return request.status;
         }
@@ -269,45 +269,45 @@ enum RequestStatus infos_wttrin_update()
 
     }
 
-    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
     return request.status;
 }
 
 void infos_wttrin_marquee_conds_scroll()
 {
-    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
     marquee_scroll_smart(&g_infos.wttrin.marquee_conds);
-    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
 void infos_wttrin_marquee_conds_update_width(int term_width)
 {
-    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
     marquee_update_width(&g_infos.wttrin.marquee_conds, make_wttrin_marquee_conds_width(term_width, &g_infos.wttrin));
-    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
 void infos_wttrin_marquee_times_scroll()
 {
-    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
     marquee_scroll_smart(&g_infos.wttrin.marquee_times);
-    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
 void infos_wttrin_marquee_times_update_width(int term_width)
 {
-    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
     marquee_update_width(&g_infos.wttrin.marquee_times, term_width);
-    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
 void infos_save()
 {
-    pthread_mutex_lock(&g_infos_bas_mutex);
-    pthread_mutex_lock(&g_infos_wttrin_mutex);
+    pthread_mutex_lock(&s_infos_bas_mutex);
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
 
     save_infos(VAR_DIR_FILE_INFOS_BIN, &g_infos);
 
-    pthread_mutex_unlock(&g_infos_bas_mutex);
-    pthread_mutex_unlock(&g_infos_wttrin_mutex);
+    pthread_mutex_unlock(&s_infos_bas_mutex);
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }

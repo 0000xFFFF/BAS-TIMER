@@ -10,11 +10,10 @@
 #define MZWS MARQUEE_ZERO_WIDTH_SPACE
 
 static char g_temp[BIGBUFF];
-static size_t g_temp_b = 0;
 
 static char* mk_str(const char* format, char* param)
 {
-    g_temp_b += snprintf(g_temp, sizeof(g_temp) - g_temp_b, format, param);
+    snprintf(g_temp, sizeof(g_temp), format, param);
     return g_temp;
 }
 

@@ -7,12 +7,12 @@ int main()
 {
     setlocale(LC_ALL, "");
 
-    Marquee m;
+    struct Marquee m;
     int term_width = 20;
     char buffer[512];
     char somebuffer[3000] = "\033[31mHello 🌍! This is a \033[32mmarquee\033[0m scroll demo!";
 
-    marquee_init(&m, somebuffer, term_width);
+    marquee_init(&m, somebuffer, term_width, 1, 1);
 
     while (1) {
         int len = marquee_render(&m, buffer, sizeof(buffer));

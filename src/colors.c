@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int TEMP_COLORS[] = {51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196};
-#define TEMP_COLORS_SIZE ((int)(sizeof(TEMP_COLORS) / sizeof(TEMP_COLORS[0])))
+static int s_temp_colors[] = {51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196};
+#define s_temp_colors_size ((int)(sizeof(s_temp_colors) / sizeof(s_temp_colors[0])))
 
 size_t ctext_fg(char* buffer, size_t size, int color, const char* text)
 {
@@ -55,11 +55,11 @@ size_t ctext_bg_con(char* buffer, size_t size, int color, const char* text)
 
 int temperature_to_color(double temp, double temp_min, double temp_max)
 {
-    if (temp <= temp_min) { return TEMP_COLORS[0]; }
-    if (temp >= temp_max) { return TEMP_COLORS[TEMP_COLORS_SIZE - 1]; }
+    if (temp <= temp_min) { return s_temp_colors[0]; }
+    if (temp >= temp_max) { return s_temp_colors[s_temp_colors_size - 1]; }
     int diff = temp_max - temp_min;
-    int index = (temp - temp_min) * (TEMP_COLORS_SIZE - 1) / (diff > 0 ? diff : 1);
-    return TEMP_COLORS[index];
+    int index = (temp - temp_min) * (s_temp_colors_size - 1) / (diff > 0 ? diff : 1);
+    return s_temp_colors[index];
 }
 
 size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double temp_min, double temp_max)
