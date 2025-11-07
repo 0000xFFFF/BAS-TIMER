@@ -46,7 +46,7 @@ function fetch_state() {
         .then(data => {
 
             txt_input.value = data.seconds;
-            colorButtons();
+            update_ClockRadio();
 
             btn_auto_timer_cb.checked = data.auto_timer;
             btn_auto_gas_cb.checked = data.auto_gas;
@@ -95,10 +95,11 @@ txt_input.addEventListener("keydown", function(event) {
 });
 
 
-function setTime(btn) {
-    const seconds = parseInt(btn.dataset.minutes) * 60;
+function setTime(rb) {
+    const seconds = parseInt(rb.dataset.minutes) * 60;
     txt_input.value = seconds;
     updateTime(seconds);
+    rb.checked = true;
 }
 
 
@@ -107,16 +108,11 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-function colorButton(btn, isOn) {
-    btn.classList.remove('on');
-    if (isOn) {
-        btn.classList.add('on');
-    }
-}
-
-function colorButtons() {
-    document.querySelectorAll('.btn_time').forEach(btn => {
-        colorButton(btn, parseInt(btn.textContent) * 60 == parseInt(txt_input.value));
+function update_ClockRadio() {
+    document.querySelectorAll('.ClockRadio input').forEach(btn => {
+        const txt_m = parseInt(txt_input.value);
+        const btn_m = parseInt(btn.dataset.minutes) * 60;
+        btn.checked = txt_m == btn_m;
     });
 }
 
