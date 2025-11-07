@@ -183,14 +183,11 @@ static int make_wttrin_marquee_times_width(int term_width)
     return term_width;
 }
 
-static char g_temp[BIGBUFF];
-static size_t g_temp_b = 0;
-
+static char s_mk_str_temp_buff[BIGBUFF];
 static char* mk_str(const char* format, char* param)
 {
-    size_t g_temp_b = 0;
-    g_temp_b += snprintf(g_temp, sizeof(g_temp) - g_temp_b, format, param);
-    return g_temp;
+    snprintf(s_mk_str_temp_buff, sizeof(s_mk_str_temp_buff), format, param);
+    return s_mk_str_temp_buff;
 }
 
 static void make_wttrin_marquee_times(struct WttrinInfo* wi)
