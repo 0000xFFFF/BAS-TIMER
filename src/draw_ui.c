@@ -176,7 +176,7 @@ const char* dut_status_to_emoji(enum RequestStatus status)
 {
     switch (status) {
         case REQUEST_STATUS_RUNNING:       return CTEXT_FG(211, ""); break;
-        case REQUEST_STATUS_DONE:          return CTEXT_FG(82,  "󰌘"); break;
+        case REQUEST_STATUS_DONE:          return CTEXT_FG(82, "󰌘"); break;
         case REQUEST_STATUS_ERROR_TIMEOUT: return CTEXT_FG(197, "󱫎"); break;
         case REQUEST_STATUS_ERROR_CONN:    return CTEXT_FG(196, "󰌙"); break;
     }
@@ -551,7 +551,16 @@ size_t draw_ui_unsafe()
         time_t current_time;
         time(&current_time);
         s_du_infos.bas.opt_auto_timer_seconds_elapsed = difftime(current_time, s_du_infos.bas.history_mode_time_on);
-        snprintf(s_du_infos.bas.opt_auto_timer_status, sizeof(s_du_infos.bas.opt_auto_timer_status), "%d/%d", s_du_infos.bas.opt_auto_timer_seconds_elapsed, s_du_infos.bas.opt_auto_timer_seconds);
+        float perc = s_du_infos.bas.opt_auto_timer_seconds >= 0 ?
+            ((float)s_du_infos.bas.opt_auto_timer_seconds_elapsed / (float)s_du_infos.bas.opt_auto_timer_seconds) * 100
+            :
+            0;
+        snprintf(s_du_infos.bas.opt_auto_timer_status,
+                 sizeof(s_du_infos.bas.opt_auto_timer_status),
+                 "%d/%d %.2f%%",
+                 s_du_infos.bas.opt_auto_timer_seconds_elapsed,
+                 s_du_infos.bas.opt_auto_timer_seconds,
+                 perc);
     }
 
     // statuses
