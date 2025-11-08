@@ -7,6 +7,5 @@
 - gradually change the color as time passes (use TEMP_COLORS)
 - add solar anim, when on, next to temp (like check/warn)
 
-
 # find in files:
 // TODO: request_send_quick can fail --> print/handle that
