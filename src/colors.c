@@ -91,8 +91,8 @@ static int s_radiator_temp_colors[] = {51, 50, 45, 44, 43, 39, 38, 37, 36, 154, 
 #define s_radiator_temp_colors_size ((int)(sizeof(s_radiator_temp_colors) / sizeof(s_radiator_temp_colors[0])))
 
 // Warm-up and cool-down durations (in seconds)
-static const int RADIATOR_WARMUP_SEC = 8 * 60;        // 8 minutes
-static const int RADIATOR_COOLDOWN_SEC = 2 * 60 * 60; // 2 hours
+static const int RADIATOR_WARMUP_SEC = 8 * 60;                    // 8 minutes
+static const int RADIATOR_COOLDOWN_SEC = 1 * 60 * 60 + (30 * 60); // 1 hour and 30 min
 
 // State tracking
 static time_t s_heating_started = 0;
