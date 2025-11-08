@@ -6,7 +6,5 @@
 // TODO: request_send_quick can fail --> print/handle that
 
 # not important:
-# cleanup Makefile
-- code is ugly fix it
-- web ui code is ugly clean it up
+- js web ui code is ugly clean it up
 
