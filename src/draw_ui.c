@@ -443,6 +443,72 @@ static char* dut_timeofday_emoji()
     // clang-format on
 }
 
+void draw_progressbar()
+{
+    time_t current_time;
+    time(&current_time);
+    s_du_infos.bas.opt_auto_timer_seconds_elapsed = difftime(current_time, s_du_infos.bas.history_mode_time_on);
+    float percent = s_du_infos.bas.opt_auto_timer_seconds >= 0 ? ((float)s_du_infos.bas.opt_auto_timer_seconds_elapsed / (float)s_du_infos.bas.opt_auto_timer_seconds) * 100
+                                                               : 0;
+
+    // Progress bar configuration
+    const int bar_width = 24;
+    const int filled_color = 28; // green
+    const int empty_color = 235; // dark gray
+
+    // Create the text content first
+    char text_content[32];
+    int text_len = snprintf(text_content, sizeof(text_content),
+                            "%d/%d %.2f%%",
+                            s_du_infos.bas.opt_auto_timer_seconds_elapsed,
+                            s_du_infos.bas.opt_auto_timer_seconds,
+                            percent);
+
+    // Calculate filled portion
+    int filled = (int)((percent / 100.0f) * bar_width);
+    if (filled > bar_width) filled = bar_width;
+
+    // Build progress bar - only 2 sections maximum
+    char bar[256] = {0};
+    char filled_section[32];
+    char empty_section[32];
+    int offset = 0;
+
+    // Filled section
+    if (filled > 0) {
+        int filled_text_len = (text_len < filled) ? text_len : filled;
+        strncpy(filled_section, text_content, filled_text_len);
+        filled_section[filled_text_len] = '\0';
+        // Pad with spaces if needed
+        for (int i = filled_text_len; i < filled; i++) {
+            filled_section[i] = ' ';
+        }
+        filled_section[filled] = '\0';
+
+        offset += ctext_bg(bar + offset, sizeof(bar) - offset, filled_color, filled_section);
+    }
+
+    // Empty section
+    if (filled < bar_width) {
+        int empty_start = filled;
+        int empty_len = bar_width - filled;
+
+        // Get remaining text or spaces
+        for (int i = 0; i < empty_len; i++) {
+            int text_idx = empty_start + i;
+            empty_section[i] = (text_idx < text_len) ? text_content[text_idx] : ' ';
+        }
+        empty_section[empty_len] = '\0';
+
+        offset += ctext_bg(bar + offset, sizeof(bar) - offset, empty_color, empty_section);
+    }
+
+    snprintf(s_du_infos.bas.opt_auto_timer_status,
+             sizeof(s_du_infos.bas.opt_auto_timer_status),
+             "[%s]",
+             bar);
+}
+
 size_t draw_ui_unsafe()
 {
     clear_screen();
@@ -547,21 +613,7 @@ size_t draw_ui_unsafe()
     scc(8, 7, 111, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_p]);
     scc(8, 8, 177, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_P]);
 
-    if (s_du_infos.bas.opt_auto_timer_started) {
-        time_t current_time;
-        time(&current_time);
-        s_du_infos.bas.opt_auto_timer_seconds_elapsed = difftime(current_time, s_du_infos.bas.history_mode_time_on);
-        float perc = s_du_infos.bas.opt_auto_timer_seconds >= 0 ?
-            ((float)s_du_infos.bas.opt_auto_timer_seconds_elapsed / (float)s_du_infos.bas.opt_auto_timer_seconds) * 100
-            :
-            0;
-        snprintf(s_du_infos.bas.opt_auto_timer_status,
-                 sizeof(s_du_infos.bas.opt_auto_timer_status),
-                 "%d/%d %.2f%%",
-                 s_du_infos.bas.opt_auto_timer_seconds_elapsed,
-                 s_du_infos.bas.opt_auto_timer_seconds,
-                 perc);
-    }
+    if (s_du_infos.bas.opt_auto_timer_started) { draw_progressbar(); }
 
     // statuses
     sc(9, 0, dut_label_auto_timer_status());
