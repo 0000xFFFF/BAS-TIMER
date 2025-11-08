@@ -469,7 +469,7 @@ void draw_progressbar()
     if (filled > bar_width) filled = bar_width;
 
     // Build progress bar - only 2 sections maximum
-    char bar[256] = {0};
+    char bar[MIDBUFF - 3] = {0};
     char filled_section[32];
     char empty_section[32];
     int offset = 0;
@@ -534,9 +534,8 @@ size_t draw_ui_unsafe()
     time_t current_time;
     time(&current_time);
 
-    int color_radiator = radiator_color_at_time(current_time,
-                                                s_du_infos.bas.history_mode_time_on,
-                                                s_du_infos.bas.history_mode_time_on + s_du_infos.bas.opt_auto_timer_seconds);
+    int color_radiator = radiator_color_update(s_du_infos.bas.mod_rada);
+
     // row 0
     enum TimeOfDay tod = get_tod();
     int hour = localtime_hour();
@@ -619,12 +618,18 @@ size_t draw_ui_unsafe()
     scc(8, 7, 111, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_p]);
     scc(8, 8, 177, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_P]);
 
-    if (s_du_infos.bas.opt_auto_timer_started) { draw_progressbar(); }
-
     // statuses
     sc(9, 0, dut_label_auto_timer_status(color_radiator));
-    scc(9, 1, color_radiator, s_du_infos.bas.opt_auto_timer_status);
     sc(10, 0, dut_label_auto_gas_status());
+
+    if (s_du_infos.bas.opt_auto_timer_started) {
+        draw_progressbar();
+        sc(9, 1, s_du_infos.bas.opt_auto_timer_status);
+    }
+    else {
+        scc(9, 1, color_radiator, s_du_infos.bas.opt_auto_timer_status);
+    }
+
     scc(10, 1, 255, s_du_infos.bas.opt_auto_gas_status);
 
     // times marquee

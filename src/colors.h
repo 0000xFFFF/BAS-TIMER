@@ -27,6 +27,6 @@ extern size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double te
 extern size_t temp_to_ctext_bg(char* buffer, size_t size, double temp, double temp_min, double temp_max);
 extern size_t temp_to_ctext_fg_con(char* buffer, size_t size, double temp, double temp_min, double temp_max);
 extern size_t temp_to_ctext_bg_con(char* buffer, size_t size, double temp, double temp_min, double temp_max);
-extern int radiator_color_at_time(time_t now, time_t heating_started_at, time_t heating_stopped_at);
+extern int radiator_color_update(int is_heating_now);
 
 #endif // COLORS_H

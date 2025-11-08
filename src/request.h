@@ -110,9 +110,9 @@ struct BasInfo {
     int opt_auto_timer_seconds_old;
     int opt_auto_timer_started;
     int opt_auto_timer_seconds_elapsed;
-    char opt_auto_timer_status[BIGBUFF];
+    char opt_auto_timer_status[MIDBUFF];
     int opt_auto_gas;
-    char opt_auto_gas_status[BIGBUFF];
+    char opt_auto_gas_status[MIDBUFF];
 
     int history_mode;
     int history_mode_time_changed;
