@@ -50,16 +50,20 @@ void term_blank()
     term_clear();
 }
 
-int term_width()
+#define TERM_WIDTH_CAP 55
+
+unsigned short int term_width()
 {
     struct winsize w;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1)
-        return 50; // fallback if detection fails
+        return TERM_WIDTH_CAP - 1; // fallback if detection fails
 
-    return w.ws_col - 1; // NOTE: some utf8 chars break term spacing so -1 to dirty fix that
+    unsigned short int col = w.ws_col;
+    if (col > TERM_WIDTH_CAP) col = TERM_WIDTH_CAP; // g_term_buffer is fixed size we need to cap it so we never overflow it when writing spaces
+    return col - 1; // NOTE: some utf8 chars break term spacing so -1 to dirty fix that
 }
 
-int term_height()
+unsigned short int term_height()
 {
     struct winsize w;
 
