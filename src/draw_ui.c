@@ -54,13 +54,6 @@ static void scc(int r, int c, int color, const char* text)
     sc(r, c, temp);
 }
 
-static void sccbg(int r, int c, int color, const char* text)
-{
-    char temp[BIGBUFF] = {0};
-    ctext_bg(temp, sizeof(temp), color, text);
-    sc(r, c, temp);
-}
-
 static char* human_temp_emojis[] = {
     CTEXT_FG(196, ""),
     CTEXT_FG(208, ""),
@@ -324,14 +317,14 @@ static char* dut_selected(char* text, int is_selected)
     return text;
 }
 
-static char* dut_label_auto_timer_status()
+static char* dut_label_auto_timer_status(int color)
 {
     s_temp_b = 0;
     if (s_du_infos.bas.opt_auto_timer) { s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
     else {
         s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, COLOR_OFF, "");
     }
-    s_temp_b += snprintf(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, "󱪯");
+    s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, color, "󱪯");
     return s_temp;
 }
 
@@ -538,6 +531,12 @@ size_t draw_ui_unsafe()
     infos_bas_safe_io(&g_infos.bas, &s_du_infos.bas);
     infos_wttrin_update_safe_io(&g_infos.wttrin, &s_du_infos.wttrin);
 
+    time_t current_time;
+    time(&current_time);
+
+    int color_radiator = radiator_color_at_time(current_time,
+                                                s_du_infos.bas.history_mode_time_on,
+                                                s_du_infos.bas.history_mode_time_on + s_du_infos.bas.opt_auto_timer_seconds);
     // row 0
     enum TimeOfDay tod = get_tod();
     int hour = localtime_hour();
@@ -576,16 +575,10 @@ size_t draw_ui_unsafe()
     sc(5, 2, dut_min_warn());
     sc(6, 2, " ");
 
-    time_t current_time;
-    time(&current_time);
-
-    int radiator_color = radiator_color_at_time(current_time,
-                                                s_du_infos.bas.history_mode_time_on,
-                                                s_du_infos.bas.history_mode_time_on + s_du_infos.bas.opt_auto_timer_seconds);
-    sccbg(3, 3, radiator_color, " ");
-    sccbg(4, 3, radiator_color, " ");
-    sccbg(5, 3, radiator_color, " ");
-    sccbg(6, 3, radiator_color, " ");
+    sc(3, 3, " ");
+    sc(4, 3, " ");
+    sc(5, 3, " ");
+    sc(6, 3, " ");
 
     scc(3, 4, 230, get_frame(&spinner_solar_panel, 1));
     scc(4, 4, 213, get_frame(&spinner_window, 1));
@@ -602,7 +595,7 @@ size_t draw_ui_unsafe()
     sc(5, 6, human_temp_to_emoji(s_du_infos.bas.Tsobna));
     sc(6, 6, human_temp_to_emoji(s_du_infos.bas.Tzadata));
 
-    scc(7, 0, s_du_infos.bas.mod_rada ? COLOR_ON : COLOR_OFF, dut_selected(dut_heat(), s_du_infos.bas.opt_auto_timer));
+    scc(7, 0, color_radiator, dut_selected(dut_heat(), s_du_infos.bas.opt_auto_timer));
     sc(8, 0, dut_regime(s_du_infos.bas.mod_rada));
 
     sc(7, 1, dut_draw_pump_bars(s_du_infos.bas.StatusPumpe6));
@@ -629,8 +622,8 @@ size_t draw_ui_unsafe()
     if (s_du_infos.bas.opt_auto_timer_started) { draw_progressbar(); }
 
     // statuses
-    sc(9, 0, dut_label_auto_timer_status());
-    scc(9, 1, 255, s_du_infos.bas.opt_auto_timer_status);
+    sc(9, 0, dut_label_auto_timer_status(color_radiator));
+    scc(9, 1, color_radiator, s_du_infos.bas.opt_auto_timer_status);
     sc(10, 0, dut_label_auto_gas_status());
     scc(10, 1, 255, s_du_infos.bas.opt_auto_gas_status);
 
