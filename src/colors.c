@@ -87,9 +87,12 @@ size_t temp_to_ctext_bg_con(char* buffer, size_t size, double temp, double temp_
     return snprintf(buffer, size, "\033[48;5;%dm\033[38;5;%dm%7.2f 󰔄\033[0m", color, contrast_color(color), temp);
 }
 
+static int s_radiator_temp_colors[] = {51, 50, 45, 44, 43, 39, 38, 37, 36, 154, 190, 226, 148, 184, 214, 136, 172, 208, 130, 166, 202, 124, 160, 196};
+#define s_radiator_temp_colors_size ((int)(sizeof(s_radiator_temp_colors) / sizeof(s_radiator_temp_colors[0])))
+
 // Warm-up and cool-down durations (in seconds)
-static const int RADIATOR_WARMUP_SEC = 8 * 60;    // 8 minutes
-static const int RADIATOR_COOLDOWN_SEC = 60 * 60; // 1 hour
+static const int RADIATOR_WARMUP_SEC = 8 * 60;        // 8 minutes
+static const int RADIATOR_COOLDOWN_SEC = 2 * 60 * 60; // 2 hours
 
 // State tracking
 static time_t s_heating_started = 0;
@@ -117,27 +120,27 @@ int radiator_color_update(int is_heating_now)
         double elapsed = difftime(now, s_heating_started);
 
         if (elapsed >= RADIATOR_WARMUP_SEC) {
-            return s_temp_colors[s_temp_colors_size - 1]; // fully hot
+            return s_radiator_temp_colors[s_radiator_temp_colors_size - 1]; // fully hot
         }
 
         double ratio = elapsed / RADIATOR_WARMUP_SEC;
-        int index = (int)(ratio * (s_temp_colors_size - 1));
-        return s_temp_colors[index];
+        int index = (int)(ratio * (s_radiator_temp_colors_size - 1));
+        return s_radiator_temp_colors[index];
     }
 
     // --- COOLING ---
     if (s_heating_stopped == 0) {
         // Never heated yet, cold
-        return s_temp_colors[0];
+        return s_radiator_temp_colors[0];
     }
 
     double elapsed = difftime(now, s_heating_stopped);
 
     if (elapsed >= RADIATOR_COOLDOWN_SEC) {
-        return s_temp_colors[0]; // fully cold
+        return s_radiator_temp_colors[0]; // fully cold
     }
 
     double ratio = elapsed / RADIATOR_COOLDOWN_SEC;
-    int index = (s_temp_colors_size - 1) - (int)(ratio * (s_temp_colors_size - 1));
-    return s_temp_colors[index];
+    int index = (s_radiator_temp_colors_size - 1) - (int)(ratio * (s_radiator_temp_colors_size - 1));
+    return s_radiator_temp_colors[index];
 }
