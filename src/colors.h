@@ -2,13 +2,14 @@
 #define COLORS_H
 
 #include <stddef.h>
-#define COLOR_ON_AUTO 48
+#include <time.h>
+#define COLOR_ON_AUTO   48
 #define COLOR_ON_MANUAL 46
 
-#define COLOR_OFF_AUTO 255
+#define COLOR_OFF_AUTO   255
 #define COLOR_OFF_MANUAL 203
 
-#define COLOR_ON COLOR_ON_AUTO
+#define COLOR_ON  COLOR_ON_AUTO
 #define COLOR_OFF COLOR_OFF_AUTO
 
 #define CTEXT_FG(color, text) "\033[38;5;" #color "m" text "\033[0m"
@@ -26,5 +27,6 @@ extern size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double te
 extern size_t temp_to_ctext_bg(char* buffer, size_t size, double temp, double temp_min, double temp_max);
 extern size_t temp_to_ctext_fg_con(char* buffer, size_t size, double temp, double temp_min, double temp_max);
 extern size_t temp_to_ctext_bg_con(char* buffer, size_t size, double temp, double temp_min, double temp_max);
+extern int radiator_color_at_time(time_t now, time_t heating_started_at, time_t heating_stopped_at);
 
 #endif // COLORS_H

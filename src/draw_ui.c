@@ -54,6 +54,13 @@ static void scc(int r, int c, int color, const char* text)
     sc(r, c, temp);
 }
 
+static void sccbg(int r, int c, int color, const char* text)
+{
+    char temp[BIGBUFF] = {0};
+    ctext_bg(temp, sizeof(temp), color, text);
+    sc(r, c, temp);
+}
+
 static char* human_temp_emojis[] = {
     CTEXT_FG(196, ""),
     CTEXT_FG(208, ""),
@@ -569,10 +576,16 @@ size_t draw_ui_unsafe()
     sc(5, 2, dut_min_warn());
     sc(6, 2, " ");
 
-    sc(3, 3, " ");
-    sc(4, 3, " ");
-    sc(5, 3, " ");
-    sc(6, 3, " ");
+    time_t current_time;
+    time(&current_time);
+
+    int radiator_color = radiator_color_at_time(current_time,
+                                                s_du_infos.bas.history_mode_time_on,
+                                                s_du_infos.bas.history_mode_time_on + s_du_infos.bas.opt_auto_timer_seconds);
+    sccbg(3, 3, radiator_color, " ");
+    sccbg(4, 3, radiator_color, " ");
+    sccbg(5, 3, radiator_color, " ");
+    sccbg(6, 3, radiator_color, " ");
 
     scc(3, 4, 230, get_frame(&spinner_solar_panel, 1));
     scc(4, 4, 213, get_frame(&spinner_window, 1));
