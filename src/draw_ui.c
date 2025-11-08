@@ -126,7 +126,7 @@ static size_t make_term_buffer()
         // newline
         if (s_term_buffer_b + 1 < sizeof(s_term_buffer)) {
 #if DEBUG
-            g_term_buffer[g_term_buffer_b++] = '\n';
+            s_term_buffer[s_term_buffer_b++] = '\n';
 #else // on relase don't add new line for last line
             if (r != MAX_ROWS - 1) {
                 s_term_buffer[s_term_buffer_b++] = '\n';
