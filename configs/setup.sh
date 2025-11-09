@@ -9,3 +9,5 @@ ln -sfr .config/alacritty ~/.config/.
 ln -sfr .config/konsolerc ~/.config/.
 ln -sfr .local/share/konsole ~/.local/share/.
 ln -sfr update.sh ~/.
+ln -sfr debug.sh ~/.
+ln -sfr makedebug.sh ~/.
