@@ -6,6 +6,10 @@ My home heat control server
 
 ![preview1](preview/preview.gif)
 
+---
+
+![preview2](preview/preview2.gif)
+
 ## Requiremens
 
 - gcc
