@@ -6,16 +6,16 @@
 #define MAX_QUEUE_SIZE 256
 static atomic_int s_queue_size = 0;
 
-struct queued_msg {
+struct QueuedMessage {
     struct mg_connection* c;
     char* data;
     size_t len;
     int op;
-    struct queued_msg* next;
+    struct QueuedMessage* next;
 };
 
-static struct queued_msg* g_msg_head = NULL;
-static struct queued_msg* g_msg_tail = NULL;
+static struct QueuedMessage* g_msg_head = NULL;
+static struct QueuedMessage* g_msg_tail = NULL;
 static pthread_mutex_t g_msg_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static pthread_mutex_t s_mutex_ws = PTHREAD_MUTEX_INITIALIZER;    // mutex for connections below
@@ -30,7 +30,7 @@ static void ws_queue_add(struct mg_connection* c, const char* data, size_t len, 
         return;
     }
 
-    struct queued_msg* m = malloc(sizeof(*m));
+    struct QueuedMessage* m = malloc(sizeof(*m));
     if (!m) return;
     m->c = c;
     m->data = malloc(len);
@@ -74,7 +74,7 @@ static bool ws_is_valid_connection(struct mg_connection* c)
 // In the server thread, after mg_mgr_poll, drain the queue and call mg_ws_send
 void ws_queue_drain()
 {
-    struct queued_msg* local_head = NULL;
+    struct QueuedMessage* local_head = NULL;
 
     pthread_mutex_lock(&g_msg_mutex);
     local_head = g_msg_head;
@@ -82,8 +82,8 @@ void ws_queue_drain()
     atomic_store(&s_queue_size, 0);
     pthread_mutex_unlock(&g_msg_mutex);
 
-    for (struct queued_msg* m = local_head; m != NULL;) {
-        struct queued_msg* next = m->next;
+    for (struct QueuedMessage* m = local_head; m != NULL;) {
+        struct QueuedMessage* next = m->next;
         if (m->c && ws_is_valid_connection(m->c) && !m->c->is_closing) {
             mg_ws_send(m->c, m->data, (int)m->len, m->op);
         }
