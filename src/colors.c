@@ -95,52 +95,41 @@ static const int RADIATOR_WARMUP_SEC = 8 * 60;                    // 8 minutes
 static const int RADIATOR_COOLDOWN_SEC = 1 * 60 * 60 + (30 * 60); // 1 hour and 30 min
 
 // State tracking
-static time_t s_heating_started = 0;
-static time_t s_heating_stopped = 0;
+static time_t s_last_update = 0;
+static double s_current_temp_ratio = 0.0; // 0.0 = cold, 1.0 = fully hot
 static int s_is_heating = 0;
 
 int radiator_color_update(int is_heating_now)
 {
     time_t now = time(NULL);
 
-    // Detect transitions: off -> on
-    if (is_heating_now && !s_is_heating) {
-        s_heating_started = now;
+    // Initialize on first call
+    if (s_last_update == 0) {
+        s_last_update = now;
     }
 
-    // Detect transitions: on -> off
-    if (!is_heating_now && s_is_heating) {
-        s_heating_stopped = now;
-    }
-
+    double delta_time = difftime(now, s_last_update);
+    s_last_update = now;
     s_is_heating = is_heating_now;
 
-    // --- HEATING ---
+    // HEATING
     if (s_is_heating) {
-        double elapsed = difftime(now, s_heating_started);
-
-        if (elapsed >= RADIATOR_WARMUP_SEC) {
-            return s_radiator_temp_colors[s_radiator_temp_colors_size - 1]; // fully hot
+        double warmup_rate = delta_time / RADIATOR_WARMUP_SEC;
+        s_current_temp_ratio += warmup_rate;
+        if (s_current_temp_ratio > 1.0) {
+            s_current_temp_ratio = 1.0;
         }
-
-        double ratio = elapsed / RADIATOR_WARMUP_SEC;
-        int index = (int)(ratio * (s_radiator_temp_colors_size - 1));
-        return s_radiator_temp_colors[index];
+    }
+    // COOLING
+    else {
+        double cooldown_rate = delta_time / RADIATOR_COOLDOWN_SEC;
+        s_current_temp_ratio -= cooldown_rate;
+        if (s_current_temp_ratio < 0.0) {
+            s_current_temp_ratio = 0.0;
+        }
     }
 
-    // --- COOLING ---
-    if (s_heating_stopped == 0) {
-        // Never heated yet, cold
-        return s_radiator_temp_colors[0];
-    }
-
-    double elapsed = difftime(now, s_heating_stopped);
-
-    if (elapsed >= RADIATOR_COOLDOWN_SEC) {
-        return s_radiator_temp_colors[0]; // fully cold
-    }
-
-    double ratio = elapsed / RADIATOR_COOLDOWN_SEC;
-    int index = (s_radiator_temp_colors_size - 1) - (int)(ratio * (s_radiator_temp_colors_size - 1));
+    // Map temperature ratio to color index
+    int index = (int)(s_current_temp_ratio * (s_radiator_temp_colors_size - 1));
     return s_radiator_temp_colors[index];
 }
