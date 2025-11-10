@@ -443,7 +443,7 @@ static char* dut_timeofday_emoji()
     // clang-format on
 }
 
-void draw_progressbar()
+static const char* dut_progressbar()
 {
     time_t current_time;
     time(&current_time);
@@ -503,10 +503,68 @@ void draw_progressbar()
         offset += ctext_bg(bar + offset, sizeof(bar) - offset, empty_color, empty_section);
     }
 
-    snprintf(s_du_infos.bas.opt_auto_timer_status,
-             sizeof(s_du_infos.bas.opt_auto_timer_status),
-             "[%s]",
-             bar);
+    snprintf(s_temp, sizeof(s_temp), "[%s]", bar);
+    return s_temp;
+}
+
+static const char* dut_opt_status_timer(struct BasInfo* info)
+{
+    time_t current_time;
+    time(&current_time);
+
+    struct tm* timeinfo = localtime(&current_time);
+    char time_str[10] = {0};
+    strftime_HMS(time_str, sizeof(time_str), timeinfo);
+
+    char p[TINYBUFF] = "";
+    if (info->history_mode_time_on && info->history_mode_time_off) {
+        char elap[10];
+        elapsed_str(elap, sizeof(elap), info->history_mode_time_off, info->history_mode_time_on);
+        snprintf(p, sizeof(p), " 󱫐 %s", elap);
+    }
+
+    switch (info->opt_auto_timer_status) {
+        default:
+        case OPT_STATUS_UNKNOWN:   snprintf(s_temp, sizeof(s_temp), " %s ?", time_str); break;
+        case OPT_STATUS_STARTING:  snprintf(s_temp, sizeof(s_temp), "󱫌 %s", time_str); break;
+        case OPT_STATUS_STARTED:   snprintf(s_temp, sizeof(s_temp), " %s 󰐸", time_str); break;
+        case OPT_STATUS_STOPPING:  snprintf(s_temp, sizeof(s_temp), " %s", time_str); break;
+        case OPT_STATUS_STOPPED:   snprintf(s_temp, sizeof(s_temp), " %s %s", time_str, p); break;
+        case OPT_STATUS_CHANGED:   snprintf(s_temp, sizeof(s_temp), "changed to: %d", info->opt_auto_timer_seconds); break;
+        case OPT_STATUS_CANCELLED: snprintf(s_temp, sizeof(s_temp), "󰜺 %s%s", time_str, p); break;
+    }
+
+    return s_temp;
+}
+
+static const char* dut_opt_status_gas(struct BasInfo* info)
+{
+    time_t current_time;
+    time(&current_time);
+
+    struct tm* timeinfo = localtime(&current_time);
+    char time_str[10] = {0};
+    strftime_HMS(time_str, sizeof(time_str), timeinfo);
+
+    char p[TINYBUFF] = "";
+    if (info->history_gas_time_on && info->history_gas_time_off) {
+        char elap[10];
+        elapsed_str(elap, sizeof(elap), info->history_gas_time_off, info->history_gas_time_on);
+        snprintf(p, sizeof(p), " 󱫐 %s", elap);
+    }
+
+    switch (info->opt_auto_gas_status) {
+        default:
+        case OPT_STATUS_UNKNOWN:
+        case OPT_STATUS_CANCELLED:
+        case OPT_STATUS_CHANGED:   snprintf(s_temp, sizeof(s_temp), " %s ?", time_str); break;
+        case OPT_STATUS_STARTING:  snprintf(s_temp, sizeof(s_temp), " %s", time_str); break;
+        case OPT_STATUS_STARTED:   snprintf(s_temp, sizeof(s_temp), " %s ", time_str); break;
+        case OPT_STATUS_STOPPING:  snprintf(s_temp, sizeof(s_temp), " %s", time_str); break;
+        case OPT_STATUS_STOPPED:   snprintf(s_temp, sizeof(s_temp), " %s %s", time_str, p); break;
+    }
+
+    return s_temp;
 }
 
 size_t draw_ui_unsafe()
@@ -623,14 +681,13 @@ size_t draw_ui_unsafe()
     sc(10, 0, dut_label_auto_gas_status());
 
     if (s_du_infos.bas.opt_auto_timer_started) {
-        draw_progressbar();
-        sc(9, 1, s_du_infos.bas.opt_auto_timer_status);
+        sc(9, 1, dut_progressbar());
     }
     else {
-        scc(9, 1, color_radiator, s_du_infos.bas.opt_auto_timer_status);
+        scc(9, 1, color_radiator, dut_opt_status_timer(&s_du_infos.bas));
     }
 
-    scc(10, 1, 255, s_du_infos.bas.opt_auto_gas_status);
+    scc(10, 1, 255, dut_opt_status_gas(&s_du_infos.bas));
 
     // times marquee
     sc(11, 0, dut_wttrin_marquee_times());

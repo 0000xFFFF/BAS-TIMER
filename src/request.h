@@ -67,6 +67,16 @@ enum PumpStatus {
     PUMP_STATUS_MANUAL_ON = 3
 };
 
+enum OptStatus {
+    OPT_STATUS_UNKNOWN,
+    OPT_STATUS_STARTING,
+    OPT_STATUS_STARTED,
+    OPT_STATUS_STOPPING,
+    OPT_STATUS_STOPPED,
+    OPT_STATUS_CHANGED,
+    OPT_STATUS_CANCELLED
+};
+
 struct BasInfo {
 
     bool valid; // is not empty
@@ -110,9 +120,9 @@ struct BasInfo {
     int opt_auto_timer_seconds_old;
     int opt_auto_timer_started;
     int opt_auto_timer_seconds_elapsed;
-    char opt_auto_timer_status[MIDBUFF];
+    enum OptStatus opt_auto_timer_status;
     int opt_auto_gas;
-    char opt_auto_gas_status[MIDBUFF];
+    enum OptStatus opt_auto_gas_status;
 
     int history_mode;
     int history_mode_time_changed;

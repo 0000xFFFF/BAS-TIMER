@@ -45,8 +45,6 @@ void infos_bas_init()
     g_infos.bas.opt_auto_timer_seconds = AUTO_TIMER_SECONDS;
     g_infos.bas.opt_auto_timer_started = 0;
     g_infos.bas.opt_auto_timer_seconds_elapsed = 0;
-    snprintf(g_infos.bas.opt_auto_timer_status, SMALLBUFF, "...");
-    snprintf(g_infos.bas.opt_auto_gas_status, SMALLBUFF, "...");
 
     g_infos.bas.history_mode = -1;
     g_infos.bas.history_mode_time_changed = 0;
