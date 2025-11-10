@@ -89,9 +89,9 @@ void print_bas_info(const struct BasInfo* b)
     printf("opt_auto_timer_seconds_old: %d\n", b->opt_auto_timer_seconds_old);
     printf("opt_auto_timer_started: %d\n", b->opt_auto_timer_started);
     printf("opt_auto_timer_seconds_elapsed: %d\n", b->opt_auto_timer_seconds_elapsed);
-    printf("opt_auto_timer_status: %s\n", b->opt_auto_timer_status);
+    printf("opt_auto_timer_status: %d\n", b->opt_auto_timer_status);
     printf("opt_auto_gas: %d\n", b->opt_auto_gas);
-    printf("opt_auto_gas_status: %s\n", b->opt_auto_gas_status);
+    printf("opt_auto_gas_status: %d\n", b->opt_auto_gas_status);
 
     printf("history_mode: %d\n", b->history_mode);
     printf("history_mode_time_changed: %d\n", b->history_mode_time_changed);
