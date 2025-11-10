@@ -115,23 +115,25 @@ struct BasInfo {
     double peak_min_circ;
     double peak_max_circ;
 
-    int opt_auto_timer;
+    bool opt_auto_timer;
     int opt_auto_timer_seconds;
     int opt_auto_timer_seconds_old;
-    int opt_auto_timer_started;
+    bool opt_auto_timer_started;
     int opt_auto_timer_seconds_elapsed;
     enum OptStatus opt_auto_timer_status;
-    int opt_auto_gas;
+    time_t opt_auto_timer_status_changed;
+    bool opt_auto_gas;
     enum OptStatus opt_auto_gas_status;
+    time_t opt_auto_gas_status_changed;
 
     int history_mode;
-    int history_mode_time_changed;
-    int history_mode_time_on;
-    int history_mode_time_off;
+    time_t history_mode_time_changed;
+    time_t history_mode_time_on;
+    time_t history_mode_time_off;
     int history_gas;
-    int history_gas_time_changed;
-    int history_gas_time_on;
-    int history_gas_time_off;
+    time_t history_gas_time_changed;
+    time_t history_gas_time_on;
+    time_t history_gas_time_off;
 };
 
 enum Weather {

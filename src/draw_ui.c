@@ -509,10 +509,7 @@ static const char* dut_progressbar()
 
 static const char* dut_opt_status_timer(struct BasInfo* info)
 {
-    time_t current_time;
-    time(&current_time);
-
-    struct tm* timeinfo = localtime(&current_time);
+    struct tm* timeinfo = localtime(&info->opt_auto_timer_status_changed);
     char time_str[10] = {0};
     strftime_HMS(time_str, sizeof(time_str), timeinfo);
 
@@ -539,10 +536,7 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
 
 static const char* dut_opt_status_gas(struct BasInfo* info)
 {
-    time_t current_time;
-    time(&current_time);
-
-    struct tm* timeinfo = localtime(&current_time);
+    struct tm* timeinfo = localtime(&info->opt_auto_gas_status_changed);
     char time_str[10] = {0};
     strftime_HMS(time_str, sizeof(time_str), timeinfo);
 
