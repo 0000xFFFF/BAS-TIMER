@@ -682,7 +682,7 @@ size_t draw_ui_and_front()
                      s_du_infos.bas.mod_rada,    // heat
                      s_du_infos.bas.StatusPumpe4 // gas pump
     );
-    websocket_emit(emit_buffer, b);
+    ws_emit(emit_buffer, b);
     pthread_mutex_unlock(&s_du_mutex);
     return r;
 }

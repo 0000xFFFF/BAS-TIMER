@@ -3,10 +3,95 @@
 #include "mongoose.h"
 #include <stdatomic.h>
 
+#define MAX_QUEUE_SIZE 256
+static atomic_int s_queue_size = 0;
+
+struct queued_msg {
+    struct mg_connection* c;
+    char* data;
+    size_t len;
+    int op;
+    struct queued_msg* next;
+};
+
+static struct queued_msg* g_msg_head = NULL;
+static struct queued_msg* g_msg_tail = NULL;
+static pthread_mutex_t g_msg_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static pthread_mutex_t s_mutex_ws = PTHREAD_MUTEX_INITIALIZER;    // mutex for connections below
 static struct mg_connection* s_ws_connections[WS_MAX_CONN] = {0}; // Array to track WebSocket connections
 atomic_size_t g_ws_conn_count = 0;                                // Counter for active connections
 
-static pthread_mutex_t s_mutex_ws = PTHREAD_MUTEX_INITIALIZER;
+// Called from any thread to enqueue message for a ws connection
+static void ws_queue_add(struct mg_connection* c, const char* data, size_t len, int op)
+{
+    if (atomic_load(&s_queue_size) >= MAX_QUEUE_SIZE) {
+        DPL("WARNING: WebSocket queue full, dropping message");
+        return;
+    }
+
+    struct queued_msg* m = malloc(sizeof(*m));
+    if (!m) return;
+    m->c = c;
+    m->data = malloc(len);
+    if (!m->data) {
+        free(m);
+        return;
+    }
+    memcpy(m->data, data, len);
+    m->len = len;
+    m->op = op;
+    m->next = NULL;
+
+    pthread_mutex_lock(&g_msg_mutex);
+    if (g_msg_tail)
+        g_msg_tail->next = m;
+    else
+        g_msg_head = m;
+    g_msg_tail = m;
+    atomic_fetch_add(&s_queue_size, 1);
+    pthread_mutex_unlock(&g_msg_mutex);
+}
+
+// Helper function to check if connection is still valid
+static bool ws_is_valid_connection(struct mg_connection* c)
+{
+    pthread_mutex_lock(&s_mutex_ws);
+    size_t count = atomic_load(&g_ws_conn_count);
+    bool valid = false;
+
+    for (size_t i = 0; i < count; i++) {
+        if (s_ws_connections[i] == c) {
+            valid = true;
+            break;
+        }
+    }
+
+    pthread_mutex_unlock(&s_mutex_ws);
+    return valid;
+}
+
+// In the server thread, after mg_mgr_poll, drain the queue and call mg_ws_send
+void ws_queue_drain()
+{
+    struct queued_msg* local_head = NULL;
+
+    pthread_mutex_lock(&g_msg_mutex);
+    local_head = g_msg_head;
+    g_msg_head = g_msg_tail = NULL;
+    atomic_store(&s_queue_size, 0);
+    pthread_mutex_unlock(&g_msg_mutex);
+
+    for (struct queued_msg* m = local_head; m != NULL;) {
+        struct queued_msg* next = m->next;
+        if (m->c && ws_is_valid_connection(m->c) && !m->c->is_closing) {
+            mg_ws_send(m->c, m->data, (int)m->len, m->op);
+        }
+        free(m->data);
+        free(m);
+        m = next;
+    }
+}
 
 size_t write_conn_to_buffer_safe(char* buffer, size_t size)
 {
@@ -24,14 +109,15 @@ size_t write_conn_to_buffer_safe(char* buffer, size_t size)
     return b;
 }
 
-// Helper function to emit a message to all WebSocket clients
-void websocket_emit(const char* data, int len)
+// Helper function to queue a message to all WebSocket
+void ws_emit(const char* data, int len)
 {
     pthread_mutex_lock(&s_mutex_ws);
     size_t count = atomic_load(&g_ws_conn_count);
     for (size_t i = 0; i < count; i++) {
-        if (s_ws_connections[i] != NULL) {
-            mg_ws_send(s_ws_connections[i], data, len, WEBSOCKET_OP_TEXT);
+        struct mg_connection* conn = s_ws_connections[i];
+        if (conn != NULL) {
+            ws_queue_add(conn, data, len, WEBSOCKET_OP_TEXT);
         }
     }
     pthread_mutex_unlock(&s_mutex_ws);
@@ -63,10 +149,18 @@ static size_t ws_drop_if_exist(struct mg_connection* c)
         struct mg_connection* ic = s_ws_connections[i];
         if (memcmp(ic->rem.ip, c->rem.ip, 16) == 0) {
             D(printf("drop existing ip: %d.%d.%d.%d\n", ic->rem.ip[0], ic->rem.ip[1], ic->rem.ip[2], ic->rem.ip[3]));
-            mg_ws_send(ic, "", 0, WEBSOCKET_OP_CLOSE); // Send a WebSocket close frame
-            ic->is_closing = 1;                        // Mark for closure
-            // mg_mgr_poll(ic->mgr, 0);                   // Process the closure
-            return dropped;
+
+            ws_queue_add(ic, "", 0, WEBSOCKET_OP_CLOSE);
+
+            // CRITICAL: Remove from array immediately
+            for (size_t j = i; j < count - 1; j++) {
+                s_ws_connections[j] = s_ws_connections[j + 1];
+            }
+            s_ws_connections[count - 1] = NULL;
+            atomic_store(&g_ws_conn_count, count - 1);
+
+            dropped++;
+            break;
         }
     }
     return dropped;

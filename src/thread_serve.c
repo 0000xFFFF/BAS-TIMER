@@ -14,7 +14,10 @@ void* th_serve(void* sig)
     mg_mgr_init(&mgr);
     mg_http_listen(&mgr, ADDR_HTTP, serve_site, &mgr);
     mg_http_listen(&mgr, ADDR_WS, serve_websocket, &mgr);
-    while (atomic_load(&g_running)) { mg_mgr_poll(&mgr, POLL_TIME); }
+    while (atomic_load(&g_running)) {
+        mg_mgr_poll(&mgr, POLL_TIME);
+        ws_queue_drain();
+    }
     mg_mgr_free(&mgr);
 
     DPL("THREAD STOP SERVE");
