@@ -31,29 +31,31 @@ void infos_bas_init()
 
     s_unix_counter = timestamp();
 
-    g_infos.bas.peak_min_solar = TEMP_MIN_SOLAR;
-    g_infos.bas.peak_max_solar = TEMP_MAX_SOLAR;
-    g_infos.bas.peak_min_human = TEMP_MIN_HUMAN;
-    g_infos.bas.peak_max_human = TEMP_MAX_HUMAN;
-    g_infos.bas.peak_min_buf = TEMP_MIN_BUF;
-    g_infos.bas.peak_max_buf = TEMP_MAX_BUF;
-    g_infos.bas.peak_min_circ = TEMP_MIN_CIRC;
-    g_infos.bas.peak_max_circ = TEMP_MAX_CIRC;
+    if (!g_infos.bas.valid) {
+        g_infos.bas.peak_min_solar = TEMP_MIN_SOLAR;
+        g_infos.bas.peak_max_solar = TEMP_MAX_SOLAR;
+        g_infos.bas.peak_min_human = TEMP_MIN_HUMAN;
+        g_infos.bas.peak_max_human = TEMP_MAX_HUMAN;
+        g_infos.bas.peak_min_buf = TEMP_MIN_BUF;
+        g_infos.bas.peak_max_buf = TEMP_MAX_BUF;
+        g_infos.bas.peak_min_circ = TEMP_MIN_CIRC;
+        g_infos.bas.peak_max_circ = TEMP_MAX_CIRC;
 
-    g_infos.bas.opt_auto_timer = ENABLE_AUTO_TIMER;
-    g_infos.bas.opt_auto_gas = ENABLE_AUTO_GAS;
-    g_infos.bas.opt_auto_timer_seconds = AUTO_TIMER_SECONDS;
-    g_infos.bas.opt_auto_timer_started = 0;
-    g_infos.bas.opt_auto_timer_seconds_elapsed = 0;
+        g_infos.bas.opt_auto_timer = ENABLE_AUTO_TIMER;
+        g_infos.bas.opt_auto_gas = ENABLE_AUTO_GAS;
+        g_infos.bas.opt_auto_timer_seconds = AUTO_TIMER_SECONDS;
+        g_infos.bas.opt_auto_timer_started = 0;
+        g_infos.bas.opt_auto_timer_seconds_elapsed = 0;
 
-    g_infos.bas.history_mode = -1;
-    g_infos.bas.history_mode_time_changed = 0;
-    g_infos.bas.history_mode_time_on = 0;
-    g_infos.bas.history_mode_time_off = 0;
-    g_infos.bas.history_gas = -1;
-    g_infos.bas.history_gas_time_changed = 0;
-    g_infos.bas.history_gas_time_on = 0;
-    g_infos.bas.history_gas_time_off = 0;
+        g_infos.bas.history_mode = -1;
+        g_infos.bas.history_mode_time_changed = 0;
+        g_infos.bas.history_mode_time_on = 0;
+        g_infos.bas.history_mode_time_off = 0;
+        g_infos.bas.history_gas = -1;
+        g_infos.bas.history_gas_time_changed = 0;
+        g_infos.bas.history_gas_time_on = 0;
+        g_infos.bas.history_gas_time_off = 0;
+    }
 
     pthread_mutex_unlock(&s_infos_bas_mutex);
 }
@@ -138,8 +140,10 @@ void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo*
 void infos_wttrin_init()
 {
     pthread_mutex_lock(&s_infos_wttrin_mutex);
-    snprintf(g_infos.wttrin.marquee_conds.text, sizeof(g_infos.wttrin.marquee_conds.text), "...");
-    snprintf(g_infos.wttrin.marquee_times.text, sizeof(g_infos.wttrin.marquee_times.text), "...");
+    if (!g_infos.wttrin.valid) {
+        snprintf(g_infos.wttrin.marquee_conds.text, sizeof(g_infos.wttrin.marquee_conds.text), "...");
+        snprintf(g_infos.wttrin.marquee_times.text, sizeof(g_infos.wttrin.marquee_times.text), "...");
+    }
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
