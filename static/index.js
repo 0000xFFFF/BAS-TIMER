@@ -200,7 +200,7 @@ function perror(error) {
 
 function connect() {
     try {
-        ws = new WebSocket("/ws");
+        ws = new WebSocket("http://" + document.domain + ":5000/ws");
 
         ws.onopen = function() {
             termcont.style.backgroundColor = "#000000";
