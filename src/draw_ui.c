@@ -214,7 +214,7 @@ static char* dut_conns()
 static char* dut_temperature(double value, double min, double max)
 {
     s_temp_b = 0;
-    s_temp_b += temp_to_ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max, "%3.0f");
+    s_temp_b += temp_to_ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max, "%7.2f");
     return s_temp;
 }
 
@@ -224,7 +224,7 @@ static char* dut_wttrin_temp_to_color(char* s, double max, double min)
     double value = strtod(s, &end);
 
     s_temp_b = 0;
-    s_temp_b += temp_to_ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max, "%3.0f");
+    s_temp_b += temp_to_ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max, "%.0f");
     return s_temp;
 }
 
@@ -646,21 +646,6 @@ size_t draw_ui_unsafe()
     sc(5, 6, human_temp_to_emoji(s_du_infos.bas.Tsobna));
     sc(6, 6, human_temp_to_emoji(s_du_infos.bas.Tzadata));
 
-    sc(3, 7, " ");
-    sc(4, 7, " ");
-    sc(5, 7, " ");
-    sc(6, 7, " ");
-
-    scc(3, 8, 196, "");
-    scc(4, 8, 106, "");
-    scc(5, 8, 100, "󰋦");
-    scc(6, 8, 51,  "");
-
-    sc(3, 9, "");
-    sc(4, 9, dut_wttrin_temp_to_color(s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_t], s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
-    sc(5, 9, dut_wttrin_temp_to_color(s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_f], s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
-    sc(6, 9, "");
-
     scc(7, 0, color_radiator, dut_selected(dut_heat(), s_du_infos.bas.opt_auto_timer));
     sc(8, 0, dut_regime(s_du_infos.bas.mod_rada));
 
@@ -676,8 +661,10 @@ size_t draw_ui_unsafe()
     scc(8, 4, 224, dut_lbl_solar());
     scc(8, 5, 78, dut_lbl_elec());
 
-    scc(7, 6, 226, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_u]);
-    scc(7, 7, 195, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_w]);
+    sc(7, 6, dut_wttrin_temp_to_color(s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_t], s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
+    sc(7, 7, dut_wttrin_temp_to_color(s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_f], s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
+    scc(7, 8, 226, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_u]);
+    scc(7, 9, 195, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_w]);
 
     scc(8, 6, 123, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_h]);
     scc(8, 7, 111, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_p]);
