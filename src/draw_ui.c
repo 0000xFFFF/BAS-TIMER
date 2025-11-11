@@ -211,10 +211,10 @@ static char* dut_conns()
     return s_temp;
 }
 
-static char* dut_temp_to_color(double value, double min, double max)
+static char* dut_temperature(double value, double min, double max)
 {
     s_temp_b = 0;
-    s_temp_b += temp_to_ctext_bg_con(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max);
+    s_temp_b += temp_to_ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max, "%3.0f");
     return s_temp;
 }
 
@@ -224,7 +224,7 @@ static char* dut_wttrin_temp_to_color(char* s, double max, double min)
     double value = strtod(s, &end);
 
     s_temp_b = 0;
-    s_temp_b += temp_to_ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max);
+    s_temp_b += temp_to_ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max, "%.0f");
     return s_temp;
 }
 
@@ -616,10 +616,10 @@ size_t draw_ui_unsafe()
     scc(5, 0, 226, "");
     scc(6, 0, 110, get_frame(&spinner_recycle, 1));
 
-    sc(3, 1, dut_temp_to_color(s_du_infos.bas.Tmax, s_du_infos.bas.peak_min_buf, s_du_infos.bas.peak_max_buf));
-    sc(4, 1, dut_temp_to_color(s_du_infos.bas.Tmid, s_du_infos.bas.peak_min_buf, s_du_infos.bas.peak_max_buf));
-    sc(5, 1, dut_temp_to_color(s_du_infos.bas.Tmin, s_du_infos.bas.peak_min_buf, s_du_infos.bas.peak_max_buf));
-    sc(6, 1, dut_temp_to_color(s_du_infos.bas.Tfs, s_du_infos.bas.peak_min_circ, s_du_infos.bas.peak_max_circ));
+    sc(3, 1, dut_temperature(s_du_infos.bas.Tmax, s_du_infos.bas.peak_min_buf, s_du_infos.bas.peak_max_buf));
+    sc(4, 1, dut_temperature(s_du_infos.bas.Tmid, s_du_infos.bas.peak_min_buf, s_du_infos.bas.peak_max_buf));
+    sc(5, 1, dut_temperature(s_du_infos.bas.Tmin, s_du_infos.bas.peak_min_buf, s_du_infos.bas.peak_max_buf));
+    sc(6, 1, dut_temperature(s_du_infos.bas.Tfs, s_du_infos.bas.peak_min_circ, s_du_infos.bas.peak_max_circ));
 
     sc(3, 2, dut_max_check());
     sc(4, 2, dut_mid_check());
@@ -636,10 +636,10 @@ size_t draw_ui_unsafe()
     scc(5, 4, 76, get_frame(&spinner_house, 1));
     scc(6, 4, 154, get_frame(&spinner_cog, 1));
 
-    sc(3, 5, dut_temp_to_color(s_du_infos.bas.Tsolar, s_du_infos.bas.peak_min_solar, s_du_infos.bas.peak_max_solar));
-    sc(4, 5, dut_temp_to_color(s_du_infos.bas.Tspv, s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
-    sc(5, 5, dut_temp_to_color(s_du_infos.bas.Tsobna, s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
-    sc(6, 5, dut_temp_to_color(s_du_infos.bas.Tzadata, s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
+    sc(3, 5, dut_temperature(s_du_infos.bas.Tsolar, s_du_infos.bas.peak_min_solar, s_du_infos.bas.peak_max_solar));
+    sc(4, 5, dut_temperature(s_du_infos.bas.Tspv, s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
+    sc(5, 5, dut_temperature(s_du_infos.bas.Tsobna, s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
+    sc(6, 5, dut_temperature(s_du_infos.bas.Tzadata, s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
 
     sc(3, 6, human_temp_to_emoji(s_du_infos.bas.Tsolar));
     sc(4, 6, human_temp_to_emoji(s_du_infos.bas.Tspv));

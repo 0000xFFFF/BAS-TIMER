@@ -1,10 +1,14 @@
 #include "colors.h"
+#include "globals.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-static int s_temp_colors[] = {51, 45, 39, 38, 33, 32, 27, 26, 21, 190, 226, 220, 214, 208, 202, 124, 160, 196};
+static int s_temp_colors[] = {51, 45, 39, 38, 33, 32, 27, 26, 190, 226, 220, 214, 208, 202, 124, 160, 196};
 #define s_temp_colors_size ((int)(sizeof(s_temp_colors) / sizeof(s_temp_colors[0])))
+
+static int s_radiator_temp_colors[] = {51, 50, 45, 44, 43, 39, 38, 37, 36, 154, 190, 226, 148, 184, 214, 136, 172, 208, 130, 166, 202, 124, 160, 196};
+#define s_radiator_temp_colors_size ((int)(sizeof(s_radiator_temp_colors) / sizeof(s_radiator_temp_colors[0])))
 
 size_t ctext_fg(char* buffer, size_t size, int color, const char* text)
 {
@@ -63,32 +67,21 @@ int temperature_to_color(double temp, double temp_min, double temp_max)
     return s_temp_colors[index];
 }
 
-size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double temp_min, double temp_max)
+size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double temp_min, double temp_max, const char* num_format)
 {
+    char format[MIDBUFF];
+    snprintf(format, sizeof(format), "\033[38;5;%%dm%s󰔄\033[0m", num_format);
     int color = temperature_to_color(temp, temp_min, temp_max);
-    return snprintf(buffer, size, "\033[38;5;%dm%.0f󰔄\033[0m", color, temp);
+    return snprintf(buffer, size, format, color, temp);
 }
 
-size_t temp_to_ctext_bg(char* buffer, size_t size, double temp, double temp_min, double temp_max)
+size_t temp_to_ctext_bg(char* buffer, size_t size, double temp, double temp_min, double temp_max, const char* num_format)
 {
+    char format[MIDBUFF];
+    snprintf(format, sizeof(format), "\033[48;5;%%dm%s󰔄\033[0m", num_format);
     int color = temperature_to_color(temp, temp_min, temp_max);
-    return snprintf(buffer, size, "\033[48;5;%dm%7.2f 󰔄\033[0m", color, temp);
+    return snprintf(buffer, size, format, color, temp);
 }
-
-size_t temp_to_ctext_fg_con(char* buffer, size_t size, double temp, double temp_min, double temp_max)
-{
-    int color = temperature_to_color(temp, temp_min, temp_max);
-    return snprintf(buffer, size, "\033[48;5;%dm\033[38;5;%dm%7.2f 󰔄\033[0m", contrast_color(color), color, temp);
-}
-
-size_t temp_to_ctext_bg_con(char* buffer, size_t size, double temp, double temp_min, double temp_max)
-{
-    int color = temperature_to_color(temp, temp_min, temp_max);
-    return snprintf(buffer, size, "\033[48;5;%dm\033[38;5;%dm%7.2f 󰔄\033[0m", color, contrast_color(color), temp);
-}
-
-static int s_radiator_temp_colors[] = {51, 50, 45, 44, 43, 39, 38, 37, 36, 154, 190, 226, 148, 184, 214, 136, 172, 208, 130, 166, 202, 124, 160, 196};
-#define s_radiator_temp_colors_size ((int)(sizeof(s_radiator_temp_colors) / sizeof(s_radiator_temp_colors[0])))
 
 // Warm-up and cool-down durations (in seconds)
 static const int RADIATOR_WARMUP_SEC = 8 * 60;                    // 8 minutes
