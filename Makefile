@@ -2,7 +2,7 @@ CC = gcc
 PROG = bas-server
 PACK = ./pack
 OUT = -o $(PROG)
-SOURCES = src/*.c
+SOURCES = $(filter-out src/mongoose.c, $(wildcard src/*.c))
 CFLAGS += -DMG_ENABLE_LINES=1 -DMG_ENABLE_PACKED_FS=1 -D MG_TLS=MG_TLS_OPENSSL -D MG_ENABLE_OPENSSL=1 -lssl -lcrypto
 
 DEBUG_ARGS   = -g -D DEBUG
@@ -11,7 +11,8 @@ RELEASE_ARGS = -Wall -Wextra -Wpedantic -Wformat=2 -Wcast-qual -Wcast-align \
                -Wstrict-prototypes -Wmissing-prototypes -Wstringop-overflow \
                -Wswitch-enum -Wundef -Wuninitialized -Wdouble-promotion \
                -Wnull-dereference -Walloc-zero -Walloca -Wvla \
-               -Werror -O2 -march=native -s
+               -Werror -O2 -march=native -s \
+               -Wno-cast-qual -Wno-alloca -Wno-discarded-qualifiers src/mongoose.c
 TESTING_ARGS = -g
 
 debug:
