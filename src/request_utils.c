@@ -51,57 +51,51 @@ void print_bas_info(const struct BasInfo* b)
 {
     if (!b) return;
 
+    int clm_len = 30;
     printf("===[ info.bas\n");
-    printf("valid: %s\n", b->valid ? "true" : "false");
-    printf("status: %d\n", (int)b->status);
-
-    printf("mod_rada: %d\n", b->mod_rada);
-    printf("mod_rezim: %d\n", b->mod_rezim);
-    printf("StatusPumpe3: %d\n", b->StatusPumpe3);
-    printf("StatusPumpe4: %d\n", b->StatusPumpe4);
-    printf("StatusPumpe5: %d\n", b->StatusPumpe5);
-    printf("StatusPumpe6: %d\n", b->StatusPumpe6);
-    printf("StatusPumpe7: %d\n", b->StatusPumpe7);
-
-    printf("Tspv: %.2f\n", b->Tspv);
-    printf("Tsolar: %.2f\n", b->Tsolar);
-    printf("Tzadata: %.2f\n", b->Tzadata);
-    printf("Tfs: %.2f\n", b->Tfs);
-    printf("Tmax: %.2f\n", b->Tmax);
-    printf("Tmin: %.2f\n", b->Tmin);
-    printf("Tsobna: %.2f\n", b->Tsobna);
-
-    printf("Tmid: %.2f\n", b->Tmid);
-    printf("TmidGE: %d\n", b->TmidGE);
-    printf("TminLT: %d\n", b->TminLT);
-
-    printf("peak_min_solar: %.2f\n", b->peak_min_solar);
-    printf("peak_max_solar: %.2f\n", b->peak_max_solar);
-    printf("peak_min_human: %.2f\n", b->peak_min_human);
-    printf("peak_max_human: %.2f\n", b->peak_max_human);
-    printf("peak_min_buf: %.2f\n", b->peak_min_buf);
-    printf("peak_max_buf: %.2f\n", b->peak_max_buf);
-    printf("peak_min_circ: %.2f\n", b->peak_min_circ);
-    printf("peak_max_circ: %.2f\n", b->peak_max_circ);
-
-    printf("opt_auto_timer: %d\n", b->opt_auto_timer);
-    printf("opt_auto_timer_seconds: %f\n", b->opt_auto_timer_seconds);
-    printf("opt_auto_timer_seconds_old: %f\n", b->opt_auto_timer_seconds_old);
-    printf("opt_auto_timer_started: %d\n", b->opt_auto_timer_started);
-    printf("opt_auto_timer_seconds_elapsed: %f\n", b->opt_auto_timer_seconds_elapsed);
-    printf("opt_auto_timer_status: %d\n", b->opt_auto_timer_status);
-    printf("opt_auto_gas: %d\n", b->opt_auto_gas);
-    printf("opt_auto_gas_status: %d\n", b->opt_auto_gas_status);
-
-    printf("history_mode: %d\n", b->history_mode);
-    printf("history_mode_time_changed: %ld\n", b->history_mode_time_changed);
-    printf("history_mode_time_on: %ld\n", b->history_mode_time_on);
-    printf("history_mode_time_off: %ld\n", b->history_mode_time_off);
-
-    printf("history_gas: %d\n", b->history_gas);
-    printf("history_gas_time_changed: %ld\n", b->history_gas_time_changed);
-    printf("history_gas_time_on: %ld\n", b->history_gas_time_on);
-    printf("history_gas_time_off: %ld\n", b->history_gas_time_off);
+    printf("%*s : %s\n", clm_len, "valid", b->valid ? "true" : "false");
+    printf("%*s : %d\n", clm_len, "status", (int)b->status);
+    printf("%*s : %d\n", clm_len, "mod_rada", b->mod_rada);
+    printf("%*s : %d\n", clm_len, "mod_rezim", b->mod_rezim);
+    printf("%*s : %d\n", clm_len, "StatusPumpe3", b->StatusPumpe3);
+    printf("%*s : %d\n", clm_len, "StatusPumpe4", b->StatusPumpe4);
+    printf("%*s : %d\n", clm_len, "StatusPumpe5", b->StatusPumpe5);
+    printf("%*s : %d\n", clm_len, "StatusPumpe6", b->StatusPumpe6);
+    printf("%*s : %d\n", clm_len, "StatusPumpe7", b->StatusPumpe7);
+    printf("%*s : %.2f\n", clm_len, "Tspv", b->Tspv);
+    printf("%*s : %.2f\n", clm_len, "Tsolar", b->Tsolar);
+    printf("%*s : %.2f\n", clm_len, "Tzadata", b->Tzadata);
+    printf("%*s : %.2f\n", clm_len, "Tfs", b->Tfs);
+    printf("%*s : %.2f\n", clm_len, "Tmax", b->Tmax);
+    printf("%*s : %.2f\n", clm_len, "Tmin", b->Tmin);
+    printf("%*s : %.2f\n", clm_len, "Tsobna", b->Tsobna);
+    printf("%*s : %.2f\n", clm_len, "Tmid", b->Tmid);
+    printf("%*s : %d\n", clm_len, "TmidGE", b->TmidGE);
+    printf("%*s : %d\n", clm_len, "TminLT", b->TminLT);
+    printf("%*s : %.2f\n", clm_len, "peak_min_solar", b->peak_min_solar);
+    printf("%*s : %.2f\n", clm_len, "peak_max_solar", b->peak_max_solar);
+    printf("%*s : %.2f\n", clm_len, "peak_min_human", b->peak_min_human);
+    printf("%*s : %.2f\n", clm_len, "peak_max_human", b->peak_max_human);
+    printf("%*s : %.2f\n", clm_len, "peak_min_buf", b->peak_min_buf);
+    printf("%*s : %.2f\n", clm_len, "peak_max_buf", b->peak_max_buf);
+    printf("%*s : %.2f\n", clm_len, "peak_min_circ", b->peak_min_circ);
+    printf("%*s : %.2f\n", clm_len, "peak_max_circ", b->peak_max_circ);
+    printf("%*s : %d\n", clm_len, "opt_auto_timer", b->opt_auto_timer);
+    printf("%*s : %f\n", clm_len, "opt_auto_timer_seconds", b->opt_auto_timer_seconds);
+    printf("%*s : %f\n", clm_len, "opt_auto_timer_seconds_old", b->opt_auto_timer_seconds_old);
+    printf("%*s : %d\n", clm_len, "opt_auto_timer_started", b->opt_auto_timer_started);
+    printf("%*s : %f\n", clm_len, "opt_auto_timer_seconds_elapsed", b->opt_auto_timer_seconds_elapsed);
+    printf("%*s : %d\n", clm_len, "opt_auto_timer_status", b->opt_auto_timer_status);
+    printf("%*s : %d\n", clm_len, "opt_auto_gas", b->opt_auto_gas);
+    printf("%*s : %d\n", clm_len, "opt_auto_gas_status", b->opt_auto_gas_status);
+    printf("%*s : %d\n", clm_len, "history_mode", b->history_mode);
+    printf("%*s : %ld\n", clm_len, "history_mode_time_changed", b->history_mode_time_changed);
+    printf("%*s : %ld\n", clm_len, "history_mode_time_on", b->history_mode_time_on);
+    printf("%*s : %ld\n", clm_len, "history_mode_time_off", b->history_mode_time_off);
+    printf("%*s : %d\n", clm_len, "history_gas", b->history_gas);
+    printf("%*s : %ld\n", clm_len, "history_gas_time_changed", b->history_gas_time_changed);
+    printf("%*s : %ld\n", clm_len, "history_gas_time_on", b->history_gas_time_on);
+    printf("%*s : %ld\n", clm_len, "history_gas_time_off", b->history_gas_time_off);
 }
 
 void print_wttrin_info(const struct WttrinInfo* info)
