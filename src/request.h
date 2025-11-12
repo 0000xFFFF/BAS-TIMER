@@ -55,7 +55,7 @@ struct Request {
     const char* url;
     const char* request_format;
     uint64_t timeout_ms;
-    uint64_t timeout_ms_start;
+    uint64_t timeout_ms_deadline;
     int remember_response;
     struct mg_str output;
 };

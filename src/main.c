@@ -42,6 +42,8 @@ int main()
     term_cursor_hide();
 #endif
 
+    init_thread_data();
+
     pthread_t t1;
     assert(!pthread_create(&t1, NULL, th_serve, NULL));
 

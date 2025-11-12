@@ -49,5 +49,5 @@ const double TEMP_MIN_CIRC = 0;
 const double TEMP_MAX_CIRC = 60;
 
 atomic_bool g_running = true;
-pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t g_cond = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t g_mutex;
+pthread_cond_t g_cond;

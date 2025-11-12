@@ -10,12 +10,12 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
     struct Request* request = (struct Request*)c->fn_data;
 
     if (ev == MG_EV_OPEN) {
-        request->timeout_ms_start = mg_millis() + request->timeout_ms;
+        request->timeout_ms_deadline = mg_millis() + request->timeout_ms;
         return;
     }
 
     if (ev == MG_EV_POLL) {
-        if (request->timeout_ms && request->timeout_ms_start && mg_millis() > request->timeout_ms_start) {
+        if (request->timeout_ms && request->timeout_ms_deadline && mg_millis() > request->timeout_ms_deadline) {
             mg_error(c, "Timeout"); /* generates MG_EV_ERROR too */
             request->status = REQUEST_STATUS_ERROR_TIMEOUT;
         }
@@ -23,7 +23,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data)
     }
 
     if (ev == MG_EV_CONNECT) {
-        if (!request->timeout_ms_start) { request->timeout_ms_start = mg_millis() + request->timeout_ms; }
+        if (!request->timeout_ms_deadline) { request->timeout_ms_deadline = mg_millis() + request->timeout_ms; }
         struct mg_str host = mg_url_host(request->url);
 
         if (mg_url_is_ssl(request->url)) {
@@ -56,13 +56,20 @@ enum RequestStatus request_send(struct Request* request)
 {
     if (request->log) { logger_requests_write("%s\n", request->url); }
 
-
     struct mg_mgr mgr;
     mg_mgr_init(&mgr);
     // mgr.dns4.url = "udp://8.8.8.8:53";
-    if (request->timeout_ms) { request->timeout_ms_start = mg_millis() + request->timeout_ms; } // ensure timeout is set before calling connect
+    if (request->timeout_ms) { request->timeout_ms_deadline = mg_millis() + request->timeout_ms; } // ensure timeout is set before calling connect
     mg_http_connect(&mgr, request->url, fn, request);
-    while (atomic_load(&g_running) && request->status == REQUEST_STATUS_RUNNING) mg_mgr_poll(&mgr, 50);
+    while (atomic_load(&g_running) && request->status == REQUEST_STATUS_RUNNING) {
+
+        mg_mgr_poll(&mgr, 50);
+
+        if (mg_millis() > request->timeout_ms_deadline) {
+            request->status = REQUEST_STATUS_ERROR_TIMEOUT;
+            break;
+        }
+    }
     mg_mgr_free(&mgr);
 
     if (request_status_failed(request->status)) { logger_errors_write("%s -- %s\n", request->url, request_status_to_str(request->status)); }

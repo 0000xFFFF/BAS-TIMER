@@ -8,6 +8,17 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+void init_thread_data()
+{
+    pthread_mutex_init(&g_mutex, NULL);
+
+    pthread_condattr_t attr;
+    pthread_condattr_init(&attr);
+    pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+    pthread_cond_init(&g_cond, &attr);
+    pthread_condattr_destroy(&attr);
+}
+
 void stop_all_threads()
 {
     DPL("STOPPING ALL THREADS");
@@ -20,7 +31,7 @@ void stop_all_threads()
 struct timespec make_timeout_ms(long ms)
 {
     struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
+    clock_gettime(CLOCK_MONOTONIC, &ts);
 
     ts.tv_sec += ms / 1000;
     ts.tv_nsec += (ms % 1000) * 1000000L;
