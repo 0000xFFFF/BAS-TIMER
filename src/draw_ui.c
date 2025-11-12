@@ -527,7 +527,7 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
         case OPT_STATUS_STARTED:   snprintf(s_temp, sizeof(s_temp), " %s 󰐸", time_str); break;
         case OPT_STATUS_STOPPING:  snprintf(s_temp, sizeof(s_temp), " %s", time_str); break;
         case OPT_STATUS_STOPPED:   snprintf(s_temp, sizeof(s_temp), " %s %s", time_str, p); break;
-        case OPT_STATUS_CHANGED:   snprintf(s_temp, sizeof(s_temp), "changed to: %f", info->opt_auto_timer_seconds); break;
+        case OPT_STATUS_CHANGED:   snprintf(s_temp, sizeof(s_temp), "changed to: %.0f", info->opt_auto_timer_seconds); break;
         case OPT_STATUS_CANCELLED: snprintf(s_temp, sizeof(s_temp), "󰜺 %s%s", time_str, p); break;
     }
 
