@@ -1,8 +1,8 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-#include <stddef.h>
 #include <time.h>
+
 #define COLOR_ON_AUTO   48
 #define COLOR_ON_MANUAL 46
 
