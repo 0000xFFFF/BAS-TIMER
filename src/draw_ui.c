@@ -213,8 +213,7 @@ static char* dut_conns(void)
 
 static char* dut_temperature(double value, double min, double max)
 {
-    s_temp_b = 0;
-    s_temp_b += temp_to_ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max, "%7.2f");
+    s_temp_b = temp_to_ctext_fg(s_temp, sizeof(s_temp), value, min, max, "%7.2f");
     return s_temp;
 }
 
@@ -223,8 +222,7 @@ static char* dut_wttrin_temp_to_color(char* s, double max, double min)
     char* end;
     double value = strtod(s, &end);
 
-    s_temp_b = 0;
-    s_temp_b += temp_to_ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, value, min, max, "%.0f");
+    s_temp_b = temp_to_ctext_fg(s_temp, sizeof(s_temp), value, min, max, "%.0f");
     return s_temp;
 }
 
