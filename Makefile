@@ -8,19 +8,20 @@ CFLAGS += -DMG_ENABLE_LINES=1 -DMG_ENABLE_PACKED_FS=1 -D MG_TLS=MG_TLS_OPENSSL -
 
 DEBUG_ARGS   = -g -D DEBUG
 RELEASE_ARGS = -Wall -Wextra -Wpedantic -Wformat=2 -Wcast-qual -Wcast-align \
-               -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith \
-               -Wstrict-prototypes -Wmissing-prototypes -Wstringop-overflow \
-               -Wswitch-enum -Wundef -Wuninitialized -Wdouble-promotion \
-               -Wnull-dereference -Walloc-zero -Walloca -Wvla \
-               -Werror -O2 -march=native -s \
-               -Wno-cast-qual -Wno-alloca -Wno-discarded-qualifiers src/mongoose.c
+				-Wconversion -Wsign-conversion -Wshadow -Wpointer-arith \
+				-Wstrict-prototypes -Wmissing-prototypes -Wstringop-overflow \
+				-Wswitch-enum -Wundef -Wuninitialized -Wdouble-promotion \
+				-Wnull-dereference -Walloc-zero -Walloca -Wvla \
+				-Werror -O2 -march=native -s \
+				$(RELEASE_SOURCES) \
+				-Wno-cast-qual -Wno-alloca -Wno-discarded-qualifiers src/mongoose.c
 TESTING_ARGS = -g
 
 debug:
 	$(CC) $(DEBUG_ARGS) $(SOURCES) $(CFLAGS) $(OUT)
 
 release:
-	$(CC) $(RELEASE_ARGS) $(RELEASE_SOURCES) $(CFLAGS) $(OUT)
+	$(CC) $(RELEASE_ARGS) $(CFLAGS) $(OUT)
 
 testing:
 	$(CC) $(TESTING_ARGS) $(SOURCES) $(CFLAGS) $(OUT)
