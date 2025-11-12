@@ -172,7 +172,7 @@ static size_t dut_weather_to_spinner(char* buffer, size_t size, int color, enum 
     }
 }
 
-const char* dut_status_to_emoji(enum RequestStatus status)
+static const char* dut_status_to_emoji(enum RequestStatus status)
 {
     switch (status) {
         case REQUEST_STATUS_RUNNING:       return CTEXT_FG(211, ""); break;
@@ -207,7 +207,7 @@ static char* dut_ip()
 static char* dut_conns()
 {
     s_temp_b = 0;
-    s_temp_b += snprintf(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, "%d", atomic_load(&g_ws_conn_count));
+    s_temp_b += (size_t)snprintf(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, "%d", atomic_load(&g_ws_conn_count));
     return s_temp;
 }
 
@@ -335,7 +335,7 @@ static char* dut_label_auto_gas_status()
     else {
         s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, COLOR_OFF, "");
     }
-    s_temp_b += snprintf(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, "󰙇");
+    s_temp_b += (size_t)snprintf(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, "󰙇");
     return s_temp;
 }
 
@@ -348,7 +348,7 @@ static void print_buffer_padded()
 
     while (*p) {
         if (*p == '\n') {
-            int line_bytes = p - line_start;
+            size_t line_bytes = (size_t)(p - line_start);
 
             char line[4096]; // enough per line
             memcpy(line, line_start, line_bytes);
@@ -376,7 +376,7 @@ static void print_buffer_padded()
 
     // last line without trailing newline
     if (line_start != p) {
-        int line_bytes = p - line_start;
+        size_t line_bytes = (size_t)(p - line_start);
 
         char line[4096];
         memcpy(line, line_start, line_bytes);
@@ -420,7 +420,7 @@ static char* dut_wttrin_marquee_times()
     return s_du_infos.wttrin.marquee_times.text;
 }
 
-enum TimeOfDay get_tod()
+static enum TimeOfDay get_tod()
 {
     return s_du_infos.wttrin.valid ? wttrin_to_timeofday(&s_du_infos.wttrin) : timeofday(); // fallback with timeofday if can't get wttrin
 }
@@ -431,6 +431,8 @@ static char* dut_timeofday_emoji()
 
     // clang-format off
     switch (tod) {
+        default:
+        case TIME_OF_DAY_UNKNOWN:     return "?";
         case TIME_OF_DAY_BEFORE_DAWN: return "";
         case TIME_OF_DAY_DAWN:        return get_frame(&spinner_sunrise, 1);
         case TIME_OF_DAY_MORNING:     return "";
@@ -438,7 +440,6 @@ static char* dut_timeofday_emoji()
         case TIME_OF_DAY_AFTERNOON:   return "";
         case TIME_OF_DAY_SUNSET:      return get_frame(&spinner_sunset, 1);
         case TIME_OF_DAY_NIGHT:       return "󰖔";
-        default:                      return "?";
     }
     // clang-format on
 }
@@ -448,7 +449,7 @@ static const char* dut_progressbar()
     time_t current_time;
     time(&current_time);
     s_du_infos.bas.opt_auto_timer_seconds_elapsed = difftime(current_time, s_du_infos.bas.history_mode_time_on);
-    float percent = s_du_infos.bas.opt_auto_timer_seconds >= 0 ? ((float)s_du_infos.bas.opt_auto_timer_seconds_elapsed / (float)s_du_infos.bas.opt_auto_timer_seconds) * 100
+    double percent = s_du_infos.bas.opt_auto_timer_seconds >= 0 ? (s_du_infos.bas.opt_auto_timer_seconds_elapsed / (double)s_du_infos.bas.opt_auto_timer_seconds) * 100
                                                                : 0;
 
     // Progress bar configuration
@@ -459,7 +460,7 @@ static const char* dut_progressbar()
     // Create the text content first
     char text_content[32];
     int text_len = snprintf(text_content, sizeof(text_content),
-                            "%d/%d %.2f%%",
+                            "%f/%d %.2f%%",
                             s_du_infos.bas.opt_auto_timer_seconds_elapsed,
                             s_du_infos.bas.opt_auto_timer_seconds,
                             percent);

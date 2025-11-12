@@ -2,6 +2,7 @@
 #include "globals.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 static int s_temp_colors[] = {51, 45, 39, 38, 33, 32, 27, 26, 190, 226, 220, 214, 208, 202, 124, 160, 196};
@@ -23,9 +24,9 @@ size_t ctext_u(char* buffer, size_t size, const char* text)
 size_t ctext_uc(char* buffer, size_t size, int underline_color, const char* text)
 {
     return (size_t)snprintf(buffer, size,
-                    "\033[4:1:%dm%s\033[0m",
-                    underline_color,
-                    text);
+                            "\033[4:1:%dm%s\033[0m",
+                            underline_color,
+                            text);
 }
 
 size_t cnum_fg(char* buffer, size_t size, int color, const int number)
@@ -62,25 +63,43 @@ int temperature_to_color(double temp, double temp_min, double temp_max)
 {
     if (temp <= temp_min) { return s_temp_colors[0]; }
     if (temp >= temp_max) { return s_temp_colors[s_temp_colors_size - 1]; }
-    int diff = temp_max - temp_min;
-    int index = (temp - temp_min) * (s_temp_colors_size - 1) / (diff > 0 ? diff : 1);
+    int diff = (int)(temp_max - temp_min);
+    int index = (int)((temp - temp_min) * (s_temp_colors_size - 1) / (diff > 0 ? diff : 1));
     return s_temp_colors[index];
 }
 
-size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double temp_min, double temp_max, const char* num_format)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+static size_t safe_format(char* buf, size_t sz, const char* fmt, double v)
 {
-    char format[MIDBUFF];
-    snprintf(format, sizeof(format), "\033[38;5;%%dm%s󰔄\033[0m", num_format);
-    int color = temperature_to_color(temp, temp_min, temp_max);
-    return (size_t)snprintf(buffer, size, format, color, temp);
+    /* reject formats containing %n */
+    if (strstr(fmt, "%n") != NULL)
+        return 0;
+
+    return (size_t)snprintf(buf, sz, fmt, v);
+}
+#pragma GCC diagnostic pop
+
+size_t temp_to_ctext_fg(char* buffer, size_t size, double t, double t_min, double t_max, const char* const num_format)
+{
+    int color = temperature_to_color(t, t_min, t_max);
+
+    size_t b = 0;
+    b += (size_t)snprintf(buffer + b, size - b, "\033[38;5;%d", color);
+    b += (size_t)safe_format(buffer + b, size - b, num_format, t);
+    b += (size_t)snprintf(buffer + b, size - b, "󰔄\033[0m");
+    return b;
 }
 
-size_t temp_to_ctext_bg(char* buffer, size_t size, double temp, double temp_min, double temp_max, const char* num_format)
+size_t temp_to_ctext_bg(char* buffer, size_t size, double t, double t_min, double t_max, const char* const num_format)
 {
-    char format[MIDBUFF];
-    snprintf(format, sizeof(format), "\033[48;5;%%dm%s󰔄\033[0m", num_format);
-    int color = temperature_to_color(temp, temp_min, temp_max);
-    return snprintf(buffer, size, format, color, temp);
+    int color = temperature_to_color(t, t_min, t_max);
+
+    size_t b = 0;
+    b += (size_t)snprintf(buffer + b, size - b, "\033[48;5;%d", color);
+    b += (size_t)safe_format(buffer + b, size - b, num_format, t);
+    b += (size_t)snprintf(buffer + b, size - b, "󰔄\033[0m");
+    return b;
 }
 
 // Warm-up and cool-down durations (in seconds)
