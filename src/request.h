@@ -85,11 +85,11 @@ struct BasInfo {
     // statuses
     int mod_rada;
     int mod_rezim;
-    int StatusPumpe3;
-    int StatusPumpe4;
-    int StatusPumpe5;
-    int StatusPumpe6;
-    int StatusPumpe7;
+    enum PumpStatus StatusPumpe3;
+    enum PumpStatus StatusPumpe4;
+    enum PumpStatus StatusPumpe5;
+    enum PumpStatus StatusPumpe6;
+    enum PumpStatus StatusPumpe7;
 
     // temps
     double Tspv;

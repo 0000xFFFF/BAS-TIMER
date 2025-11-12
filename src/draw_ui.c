@@ -31,7 +31,7 @@ static size_t s_term_buffer_b = 0;
 static char s_temp[MAX_CELL];
 static size_t s_temp_b = 0;
 
-static void clear_screen()
+static void clear_screen(void)
 {
     for (int r = 0; r < MAX_ROWS; r++)
         for (int c = 0; c < MAX_COLS; c++)
@@ -80,7 +80,7 @@ static char* hour_to_clock(int hour)
     return clock_hours[hour % 12];
 }
 
-static size_t make_term_buffer()
+static size_t make_term_buffer(void)
 {
     s_term_buffer_b = 0; // reset
 
@@ -183,7 +183,7 @@ static const char* dut_status_to_emoji(enum RequestStatus status)
     return "";
 }
 
-static char* dut_time()
+static char* dut_time(void)
 {
     s_temp_b = 0;
     s_temp_b += dt_full(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b);
@@ -197,14 +197,14 @@ static char* dut_wttrin_emoji(int color)
     return s_temp;
 }
 
-static char* dut_ip()
+static char* dut_ip(void)
 {
     s_temp_b = 0;
     s_temp_b += get_local_ip(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b);
     return s_temp;
 }
 
-static char* dut_conns()
+static char* dut_conns(void)
 {
     s_temp_b = 0;
     s_temp_b += (size_t)snprintf(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, "%d", atomic_load(&g_ws_conn_count));
@@ -228,28 +228,28 @@ static char* dut_wttrin_temp_to_color(char* s, double max, double min)
     return s_temp;
 }
 
-static char* dut_max_check()
+static char* dut_max_check(void)
 {
     s_temp_b = 0;
     ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, 82, s_du_infos.bas.valid && s_du_infos.bas.TmaxGE ? get_frame(&spinner_check, 1) : " ");
     return s_temp;
 }
 
-static char* dut_mid_check()
+static char* dut_mid_check(void)
 {
     s_temp_b = 0;
     s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, 82, s_du_infos.bas.valid && s_du_infos.bas.TmidGE ? get_frame(&spinner_check, 1) : " ");
     return s_temp;
 }
 
-static char* dut_min_warn()
+static char* dut_min_warn(void)
 {
     s_temp_b = 0;
     s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, 51, s_du_infos.bas.valid && s_du_infos.bas.TminLT ? get_frame(&spinner_snow, 1) : " ");
     return s_temp;
 }
 
-static char* dut_heat()
+static char* dut_heat(void)
 {
     return s_du_infos.bas.mod_rada ? get_frame(&spinner_heat, 1) : "󱪯";
 }
@@ -266,7 +266,7 @@ static int dut_pump_is_on(enum PumpStatus value)
     return value == PUMP_STATUS_AUTO_ON || value == PUMP_STATUS_MANUAL_ON;
 }
 
-static char* dut_draw_pump_bars(int value)
+static char* dut_draw_pump_bars(enum PumpStatus value)
 {
 
     s_temp_b = 0;
@@ -282,27 +282,27 @@ static char* dut_draw_pump_bars(int value)
     return s_temp;
 }
 
-static char* dut_lbl_heat()
+static char* dut_lbl_heat(void)
 {
     return dut_pump_is_on(s_du_infos.bas.StatusPumpe6) ? get_frame(&spinner_heat_pump, 1) : "󱩃";
 }
 
-static char* dut_lbl_gas()
+static char* dut_lbl_gas(void)
 {
     return dut_pump_is_on(s_du_infos.bas.StatusPumpe4) ? get_frame(&spinner_fire, 1) : "󰙇";
 }
 
-static char* dut_lbl_circ()
+static char* dut_lbl_circ(void)
 {
     return dut_pump_is_on(s_du_infos.bas.StatusPumpe3) ? get_frame(&spinner_circle, 1) : "";
 }
 
-static char* dut_lbl_solar()
+static char* dut_lbl_solar(void)
 {
     return dut_pump_is_on(s_du_infos.bas.StatusPumpe7) ? get_frame(&spinner_solar, 1) : "";
 }
 
-static char* dut_lbl_elec()
+static char* dut_lbl_elec(void)
 {
     return dut_pump_is_on(s_du_infos.bas.StatusPumpe5) ? get_frame(&spinner_lightning, 1) : "󰠠";
 }
@@ -328,7 +328,7 @@ static char* dut_label_auto_timer_status(int color)
     return s_temp;
 }
 
-static char* dut_label_auto_gas_status()
+static char* dut_label_auto_gas_status(void)
 {
     s_temp_b = 0;
     if (s_du_infos.bas.opt_auto_gas) { s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, COLOR_ON, get_frame(&spinner_eye_right, 0)); }
@@ -339,7 +339,7 @@ static char* dut_label_auto_gas_status()
     return s_temp;
 }
 
-static void print_buffer_padded()
+static void print_buffer_padded(void)
 {
     setlocale(LC_ALL, ""); // ensure correct UTF-8 width
 
@@ -396,7 +396,7 @@ static void print_buffer_padded()
     fflush(stdout);
 }
 
-static const char* dut_wttrin_marquee_conds()
+static const char* dut_wttrin_marquee_conds(void)
 {
     if (s_du_infos.wttrin.marquee_conds.valid) {
         char temp[sizeof(s_temp) - 5];
@@ -408,7 +408,7 @@ static const char* dut_wttrin_marquee_conds()
     return s_du_infos.wttrin.marquee_conds.text;
 }
 
-static char* dut_wttrin_marquee_times()
+static char* dut_wttrin_marquee_times(void)
 {
     if (s_du_infos.wttrin.marquee_times.valid) {
         char temp[sizeof(s_temp) - 5];
@@ -420,12 +420,12 @@ static char* dut_wttrin_marquee_times()
     return s_du_infos.wttrin.marquee_times.text;
 }
 
-static enum TimeOfDay get_tod()
+static enum TimeOfDay get_tod(void)
 {
     return s_du_infos.wttrin.valid ? wttrin_to_timeofday(&s_du_infos.wttrin) : timeofday(); // fallback with timeofday if can't get wttrin
 }
 
-static char* dut_timeofday_emoji()
+static char* dut_timeofday_emoji(void)
 {
     enum TimeOfDay tod = get_tod();
 
@@ -444,7 +444,7 @@ static char* dut_timeofday_emoji()
     // clang-format on
 }
 
-static const char* dut_progressbar()
+static const char* dut_progressbar(void)
 {
     time_t current_time;
     time(&current_time);
@@ -459,49 +459,49 @@ static const char* dut_progressbar()
 
     // Create the text content first
     char text_content[32];
-    int text_len = snprintf(text_content, sizeof(text_content),
+    size_t text_len = (size_t)snprintf(text_content, sizeof(text_content),
                             "%f/%d %.2f%%",
                             s_du_infos.bas.opt_auto_timer_seconds_elapsed,
                             s_du_infos.bas.opt_auto_timer_seconds,
                             percent);
 
     // Calculate filled portion
-    int filled = (int)((percent / 100.0f) * bar_width);
+    size_t filled = (size_t)((percent / 100.0) * bar_width);
     if (filled > bar_width) filled = bar_width;
 
     // Build progress bar - only 2 sections maximum
     char bar[MIDBUFF - 3] = {0};
     char filled_section[32];
     char empty_section[32];
-    int offset = 0;
+    size_t offset = 0;
 
     // Filled section
     if (filled > 0) {
-        int filled_text_len = (text_len < filled) ? text_len : filled;
+        size_t filled_text_len = (size_t)((text_len < filled) ? text_len : filled);
         strncpy(filled_section, text_content, filled_text_len);
         filled_section[filled_text_len] = '\0';
         // Pad with spaces if needed
-        for (int i = filled_text_len; i < filled; i++) {
+        for (size_t i = filled_text_len; i < filled; i++) {
             filled_section[i] = ' ';
         }
         filled_section[filled] = '\0';
 
-        offset += ctext_bg(bar + offset, sizeof(bar) - offset, filled_color, filled_section);
+        offset += (size_t)ctext_bg(bar + offset, sizeof(bar) - offset, filled_color, filled_section);
     }
 
     // Empty section
     if (filled < bar_width) {
-        int empty_start = filled;
-        int empty_len = bar_width - filled;
+        size_t empty_start = filled;
+        size_t empty_len = bar_width - filled;
 
         // Get remaining text or spaces
-        for (int i = 0; i < empty_len; i++) {
-            int text_idx = empty_start + i;
+        for (size_t i = 0; i < empty_len; i++) {
+            size_t text_idx = empty_start + i;
             empty_section[i] = (text_idx < text_len) ? text_content[text_idx] : ' ';
         }
         empty_section[empty_len] = '\0';
 
-        offset += ctext_bg(bar + offset, sizeof(bar) - offset, empty_color, empty_section);
+        offset += (size_t)ctext_bg(bar + offset, sizeof(bar) - offset, empty_color, empty_section);
     }
 
     snprintf(s_temp, sizeof(s_temp), "[%s]", bar);
@@ -562,7 +562,7 @@ static const char* dut_opt_status_gas(struct BasInfo* info)
     return s_temp;
 }
 
-size_t draw_ui_unsafe()
+static size_t draw_ui_unsafe(void)
 {
     clear_screen();
 
@@ -702,7 +702,7 @@ size_t draw_ui_unsafe()
 static pthread_mutex_t s_du_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #define HTML_BUFFER_SIZE 1024 * 6
-size_t draw_ui_and_front()
+size_t draw_ui_and_front(void)
 {
     pthread_mutex_lock(&s_du_mutex);
 
