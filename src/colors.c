@@ -84,7 +84,7 @@ size_t temp_to_ctext_fg(char* buffer, size_t size, double t, double t_min, doubl
     int color = temperature_to_color(t, t_min, t_max);
 
     size_t b = 0;
-    b += (size_t)snprintf(buffer + b, size - b, "\033[38;5;%d", color);
+    b += (size_t)snprintf(buffer + b, size - b, "\033[38;5;%dm", color);
     b += (size_t)safe_format(buffer + b, size - b, num_format, t);
     b += (size_t)snprintf(buffer + b, size - b, "󰔄\033[0m");
     return b;
@@ -95,7 +95,7 @@ size_t temp_to_ctext_bg(char* buffer, size_t size, double t, double t_min, doubl
     int color = temperature_to_color(t, t_min, t_max);
 
     size_t b = 0;
-    b += (size_t)snprintf(buffer + b, size - b, "\033[48;5;%d", color);
+    b += (size_t)snprintf(buffer + b, size - b, "\033[48;5;%dm", color);
     b += (size_t)safe_format(buffer + b, size - b, num_format, t);
     b += (size_t)snprintf(buffer + b, size - b, "󰔄\033[0m");
     return b;
