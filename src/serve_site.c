@@ -18,6 +18,11 @@ static int mg_str_contains(struct mg_str haystack, const char* needle)
     return 0;
 }
 
+static char* bool_to_str(bool value)
+{
+    return value ? "true" : "false";
+}
+
 void serve_site(struct mg_connection* c, int ev, void* ev_data)
 {
 
@@ -35,15 +40,15 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
         mg_http_reply(c, 200, "Content-Type: application/json\r\n",
                       "{"
-                      "\"seconds\": %d"
+                      "\"seconds\": %f"
                       ","
-                      "\"auto_timer\": %d"
+                      "\"auto_timer\": %s"
                       ","
-                      "\"auto_gas\": %d"
+                      "\"auto_gas\": %s"
                       "}",
                       info.opt_auto_timer_seconds,
-                      info.opt_auto_timer,
-                      info.opt_auto_gas);
+                      bool_to_str(info.opt_auto_timer),
+                      bool_to_str(info.opt_auto_gas));
         return;
     }
 
@@ -70,7 +75,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
         infos_bas_safe_io(&info, &g_infos.bas);
 
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", info.opt_auto_timer_seconds);
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %f}", info.opt_auto_timer_seconds);
         draw_ui_and_front();
         return;
     }
@@ -86,7 +91,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
         info.opt_auto_timer = !info.opt_auto_timer;
         infos_bas_safe_io(&info, &g_infos.bas);
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"value\": %d}", info.opt_auto_timer);
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"value\": %s}", bool_to_str(info.opt_auto_timer));
         draw_ui_and_front();
         return;
     }
@@ -101,7 +106,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
         info.opt_auto_gas = !info.opt_auto_gas;
         infos_bas_safe_io(&info, &g_infos.bas);
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"value\": %d}", info.opt_auto_gas);
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"value\": %s}", bool_to_str(info.opt_auto_gas));
         draw_ui_and_front();
         return;
     }
