@@ -17,11 +17,11 @@ extern const char* VAR_DIR_FILE_REQUESTS_LOG;
 extern const char* VAR_DIR_FILE_ERRORS_LOG;
 extern const char* VAR_DIR_FILE_INFOS_BIN;
 
-extern const int ENABLE_REQUEST_BAS;
-extern const int ENABLE_REQUEST_WTTRIN;
-extern const int ENABLE_SAVE_INFOS;
-extern const int ENABLE_AUTO_TIMER;
-extern const int ENABLE_AUTO_GAS;
+extern const bool ENABLE_REQUEST_BAS;
+extern const bool ENABLE_REQUEST_WTTRIN;
+extern const bool ENABLE_SAVE_INFOS;
+extern const bool ENABLE_AUTO_TIMER;
+extern const bool ENABLE_AUTO_GAS;
 extern const int AUTO_TIMER_SECONDS;
 
 extern const int POLL_TIME;
