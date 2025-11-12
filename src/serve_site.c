@@ -49,11 +49,11 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
     if (mg_match(hm->uri, mg_str("/api/set_timer_seconds"), NULL)) {
         double value;
         if (!mg_json_get_num(hm->body, "$.seconds", &value)) { return mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}"); }
-        if (value <= 0) { return mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}"); }
+        if (value <= 0) { mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}"); return; }
 
         struct BasInfo info = {0};
         infos_bas_safe_io(&g_infos.bas, &info);
-        if (!info.valid) { return mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); }
+        if (!info.valid) { mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); return; }
 
         info.opt_auto_timer_seconds = value;
         info.opt_auto_timer_status = OPT_STATUS_CHANGED;
@@ -69,7 +69,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
         struct BasInfo info = {0};
         infos_bas_safe_io(&g_infos.bas, &info);
-        if (!info.valid) { return mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); }
+        if (!info.valid) { mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); return; }
 
         info.opt_auto_timer = !info.opt_auto_timer;
         infos_bas_safe_io(&info, &g_infos.bas);
@@ -81,7 +81,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
     if (mg_match(hm->uri, mg_str("/api/toggle_auto_gas"), NULL)) {
         struct BasInfo info = {0};
         infos_bas_safe_io(&g_infos.bas, &info);
-        if (!info.valid) { return mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); }
+        if (!info.valid) { mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}"); return; }
 
         info.opt_auto_gas = !info.opt_auto_gas;
         infos_bas_safe_io(&info, &g_infos.bas);
@@ -143,7 +143,8 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         DPL("SERVER c");
         char buffer[WS_MAX_CONN * 32] = {0};
         write_conn_to_buffer_safe(buffer, sizeof(buffer));
-        return mg_http_reply(c, 200, "Content-Type: text/plain\r\n", "%s", buffer);
+        mg_http_reply(c, 200, "Content-Type: text/plain\r\n", "%s", buffer);
+        return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/sumtime"), NULL)) {
@@ -153,7 +154,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
         int r1 = logger_changes_sumtime(sumtime1, sizeof(sumtime1), "mod_rada = 0 -- ");
         int r2 = logger_changes_sumtime(sumtime2, sizeof(sumtime2), "StatusPumpe4 = 0 -- ");
-        if (r1 == -1 || r2 == -1) { return mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't sum time\"}"); }
+        if (r1 == -1 || r2 == -1) { mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't sum time\"}"); return; }
 
         mg_http_reply(c, 200, "Content-Type: application/json\r\n",
                       "{"

@@ -87,8 +87,8 @@ enum RequestStatus infos_bas_update()
     if (request.output.buf) {
 
         info.valid = true;
-        info.mod_rada = extract_json_label(request.output, "$.mod_rada", 0);
-        info.mod_rezim = extract_json_label(request.output, "$.mod_rezim", 0);
+        info.mod_rada = (int)extract_json_label(request.output, "$.mod_rada", 0);
+        info.mod_rezim = (int)extract_json_label(request.output, "$.mod_rezim", 0);
         info.StatusPumpe3 = extract_json_label(request.output, "$.StatusPumpe3", 0);
         info.StatusPumpe4 = extract_json_label(request.output, "$.StatusPumpe4", 0);
         info.StatusPumpe5 = extract_json_label(request.output, "$.StatusPumpe5", 0);
@@ -153,7 +153,7 @@ static void make_wttrin_time(struct WttrinInfo* wi)
 {
     size_t b = 0;
     b += dt_HM(wi->time + b, sizeof(wi->time) - b); // prepend hour:minute
-    b += snprintf(wi->time + b, sizeof(wi->time) - b, ":");
+    b += (size_t)snprintf(wi->time + b, sizeof(wi->time) - b, ":");
 }
 
 static int make_wttrin_marquee_conds_width(int term_width, struct WttrinInfo* wi)
@@ -172,8 +172,8 @@ static void make_wttrin_marquee_conds(struct WttrinInfo* wi)
     char buf[MIDBUFF];
 
     size_t b = 0;
-    b += snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
-    b += snprintf(buf + b, sizeof(buf) - b, "%s  ", wi->csv[WTTRIN_CSV_FIELD_C]);
+    b += (size_t)snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
+    b += (size_t)snprintf(buf + b, sizeof(buf) - b, "%s  ", wi->csv[WTTRIN_CSV_FIELD_C]);
 
     const int marquee_pause = 1000; // 1 sec pause
     const int width = make_wttrin_marquee_conds_width(g_term_w, wi);
@@ -185,12 +185,15 @@ static int make_wttrin_marquee_times_width(int term_width)
     return term_width;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
 static char s_mk_str_temp_buff[SMALLBUFF];
 static char* mk_str(const char* format, char* param)
 {
     snprintf(s_mk_str_temp_buff, sizeof(s_mk_str_temp_buff), format, param);
     return s_mk_str_temp_buff;
 }
+#pragma GCC diagnostic pop
 
 static void make_wttrin_marquee_times(struct WttrinInfo* wi)
 {
@@ -236,7 +239,7 @@ enum RequestStatus infos_wttrin_update()
                                       URL_WTTRIN_OUTPUT_CSV_SEP,
                                       URL_WTTRIN_OUTPUT_MAX_FIELDS,
                                       URL_WTTRIN_OUTPUT_MAX_FIELD_LEN,
-                                      g_infos.wttrin.csv);
+                                      (char*)g_infos.wttrin.csv);
         free((void*)request.output.buf);
 
         D(printf("WTTRIN PARSED: %d\n", g_infos.wttrin.csv_parsed));

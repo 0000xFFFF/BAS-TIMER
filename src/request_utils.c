@@ -88,20 +88,20 @@ void print_bas_info(const struct BasInfo* b)
     printf("opt_auto_timer_seconds: %d\n", b->opt_auto_timer_seconds);
     printf("opt_auto_timer_seconds_old: %d\n", b->opt_auto_timer_seconds_old);
     printf("opt_auto_timer_started: %d\n", b->opt_auto_timer_started);
-    printf("opt_auto_timer_seconds_elapsed: %d\n", b->opt_auto_timer_seconds_elapsed);
+    printf("opt_auto_timer_seconds_elapsed: %f\n", b->opt_auto_timer_seconds_elapsed);
     printf("opt_auto_timer_status: %d\n", b->opt_auto_timer_status);
     printf("opt_auto_gas: %d\n", b->opt_auto_gas);
     printf("opt_auto_gas_status: %d\n", b->opt_auto_gas_status);
 
     printf("history_mode: %d\n", b->history_mode);
-    printf("history_mode_time_changed: %d\n", b->history_mode_time_changed);
-    printf("history_mode_time_on: %d\n", b->history_mode_time_on);
-    printf("history_mode_time_off: %d\n", b->history_mode_time_off);
+    printf("history_mode_time_changed: %ld\n", b->history_mode_time_changed);
+    printf("history_mode_time_on: %ld\n", b->history_mode_time_on);
+    printf("history_mode_time_off: %ld\n", b->history_mode_time_off);
 
     printf("history_gas: %d\n", b->history_gas);
-    printf("history_gas_time_changed: %d\n", b->history_gas_time_changed);
-    printf("history_gas_time_on: %d\n", b->history_gas_time_on);
-    printf("history_gas_time_off: %d\n", b->history_gas_time_off);
+    printf("history_gas_time_changed: %ld\n", b->history_gas_time_changed);
+    printf("history_gas_time_on: %ld\n", b->history_gas_time_on);
+    printf("history_gas_time_off: %ld\n", b->history_gas_time_off);
 }
 
 void print_wttrin_info(const struct WttrinInfo* info)
