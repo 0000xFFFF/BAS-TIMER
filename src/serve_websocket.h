@@ -4,8 +4,8 @@
 #include <stdatomic.h>
 #include "mongoose.h"
 
-extern atomic_int g_ws_conn_count;
-extern void ws_emit(const char* data, int len);
+extern atomic_size_t g_ws_conn_count;
+extern void ws_emit(const char* data, size_t len);
 extern void ws_queue_drain();
 extern size_t write_conn_to_buffer_safe(char* buffer, size_t size);
 extern void serve_websocket(struct mg_connection* c, int ev, void* ev_data);

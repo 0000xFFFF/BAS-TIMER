@@ -1,3 +1,4 @@
+#include "thread_print_loop.h"
 #include "debug.h"
 #include "draw_ui.h"
 #include "globals.h"

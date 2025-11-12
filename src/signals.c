@@ -1,5 +1,6 @@
-#include "thread_utils.h"
+#include "signals.h"
 #include "term.h"
+#include "thread_utils.h"
 #include <stdio.h>
 
 void signals_sigint(int sig)

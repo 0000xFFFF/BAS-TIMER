@@ -182,7 +182,7 @@ typedef struct {
 } StyleState;
 
 // Convert 256-color index to RGB hex string
-void ansi_256_to_rgb(int color_index, char* result)
+static void ansi_256_to_rgb(int color_index, char* result)
 {
     if (color_index < 16) {
         // Basic 16 colors
@@ -213,7 +213,7 @@ void ansi_256_to_rgb(int color_index, char* result)
 }
 
 // Parse ANSI escape sequence and update style state
-void parse_ansi_sequence(const char* seq, StyleState* state)
+static void parse_ansi_sequence(const char* seq, StyleState* state)
 {
     state->has_style = false;
 
@@ -275,7 +275,7 @@ void parse_ansi_sequence(const char* seq, StyleState* state)
     free(sequence);
 }
 
-void generate_style_string(const StyleState* state, char* style_str, size_t max_len)
+static void generate_style_string(const StyleState* state, char* style_str, size_t max_len)
 {
     style_str[0] = '\0';
 
@@ -342,7 +342,7 @@ size_t ansi_to_html(const char* text, char* result)
             const char* seq_start = text + i;
             char* seq_end = strchr(seq_start, 'm');
             if (seq_end != NULL) {
-                size_t seq_len = seq_end - seq_start;
+                size_t seq_len = (size_t)(seq_end - seq_start);
                 char* seq = (char*)malloc(seq_len + 1);
                 if (seq != NULL) {
                     strncpy(seq, seq_start, seq_len);
@@ -378,7 +378,7 @@ size_t ansi_to_html(const char* text, char* result)
                         if (current_style.has_style) {
                             char style_str[128] = {0};
                             generate_style_string(&current_style, style_str, sizeof(style_str));
-                            result_pos += sprintf(result + result_pos, "<span style=\"%s\">", style_str);
+                            result_pos += (size_t)sprintf(result + result_pos, "<span style=\"%s\">", style_str);
                         }
                         else {
                             strcpy(result + result_pos, "<span>");

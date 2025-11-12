@@ -1,3 +1,4 @@
+#include "thread_serve.h"
 #include "debug.h"
 #include "globals.h"
 #include "mongoose.h"

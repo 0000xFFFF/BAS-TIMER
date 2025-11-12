@@ -1,3 +1,4 @@
+#include "thread_request_wttrin.h"
 #include "debug.h"
 #include "globals.h"
 #include "request.h"

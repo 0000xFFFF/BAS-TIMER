@@ -1,3 +1,4 @@
+#include "thread_save_infos.h"
 #include "debug.h"
 #include "globals.h"
 #include "request.h"

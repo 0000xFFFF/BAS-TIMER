@@ -1,3 +1,4 @@
+#include "thread_request_bas.h"
 #include "debug.h"
 #include "globals.h"
 #include "request.h"

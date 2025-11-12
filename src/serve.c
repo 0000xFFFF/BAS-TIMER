@@ -1,3 +1,4 @@
+#include "serve.h"
 #include "mongoose.h"
 #include "serve_site.h"
 #include "serve_websocket.h"

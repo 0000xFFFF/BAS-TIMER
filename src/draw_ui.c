@@ -207,7 +207,7 @@ static char* dut_ip(void)
 static char* dut_conns(void)
 {
     s_temp_b = 0;
-    s_temp_b += (size_t)snprintf(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, "%d", atomic_load(&g_ws_conn_count));
+    s_temp_b += (size_t)snprintf(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, "%ld", atomic_load(&g_ws_conn_count));
     return s_temp;
 }
 
@@ -461,7 +461,7 @@ static const char* dut_progressbar(void)
     // Create the text content first
     char text_content[32];
     size_t text_len = (size_t)snprintf(text_content, sizeof(text_content),
-                                       "%f/%d %.2f%%",
+                                       "%f/%f %.2f%%",
                                        s_du_infos.bas.opt_auto_timer_seconds_elapsed,
                                        s_du_infos.bas.opt_auto_timer_seconds,
                                        percent);
@@ -529,7 +529,7 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
         case OPT_STATUS_STARTED:   snprintf(s_temp, sizeof(s_temp), " %s 󰐸", time_str); break;
         case OPT_STATUS_STOPPING:  snprintf(s_temp, sizeof(s_temp), " %s", time_str); break;
         case OPT_STATUS_STOPPED:   snprintf(s_temp, sizeof(s_temp), " %s %s", time_str, p); break;
-        case OPT_STATUS_CHANGED:   snprintf(s_temp, sizeof(s_temp), "changed to: %d", info->opt_auto_timer_seconds); break;
+        case OPT_STATUS_CHANGED:   snprintf(s_temp, sizeof(s_temp), "changed to: %f", info->opt_auto_timer_seconds); break;
         case OPT_STATUS_CANCELLED: snprintf(s_temp, sizeof(s_temp), "󰜺 %s%s", time_str, p); break;
     }
 
@@ -717,7 +717,7 @@ size_t draw_ui_and_front(void)
     escape_quotes(html_buffer, html_buffer_escaped);
 
     char emit_buffer[HTML_BUFFER_SIZE] = {0};
-    int b = snprintf(emit_buffer, HTML_BUFFER_SIZE,
+    size_t b = (size_t)snprintf(emit_buffer, HTML_BUFFER_SIZE,
                      "{"
                      "\"term\": \"%s\""
                      ","

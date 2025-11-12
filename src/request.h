@@ -117,8 +117,8 @@ struct BasInfo {
     double peak_max_circ;
 
     bool opt_auto_timer;
-    int opt_auto_timer_seconds;
-    int opt_auto_timer_seconds_old;
+    double opt_auto_timer_seconds;
+    double opt_auto_timer_seconds_old;
     bool opt_auto_timer_started;
     double opt_auto_timer_seconds_elapsed;
     enum OptStatus opt_auto_timer_status;

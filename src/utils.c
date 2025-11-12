@@ -85,11 +85,11 @@ size_t elapsed_str(char* buffer, size_t size, time_t end, time_t start)
 static size_t get_local_ip_exec(char* buffer, size_t size, char* command)
 {
     FILE* fp = popen(command, "r");
-    if (fp == NULL) { return snprintf(buffer, size, "Can't get ip."); }
+    if (fp == NULL) { return (size_t)snprintf(buffer, size, "Can't get ip."); }
     int found = 0;
-    while (fgets(buffer, size, fp) != NULL) { found = 1; }
+    while (fgets(buffer, (int)size, fp) != NULL) { found = 1; }
     pclose(fp);
-    if (!found) { return snprintf(buffer, size, "No IP found."); }
+    if (!found) { return (size_t)snprintf(buffer, size, "No IP found."); }
     return 0;
 }
 
@@ -131,9 +131,9 @@ double max_dv(int count, ...)
     return m;
 }
 
-char* istrstr(const char* haystack, const char* needle)
+const char* istrstr(const char* haystack, const char* needle)
 {
-    if (!*needle) return (char*)haystack;
+    if (!*needle) return (const char*)haystack;
 
     for (; *haystack; haystack++) {
         const char* h = haystack;
@@ -145,7 +145,7 @@ char* istrstr(const char* haystack, const char* needle)
         }
 
         if (!*n)
-            return (char*)haystack;
+            return (const char*)haystack;
     }
     return NULL;
 }

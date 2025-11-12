@@ -85,8 +85,8 @@ void print_bas_info(const struct BasInfo* b)
     printf("peak_max_circ: %.2f\n", b->peak_max_circ);
 
     printf("opt_auto_timer: %d\n", b->opt_auto_timer);
-    printf("opt_auto_timer_seconds: %d\n", b->opt_auto_timer_seconds);
-    printf("opt_auto_timer_seconds_old: %d\n", b->opt_auto_timer_seconds_old);
+    printf("opt_auto_timer_seconds: %f\n", b->opt_auto_timer_seconds);
+    printf("opt_auto_timer_seconds_old: %f\n", b->opt_auto_timer_seconds_old);
     printf("opt_auto_timer_started: %d\n", b->opt_auto_timer_started);
     printf("opt_auto_timer_seconds_elapsed: %f\n", b->opt_auto_timer_seconds_elapsed);
     printf("opt_auto_timer_status: %d\n", b->opt_auto_timer_status);
@@ -242,6 +242,8 @@ int timeofday_to_color(enum TimeOfDay tod)
 {
     // clang-format off
     switch (tod) {
+        default:
+        case TIME_OF_DAY_UNKNOWN:     return 255;
         case TIME_OF_DAY_BEFORE_DAWN: return 99;
         case TIME_OF_DAY_DAWN:        return 130;
         case TIME_OF_DAY_MORNING:     return 214;
@@ -249,7 +251,6 @@ int timeofday_to_color(enum TimeOfDay tod)
         case TIME_OF_DAY_AFTERNOON:   return 220;
         case TIME_OF_DAY_SUNSET:      return 202;
         case TIME_OF_DAY_NIGHT:       return 105;
-        default:                      return 255;
     }
     // clang-format on
 }

@@ -1,5 +1,6 @@
-#include "globals.h"
+#include "thread_utils.h"
 #include "debug.h"
+#include "globals.h"
 #include <asm-generic/errno.h>
 #include <assert.h>
 #include <pthread.h>
