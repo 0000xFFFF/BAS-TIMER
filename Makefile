@@ -6,7 +6,12 @@ SOURCES = src/*.c
 CFLAGS += -DMG_ENABLE_LINES=1 -DMG_ENABLE_PACKED_FS=1 -D MG_TLS=MG_TLS_OPENSSL -D MG_ENABLE_OPENSSL=1 -lssl -lcrypto
 
 DEBUG_ARGS   = -g -D DEBUG
-RELEASE_ARGS = -W -Wall -Wextra -O2 -march=native -s
+RELEASE_ARGS = -Wall -Wextra -Wpedantic -Wformat=2 -Wcast-qual -Wcast-align \
+               -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith \
+               -Wstrict-prototypes -Wmissing-prototypes -Wstringop-overflow \
+               -Wswitch-enum -Wundef -Wuninitialized -Wdouble-promotion \
+               -Wnull-dereference -Walloc-zero -Walloca -Wvla \
+               -Werror -O2 -march=native -s
 TESTING_ARGS = -g
 
 debug:

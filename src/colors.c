@@ -12,17 +12,17 @@ static int s_radiator_temp_colors[] = {51, 50, 45, 44, 43, 39, 38, 37, 36, 154, 
 
 size_t ctext_fg(char* buffer, size_t size, int color, const char* text)
 {
-    return snprintf(buffer, size, "\033[38;5;%dm%s\033[0m", color, text);
+    return (size_t)snprintf(buffer, size, "\033[38;5;%dm%s\033[0m", color, text);
 }
 
 size_t ctext_u(char* buffer, size_t size, const char* text)
 {
-    return snprintf(buffer, size, "\033[4m%s\033[0m", text);
+    return (size_t)snprintf(buffer, size, "\033[4m%s\033[0m", text);
 }
 
 size_t ctext_uc(char* buffer, size_t size, int underline_color, const char* text)
 {
-    return snprintf(buffer, size,
+    return (size_t)snprintf(buffer, size,
                     "\033[4:1:%dm%s\033[0m",
                     underline_color,
                     text);
@@ -30,12 +30,12 @@ size_t ctext_uc(char* buffer, size_t size, int underline_color, const char* text
 
 size_t cnum_fg(char* buffer, size_t size, int color, const int number)
 {
-    return snprintf(buffer, size, "\033[38;5;%dm%d\033[0m", color, number);
+    return (size_t)snprintf(buffer, size, "\033[38;5;%dm%d\033[0m", color, number);
 }
 
 size_t ctext_bg(char* buffer, size_t size, int color, const char* text)
 {
-    return snprintf(buffer, size, "\033[48;5;%dm%s\033[0m", color, text);
+    return (size_t)snprintf(buffer, size, "\033[48;5;%dm%s\033[0m", color, text);
 }
 
 int contrast_color(int color)
@@ -49,13 +49,13 @@ int contrast_color(int color)
 size_t ctext_fg_con(char* buffer, size_t size, int color, const char* text)
 {
     int contrast = contrast_color(color);
-    return snprintf(buffer, size, "\033[48;5;%dm\033[38;5;%dm%s\033[0m\033[0m", contrast, color, text);
+    return (size_t)snprintf(buffer, size, "\033[48;5;%dm\033[38;5;%dm%s\033[0m\033[0m", contrast, color, text);
 }
 
 size_t ctext_bg_con(char* buffer, size_t size, int color, const char* text)
 {
     int contrast = contrast_color(color);
-    return snprintf(buffer, size, "\033[48;5;%dm\033[38;5;%dm%s\033[0m\033[0m", color, contrast, text);
+    return (size_t)snprintf(buffer, size, "\033[48;5;%dm\033[38;5;%dm%s\033[0m\033[0m", color, contrast, text);
 }
 
 int temperature_to_color(double temp, double temp_min, double temp_max)
@@ -72,7 +72,7 @@ size_t temp_to_ctext_fg(char* buffer, size_t size, double temp, double temp_min,
     char format[MIDBUFF];
     snprintf(format, sizeof(format), "\033[38;5;%%dm%s󰔄\033[0m", num_format);
     int color = temperature_to_color(temp, temp_min, temp_max);
-    return snprintf(buffer, size, format, color, temp);
+    return (size_t)snprintf(buffer, size, format, color, temp);
 }
 
 size_t temp_to_ctext_bg(char* buffer, size_t size, double temp, double temp_min, double temp_max, const char* num_format)

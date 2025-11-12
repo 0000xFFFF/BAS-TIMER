@@ -125,7 +125,7 @@ static size_t make_term_buffer()
 
         // newline
         if (s_term_buffer_b + 1 < sizeof(s_term_buffer)) {
-#if DEBUG
+#ifdef DEBUG
             s_term_buffer[s_term_buffer_b++] = '\n';
 #else // on relase don't add new line for last line
             if (r != MAX_ROWS - 1) {
@@ -388,7 +388,7 @@ static void print_buffer_padded()
         for (; w < g_term_w; w++)
             fputc(' ', stdout);
 
-#if DEBUG // last newline only in debug
+#ifdef DEBUG // last newline only in debug
         fputc('\n', stdout);
 #endif
     }

@@ -214,7 +214,7 @@ extern bool request_status_failed(enum RequestStatus status);
 extern void print_bas_info(const struct BasInfo* b);
 extern void print_wttrin_info(const struct WttrinInfo* info);
 extern enum Weather detect_weather(const char* text);
-extern int parse_csv(const char* input, char sep, int nfields, int field_size, char fields[][field_size]);
+extern int parse_csv(const char* input, char sep, int nfields, int field_size, char* fields);
 extern int save_infos(const char* filename, const struct Infos* info);
 extern int load_infos(const char* filename, struct Infos* info);
 extern enum TimeOfDay wttrin_to_timeofday(struct WttrinInfo* wttrin);
