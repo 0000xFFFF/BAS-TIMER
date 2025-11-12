@@ -61,6 +61,7 @@ struct Request {
 };
 
 enum PumpStatus {
+    PUMP_STATUS_UNKNOWN = -1,
     PUMP_STATUS_AUTO_OFF = 0,
     PUMP_STATUS_AUTO_ON = 1,
     PUMP_STATUS_MANUAL_OFF = 2,
@@ -130,7 +131,7 @@ struct BasInfo {
     time_t history_mode_time_changed;
     time_t history_mode_time_on;
     time_t history_mode_time_off;
-    int history_gas;
+    enum PumpStatus history_gas;
     time_t history_gas_time_changed;
     time_t history_gas_time_on;
     time_t history_gas_time_off;

@@ -27,7 +27,7 @@ struct Marquee {
 extern int marquee_visible_length(const char* str);
 extern void marquee_init(struct Marquee* m, const char* text, int width, int start_delay, int update_on);
 extern void marquee_update_width(struct Marquee* m, int width);
-extern int marquee_render(struct Marquee* m, char* buffer, size_t size);
+extern size_t marquee_render(struct Marquee* m, char* buffer, size_t size);
 extern void marquee_scroll(struct Marquee* m);
 extern void marquee_scroll_smart(struct Marquee* m);
 

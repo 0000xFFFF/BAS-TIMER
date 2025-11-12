@@ -271,11 +271,12 @@ static char* dut_draw_pump_bars(enum PumpStatus value)
 
     s_temp_b = 0;
     switch (value) {
+        default:
+        case PUMP_STATUS_UNKNOWN:    s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, 255, "?"); break;
 
         case PUMP_STATUS_AUTO_ON:    s_temp_b += ctext_fg_con(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, COLOR_ON_AUTO, get_frame(&spinner_bars, 0)); break;
         case PUMP_STATUS_MANUAL_ON:  s_temp_b += ctext_fg_con(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, COLOR_ON_MANUAL, get_frame(&spinner_bars, 0)); break;
 
-        default:
         case PUMP_STATUS_AUTO_OFF:   s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, COLOR_OFF_AUTO, ""); break;
         case PUMP_STATUS_MANUAL_OFF: s_temp_b += ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, COLOR_OFF_MANUAL, ""); break;
     }
@@ -450,23 +451,23 @@ static const char* dut_progressbar(void)
     time(&current_time);
     s_du_infos.bas.opt_auto_timer_seconds_elapsed = difftime(current_time, s_du_infos.bas.history_mode_time_on);
     double percent = s_du_infos.bas.opt_auto_timer_seconds >= 0 ? (s_du_infos.bas.opt_auto_timer_seconds_elapsed / (double)s_du_infos.bas.opt_auto_timer_seconds) * 100
-                                                               : 0;
+                                                                : 0;
 
     // Progress bar configuration
-    const int bar_width = 24;
+    const size_t bar_width = 24;
     const int filled_color = 28; // green
     const int empty_color = 235; // dark gray
 
     // Create the text content first
     char text_content[32];
     size_t text_len = (size_t)snprintf(text_content, sizeof(text_content),
-                            "%f/%d %.2f%%",
-                            s_du_infos.bas.opt_auto_timer_seconds_elapsed,
-                            s_du_infos.bas.opt_auto_timer_seconds,
-                            percent);
+                                       "%f/%d %.2f%%",
+                                       s_du_infos.bas.opt_auto_timer_seconds_elapsed,
+                                       s_du_infos.bas.opt_auto_timer_seconds,
+                                       percent);
 
     // Calculate filled portion
-    size_t filled = (size_t)((percent / 100.0) * bar_width);
+    size_t filled = (size_t)((percent / 100.0)) * bar_width;
     if (filled > bar_width) filled = bar_width;
 
     // Build progress bar - only 2 sections maximum

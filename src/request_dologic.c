@@ -40,7 +40,7 @@ static void update_history(struct BasInfo* info)
         }
     }
 
-    if (info->history_gas == -1 || info->history_gas != info->StatusPumpe4) {
+    if (info->history_gas == PUMP_STATUS_UNKNOWN || info->history_gas != info->StatusPumpe4) {
         info->history_gas = info->StatusPumpe4;
         info->history_gas_time_changed = current_time;
 

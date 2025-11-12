@@ -34,7 +34,7 @@ int marquee_visible_length(const char* str)
 }
 
 // Update ANSI state
-static void update_ansi_state(struct Marquee* m, const char* start, int len)
+static void update_ansi_state(struct Marquee* m, const char* start, size_t len)
 {
     if (len >= (int)sizeof(m->ansi_state)) return;
     strncpy(m->ansi_state, start, len);
@@ -42,17 +42,17 @@ static void update_ansi_state(struct Marquee* m, const char* start, int len)
 }
 
 // Write next visible character or ANSI code to buffer
-static int write_next_char(struct Marquee* m, const char* str, int* idx, char** buf_ptr, size_t* remaining)
+static int write_next_char(struct Marquee* m, const char* str, size_t* idx, char** buf_ptr, size_t* remaining)
 {
     if (!str[*idx]) return 0;
 
     if (str[*idx] == '\033') {
-        int start = *idx;
+        size_t start = *idx;
         while (str[*idx] && str[*idx] != 'm') (*idx)++;
         if (str[*idx]) (*idx)++;
 
-        int len = *idx - start;
-        if ((size_t)len >= *remaining) return -1; // Buffer overflow
+        size_t len = *idx - start;
+        if (len >= *remaining) return -1; // Buffer overflow
 
         update_ansi_state(m, &str[start], len);
         memcpy(*buf_ptr, &str[start], len);
@@ -108,23 +108,23 @@ void marquee_update_width(struct Marquee* m, int width)
 }
 
 // Render frame to buffer
-int marquee_render(struct Marquee* m, char* buffer, size_t size)
+size_t marquee_render(struct Marquee* m, char* buffer, size_t size)
 {
-    if (!buffer || size == 0) return -1;
+    if (!buffer || size == 0) return 0;
 
     char* buf_ptr = buffer;
     size_t remaining = size - 1; // Reserve space for null terminator
 
     if (!m->scroll_needed) {
         size_t len = strlen(m->text);
-        if (len >= remaining) return -1;
+        if (len >= remaining) return 0;
         strlcpy(buffer, m->text, size);
         return len;
     }
 
     int displayed = 0;
     int vis_idx = 0;
-    int byte_idx = 0;
+    size_t byte_idx = 0;
     char last_ansi[128] = {0};
 
     // Skip to scroll position (count visible chars)
@@ -135,10 +135,10 @@ int marquee_render(struct Marquee* m, char* buffer, size_t size)
         }
 
         if (m->text[byte_idx] == '\033') {
-            int start = byte_idx;
+            size_t start = byte_idx;
             while (m->text[byte_idx] && m->text[byte_idx] != 'm') byte_idx++;
             if (m->text[byte_idx]) byte_idx++;
-            int len = byte_idx - start;
+            size_t len = byte_idx - start;
             if (len < (int)sizeof(last_ansi)) {
                 strncpy(last_ansi, &m->text[start], len);
                 last_ansi[len] = '\0';
@@ -158,7 +158,7 @@ int marquee_render(struct Marquee* m, char* buffer, size_t size)
     // Prepend active ANSI
     if (last_ansi[0]) {
         size_t ansi_len = strlen(last_ansi);
-        if (ansi_len >= remaining) return -1;
+        if (ansi_len >= remaining) return 0;
         memcpy(buf_ptr, last_ansi, ansi_len);
         buf_ptr += ansi_len;
         remaining -= ansi_len;
@@ -168,12 +168,12 @@ int marquee_render(struct Marquee* m, char* buffer, size_t size)
     while (displayed < m->width) {
         if (!m->text[byte_idx]) byte_idx = 0;
         int result = write_next_char(m, m->text, &byte_idx, &buf_ptr, &remaining);
-        if (result < 0) return -1; // Buffer overflow
+        if (result < 0) return 0; // Buffer overflow
         displayed += result;
     }
 
     *buf_ptr = '\0';
-    return buf_ptr - buffer;
+    return (size_t)(buf_ptr - buffer);
 }
 
 // Scroll one step
@@ -198,7 +198,7 @@ void marquee_scroll_smart(struct Marquee* m)
 
     // Find the current first visible character (after skipping to m->pos)
     int vis_idx = 0;
-    int byte_idx = 0;
+    size_t byte_idx = 0;
 
     // Skip to current scroll position
     while (vis_idx < m->pos) {

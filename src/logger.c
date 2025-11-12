@@ -9,7 +9,7 @@ static pthread_mutex_t s_mutex_file_errors = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t s_mutex_file_requests = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t s_mutex_file_changes = PTHREAD_MUTEX_INITIALIZER;
 
-void logger_write(const char* filename, const char* fmt, va_list args)
+static void logger_write(const char* filename, const char* fmt, va_list args)
 {
     if (fmt == NULL || filename == NULL) { return; }
 
@@ -58,14 +58,14 @@ void logger_changes_write(const char* fmt, ...)
     pthread_mutex_unlock(&s_mutex_file_changes);
 }
 
-int logger_changes_sumtime(char* buffer, int buffer_size, const char* pattern)
+size_t logger_changes_sumtime(char* buffer, size_t buffer_size, const char* pattern)
 {
     pthread_mutex_lock(&s_mutex_file_changes);
     FILE* f = fopen(VAR_DIR_FILE_CHANGES_LOG, "r");
     if (f == NULL) {
         perror("Failed to open log file");
         pthread_mutex_unlock(&s_mutex_file_changes);
-        return -1;
+        return 0;
     }
 
     char line[1024 * 4] = {0};
@@ -93,44 +93,44 @@ int logger_changes_sumtime(char* buffer, int buffer_size, const char* pattern)
     long total_days = total_hours / 24;
     long total_years = total_days / 365; // approximate
 
-    int seconds = total_seconds % 60;
-    int minutes = total_minutes % 60;
-    int hours = total_hours % 24;
-    int days = total_days % 30; // remainder days after months
-    int months = (total_days / 30) % 12;
+    long seconds = total_seconds % 60;
+    long minutes = total_minutes % 60;
+    long hours = total_hours % 24;
+    long days = total_days % 30; // remainder days after months
+    long months = (total_days / 30) % 12;
 
-    int c = 0;
+    size_t c = 0;
 
     if (total_years != 0) {
-        c += snprintf(buffer+c, buffer_size, "%dy", (int)total_years);
-        c += snprintf(buffer+c, buffer_size, "%s", " ");
+        c += (size_t)snprintf(buffer+c, buffer_size, "%ldy", total_years);
+        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
     }
 
     if (months != 0) {
-        c += snprintf(buffer+c, buffer_size, "%dM", months);
-        c += snprintf(buffer+c, buffer_size, "%s", " ");
+        c += (size_t)snprintf(buffer+c, buffer_size, "%ldM", months);
+        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
     }
 
     if (days != 0) {
-        c += snprintf(buffer+c, buffer_size, "%dd", days);
-        c += snprintf(buffer+c, buffer_size, "%s", " ");
+        c += (size_t)snprintf(buffer+c, buffer_size, "%ldd", days);
+        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
     }
 
     if (hours != 0) {
-        c += snprintf(buffer+c, buffer_size, "%dh", hours);
-        c += snprintf(buffer+c, buffer_size, "%s", " ");
+        c += (size_t)snprintf(buffer+c, buffer_size, "%ldh", hours);
+        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
     }
 
     if (minutes != 0) {
-        c += snprintf(buffer+c, buffer_size, "%dm", minutes);
-        c += snprintf(buffer+c, buffer_size, "%s", " ");
+        c += (size_t)snprintf(buffer+c, buffer_size, "%ldm", minutes);
+        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
     }
 
     if (seconds != 0) {
-        c += snprintf(buffer+c, buffer_size, "%ds", seconds);
+        c += (size_t)snprintf(buffer+c, buffer_size, "%lds", seconds);
     }
 
-    c += snprintf(buffer+c, buffer_size, " (%lu sec)", total_seconds);
+    c += (size_t)snprintf(buffer+c, buffer_size, " (%lu sec)", total_seconds);
 
     pthread_mutex_unlock(&s_mutex_file_changes);
     return c;

@@ -1,6 +1,4 @@
-#include <pthread.h>
-#include <stdatomic.h>
-#include <stdbool.h>
+#include "globals.h"
 
 const char* ADDR_HTTP = "http://0.0.0.0:5000";   // HTTP port
 const char* ADDR_HTTPS = "https://0.0.0.0:5001"; // HTTPS port -- unused
@@ -38,8 +36,8 @@ const int SLEEP_MS_WTTRIN = 60 * 5 * 1000; // 5 min
 const int SLEEP_MS_WTTRIN_RETRY = 5000;    // 5 sec
 const int SLEEP_MS_SAVE_INFOS = 3000;      // 3 sec
 
-const int TIMEOUT_MS_BAS = 1500;
-const int TIMEOUT_MS_WTTRIN = 10000;
+const uint64_t TIMEOUT_MS_BAS = 1500;
+const uint64_t TIMEOUT_MS_WTTRIN = 10000;
 
 const double TEMP_MIN_SOLAR = 0;
 const double TEMP_MAX_SOLAR = 100;

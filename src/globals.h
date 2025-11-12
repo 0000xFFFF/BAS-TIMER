@@ -3,6 +3,8 @@
 
 #include <pthread.h>
 #include <stdatomic.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 extern const char* ADDR_HTTP;
 extern const char* ADDR_HTTPS;
@@ -29,8 +31,8 @@ extern const int SLEEP_MS_WTTRIN;
 extern const int SLEEP_MS_WTTRIN_RETRY;
 extern const int SLEEP_MS_SAVE_INFOS;
 
-extern const int TIMEOUT_MS_BAS;
-extern const int TIMEOUT_MS_WTTRIN;
+extern const uint64_t TIMEOUT_MS_BAS;
+extern const uint64_t TIMEOUT_MS_WTTRIN;
 
 extern const double TEMP_MIN_SOLAR;
 extern const double TEMP_MAX_SOLAR;
@@ -51,6 +53,5 @@ extern pthread_cond_t g_cond;
 #define BIGBUFF   1024
 
 #define WS_MAX_CONN MIDBUFF
-
 
 #endif // GLOBALS_H
