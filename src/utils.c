@@ -186,7 +186,7 @@ size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seco
     if (hours != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldh ", hours); }
     if (minutes != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldm ", minutes); }
     if (seconds != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%lds ", seconds); }
-    c += (size_t)snprintf(buffer + c, buffer_size, "(%lu sec)", total_seconds);
+    c += (size_t)snprintf(buffer + c, buffer_size, "(%lus)", total_seconds);
 
     return c;
 }
