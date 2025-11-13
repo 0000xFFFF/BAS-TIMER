@@ -465,7 +465,7 @@ static const char* dut_progressbar(void)
                                        percent);
 
     // Calculate filled portion
-    size_t filled = (size_t)((percent / 100.0)) * bar_width;
+    size_t filled = (size_t)((percent / 100.0) * bar_width);
     if (filled > bar_width) filled = bar_width;
 
     // Build progress bar - only 2 sections maximum
@@ -504,6 +504,7 @@ static const char* dut_progressbar(void)
     }
 
     snprintf(s_temp, sizeof(s_temp), "[%s]", bar);
+
     return s_temp;
 }
 
