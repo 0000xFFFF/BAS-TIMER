@@ -180,36 +180,13 @@ size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seco
 
     size_t c = 0;
 
-    if (total_years != 0) {
-        c += (size_t)snprintf(buffer + c, buffer_size, "%ldy", total_years);
-        c += (size_t)snprintf(buffer + c, buffer_size, "%s", " ");
-    }
-
-    if (months != 0) {
-        c += (size_t)snprintf(buffer + c, buffer_size, "%ldM", months);
-        c += (size_t)snprintf(buffer + c, buffer_size, "%s", " ");
-    }
-
-    if (days != 0) {
-        c += (size_t)snprintf(buffer + c, buffer_size, "%ldd", days);
-        c += (size_t)snprintf(buffer + c, buffer_size, "%s", " ");
-    }
-
-    if (hours != 0) {
-        c += (size_t)snprintf(buffer + c, buffer_size, "%ldh", hours);
-        c += (size_t)snprintf(buffer + c, buffer_size, "%s", " ");
-    }
-
-    if (minutes != 0) {
-        c += (size_t)snprintf(buffer + c, buffer_size, "%ldm", minutes);
-        c += (size_t)snprintf(buffer + c, buffer_size, "%s", " ");
-    }
-
-    if (seconds != 0) {
-        c += (size_t)snprintf(buffer + c, buffer_size, "%lds", seconds);
-    }
-
-    c += (size_t)snprintf(buffer + c, buffer_size, " (%lu sec)", total_seconds);
+    if (total_years != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldy ", total_years); }
+    if (months != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldM ", months); }
+    if (days != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldd ", days); }
+    if (hours != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldh ", hours); }
+    if (minutes != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldm ", minutes); }
+    if (seconds != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%lds ", seconds); }
+    c += (size_t)snprintf(buffer + c, buffer_size, "(%lu sec)", total_seconds);
 
     return c;
 }
