@@ -72,7 +72,7 @@ static void do_logic_timer(struct BasInfo* info)
 
     if (info->opt_auto_timer && info->mod_rada) {
         if (info->opt_auto_timer_started) {
-            info->opt_auto_timer_seconds_elapsed = difftime(current_time, info->history_mode_time_on);
+            info->opt_auto_timer_seconds_elapsed = (int)difftime(current_time, info->history_mode_time_on);
 
             if (info->opt_auto_timer_seconds_elapsed >= info->opt_auto_timer_seconds) {
                 info->opt_auto_timer_started = false;

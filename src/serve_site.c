@@ -40,7 +40,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
         mg_http_reply(c, 200, "Content-Type: application/json\r\n",
                       "{"
-                      "\"seconds\": %f"
+                      "\"seconds\": %d"
                       ","
                       "\"auto_timer\": %s"
                       ","
@@ -70,12 +70,12 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
             return;
         }
 
-        info.opt_auto_timer_seconds = value;
+        info.opt_auto_timer_seconds = (int)value;
         info.opt_auto_timer_status = OPT_STATUS_CHANGED;
 
         infos_bas_safe_io(&info, &g_infos.bas);
 
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %f}", info.opt_auto_timer_seconds);
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", info.opt_auto_timer_seconds);
         draw_ui_and_front();
         return;
     }

@@ -43,7 +43,7 @@ void infos_bas_init()
 
         g_infos.bas.opt_auto_timer = ENABLE_AUTO_TIMER;
         g_infos.bas.opt_auto_gas = ENABLE_AUTO_GAS;
-        g_infos.bas.opt_auto_timer_seconds = (double)AUTO_TIMER_SECONDS;
+        g_infos.bas.opt_auto_timer_seconds = (int)AUTO_TIMER_SECONDS;
         g_infos.bas.opt_auto_timer_started = 0;
         g_infos.bas.opt_auto_timer_seconds_elapsed = 0;
 

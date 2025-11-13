@@ -447,7 +447,7 @@ static const char* dut_progressbar(void)
 {
     time_t current_time;
     time(&current_time);
-    s_du_infos.bas.opt_auto_timer_seconds_elapsed = difftime(current_time, s_du_infos.bas.history_mode_time_on);
+    s_du_infos.bas.opt_auto_timer_seconds_elapsed = (int)difftime(current_time, s_du_infos.bas.history_mode_time_on);
     double percent = s_du_infos.bas.opt_auto_timer_seconds >= 0 ? (s_du_infos.bas.opt_auto_timer_seconds_elapsed / (double)s_du_infos.bas.opt_auto_timer_seconds) * 100
                                                                 : 0;
 
@@ -459,7 +459,7 @@ static const char* dut_progressbar(void)
     // Create the text content first
     char text_content[32];
     size_t text_len = (size_t)snprintf(text_content, sizeof(text_content),
-                                       "%f/%f %.2f%%",
+                                       "%d/%d %.2f%%",
                                        s_du_infos.bas.opt_auto_timer_seconds_elapsed,
                                        s_du_infos.bas.opt_auto_timer_seconds,
                                        percent);
@@ -527,7 +527,7 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
         case OPT_STATUS_STARTED:   snprintf(s_temp, sizeof(s_temp), " %s 󰐸", time_str); break;
         case OPT_STATUS_STOPPING:  snprintf(s_temp, sizeof(s_temp), " %s", time_str); break;
         case OPT_STATUS_STOPPED:   snprintf(s_temp, sizeof(s_temp), " %s %s", time_str, p); break;
-        case OPT_STATUS_CHANGED:   snprintf(s_temp, sizeof(s_temp), "changed to: %.0f", info->opt_auto_timer_seconds); break;
+        case OPT_STATUS_CHANGED:   snprintf(s_temp, sizeof(s_temp), "changed to: %d", info->opt_auto_timer_seconds); break;
         case OPT_STATUS_CANCELLED: snprintf(s_temp, sizeof(s_temp), "󰜺 %s%s", time_str, p); break;
     }
 

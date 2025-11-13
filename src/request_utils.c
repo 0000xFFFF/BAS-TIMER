@@ -81,10 +81,10 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %.2f\n", clm_len, "peak_min_circ", b->peak_min_circ);
     printf("%*s : %.2f\n", clm_len, "peak_max_circ", b->peak_max_circ);
     printf("%*s : %d\n", clm_len, "opt_auto_timer", b->opt_auto_timer);
-    printf("%*s : %f\n", clm_len, "opt_auto_timer_seconds", b->opt_auto_timer_seconds);
-    printf("%*s : %f\n", clm_len, "opt_auto_timer_seconds_old", b->opt_auto_timer_seconds_old);
+    printf("%*s : %d\n", clm_len, "opt_auto_timer_seconds", b->opt_auto_timer_seconds);
+    printf("%*s : %d\n", clm_len, "opt_auto_timer_seconds_old", b->opt_auto_timer_seconds_old);
     printf("%*s : %d\n", clm_len, "opt_auto_timer_started", b->opt_auto_timer_started);
-    printf("%*s : %f\n", clm_len, "opt_auto_timer_seconds_elapsed", b->opt_auto_timer_seconds_elapsed);
+    printf("%*s : %d\n", clm_len, "opt_auto_timer_seconds_elapsed", b->opt_auto_timer_seconds_elapsed);
     printf("%*s : %d\n", clm_len, "opt_auto_timer_status", b->opt_auto_timer_status);
     printf("%*s : %d\n", clm_len, "opt_auto_gas", b->opt_auto_gas);
     printf("%*s : %d\n", clm_len, "opt_auto_gas_status", b->opt_auto_gas_status);
