@@ -527,7 +527,7 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
         case OPT_STATUS_STARTED:   snprintf(s_temp, sizeof(s_temp), " %s 󰐸", time_str); break;
         case OPT_STATUS_STOPPING:  snprintf(s_temp, sizeof(s_temp), " %s", time_str); break;
         case OPT_STATUS_STOPPED:   snprintf(s_temp, sizeof(s_temp), " %s %s", time_str, p); break;
-        case OPT_STATUS_CHANGED:   snprintf(s_temp, sizeof(s_temp), "changed to: %d", info->opt_auto_timer_seconds); break;
+        case OPT_STATUS_CHANGED:   total_seconds_to_string(s_temp, sizeof(s_temp), info->opt_auto_timer_seconds); break;
         case OPT_STATUS_CANCELLED: snprintf(s_temp, sizeof(s_temp), "󰜺 %s%s", time_str, p); break;
     }
 
@@ -716,22 +716,22 @@ size_t draw_ui_and_front(void)
 
     char emit_buffer[HTML_BUFFER_SIZE] = {0};
     size_t b = (size_t)snprintf(emit_buffer, HTML_BUFFER_SIZE,
-                     "{"
-                     "\"term\": \"%s\""
-                     ","
-                     "\"Tmin\": %f"
-                     ","
-                     "\"Tmax\": %f"
-                     ","
-                     "\"mod_rada\": %d"
-                     ","
-                     "\"StatusPumpe4\": %d"
-                     "}",
-                     html_buffer_escaped,
-                     s_du_infos.bas.Tmin,
-                     s_du_infos.bas.Tmax,
-                     s_du_infos.bas.mod_rada,    // heat
-                     s_du_infos.bas.StatusPumpe4 // gas pump
+                                "{"
+                                "\"term\": \"%s\""
+                                ","
+                                "\"Tmin\": %f"
+                                ","
+                                "\"Tmax\": %f"
+                                ","
+                                "\"mod_rada\": %d"
+                                ","
+                                "\"StatusPumpe4\": %d"
+                                "}",
+                                html_buffer_escaped,
+                                s_du_infos.bas.Tmin,
+                                s_du_infos.bas.Tmax,
+                                s_du_infos.bas.mod_rada,    // heat
+                                s_du_infos.bas.StatusPumpe4 // gas pump
     );
     ws_emit(emit_buffer, b);
     pthread_mutex_unlock(&s_du_mutex);
