@@ -2,5 +2,5 @@
 pkill konsole
 cd ~/BAS-TIMER
 git pull
-make testing
+make release
 DISPLAY=:0 i3-msg restart
