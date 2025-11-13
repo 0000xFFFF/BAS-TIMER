@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -x
 mkdir -p ~/.config
 mkdir -p ~/.config/i3
 mkdir -p ~/.local/share
