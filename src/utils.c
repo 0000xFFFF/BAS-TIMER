@@ -15,7 +15,7 @@
 #include <time.h>
 #include <unistd.h>
 
-long long timestamp()
+long long timestamp(void)
 {
     struct timeval tv;
     gettimeofday(&tv, NULL); // Get the current time
@@ -66,7 +66,7 @@ size_t dt_full(char* buffer, size_t size)
     return strftime_YmdHMS(buffer, size, timeinfo);
 }
 
-int localtime_hour()
+int localtime_hour(void)
 {
     time_t t;
     struct tm* tm_info;
@@ -157,7 +157,7 @@ int hms_to_seconds(const char* str)
     return h * 3600 + m * 60 + s;
 }
 
-int now_seconds()
+int now_seconds(void)
 {
     time_t t = time(NULL);
     struct tm* tm = localtime(&t);

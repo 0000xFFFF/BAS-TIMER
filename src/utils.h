@@ -3,14 +3,14 @@
 
 #include <time.h>
 
-extern long long timestamp();
+extern long long timestamp(void);
 extern size_t strftime_HM(char* buffer, size_t size, struct tm* timeinfo);
 extern size_t strftime_HMS(char* buffer, size_t size, struct tm* timeinfo);
 extern size_t strftime_YmdHMS(char* buffer, size_t size, struct tm* timeinfo);
 extern size_t dt_HM(char* buffer, size_t size);
 extern size_t dt_HMS(char* buffer, size_t size);
 extern size_t dt_full(char* buffer, size_t size);
-extern int localtime_hour();
+extern int localtime_hour(void);
 extern size_t elapsed_str(char* buffer, size_t size, time_t end, time_t start);
 extern size_t get_local_ip(char* buffer, size_t size);
 extern size_t get_local_ips(char* buffer, size_t size);
@@ -18,7 +18,7 @@ extern double min_dv(int count, ...);
 extern double max_dv(int count, ...);
 extern const char* istrstr(const char* haystack, const char* needle);
 extern int hms_to_seconds(const char* str);
-extern int now_seconds();
+extern int now_seconds(void);
 extern size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds);
 
 #endif // UTILS_HPP
