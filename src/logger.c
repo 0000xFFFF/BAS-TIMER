@@ -87,50 +87,7 @@ size_t logger_changes_sumtime(char* buffer, size_t buffer_size, const char* patt
         }
     }
 
-    // Convert total_seconds into years, months, days, hours, minutes, seconds
-    long total_minutes = total_seconds / 60;
-    long total_hours = total_minutes / 60;
-    long total_days = total_hours / 24;
-    long total_years = total_days / 365; // approximate
-
-    long seconds = total_seconds % 60;
-    long minutes = total_minutes % 60;
-    long hours = total_hours % 24;
-    long days = total_days % 30; // remainder days after months
-    long months = (total_days / 30) % 12;
-
-    size_t c = 0;
-
-    if (total_years != 0) {
-        c += (size_t)snprintf(buffer+c, buffer_size, "%ldy", total_years);
-        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
-    }
-
-    if (months != 0) {
-        c += (size_t)snprintf(buffer+c, buffer_size, "%ldM", months);
-        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
-    }
-
-    if (days != 0) {
-        c += (size_t)snprintf(buffer+c, buffer_size, "%ldd", days);
-        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
-    }
-
-    if (hours != 0) {
-        c += (size_t)snprintf(buffer+c, buffer_size, "%ldh", hours);
-        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
-    }
-
-    if (minutes != 0) {
-        c += (size_t)snprintf(buffer+c, buffer_size, "%ldm", minutes);
-        c += (size_t)snprintf(buffer+c, buffer_size, "%s", " ");
-    }
-
-    if (seconds != 0) {
-        c += (size_t)snprintf(buffer+c, buffer_size, "%lds", seconds);
-    }
-
-    c += (size_t)snprintf(buffer+c, buffer_size, " (%lu sec)", total_seconds);
+    size_t c = total_seconds_to_string(buffer, buffer_size, total_seconds);
 
     pthread_mutex_unlock(&s_mutex_file_changes);
     return c;

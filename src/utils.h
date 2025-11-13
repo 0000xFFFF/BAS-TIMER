@@ -19,5 +19,6 @@ extern double max_dv(int count, ...);
 extern const char* istrstr(const char* haystack, const char* needle);
 extern int hms_to_seconds(const char* str);
 extern int now_seconds();
+extern size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds);
 
 #endif // UTILS_HPP
