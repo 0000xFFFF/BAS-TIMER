@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <stdatomic.h>
 
-static void fn(struct mg_connection* c, int ev, void* ev_data)
+static void request_send_callback(struct mg_connection* c, int ev, void* ev_data)
 {
     struct Request* request = (struct Request*)c->fn_data;
 
@@ -60,7 +60,7 @@ enum RequestStatus request_send(struct Request* request)
     mg_mgr_init(&mgr);
     // mgr.dns4.url = "udp://8.8.8.8:53";
     if (request->timeout_ms) { request->timeout_ms_deadline = mg_millis() + request->timeout_ms; } // ensure timeout is set before calling connect
-    mg_http_connect(&mgr, request->url, fn, request);
+    mg_http_connect(&mgr, request->url, request_send_callback, request);
     while (atomic_load(&g_running) && request->status == REQUEST_STATUS_RUNNING) {
 
         mg_mgr_poll(&mgr, 50);
