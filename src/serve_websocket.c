@@ -73,7 +73,7 @@ static bool ws_is_valid_connection(struct mg_connection* c)
 }
 
 // In the server thread, after mg_mgr_poll, drain the queue and call mg_ws_send
-void ws_queue_drain()
+void ws_queue_drain(void)
 {
     struct QueuedMessage* local_head = NULL;
 
