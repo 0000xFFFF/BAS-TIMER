@@ -188,17 +188,17 @@ struct Infos {
 };
 
 // request_infos.c
-extern void infos_bas_init();
-extern enum RequestStatus infos_bas_update();
+extern void infos_bas_init(void);
+extern enum RequestStatus infos_bas_update(void);
 extern void infos_bas_safe_io(const struct BasInfo* in, struct BasInfo* out);
-extern void infos_wttrin_init();
-extern enum RequestStatus infos_wttrin_update();
+extern void infos_wttrin_init(void);
+extern enum RequestStatus infos_wttrin_update(void);
 extern void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo* out);
-extern void infos_wttrin_marquee_conds_scroll();
+extern void infos_wttrin_marquee_conds_scroll(void);
 extern void infos_wttrin_marquee_conds_update_width(int term_width);
-extern void infos_wttrin_marquee_times_scroll();
+extern void infos_wttrin_marquee_times_scroll(void);
 extern void infos_wttrin_marquee_times_update_width(int term_width);
-extern void infos_save();
+extern void infos_save(void);
 
 // request_send.c
 extern enum RequestStatus request_send(struct Request* request);
@@ -222,7 +222,7 @@ extern int load_infos(const char* filename, struct Infos* info);
 extern enum TimeOfDay wttrin_to_timeofday(struct WttrinInfo* wttrin);
 extern int timeofday_to_color(enum TimeOfDay tod);
 extern int wttrin_timeofday_color(struct WttrinInfo* wttrin);
-extern enum TimeOfDay timeofday();
+extern enum TimeOfDay timeofday(void);
 
 extern struct Infos g_infos;
 

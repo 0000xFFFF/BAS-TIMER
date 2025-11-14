@@ -146,7 +146,7 @@ enum Weather detect_weather(const char* text)
     for (int w = WEATHER_CLEAR; w <= WEATHER_SNOW; w++) {
         for (int k = 0; weather_keywords[w][k] != NULL; k++) {
             if (istrstr(text, weather_keywords[w][k])) {
-                return w;
+                return (enum Weather)w;
             }
         }
     }
@@ -221,7 +221,7 @@ enum TimeOfDay wttrin_to_timeofday(struct WttrinInfo* wttrin)
     // clang-format on
 }
 
-enum TimeOfDay timeofday()
+enum TimeOfDay timeofday(void)
 {
     // clang-format off
     int hour = localtime_hour();

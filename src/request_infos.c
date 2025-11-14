@@ -25,7 +25,7 @@ void infos_bas_safe_io(const struct BasInfo* in, struct BasInfo* out)
 
 static long long s_unix_counter = 0;
 
-void infos_bas_init()
+void infos_bas_init(void)
 {
     pthread_mutex_lock(&s_infos_bas_mutex);
 
@@ -61,7 +61,7 @@ void infos_bas_init()
 }
 
 // must infos_bas_init before running this
-enum RequestStatus infos_bas_update()
+enum RequestStatus infos_bas_update(void)
 {
     s_unix_counter++;
     char request_url[BIGBUFF];
@@ -137,7 +137,7 @@ void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo*
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
-void infos_wttrin_init()
+void infos_wttrin_init(void)
 {
     pthread_mutex_lock(&s_infos_wttrin_mutex);
     if (!g_infos.wttrin.valid) {
@@ -215,7 +215,7 @@ static void make_wttrin_marquee_times(struct WttrinInfo* wi)
 }
 
 // must infos_wttrin_init before running this
-enum RequestStatus infos_wttrin_update()
+enum RequestStatus infos_wttrin_update(void)
 {
     struct Request request = {0};
     request.status = REQUEST_STATUS_RUNNING;
@@ -278,7 +278,7 @@ enum RequestStatus infos_wttrin_update()
     return request.status;
 }
 
-void infos_wttrin_marquee_conds_scroll()
+void infos_wttrin_marquee_conds_scroll(void)
 {
     pthread_mutex_lock(&s_infos_wttrin_mutex);
     marquee_scroll_smart(&g_infos.wttrin.marquee_conds);
@@ -292,7 +292,7 @@ void infos_wttrin_marquee_conds_update_width(int term_width)
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
-void infos_wttrin_marquee_times_scroll()
+void infos_wttrin_marquee_times_scroll(void)
 {
     pthread_mutex_lock(&s_infos_wttrin_mutex);
     marquee_scroll_smart(&g_infos.wttrin.marquee_times);
@@ -306,7 +306,7 @@ void infos_wttrin_marquee_times_update_width(int term_width)
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
 
-void infos_save()
+void infos_save(void)
 {
     pthread_mutex_lock(&s_infos_bas_mutex);
     pthread_mutex_lock(&s_infos_wttrin_mutex);
