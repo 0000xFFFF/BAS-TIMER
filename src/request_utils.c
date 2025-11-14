@@ -102,34 +102,37 @@ void print_wttrin_info(const struct WttrinInfo* info)
 {
     if (!info) return;
 
+    int cl1 = 18;
     printf("===[ info.wttrin\n");
-    printf("valid: %s\n", info->valid ? "true" : "false");
-    printf("status: %d\n", (int)info->status);
-    printf("weather: %d\n", (int)info->weather);
-    printf("time: %s\n", info->time);
-    printf("marquee_conds.text: %s\n", info->marquee_conds.text);
-    printf("marquee_times.text: %s\n", info->marquee_times.text);
-    printf("Weather condition                    : %s\n", info->csv[WTTRIN_CSV_FIELD_c]);
-    printf("Weather condition textual name       : %s\n", info->csv[WTTRIN_CSV_FIELD_C]);
-    printf("Weather condition  plain-text symbol : %s\n", info->csv[WTTRIN_CSV_FIELD_x]);
-    printf("Humidity                             : %s\n", info->csv[WTTRIN_CSV_FIELD_h]);
-    printf("Temperature (Actual)                 : %s\n", info->csv[WTTRIN_CSV_FIELD_t]);
-    printf("Temperature (Feels Like)             : %s\n", info->csv[WTTRIN_CSV_FIELD_f]);
-    printf("Wind                                 : %s\n", info->csv[WTTRIN_CSV_FIELD_w]);
-    printf("Location                             : %s\n", info->csv[WTTRIN_CSV_FIELD_l]);
-    printf("Moon phase 🌑🌒🌓🌔🌕🌖🌗🌘          : %s\n", info->csv[WTTRIN_CSV_FIELD_m]);
-    printf("Moon day                             : %s\n", info->csv[WTTRIN_CSV_FIELD_M]);
-    printf("Precipitation (mm/3 hours)           : %s\n", info->csv[WTTRIN_CSV_FIELD_p]);
-    printf("Pressure (hPa)                       : %s\n", info->csv[WTTRIN_CSV_FIELD_P]);
-    printf("UV index (1-12)                      : %s\n", info->csv[WTTRIN_CSV_FIELD_u]);
-    printf("Dawn*                                : %s\n", info->csv[WTTRIN_CSV_FIELD_D]);
-    printf("Sunrise*                             : %s\n", info->csv[WTTRIN_CSV_FIELD_S]);
-    printf("Zenith*                              : %s\n", info->csv[WTTRIN_CSV_FIELD_z]);
-    printf("Sunset*                              : %s\n", info->csv[WTTRIN_CSV_FIELD_s]);
-    printf("Dusk*                                : %s\n", info->csv[WTTRIN_CSV_FIELD_d]);
-    printf("Current time*                        : %s\n", info->csv[WTTRIN_CSV_FIELD_T]);
-    printf("Local timezone.                      : %s\n", info->csv[WTTRIN_CSV_FIELD_Z]);
-    printf("csv_parsed: %d\n", info->csv_parsed);
+    printf("%*s : %s\n", cl1, "valid", info->valid ? "true" : "false");
+    printf("%*s : %d\n", cl1, "status", (int)info->status);
+    printf("%*s : %d\n", cl1, "weather", (int)info->weather);
+    printf("%*s : %s\n", cl1, "time", info->time);
+    printf("%*s : %s\n", cl1, "marquee_conds.text", info->marquee_conds.text);
+    printf("%*s : %s\n", cl1, "marquee_times.text", info->marquee_times.text);
+
+    int cl2 = 18;
+    printf("%*s : %s\n", cl2, "Weather",            info->csv[WTTRIN_CSV_FIELD_c]);
+    printf("%*s : %s\n", cl2, "WC textual name",    info->csv[WTTRIN_CSV_FIELD_C]);
+    printf("%*s : %s\n", cl2, "WC text symbol",     info->csv[WTTRIN_CSV_FIELD_x]);
+    printf("%*s : %s\n", cl2, "Humidity",           info->csv[WTTRIN_CSV_FIELD_h]);
+    printf("%*s : %s\n", cl2, "T (Actual)",         info->csv[WTTRIN_CSV_FIELD_t]);
+    printf("%*s : %s\n", cl2, "T (Feels Like)",     info->csv[WTTRIN_CSV_FIELD_f]);
+    printf("%*s : %s\n", cl2, "Wind",               info->csv[WTTRIN_CSV_FIELD_w]);
+    printf("%*s : %s\n", cl2, "Location",           info->csv[WTTRIN_CSV_FIELD_l]);
+    printf("%*s : %s\n", cl2, "Moon phase",         info->csv[WTTRIN_CSV_FIELD_m]);
+    printf("%*s : %s\n", cl2, "Moon day",           info->csv[WTTRIN_CSV_FIELD_M]);
+    printf("%*s : %s\n", cl2, "Prec. (mm/3 hours)", info->csv[WTTRIN_CSV_FIELD_p]);
+    printf("%*s : %s\n", cl2, "Pressure (hPa)",     info->csv[WTTRIN_CSV_FIELD_P]);
+    printf("%*s : %s\n", cl2, "UV index (1-12)",    info->csv[WTTRIN_CSV_FIELD_u]);
+    printf("%*s : %s\n", cl2, "Dawn",               info->csv[WTTRIN_CSV_FIELD_D]);
+    printf("%*s : %s\n", cl2, "Sunrise",            info->csv[WTTRIN_CSV_FIELD_S]);
+    printf("%*s : %s\n", cl2, "Zenith",             info->csv[WTTRIN_CSV_FIELD_z]);
+    printf("%*s : %s\n", cl2, "Sunset",             info->csv[WTTRIN_CSV_FIELD_s]);
+    printf("%*s : %s\n", cl2, "Dusk",               info->csv[WTTRIN_CSV_FIELD_d]);
+    printf("%*s : %s\n", cl2, "Time",               info->csv[WTTRIN_CSV_FIELD_T]);
+    printf("%*s : %s\n", cl2, "Local timezone.",    info->csv[WTTRIN_CSV_FIELD_Z]);
+    printf("csv_parsed: %d\n",                      info->csv_parsed);
 }
 
 void print_infos(const struct Infos* info)

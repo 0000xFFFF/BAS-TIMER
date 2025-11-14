@@ -252,7 +252,6 @@ enum RequestStatus infos_wttrin_update()
         }
 
         g_infos.wttrin.valid = true;
-        D(print_wttrin_info(&g_infos.wttrin));
 
         // // override weather cond
         // snprintf(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
@@ -272,6 +271,7 @@ enum RequestStatus infos_wttrin_update()
         g_infos.wttrin.sunset = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s]);
         g_infos.wttrin.dusk = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d]);
 
+        D(print_wttrin_info(&g_infos.wttrin));
     }
 
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
