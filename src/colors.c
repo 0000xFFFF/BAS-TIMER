@@ -1,4 +1,6 @@
 #include "colors.h"
+#include "globals.h"
+#include "request.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -101,46 +103,35 @@ size_t temp_to_ctext_bg(char* buffer, size_t size, double t, double t_min, doubl
     return b;
 }
 
-// Warm-up and cool-down durations (in seconds)
-static const int RADIATOR_WARMUP_SEC = 8 * 60;                    // 8 minutes
-static const int RADIATOR_COOLDOWN_SEC = 1 * 60 * 60 + (30 * 60); // 1 hour and 30 min
-
-// State tracking
-static time_t s_last_update = 0;
-static double s_current_temp_ratio = 0.0; // 0.0 = cold, 1.0 = fully hot
-static int s_is_heating = 0;
-
-int radiator_color_update(int is_heating_now)
+int radiator_color_update(struct BasInfo* info)
 {
     time_t now = time(NULL);
 
     // Initialize on first call
-    if (s_last_update == 0) {
-        s_last_update = now;
-    }
+    if (info->radiator_color_last_update == 0) { info->radiator_color_last_update = now; }
 
-    double delta_time = difftime(now, s_last_update);
-    s_last_update = now;
-    s_is_heating = is_heating_now;
+    double delta_time = difftime(now, info->radiator_color_last_update);
+    info->radiator_color_last_update = now;
 
     // HEATING
-    if (s_is_heating) {
+    if (info->mod_rada) {
         double warmup_rate = delta_time / RADIATOR_WARMUP_SEC;
-        s_current_temp_ratio += warmup_rate;
-        if (s_current_temp_ratio > 1.0) {
-            s_current_temp_ratio = 1.0;
+        info->radiator_color_current_temp_ratio += warmup_rate;
+        if (info->radiator_color_current_temp_ratio > 1.0) {
+            info->radiator_color_current_temp_ratio = 1.0;
         }
     }
     // COOLING
     else {
         double cooldown_rate = delta_time / RADIATOR_COOLDOWN_SEC;
-        s_current_temp_ratio -= cooldown_rate;
-        if (s_current_temp_ratio < 0.0) {
-            s_current_temp_ratio = 0.0;
+        info->radiator_color_current_temp_ratio -= cooldown_rate;
+        if (info->radiator_color_current_temp_ratio < 0.0) {
+            info->radiator_color_current_temp_ratio = 0.0;
         }
     }
 
     // Map temperature ratio to color index
-    int index = (int)(s_current_temp_ratio * (s_radiator_temp_colors_size - 1));
-    return s_radiator_temp_colors[index];
+    info->radiator_color_index = (int)(info->radiator_color_current_temp_ratio * (s_radiator_temp_colors_size - 1));
+    info->radiator_color = s_radiator_temp_colors[info->radiator_color_index];
+    return info->radiator_color;
 }

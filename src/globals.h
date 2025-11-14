@@ -43,6 +43,9 @@ extern const double TEMP_MAX_BUF;
 extern const double TEMP_MIN_CIRC;
 extern const double TEMP_MAX_CIRC;
 
+extern const int RADIATOR_WARMUP_SEC;
+extern const int RADIATOR_COOLDOWN_SEC;
+
 extern atomic_bool g_running;
 extern pthread_mutex_t g_mutex;
 extern pthread_cond_t g_cond;

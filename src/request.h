@@ -135,6 +135,11 @@ struct BasInfo {
     time_t history_gas_time_changed;
     time_t history_gas_time_on;
     time_t history_gas_time_off;
+
+    int radiator_color;
+    int radiator_color_index;
+    time_t radiator_color_last_update;
+    double radiator_color_current_temp_ratio; // 0.0 = cold, 1.0 = fully hot
 };
 
 enum Weather {
@@ -179,7 +184,6 @@ struct WttrinInfo {
 
     struct Marquee marquee_conds; // c -- Weather condition, C -- Weather condition textual name
     struct Marquee marquee_times; // D -- Dawn*, S -- Sunrise*, z -- Zenith*, s -- Sunset*, d -- Dusk*
-
 };
 
 struct Infos {

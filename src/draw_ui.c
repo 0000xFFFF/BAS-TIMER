@@ -589,7 +589,7 @@ static size_t draw_ui_unsafe(void)
     time_t current_time;
     time(&current_time);
 
-    int color_radiator = radiator_color_update(s_du_infos.bas.mod_rada);
+    radiator_color_update(&s_du_infos.bas);
 
     // row 0
     enum TimeOfDay tod = get_tod();
@@ -649,7 +649,7 @@ static size_t draw_ui_unsafe(void)
     sc(5, 6, human_temp_to_emoji(s_du_infos.bas.Tsobna));
     sc(6, 6, human_temp_to_emoji(s_du_infos.bas.Tzadata));
 
-    scc(7, 0, color_radiator, dut_selected(dut_heat(), s_du_infos.bas.opt_auto_timer));
+    scc(7, 0, s_du_infos.bas.radiator_color, dut_selected(dut_heat(), s_du_infos.bas.opt_auto_timer));
     sc(8, 0, dut_regime(s_du_infos.bas.mod_rada));
 
     sc(7, 1, dut_draw_pump_bars(s_du_infos.bas.StatusPumpe6));
@@ -674,14 +674,14 @@ static size_t draw_ui_unsafe(void)
     scc(8, 8, 177, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_P]);
 
     // statuses
-    sc(9, 0, dut_label_auto_timer_status(color_radiator));
+    sc(9, 0, dut_label_auto_timer_status(s_du_infos.bas.radiator_color));
     sc(10, 0, dut_label_auto_gas_status());
 
     if (s_du_infos.bas.opt_auto_timer_started) {
         sc(9, 1, dut_progressbar());
     }
     else {
-        scc(9, 1, color_radiator, dut_opt_status_timer(&s_du_infos.bas));
+        scc(9, 1, s_du_infos.bas.radiator_color, dut_opt_status_timer(&s_du_infos.bas));
     }
 
     scc(10, 1, 255, dut_opt_status_gas(&s_du_infos.bas));

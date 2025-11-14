@@ -1,6 +1,7 @@
 #ifndef COLORS_H
 #define COLORS_H
 
+#include "request.h"
 #include <time.h>
 
 #define COLOR_ON_AUTO   48
@@ -25,6 +26,6 @@ extern size_t ctext_bg_con(char* buffer, size_t size, int color, const char* tex
 extern int temperature_to_color(double temp, double temp_min, double temp_max);
 extern size_t temp_to_ctext_fg(char* buffer, size_t size, double t, double t_min, double t_max, const char* const num_format);
 extern size_t temp_to_ctext_bg(char* buffer, size_t size, double t, double t_min, double t_max, const char* const num_format);
-extern int radiator_color_update(int is_heating_now);
+extern int radiator_color_update(struct BasInfo* info);
 
 #endif // COLORS_H

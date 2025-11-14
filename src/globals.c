@@ -16,9 +16,9 @@ const bool ENABLE_REQUEST_BAS = true;
 const bool ENABLE_REQUEST_WTTRIN = true;
 const bool ENABLE_SAVE_INFOS =
 #ifdef DEBUG
-false;
+    false;
 #else
-true;
+    true;
 #endif
 const bool ENABLE_AUTO_TIMER = true;
 const bool ENABLE_AUTO_GAS = true;
@@ -52,6 +52,9 @@ const double TEMP_MIN_BUF = 45;
 const double TEMP_MAX_BUF = 60;
 const double TEMP_MIN_CIRC = 0;
 const double TEMP_MAX_CIRC = 60;
+
+const int RADIATOR_WARMUP_SEC = 8 * 60;                    // 8 minutes
+const int RADIATOR_COOLDOWN_SEC = 1 * 60 * 60 + (30 * 60); // 1 hour and 30 min
 
 atomic_bool g_running = true;
 pthread_mutex_t g_mutex;

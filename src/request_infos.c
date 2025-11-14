@@ -116,6 +116,8 @@ enum RequestStatus infos_bas_update(void)
         info.peak_min_circ = min_dv(2, info.peak_min_circ, info.Tfs);
         info.peak_max_circ = max_dv(2, info.peak_max_circ, info.Tfs);
 
+        radiator_color_update(&info);
+
         remember_vars_do_action(&info);
 
         D(print_bas_info(&info));
