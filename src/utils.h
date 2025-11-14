@@ -1,6 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include <stdbool.h>
 #include <time.h>
 
 extern long long timestamp(void);
@@ -19,6 +20,6 @@ extern double max_dv(int count, ...);
 extern const char* istrstr(const char* haystack, const char* needle);
 extern int hms_to_seconds(const char* str);
 extern int now_seconds(void);
-extern size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds);
+extern size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds);
 
 #endif // UTILS_HPP

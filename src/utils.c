@@ -164,29 +164,65 @@ int now_seconds(void)
     return tm->tm_hour * 3600 + tm->tm_min * 60 + tm->tm_sec;
 }
 
-size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds)
+#include <stdbool.h>
+#include <stdio.h>
+
+size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds)
 {
-    // Convert total_seconds into years, months, days, hours, minutes, seconds
+    if (!buffer || buffer_size == 0) {
+        return 0;
+    }
+
+    buffer[0] = '\0';
+
     long total_minutes = total_seconds / 60;
     long total_hours = total_minutes / 60;
     long total_days = total_hours / 24;
-    long total_years = total_days / 365; // approximate
+    long total_years = total_days / 365;
 
     long seconds = total_seconds % 60;
     long minutes = total_minutes % 60;
     long hours = total_hours % 24;
-    long days = total_days % 30; // remainder days after months
+    long days = total_days % 30;
     long months = (total_days / 30) % 12;
 
-    size_t c = 0;
+    size_t written = 0; // characters actually placed in buffer
+    size_t wanted = 0;  // characters that *would* have been written
 
-    if (total_years != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldy ", total_years); }
-    if (months != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldM ", months); }
-    if (days != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldd ", days); }
-    if (hours != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldh ", hours); }
-    if (minutes != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%ldm ", minutes); }
-    if (seconds != 0) { c += (size_t)snprintf(buffer + c, buffer_size, "%lds ", seconds); }
-    c += (size_t)snprintf(buffer + c, buffer_size, "(%lus)", total_seconds);
+#define SAFE_APPEND(fmt, value)                                                \
+    do {                                                                       \
+        int n = snprintf(buffer + written, buffer_size - written, fmt, value); \
+        if (n < 0) return wanted; /* encoding error */                         \
+        wanted += (size_t)n;                                                   \
+        if (written < buffer_size) {                                           \
+            if ((size_t)n >= buffer_size - written) {                          \
+                written = buffer_size - 1; /* truncated */                     \
+            }                                                                  \
+            else {                                                             \
+                written += (size_t)n;                                          \
+            }                                                                  \
+        }                                                                      \
+    } while (0)
 
-    return c;
+    if (total_years) SAFE_APPEND("%ldy ", total_years);
+    if (months) SAFE_APPEND("%ldM ", months);
+    if (days) SAFE_APPEND("%ldd ", days);
+    if (hours) SAFE_APPEND("%ldh ", hours);
+    if (minutes) SAFE_APPEND("%ldm ", minutes);
+    if (seconds) SAFE_APPEND("%lds ", seconds);
+
+    if (append_total_seconds) {
+        SAFE_APPEND("(%lds)", total_seconds);
+    }
+    else {
+        // remove trailing space if present
+        if (written > 0 && buffer[written - 1] == ' ') {
+            buffer[written - 1] = '\0';
+            written--;
+            wanted--;
+        }
+    }
+
+    buffer[written] = '\0';
+    return wanted; // total characters that would have been produced
 }

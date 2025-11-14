@@ -456,16 +456,18 @@ static const char* dut_progressbar(void)
     const int filled_color = 28; // green
     const int empty_color = 235; // dark gray
 
+    char time1[32];
+    total_seconds_to_string(time1, sizeof(time1), s_du_infos.bas.opt_auto_timer_seconds_elapsed, false);
+
+    char time2[32];
+    total_seconds_to_string(time2, sizeof(time2), s_du_infos.bas.opt_auto_timer_seconds, false);
+
     // Create the text content first
     char text_content[32];
-    size_t text_len = (size_t)snprintf(text_content, sizeof(text_content),
-                                       "%d/%d %.2f%%",
-                                       s_du_infos.bas.opt_auto_timer_seconds_elapsed,
-                                       s_du_infos.bas.opt_auto_timer_seconds,
-                                       percent);
+    size_t text_len = (size_t)snprintf(text_content, sizeof(text_content), "%s/%s %.2f%%", time1, time2, percent);
 
     // Calculate filled portion
-    size_t filled = (size_t)((percent / 100.0) * bar_width);
+    size_t filled = (size_t)((percent / 100.0) * (double)bar_width);
     if (filled > bar_width) filled = bar_width;
 
     // Build progress bar - only 2 sections maximum
@@ -528,7 +530,7 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
         case OPT_STATUS_STARTED:   snprintf(s_temp, sizeof(s_temp), " %s 󰐸", time_str); break;
         case OPT_STATUS_STOPPING:  snprintf(s_temp, sizeof(s_temp), " %s", time_str); break;
         case OPT_STATUS_STOPPED:   snprintf(s_temp, sizeof(s_temp), " %s %s", time_str, p); break;
-        case OPT_STATUS_CHANGED:   total_seconds_to_string(s_temp, sizeof(s_temp), info->opt_auto_timer_seconds); break;
+        case OPT_STATUS_CHANGED:   total_seconds_to_string(s_temp, sizeof(s_temp), info->opt_auto_timer_seconds, true); break;
         case OPT_STATUS_CANCELLED: snprintf(s_temp, sizeof(s_temp), "󰜺 %s%s", time_str, p); break;
     }
 
