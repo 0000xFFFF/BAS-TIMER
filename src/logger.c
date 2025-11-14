@@ -9,6 +9,9 @@ static pthread_mutex_t s_mutex_file_errors = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t s_mutex_file_requests = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t s_mutex_file_changes = PTHREAD_MUTEX_INITIALIZER;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+
 static void logger_write(const char* filename, const char* fmt, va_list args)
 {
     if (fmt == NULL || filename == NULL) { return; }
@@ -26,6 +29,8 @@ static void logger_write(const char* filename, const char* fmt, va_list args)
     vfprintf(f, fmt, args);
     fclose(f);
 }
+
+#pragma GCC diagnostic pop
 
 void logger_errors_write(const char* fmt, ...)
 {
