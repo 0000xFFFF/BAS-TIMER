@@ -21,7 +21,7 @@ void mkdir_safe(const char* dir)
     if (stat(dir, &st) == -1) { mkdir(dir, 0700); }
 }
 
-void change_to_bin_dir()
+void change_to_bin_dir(void)
 {
     char path[PATH_MAX];
     ssize_t len = readlink("/proc/self/exe", path, sizeof(path) - 1);

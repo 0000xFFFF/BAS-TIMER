@@ -17,7 +17,7 @@
 #include <stdatomic.h>
 #include <unistd.h>
 
-int main()
+int main(void)
 {
     // init
     DPL("MAIN START");

@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-void init_thread_data()
+void init_thread_data(void)
 {
     pthread_mutex_init(&g_mutex, NULL);
 
@@ -19,7 +19,7 @@ void init_thread_data()
     pthread_condattr_destroy(&attr);
 }
 
-void stop_all_threads()
+void stop_all_threads(void)
 {
     DPL("STOPPING ALL THREADS");
     atomic_store(&g_running, false);

@@ -21,30 +21,30 @@
 int g_term_w = 0;
 int g_term_h = 0;
 
-void term_clear()
+void term_clear(void)
 {
     system("clear");
 }
 
-void term_cursor_reset()
+void term_cursor_reset(void)
 {
     printf("\033[0;0H");
     fflush(stdout);
 }
 
-void term_cursor_hide()
+void term_cursor_hide(void)
 {
     printf("\033[?25l");
     fflush(stdout);
 }
 
-void term_cursor_show()
+void term_cursor_show(void)
 {
     printf("\033[?25h");
     fflush(stdout);
 }
 
-void term_blank()
+void term_blank(void)
 {
     term_cursor_hide();
     term_clear();
@@ -52,7 +52,7 @@ void term_blank()
 
 #define TERM_WIDTH_CAP 55
 
-unsigned short int term_width()
+unsigned short int term_width(void)
 {
     struct winsize w;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1)
@@ -63,7 +63,7 @@ unsigned short int term_width()
     return col - 1; // NOTE: some utf8 chars break term spacing so -1 to dirty fix that
 }
 
-unsigned short int term_height()
+unsigned short int term_height(void)
 {
     struct winsize w;
 
@@ -73,7 +73,7 @@ unsigned short int term_height()
     return w.ws_row;
 }
 
-void term_init()
+void term_init(void)
 {
     g_term_w = term_width();
     g_term_h = term_height();

@@ -93,7 +93,7 @@ char* spinner_house_frames[] = {"", ""};
 struct Spinner spinner_recycle;
 char* spinner_recycle_frames[] = {"", "󰑌", "󱎝"};
 
-void init_spinners()
+void init_spinners(void)
 {
     int default_spinner_delay = 250 / SLEEP_MS_DRAW;
     init_spinner(&spinner_basic, spinner_basic_frames, sizeof(spinner_basic_frames) / sizeof(spinner_basic_frames[0]), default_spinner_delay);

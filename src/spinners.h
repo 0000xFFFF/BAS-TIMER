@@ -13,7 +13,7 @@ struct Spinner {
 // Function prototypes
 extern void spin_spinner(struct Spinner*);
 extern char* get_frame(struct Spinner*, int);
-extern void init_spinners();
+extern void init_spinners(void);
 
 // Declare external spinners
 extern struct Spinner spinner_basic;
