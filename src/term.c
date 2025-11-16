@@ -60,7 +60,7 @@ unsigned short int term_width(void)
 
     unsigned short int col = w.ws_col;
     if (col > TERM_WIDTH_CAP) col = TERM_WIDTH_CAP; // g_term_buffer is fixed size we need to cap it so we never overflow it when writing spaces
-    return col - 1; // NOTE: some utf8 chars break term spacing so -1 to dirty fix that
+    return col;
 }
 
 unsigned short int term_height(void)

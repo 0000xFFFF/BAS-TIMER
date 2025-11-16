@@ -403,7 +403,7 @@ static void print_buffer_padded(void)
             // print truncated line
             fputs(truncated, stdout);
             // pad remaining spaces
-            for (; width < g_term_w; width++)
+            for (; width < g_term_w - 1; width++) // NOTE: -1 diry fix == some utf8 chars break term wrap (too wide)
                 fputc(' ', stdout);
             fputc('\n', stdout);
             p++;
