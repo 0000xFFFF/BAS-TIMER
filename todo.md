@@ -1,8 +1,5 @@
 # top:
-- bas info:
-    - add radiator color
-    - bas_infos_update should update times
-    - make a function to get color
+- ? for unint values
 - min max temp from wttr.in --- BRUH ... i can get min/max temp but I can't get other values in j1 j2 formats
 
 # find in files:
