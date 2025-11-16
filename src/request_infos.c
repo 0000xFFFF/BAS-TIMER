@@ -32,6 +32,14 @@ void infos_bas_init(void)
     s_unix_counter = timestamp();
 
     if (!g_infos.bas.valid) {
+        g_infos.bas.mod_rada = -1;
+        g_infos.bas.mod_rezim = -1;
+        g_infos.bas.StatusPumpe3 = -1;
+        g_infos.bas.StatusPumpe4 = -1;
+        g_infos.bas.StatusPumpe5 = -1;
+        g_infos.bas.StatusPumpe6 = -1;
+        g_infos.bas.StatusPumpe7 = -1;
+
         g_infos.bas.peak_min_solar = TEMP_MIN_SOLAR;
         g_infos.bas.peak_max_solar = TEMP_MAX_SOLAR;
         g_infos.bas.peak_min_human = TEMP_MIN_HUMAN;

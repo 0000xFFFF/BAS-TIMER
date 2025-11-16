@@ -249,13 +249,22 @@ static char* dut_min_warn(void)
 
 static char* dut_heat(void)
 {
-    return s_du_infos.bas.mod_rada ? get_frame(&spinner_heat, 1) : "󱪯";
+    switch (s_du_infos.bas.mod_rada) {
+        case -1: return "?";
+        case 0:  return "󱪯";
+    }
+    return get_frame(&spinner_heat, 1);
 }
 
 static char* dut_regime(int value)
 {
     s_temp_b = 0;
-    s_temp_b += cnum_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, 192, value);
+    if (value == -1) {
+        s_temp_b += (size_t)snprintf(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, "?");
+    }
+    else {
+        s_temp_b += cnum_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, 192, value);
+    }
     return s_temp;
 }
 
