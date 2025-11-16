@@ -258,12 +258,6 @@ enum RequestStatus infos_wttrin_update(void)
         // // override weather cond
         // snprintf(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
 
-        // make marquees
-        make_wttrin_time(&g_infos.wttrin);
-        g_infos.wttrin.weather = detect_weather(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]); // wttrin emoji
-        make_wttrin_marquee_conds(&g_infos.wttrin);
-
-        make_wttrin_marquee_times(&g_infos.wttrin);
 
         // parse seconds for wttrin_to_timeofday
         g_infos.wttrin.dawn = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_D]);
@@ -274,6 +268,25 @@ enum RequestStatus infos_wttrin_update(void)
         g_infos.wttrin.dusk = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d]);
 
         trim_spaces(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_c]); // trim spaces from emoji
+
+        // // make times smaller '06:09:47' -> '6:09' = remove seconds + remove it if it's padded with 0 on left
+        //trim_right(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_D], 3);
+        //trim_right(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_S], 3);
+        //trim_right(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_z], 3);
+        //trim_right(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s], 3);
+        //trim_right(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d], 3);
+        //if (g_infos.wttrin.csv[WTTRIN_CSV_FIELD_D][0] == '0') trim_left(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_D], 1);
+        //if (g_infos.wttrin.csv[WTTRIN_CSV_FIELD_S][0] == '0') trim_left(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_S], 1);
+        //if (g_infos.wttrin.csv[WTTRIN_CSV_FIELD_z][0] == '0') trim_left(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_z], 1);
+        //if (g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s][0] == '0') trim_left(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s], 1);
+        //if (g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d][0] == '0') trim_left(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d], 1);
+
+        // make marquees
+        make_wttrin_time(&g_infos.wttrin);
+        g_infos.wttrin.weather = detect_weather(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]); // wttrin emoji
+        make_wttrin_marquee_conds(&g_infos.wttrin);
+
+        make_wttrin_marquee_times(&g_infos.wttrin);
 
         D(print_wttrin_info(&g_infos.wttrin));
     }

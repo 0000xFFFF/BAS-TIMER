@@ -245,3 +245,29 @@ void trim_spaces(char* buffer)
     }
     *dst = '\0';
 }
+
+void trim_left(char* buffer, size_t n)
+{
+    if (n <= 0) return;
+
+    size_t len = strlen(buffer);
+    if ((size_t)n >= len) {
+        buffer[0] = '\0';
+        return;
+    }
+
+    memmove(buffer, buffer + n, len - n + 1);
+}
+
+void trim_right(char* buffer, size_t n)
+{
+    if (n <= 0) return;
+
+    size_t len = strlen(buffer);
+    if ((size_t)n >= len) {
+        buffer[0] = '\0';
+        return;
+    }
+
+    buffer[len - n] = '\0';
+}

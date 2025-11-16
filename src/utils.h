@@ -22,5 +22,7 @@ extern int hms_to_seconds(const char* str);
 extern int now_seconds(void);
 extern size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds);
 extern void trim_spaces(char* buffer);
+extern void trim_left(char* buffer, size_t n);
+extern void trim_right(char* buffer, size_t n);
 
 #endif // UTILS_HPP
