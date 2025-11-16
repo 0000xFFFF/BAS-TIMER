@@ -273,6 +273,8 @@ enum RequestStatus infos_wttrin_update(void)
         g_infos.wttrin.sunset = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s]);
         g_infos.wttrin.dusk = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d]);
 
+        trim_spaces(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_c]); // trim spaces from emoji
+
         D(print_wttrin_info(&g_infos.wttrin));
     }
 

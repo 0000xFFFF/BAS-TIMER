@@ -226,3 +226,22 @@ size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seco
     buffer[written] = '\0';
     return wanted; // total characters that would have been produced
 }
+
+void trim_spaces(char* buffer)
+{
+    char* src = buffer;
+    char* dst = buffer;
+
+    while (*src) {
+        if (*src != ' ' &&  // space
+            *src != '\t' && // tab
+            *src != '\n' && // newline
+            *src != '\r' && // carriage return
+            *src != '\v' && // vertical tab
+            *src != '\f') { // form feed
+            *dst++ = *src;
+        }
+        src++;
+    }
+    *dst = '\0';
+}

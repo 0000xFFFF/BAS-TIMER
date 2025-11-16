@@ -21,5 +21,6 @@ extern const char* istrstr(const char* haystack, const char* needle);
 extern int hms_to_seconds(const char* str);
 extern int now_seconds(void);
 extern size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds);
+extern void trim_spaces(char* buffer);
 
 #endif // UTILS_HPP
