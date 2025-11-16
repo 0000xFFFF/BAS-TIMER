@@ -256,7 +256,7 @@ enum RequestStatus infos_wttrin_update(void)
         g_infos.wttrin.valid = true;
 
         // // override weather cond
-        snprintf(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
+        // snprintf(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
 
         // make marquees
         make_wttrin_time(&g_infos.wttrin);
