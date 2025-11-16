@@ -341,30 +341,71 @@ static char* dut_label_auto_gas_status(void)
 static void print_buffer_padded(void)
 {
     setlocale(LC_ALL, ""); // ensure correct UTF-8 width
-
     const char* p = s_term_buffer;
     const char* line_start = p;
-
     while (*p) {
         if (*p == '\n') {
             size_t line_bytes = (size_t)(p - line_start);
-
             char line[4096]; // enough per line
             memcpy(line, line_start, line_bytes);
             line[line_bytes] = '\0';
 
-            // print line
-            fputs(line, stdout);
+            // Truncate line to fit terminal width
+            mbstate_t ps = {0};
+            wchar_t wc;
+            int width = 0;
+            const char* ch = line;
+            char truncated[4096];
+            char* out = truncated;
 
-            // measure display width
-            int w = utf8_display_width(line);
+            while (*ch) {
+                // Handle ANSI escape sequences
+                if (*ch == '\033') {
+                    const char* esc_start = ch;
+                    if (*(ch + 1) == '[') {
+                        ch += 2;
+                        while (*ch && (*ch < '@' || *ch > '~'))
+                            ch++;
+                        if (*ch) ch++;
+                        // Copy entire escape sequence
+                        memcpy(out, esc_start, (size_t)(ch - esc_start));
+                        out += (ch - esc_start);
+                        continue;
+                    }
+                }
 
-            // pad spaces
-            for (; w < g_term_w; w++)
+                // Convert next multibyte character
+                size_t n = mbrtowc(&wc, ch, MB_CUR_MAX, &ps);
+                if (n == (size_t)-1 || n == (size_t)-2) {
+                    ch++;
+                    continue;
+                }
+                else if (n == 0) {
+                    break;
+                }
+
+                int w = wcwidth(wc);
+                int char_width = (w > 0) ? w : 0;
+
+                if (width + char_width <= g_term_w) {
+                    // Copy this character
+                    memcpy(out, ch, n);
+                    out += n;
+                    width += char_width;
+                    ch += n;
+                }
+                else {
+                    break;
+                }
+            }
+            *out = '\0';
+
+            // print truncated line
+            fputs(truncated, stdout);
+            // pad remaining spaces
+            for (; width < g_term_w; width++)
                 fputc(' ', stdout);
-
             fputc('\n', stdout);
-
             p++;
             line_start = p;
         }
@@ -372,26 +413,71 @@ static void print_buffer_padded(void)
             p++;
         }
     }
-
     // last line without trailing newline
     if (line_start != p) {
         size_t line_bytes = (size_t)(p - line_start);
-
         char line[4096];
         memcpy(line, line_start, line_bytes);
         line[line_bytes] = '\0';
 
-        fputs(line, stdout);
+        // Truncate line to fit terminal width
+        mbstate_t ps = {0};
+        wchar_t wc;
+        int width = 0;
+        const char* ch = line;
+        char truncated[4096];
+        char* out = truncated;
 
-        int w = utf8_display_width(line);
-        for (; w < g_term_w; w++)
+        while (*ch) {
+            // Handle ANSI escape sequences
+            if (*ch == '\033') {
+                const char* esc_start = ch;
+                if (*(ch + 1) == '[') {
+                    ch += 2;
+                    while (*ch && (*ch < '@' || *ch > '~'))
+                        ch++;
+                    if (*ch) ch++;
+                    // Copy entire escape sequence
+                    memcpy(out, esc_start, (size_t)(ch - esc_start));
+                    out += (ch - esc_start);
+                    continue;
+                }
+            }
+
+            // Convert next multibyte character
+            size_t n = mbrtowc(&wc, ch, MB_CUR_MAX, &ps);
+            if (n == (size_t)-1 || n == (size_t)-2) {
+                ch++;
+                continue;
+            }
+            else if (n == 0) {
+                break;
+            }
+
+            int w = wcwidth(wc);
+            int char_width = (w > 0) ? w : 0;
+
+            if (width + char_width <= g_term_w) {
+                // Copy this character
+                memcpy(out, ch, n);
+                out += n;
+                width += char_width;
+                ch += n;
+            }
+            else {
+                break;
+            }
+        }
+        *out = '\0';
+
+        fputs(truncated, stdout);
+        // pad remaining spaces
+        for (; width < g_term_w; width++)
             fputc(' ', stdout);
-
 #ifdef DEBUG // last newline only in debug
         fputc('\n', stdout);
 #endif
     }
-
     fflush(stdout);
 }
 
