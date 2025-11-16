@@ -165,7 +165,7 @@ static int make_wttrin_marquee_conds_width(int term_width, struct WttrinInfo* wi
                 + utf8_display_width(wi->csv[WTTRIN_CSV_FIELD_c]) // emojis -- e.g "☀ "
                 + 1;                                              // space
 
-    int ret = term_width - other;
+    int ret = term_width - other - 1;
     return ret;
 }
 
@@ -256,7 +256,7 @@ enum RequestStatus infos_wttrin_update(void)
         g_infos.wttrin.valid = true;
 
         // // override weather cond
-        // snprintf(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
+        snprintf(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C], sizeof(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]), "Moderate or heavy rain in area with thunder");
 
         // make marquees
         make_wttrin_time(&g_infos.wttrin);
