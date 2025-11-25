@@ -182,8 +182,15 @@ static void make_wttrin_marquee_conds(struct WttrinInfo* wi)
     char buf[MIDBUFF];
 
     size_t b = 0;
+
     b += (size_t)snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
-    b += (size_t)snprintf(buf + b, sizeof(buf) - b, "%s  ", wi->csv[WTTRIN_CSV_FIELD_C]);
+
+    if (request_status_failed(wi->status)) {
+        b += (size_t)snprintf(buf + b, sizeof(buf) - b, "wttr.in %s  ", request_status_to_str(wi->status));
+    }
+    else {
+        b += (size_t)snprintf(buf + b, sizeof(buf) - b, "%s  ", wi->csv[WTTRIN_CSV_FIELD_C]);
+    }
 
     const int marquee_pause = 1000; // 1 sec pause
     const int width = make_wttrin_marquee_conds_width(g_term_w, wi);
@@ -208,6 +215,11 @@ static char* mk_str(const char* format, char* param)
 static void make_wttrin_marquee_times(struct WttrinInfo* wi)
 {
     char buf[MIDBUFF];
+
+    // NOTE: we could overwrite the marquee times with error if wttr.in fetch fails
+    // (like make_wttrin_marquee_conds does)
+    // but we're not going to... 
+    // since times only change when season changes (not very freq)... 
 
     size_t b = 0;
     // clang-format on
@@ -294,12 +306,13 @@ enum RequestStatus infos_wttrin_update(void)
 
         // make marquees
         g_infos.wttrin.weather = detect_weather(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]); // wttrin emoji
-        make_wttrin_marquee_conds(&g_infos.wttrin);
 
         make_wttrin_marquee_times(&g_infos.wttrin);
 
         D(print_wttrin_info(&g_infos.wttrin));
     }
+
+    make_wttrin_marquee_conds(&g_infos.wttrin);
 
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
     return request.status;
