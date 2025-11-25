@@ -236,12 +236,15 @@ enum RequestStatus infos_wttrin_update(void)
 
     pthread_mutex_lock(&s_infos_wttrin_mutex);
     g_infos.wttrin.status = REQUEST_STATUS_RUNNING;
+    make_wttrin_time(&g_infos.wttrin);
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
 
     request_send(&request);
 
     pthread_mutex_lock(&s_infos_wttrin_mutex);
+
     g_infos.wttrin.status = request.status;
+    make_wttrin_time(&g_infos.wttrin);
 
     if (request.output.buf) {
         // parse csv
@@ -290,7 +293,6 @@ enum RequestStatus infos_wttrin_update(void)
         //if (g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d][0] == '0') trim_left(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d], 1);
 
         // make marquees
-        make_wttrin_time(&g_infos.wttrin);
         g_infos.wttrin.weather = detect_weather(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]); // wttrin emoji
         make_wttrin_marquee_conds(&g_infos.wttrin);
 
