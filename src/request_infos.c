@@ -182,14 +182,15 @@ static void display_status_weather_conditions(struct WttrinInfo* wi)
 {
     char buf[MIDBUFF];
     size_t b = 0;
-    b += (size_t)snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
     if (request_status_failed(wi->status)) {
+        //b += (size_t)snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
         //b += (size_t)snprintf(buf + b, sizeof(buf) - b, "wttr.in %s  ", request_status_to_str(wi->status));
         //g_infos.wttrin.weather = WEATHER_UNKNOWN;
         //wi->csv[WTTRIN_CSV_FIELD_c][0] = 0;
     }
     else {
         make_wttrin_time(&g_infos.wttrin);
+        b += (size_t)snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
         b += (size_t)snprintf(buf + b, sizeof(buf) - b, "%s  ", wi->csv[WTTRIN_CSV_FIELD_C]);
         g_infos.wttrin.weather = detect_weather(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]); // wttrin emoji
     }
