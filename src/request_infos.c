@@ -180,20 +180,12 @@ static int make_wttrin_marquee_conds_width(int term_width, struct WttrinInfo* wi
 // wttr.in: time; emoji ; weather marquee ; top weather emoji
 static void display_status_weather_conditions(struct WttrinInfo* wi)
 {
+    make_wttrin_time(&g_infos.wttrin);
     char buf[MIDBUFF];
     size_t b = 0;
-    if (request_status_failed(wi->status)) {
-        //b += (size_t)snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
-        //b += (size_t)snprintf(buf + b, sizeof(buf) - b, "wttr.in %s  ", request_status_to_str(wi->status));
-        //g_infos.wttrin.weather = WEATHER_UNKNOWN;
-        //wi->csv[WTTRIN_CSV_FIELD_c][0] = 0;
-    }
-    else {
-        make_wttrin_time(&g_infos.wttrin);
-        b += (size_t)snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
-        b += (size_t)snprintf(buf + b, sizeof(buf) - b, "%s  ", wi->csv[WTTRIN_CSV_FIELD_C]);
-        g_infos.wttrin.weather = detect_weather(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]); // wttrin emoji
-    }
+    b += (size_t)snprintf(buf + b, sizeof(buf) - b, MZWS); // pause on zero width space char
+    b += (size_t)snprintf(buf + b, sizeof(buf) - b, "%s  ", wi->csv[WTTRIN_CSV_FIELD_C]);
+    g_infos.wttrin.weather = detect_weather(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_C]); // wttrin emoji
 
     const int marquee_pause = 1000; // 1 sec pause
     const int width = make_wttrin_marquee_conds_width(g_term_w, wi);
@@ -219,14 +211,6 @@ static char* mk_str(const char* format, char* param)
 static void display_status_times(struct WttrinInfo* wi)
 {
     char buf[MIDBUFF];
-
-    // NOTE:
-    //       we could overwrite the marquee + moon status
-    //       with error if wttr.in fetch fails
-    //       (like make_wttrin_marquee_conds does)
-    //       but we're not going to... 
-    //       since times only change when season changes (not very freq)... 
-
     size_t b = 0;
     // clang-format on
     b += ctext_fg(buf + b, sizeof(buf) - b, timeofday_to_color(TIME_OF_DAY_DAWN), mk_str(MZWS "🌄%s", wi->csv[WTTRIN_CSV_FIELD_D]));
@@ -309,12 +293,12 @@ enum RequestStatus infos_wttrin_update(void)
         //if (g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s][0] == '0') trim_left(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s], 1);
         //if (g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d][0] == '0') trim_left(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d], 1);
 
+        display_status_weather_conditions(&g_infos.wttrin);
         display_status_times(&g_infos.wttrin);
 
         D(print_wttrin_info(&g_infos.wttrin));
     }
 
-    display_status_weather_conditions(&g_infos.wttrin);
 
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
     return request.status;
