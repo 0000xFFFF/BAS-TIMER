@@ -113,28 +113,28 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
     if (mg_match(hm->uri, mg_str("/api/bas_heat_on"), NULL)) {
         enum RequestStatus r = request_send_quick(URL_HEAT_ON);
-        mg_http_reply(c, 200, "Content-Type: text/plain", "bas_heat_on - %s", request_status_to_str(r));
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_heat_on\": \"%s\"}", request_status_to_str(r));
         draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_heat_off"), NULL)) {
         enum RequestStatus r = request_send_quick(URL_HEAT_OFF);
-        mg_http_reply(c, 200, "Content-Type: text/plain", "bas_heat_off - %s", request_status_to_str(r));
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_heat_off\": \"%s\"}", request_status_to_str(r));
         draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_gas_on"), NULL)) {
         enum RequestStatus r = request_send_quick(URL_GAS_ON);
-        mg_http_reply(c, 200, "Content-Type: text/plain", "bas_gas_on - %s", request_status_to_str(r));
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_gas_on\": \"%s\"}", request_status_to_str(r));
         draw_ui_and_front();
         return;
     }
 
     if (mg_match(hm->uri, mg_str("/api/bas_gas_off"), NULL)) {
         enum RequestStatus r = request_send_quick(URL_GAS_OFF);
-        mg_http_reply(c, 200, "Content-Type: text/plain", "bas_gas_off - %s", request_status_to_str(r));
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_gas_off\": \"%s\"}", request_status_to_str(r));
         draw_ui_and_front();
         return;
     }
