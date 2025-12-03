@@ -15,6 +15,7 @@ extern int localtime_hour(void);
 extern size_t elapsed_str(char* buffer, size_t size, time_t end, time_t start);
 extern size_t get_local_ip(char* buffer, size_t size);
 extern size_t get_local_ips(char* buffer, size_t size);
+extern bool is_connection_healthy();
 extern double min_dv(int count, ...);
 extern double max_dv(int count, ...);
 extern const char* istrstr(const char* haystack, const char* needle);

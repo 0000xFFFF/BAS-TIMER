@@ -138,6 +138,14 @@ enum RequestStatus infos_bas_update(void)
     return request.status;
 }
 
+enum RequestStatus infos_bas_health(void)
+{
+    pthread_mutex_lock(&s_infos_bas_mutex);
+    enum RequestStatus r = g_infos.bas.status;
+    pthread_mutex_unlock(&s_infos_bas_mutex);
+    return r;
+}
+
 static pthread_mutex_t s_infos_wttrin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo* out)
@@ -304,6 +312,14 @@ enum RequestStatus infos_wttrin_update(void)
     return request.status;
 }
 
+enum RequestStatus infos_wttrin_health(void)
+{
+    pthread_mutex_lock(&s_infos_wttrin_mutex);
+    enum RequestStatus r = g_infos.wttrin.status;
+    pthread_mutex_unlock(&s_infos_wttrin_mutex);
+    return r;
+}
+
 void infos_wttrin_marquee_conds_scroll(void)
 {
     pthread_mutex_lock(&s_infos_wttrin_mutex);
@@ -342,3 +358,4 @@ void infos_save(void)
     pthread_mutex_unlock(&s_infos_bas_mutex);
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
 }
+

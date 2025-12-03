@@ -8,6 +8,7 @@
 #include "thread_print_loop.h"
 #include "thread_request_bas.h"
 #include "thread_request_wttrin.h"
+#include "thread_restarter.h"
 #include "thread_save_infos.h"
 #include "thread_serve.h"
 #include "thread_utils.h"
@@ -44,29 +45,33 @@ int main(void)
 
     init_thread_data();
 
-    pthread_t t1;
-    assert(!pthread_create(&t1, NULL, th_serve, NULL));
+    pthread_t t_serve;
+    assert(!pthread_create(&t_serve, NULL, th_serve, NULL));
 
-    pthread_t t2;
-    assert(!pthread_create(&t2, NULL, th_request_bas, NULL));
+    pthread_t t_print_loop;
+    assert(!pthread_create(&t_print_loop, NULL, th_print_loop, NULL));
 
-    pthread_t t3;
-    assert(!pthread_create(&t3, NULL, th_request_wttrin, NULL));
+    pthread_t t_request_bas;
+    assert(!pthread_create(&t_request_bas, NULL, th_request_bas, NULL));
 
-    pthread_t t4;
-    assert(!pthread_create(&t4, NULL, th_save_infos, NULL));
+    pthread_t t_request_wttrin;
+    assert(!pthread_create(&t_request_wttrin, NULL, th_request_wttrin, NULL));
 
-    pthread_t t5;
-    assert(!pthread_create(&t5, NULL, th_print_loop, NULL));
+    pthread_t t_save_infos;
+    assert(!pthread_create(&t_save_infos, NULL, th_save_infos, NULL));
 
-    pthread_join(t5, NULL);
+    pthread_t t_restarter;
+    assert(!pthread_create(&t_restarter, NULL, th_restarter, NULL));
+
+    pthread_join(t_print_loop, NULL);
 
     stop_all_threads();
 
-    pthread_join(t1, NULL);
-    pthread_join(t2, NULL);
-    pthread_join(t3, NULL);
-    pthread_join(t4, NULL);
+    pthread_join(t_serve, NULL);
+    pthread_join(t_print_loop, NULL);
+    pthread_join(t_request_bas, NULL);
+    pthread_join(t_save_infos, NULL);
+    pthread_join(t_restarter, NULL);
 
     DPL("MAIN STOP");
     return 0;

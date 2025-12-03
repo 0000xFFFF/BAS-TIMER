@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "globals.h"
 #include <ctype.h>
 #include <float.h>
 #include <libgen.h>
@@ -82,28 +83,34 @@ size_t elapsed_str(char* buffer, size_t size, time_t end, time_t start)
     return strftime(buffer, size, "%H:%M:%S", tm_info);
 }
 
-static size_t get_local_ip_exec(char* buffer, size_t size, char* command)
+static size_t get_local_ip_exec(char* buffer, size_t size, const char* const command)
 {
     FILE* fp = popen(command, "r");
     if (fp == NULL) { return (size_t)snprintf(buffer, size, "Can't get ip."); }
-    int found = 0;
-    while (fgets(buffer, (int)size, fp) != NULL) { found = 1; }
+    bool found = false;
+    while (fgets(buffer, (int)size, fp) != NULL) { found = true; }
     pclose(fp);
     if (!found) { return (size_t)snprintf(buffer, size, "No IP found."); }
     return 0;
 }
 
-size_t get_local_ip(char* buffer, size_t size)
+static const char* const s_command_ip  = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1 | tr -d '\n'";
+static const char* const s_command_ips = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | tr '\n' ' '";
+
+bool is_connection_healthy()
 {
-    char* command = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1 | tr -d '\n'";
-    return get_local_ip_exec(buffer, size, command);
+    FILE* fp = popen(s_command_ips, "r");
+    if (fp == NULL) { return false; }
+    bool found = false;
+    char buffer[BIGBUFF];
+    while (fgets(buffer, (int)sizeof(buffer), fp) != NULL) { found = true; }
+    pclose(fp);
+    if (!found) { return false; }
+    return true;
 }
 
-size_t get_local_ips(char* buffer, size_t size)
-{
-    char* command = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | tr '\n' ' '";
-    return get_local_ip_exec(buffer, size, command);
-}
+size_t get_local_ip(char* buffer, size_t size) { return get_local_ip_exec(buffer, size, s_command_ip); }
+size_t get_local_ips(char* buffer, size_t size) { return get_local_ip_exec(buffer, size, s_command_ips); }
 
 double min_dv(int count, ...)
 {

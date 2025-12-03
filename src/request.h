@@ -194,9 +194,11 @@ struct Infos {
 // request_infos.c
 extern void infos_bas_init(void);
 extern enum RequestStatus infos_bas_update(void);
+extern enum RequestStatus infos_bas_health(void);
 extern void infos_bas_safe_io(const struct BasInfo* in, struct BasInfo* out);
 extern void infos_wttrin_init(void);
 extern enum RequestStatus infos_wttrin_update(void);
+extern enum RequestStatus infos_wttrin_health(void);
 extern void infos_wttrin_update_safe_io(const struct WttrinInfo* in, struct WttrinInfo* out);
 extern void infos_wttrin_marquee_conds_scroll(void);
 extern void infos_wttrin_marquee_conds_update_width(int term_width);

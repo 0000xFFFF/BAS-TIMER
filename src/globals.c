@@ -20,6 +20,7 @@ const bool ENABLE_SAVE_INFOS =
 #else
     true;
 #endif
+const bool ENABLE_RESTARTER = true;
 const bool ENABLE_AUTO_TIMER = true;
 const bool ENABLE_AUTO_GAS = true;
 const int AUTO_TIMER_SECONDS = 8 * 60;
@@ -36,10 +37,11 @@ const int SLEEP_MS_DRAW =
 #else
     250;
 #endif
-const int SLEEP_MS_BAS = 3000;               // 3 sec
-const int SLEEP_MS_WTTRIN = 60 * 5 * 1000;   // 5 min
-const int SLEEP_MS_WTTRIN_RETRY = 60 * 1000; // 1 min
-const int SLEEP_MS_SAVE_INFOS = 3000;        // 3 sec
+const int SLEEP_MS_BAS = 3000;                 // 3 sec
+const int SLEEP_MS_WTTRIN = 60 * 5 * 1000;     // 5 min
+const int SLEEP_MS_WTTRIN_RETRY = 60 * 1000;   // 1 min
+const int SLEEP_MS_SAVE_INFOS = 3000;          // 3 sec
+const int SLEEP_MS_RESTARTER = 30 * 60 * 1000; // 30 min
 
 const uint64_t TIMEOUT_MS_BAS = 3000;         // 3 sec
 const uint64_t TIMEOUT_MS_WTTRIN = 60 * 1000; // 1 min

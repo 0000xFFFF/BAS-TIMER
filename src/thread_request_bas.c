@@ -10,12 +10,14 @@
 
 void* th_request_bas(void* sig)
 {
+    if (!ENABLE_REQUEST_BAS) { return NULL; }
+
     DPL("THREAD START BAS");
     UNUSED(sig);
 
     infos_bas_init();
     while (atomic_load(&g_running)) {
-        if (ENABLE_REQUEST_BAS) { infos_bas_update(); }
+        infos_bas_update();
         sleep_ms_interruptible(SLEEP_MS_BAS);
     }
 

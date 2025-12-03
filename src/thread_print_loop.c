@@ -14,7 +14,6 @@ void* th_print_loop(void* sig)
     UNUSED(sig);
 
     while (atomic_load(&g_running)) {
-
         draw_ui_and_front();
         sleep_ms_interruptible(SLEEP_MS_DRAW);
     }

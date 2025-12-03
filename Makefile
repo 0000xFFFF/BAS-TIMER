@@ -36,3 +36,4 @@ pack: certs/*
 
 install:
 	sudo ln -sfr bas-server /usr/local/bin/bas-server
+	sudo setcap 'cap_sys_boot+ep' ./bas-server # give reboot capability
