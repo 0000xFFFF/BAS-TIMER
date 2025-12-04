@@ -41,7 +41,7 @@ const int SLEEP_MS_BAS = 3000;                 // 3 sec
 const int SLEEP_MS_WTTRIN = 60 * 5 * 1000;     // 5 min
 const int SLEEP_MS_WTTRIN_RETRY = 60 * 1000;   // 1 min
 const int SLEEP_MS_SAVE_INFOS = 3000;          // 3 sec
-const int SLEEP_MS_RESTARTER = 30 * 60 * 1000; // 30 min
+const int SLEEP_MS_RESTARTER = 20 * 60 * 1000; // 20 min
 
 const uint64_t TIMEOUT_MS_BAS = 3000;         // 3 sec
 const uint64_t TIMEOUT_MS_WTTRIN = 60 * 1000; // 1 min
