@@ -1,5 +1,6 @@
 #include "debug.h"
 #include "globals.h"
+#include "logger.h"
 #include "main_utils.h"
 #include "mongoose.h"
 #include "request.h"
@@ -44,6 +45,8 @@ int main(void)
 #endif
 
     init_thread_data();
+
+    logger_changes_write("system - program start\n");
 
     pthread_t t_serve;
     assert(!pthread_create(&t_serve, NULL, th_serve, NULL));

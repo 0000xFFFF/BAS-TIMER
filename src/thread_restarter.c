@@ -1,6 +1,7 @@
 #include "thread_restarter.h"
 #include "debug.h"
 #include "globals.h"
+#include "logger.h"
 #include "request.h"
 #include "thread_utils.h"
 #include "utils.h"
@@ -15,6 +16,7 @@ static void if_unhealthy_restart(void)
     // if everything is failing restart
     if (!is_connection_healthy() && request_status_failed(bas_status)) {
         printf("Rebooting system...\n");
+        logger_changes_write("system - reboot\n");
 
         sync(); // Sync filesystems before reboot
 
