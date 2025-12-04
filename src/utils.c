@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "globals.h"
+#include <arpa/inet.h>
 #include <ctype.h>
 #include <float.h>
 #include <libgen.h>
@@ -94,23 +95,37 @@ static size_t get_local_ip_exec(char* buffer, size_t size, const char* const com
     return 0;
 }
 
-static const char* const s_command_ip  = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1 | tr -d '\n'";
+static const char* const s_command_ip = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1 | tr -d '\n'";
 static const char* const s_command_ips = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | tr '\n' ' '";
 
 bool is_connection_healthy()
 {
-    FILE* fp = popen(s_command_ips, "r");
-    if (fp == NULL) { return false; }
-    bool found = false;
-    char buffer[BIGBUFF];
-    while (fgets(buffer, (int)sizeof(buffer), fp) != NULL) { found = true; }
-    pclose(fp);
-    if (!found) { return false; }
-    return true;
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) { return false; }
+
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(53); // DNS port
+    inet_pton(AF_INET, "8.8.8.8", &addr.sin_addr);
+
+    bool r = false;
+    int result = connect(sock, (struct sockaddr*)&addr, sizeof(addr));
+    if (result == 0) { r = true; }
+
+    close(sock);
+
+    return r;
 }
 
-size_t get_local_ip(char* buffer, size_t size) { return get_local_ip_exec(buffer, size, s_command_ip); }
-size_t get_local_ips(char* buffer, size_t size) { return get_local_ip_exec(buffer, size, s_command_ips); }
+size_t get_local_ip(char* buffer, size_t size)
+{
+    return get_local_ip_exec(buffer, size, s_command_ip);
+}
+size_t get_local_ips(char* buffer, size_t size)
+{
+    return get_local_ip_exec(buffer, size, s_command_ips);
+}
 
 double min_dv(int count, ...)
 {
