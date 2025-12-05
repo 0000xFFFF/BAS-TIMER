@@ -246,7 +246,6 @@ enum RequestStatus infos_wttrin_update(void)
 
     pthread_mutex_lock(&s_infos_wttrin_mutex);
     g_infos.wttrin.status = REQUEST_STATUS_RUNNING;
-    make_wttrin_time(&g_infos.wttrin);
     pthread_mutex_unlock(&s_infos_wttrin_mutex);
 
     request_send(&request);
