@@ -707,7 +707,7 @@ static size_t draw_ui_unsafe(void)
     scc(1, 2, wttrin_color, dut_wttrin_marquee_conds());
 
     // row 2
-    scc(2, 0, g_online, dut_ip());
+    scc(2, 0, g_online ? COLOR_OFF : COLOR_ON, dut_ip());
     sc(2, 1, dut_conns());
 
     scc(3, 0, 214, "");
