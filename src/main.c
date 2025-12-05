@@ -8,6 +8,7 @@
 #include "term.h"
 #include "thread_print_loop.h"
 #include "thread_request_bas.h"
+#include "thread_request_doctor.h"
 #include "thread_request_wttrin.h"
 #include "thread_restarter.h"
 #include "thread_save_infos.h"
@@ -50,6 +51,9 @@ int main(void)
 
     pthread_t t_serve;
     assert(!pthread_create(&t_serve, NULL, th_serve, NULL));
+
+    pthread_t t_doctor;
+    assert(!pthread_create(&t_doctor, NULL, th_request_doctor, NULL));
 
     pthread_t t_print_loop;
     assert(!pthread_create(&t_print_loop, NULL, th_print_loop, NULL));

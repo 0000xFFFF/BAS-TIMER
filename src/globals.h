@@ -21,6 +21,8 @@ extern const bool ENABLE_REQUEST_BAS;
 extern const bool ENABLE_REQUEST_WTTRIN;
 extern const bool ENABLE_SAVE_INFOS;
 extern const bool ENABLE_RESTARTER;
+extern const bool ENABLE_DOCTOR;
+
 extern const bool ENABLE_AUTO_TIMER;
 extern const bool ENABLE_AUTO_GAS;
 extern const int AUTO_TIMER_SECONDS;
@@ -32,6 +34,7 @@ extern const int SLEEP_MS_WTTRIN;
 extern const int SLEEP_MS_WTTRIN_RETRY;
 extern const int SLEEP_MS_SAVE_INFOS;
 extern const int SLEEP_MS_RESTARTER;
+extern const int SLEEP_MS_DOCTOR;
 
 extern const uint64_t TIMEOUT_MS_BAS;
 extern const uint64_t TIMEOUT_MS_WTTRIN;
