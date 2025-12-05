@@ -52,8 +52,8 @@ int main(void)
     pthread_t t_serve;
     assert(!pthread_create(&t_serve, NULL, th_serve, NULL));
 
-    pthread_t t_doctor;
-    assert(!pthread_create(&t_doctor, NULL, th_request_doctor, NULL));
+    pthread_t t_request_doctor;
+    assert(!pthread_create(&t_request_doctor, NULL, th_request_doctor, NULL));
 
     pthread_t t_print_loop;
     assert(!pthread_create(&t_print_loop, NULL, th_print_loop, NULL));
