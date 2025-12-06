@@ -31,7 +31,6 @@ extern const int POLL_TIME;
 extern const int SLEEP_MS_DRAW;
 extern const int SLEEP_MS_BAS;
 extern const int SLEEP_MS_WTTRIN;
-extern const int SLEEP_MS_WTTRIN_RETRY;
 extern const int SLEEP_MS_SAVE_INFOS;
 extern const int SLEEP_MS_RESTARTER;
 extern const int SLEEP_MS_DOCTOR;

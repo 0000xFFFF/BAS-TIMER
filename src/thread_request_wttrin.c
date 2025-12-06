@@ -10,16 +10,12 @@
 void* th_request_wttrin(void* sig)
 {
     if (!ENABLE_REQUEST_WTTRIN) { return NULL; }
-
     UNUSED(sig);
     DPL("THREAD START WTTRIN");
-
-    long sleep = SLEEP_MS_WTTRIN;
-
     infos_wttrin_init();
     while (atomic_load(&g_running)) {
-        sleep = request_status_failed(infos_wttrin_update()) ? SLEEP_MS_WTTRIN_RETRY : SLEEP_MS_WTTRIN;
-        sleep_ms_interruptible(sleep);
+        infos_wttrin_update();
+        sleep_ms_interruptible(SLEEP_MS_WTTRIN);
     }
     DPL("THREAD STOP WTTRIN");
     return NULL;
