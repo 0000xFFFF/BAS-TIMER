@@ -46,8 +46,8 @@ const int SLEEP_MS_SAVE_INFOS = 3000;          // 3 sec
 const int SLEEP_MS_RESTARTER = 20 * 60 * 1000; // 20 min
 const int SLEEP_MS_DOCTOR = 60 * 1000;         // 1 min
 
-const uint64_t TIMEOUT_MS_BAS = 3000;         // 3 sec
-const uint64_t TIMEOUT_MS_WTTRIN = 60 * 1000; // 1 min
+const uint64_t TIMEOUT_MS_BAS = 3000;             // 3 sec
+const uint64_t TIMEOUT_MS_WTTRIN = 3 * 60 * 1000; // 3 min
 
 const double TEMP_MIN_SOLAR = 0;
 const double TEMP_MAX_SOLAR = 100;
