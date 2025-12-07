@@ -15,6 +15,7 @@ extern const char* VAR_DIR;
 extern const char* VAR_DIR_FILE_CHANGES_LOG;
 extern const char* VAR_DIR_FILE_REQUESTS_LOG;
 extern const char* VAR_DIR_FILE_ERRORS_LOG;
+extern const char* VAR_DIR_FILE_WTTRIN_LOG;
 extern const char* VAR_DIR_FILE_INFOS_BIN;
 
 extern const bool ENABLE_REQUEST_BAS;

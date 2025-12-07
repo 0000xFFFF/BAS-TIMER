@@ -10,6 +10,7 @@ const char* VAR_DIR = VAR_DIR_;
 const char* VAR_DIR_FILE_CHANGES_LOG = VAR_DIR_ SEP_ "changes.log";
 const char* VAR_DIR_FILE_REQUESTS_LOG = VAR_DIR_ SEP_ "requests.log";
 const char* VAR_DIR_FILE_ERRORS_LOG = VAR_DIR_ SEP_ "errors.log";
+const char* VAR_DIR_FILE_WTTRIN_LOG = VAR_DIR_ SEP_ "wttrin.log";
 const char* VAR_DIR_FILE_INFOS_BIN = VAR_DIR_ SEP_ "infos.bin";
 
 const bool ENABLE_REQUEST_BAS = true;

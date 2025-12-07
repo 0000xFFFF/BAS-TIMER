@@ -1,6 +1,7 @@
 #include "colors.h"
 #include "debug.h"
 #include "globals.h"
+#include "logger.h"
 #include "marquee.h"
 #include "mongoose.h"
 #include "request.h"
@@ -261,6 +262,8 @@ enum RequestStatus infos_wttrin_update(void)
                                       URL_WTTRIN_OUTPUT_MAX_FIELDS,
                                       URL_WTTRIN_OUTPUT_MAX_FIELD_LEN,
                                       (char*)g_infos.wttrin.csv);
+
+        logger_wttrin_write("%s\n", request.output.buf);
         free((void*)request.output.buf);
 
         D(printf("WTTRIN PARSED: %d\n", g_infos.wttrin.csv_parsed));

@@ -160,6 +160,13 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         return;
     }
 
+    if (mg_match(hm->uri, mg_str("/wttrin"), NULL)) {
+        struct mg_http_serve_opts opts = {.mime_types = "text/plain"};
+        DPL("SERVER wttrin.txt");
+        mg_http_serve_file(c, hm, VAR_DIR_FILE_WTTRIN_LOG, &opts);
+        return;
+    }
+
     if (mg_match(hm->uri, mg_str("/c"), NULL)) {
         DPL("SERVER c");
         char buffer[WS_MAX_CONN * 32] = {0};

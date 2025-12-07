@@ -8,6 +8,7 @@
 static pthread_mutex_t s_mutex_file_errors = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t s_mutex_file_requests = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t s_mutex_file_changes = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t s_mutex_file_wttrin = PTHREAD_MUTEX_INITIALIZER;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
@@ -61,6 +62,16 @@ void logger_changes_write(const char* fmt, ...)
     logger_write(VAR_DIR_FILE_CHANGES_LOG, fmt, args);
     va_end(args);
     pthread_mutex_unlock(&s_mutex_file_changes);
+}
+
+void logger_wttrin_write(const char* fmt, ...)
+{
+    pthread_mutex_lock(&s_mutex_file_wttrin);
+    va_list args;
+    va_start(args, fmt);
+    logger_write(VAR_DIR_FILE_WTTRIN_LOG, fmt, args);
+    va_end(args);
+    pthread_mutex_unlock(&s_mutex_file_wttrin);
 }
 
 size_t logger_changes_sumtime(char* buffer, size_t buffer_size, const char* pattern)
