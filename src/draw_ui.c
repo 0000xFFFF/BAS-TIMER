@@ -699,7 +699,6 @@ static size_t draw_ui_unsafe(void)
     sc(0, 4, dut_status_to_emoji(s_du_infos.wttrin.status));
     int wttrin_color = dut_weather_to_color(s_du_infos.wttrin.weather);
     sc(0, 5, dut_wttrin_emoji(wttrin_color));
-    sc(0, 6, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_m]);
 
     // row 1
     scc(1, 0, wttrin_color, s_du_infos.wttrin.time);
@@ -764,6 +763,7 @@ static size_t draw_ui_unsafe(void)
     sc(7, 7, dut_wttrin_temp_to_color(s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_f], s_du_infos.bas.peak_min_human, s_du_infos.bas.peak_max_human));
     scc(7, 8, 226, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_u]);
     scc(7, 9, 195, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_w]);
+    sc(7, 10, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_m]);
 
     scc(8, 6, 123, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_h]);
     scc(8, 7, 111, s_du_infos.wttrin.csv[WTTRIN_CSV_FIELD_p]);
