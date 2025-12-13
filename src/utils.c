@@ -95,6 +95,8 @@ static size_t get_local_ip_exec(char* buffer, size_t size, const char* const com
     return 0;
 }
 
+
+
 static const char* const s_command_ip = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1 | tr -d '\n'";
 static const char* const s_command_ips = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | tr '\n' ' '";
 
@@ -116,6 +118,18 @@ bool is_connection_healthy()
     close(sock);
 
     return r;
+}
+
+bool can_get_local_ips()
+{
+    FILE* fp = popen(s_command_ips, "r");
+    if (fp == NULL) { return false; }
+    bool found = false;
+    char buffer[BIGBUFF];
+    while (fgets(buffer, (int)BIGBUFF, fp) != NULL) { found = true; }
+    pclose(fp);
+    if (!found) { return false; }
+    return found;
 }
 
 size_t get_local_ip(char* buffer, size_t size)

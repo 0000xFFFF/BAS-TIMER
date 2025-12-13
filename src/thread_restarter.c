@@ -14,7 +14,7 @@ static void if_unhealthy_restart(void)
     enum RequestStatus bas_status = infos_bas_health();
 
     // if everything is failing restart
-    if (!is_connection_healthy() && request_status_failed(bas_status)) {
+    if ((!is_connection_healthy() || !can_get_local_ips()) && request_status_failed(bas_status)) {
         printf("Rebooting system...\n");
         logger_changes_write("system - reboot\n");
 
