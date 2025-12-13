@@ -103,8 +103,8 @@ size_t logger_changes_sumtime(char* buffer, size_t buffer_size, const char* patt
         }
     }
 
+    fclose(f);
     size_t c = total_seconds_to_string(buffer, buffer_size, total_seconds, true);
-
     pthread_mutex_unlock(&s_mutex_file_changes);
     return c;
 }
