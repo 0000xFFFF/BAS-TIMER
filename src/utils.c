@@ -278,7 +278,7 @@ void human_readable_time(char* buffer, size_t buffer_size, size_t seconds)
     else {
         int hours = seconds / 3600;
         int minutes = (seconds % 3600) / 60;
-        snprintf(buffer, buffer_size, "%dh%dm ago", hours, minutes);
+        snprintf(buffer, buffer_size, "%dh %dm ago", hours, minutes);
     }
 }
 
