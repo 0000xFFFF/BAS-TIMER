@@ -609,8 +609,11 @@ static const char* dut_progressbar(void)
 static const char* dut_opt_status_timer(struct BasInfo* info)
 {
     struct tm* timeinfo = localtime(&info->opt_auto_timer_status_changed);
-    char time_str[10] = {0};
-    strftime_HMS(time_str, sizeof(time_str), timeinfo);
+    char time_str[64] = {0};
+    time_t past_timestamp = mktime(timeinfo);
+    time_t now = time(NULL);
+    size_t diff_seconds = (size_t)difftime(now, past_timestamp);  // now - past
+    human_readable_time(time_str, sizeof(time_str), diff_seconds);
 
     char p[TINYBUFF] = "";
     if (info->history_mode_time_on && info->history_mode_time_off) {
@@ -636,8 +639,11 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
 static const char* dut_opt_status_gas(struct BasInfo* info)
 {
     struct tm* timeinfo = localtime(&info->opt_auto_gas_status_changed);
-    char time_str[10] = {0};
-    strftime_HMS(time_str, sizeof(time_str), timeinfo);
+    char time_str[64] = {0};
+    time_t past_timestamp = mktime(timeinfo);
+    time_t now = time(NULL);
+    size_t diff_seconds = (size_t)difftime(now, past_timestamp);  // now - past
+    human_readable_time(time_str, sizeof(time_str), diff_seconds);
 
     char p[TINYBUFF] = "";
     if (info->history_gas_time_on && info->history_gas_time_off) {

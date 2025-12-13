@@ -95,8 +95,6 @@ static size_t get_local_ip_exec(char* buffer, size_t size, const char* const com
     return 0;
 }
 
-
-
 static const char* const s_command_ip = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1 | tr -d '\n'";
 static const char* const s_command_ips = "ip -o -4 addr show | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | tr '\n' ' '";
 
@@ -261,6 +259,27 @@ size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seco
 
     buffer[written] = '\0';
     return wanted; // total characters that would have been produced
+}
+
+void human_readable_time(char* buffer, size_t buffer_size, size_t seconds)
+{
+    if (seconds < 10) {
+        snprintf(buffer, buffer_size, "now");
+    }
+    else if (seconds < 60) {
+        // Round seconds down to nearest multiple of 5
+        size_t display_sec = (seconds / 5) * 5;
+        snprintf(buffer, buffer_size, "%zus ago", display_sec);
+    }
+    else if (seconds < 3600) {
+        int minutes = seconds / 60;
+        snprintf(buffer, buffer_size, "%dm ago", minutes);
+    }
+    else {
+        int hours = seconds / 3600;
+        int minutes = (seconds % 3600) / 60;
+        snprintf(buffer, buffer_size, "%dh%dm ago", hours, minutes);
+    }
 }
 
 void trim_spaces(char* buffer)
