@@ -109,7 +109,7 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
     for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
         if (!b->schedules[i].valid) continue;
-        printf("%*s : i: %d, time: %d, dur: %d\n", clm_len, "schedules", i, b->schedules[i].time, b->schedules[i].duration);
+        printf("%*s : %d - %d -> %d, dur: %d\n", clm_len, "schedules", i, b->schedules[i].from, b->schedules[i].to, b->schedules[i].duration);
     }
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
 
@@ -230,7 +230,7 @@ enum TimeOfDay wttrin_to_timeofday(struct WttrinInfo* wttrin)
     if (!wttrin->valid) return TIME_OF_DAY_UNKNOWN;
 
     // clang-format off
-    int now = now_seconds();
+    int now = now_to_today_seconds();
     if      (now < wttrin->dawn)                                      return TIME_OF_DAY_BEFORE_DAWN;
     else if (now < wttrin->sunrise)                                   return TIME_OF_DAY_DAWN;
     else if (now < wttrin->zenith)                                    return TIME_OF_DAY_MORNING;

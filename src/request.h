@@ -80,9 +80,10 @@ enum OptStatus {
 
 struct HeatSchedule {
     bool valid;
-    int time;      // seconds since midnight (0–86399)
+    int from;      // seconds since midnight (0–86399)
+    int to;        // same as above, use hms_to_seconds
     int duration;  // timer duration that turns heat off
-    bool switched; // schedule flipped for today
+    int last_yday; // day-of-year when this schedule last ran
 };
 
 #define HEAT_SCHEDULES_COUNT 12

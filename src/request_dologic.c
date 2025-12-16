@@ -65,6 +65,7 @@ static void update_history(struct BasInfo* info)
     }
 }
 
+
 static void do_logic_timer(struct BasInfo* info)
 {
     time_t current_time;
@@ -74,23 +75,20 @@ static void do_logic_timer(struct BasInfo* info)
     if (info->Tspv < info->schedules_t_min) {
         struct tm local;
         localtime_r(&current_time, &local);
-        if (local.tm_yday != info->schedules_last_yday) { // new day -> reset all schedules
-            for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
-                info->schedules[i].switched = false;
-            }
-            info->schedules_last_yday = local.tm_yday;
-        }
-        int sec_today = hms_to_seconds(local.tm_hour, local.tm_min, local.tm_sec);
+        int today = local.tm_yday;
+        int sec_today = hms_to_today_seconds(local.tm_hour, local.tm_min, local.tm_sec);
         for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
-            if (!info->schedules[i].valid) continue;
+            struct HeatSchedule* s = &info->schedules[i];
 
-            if (!info->schedules[i].switched && sec_today >= info->schedules[i].time) {
-                info->schedules[i].switched = true;
-                info->opt_auto_timer_seconds = info->schedules[i].duration;
-                info->opt_auto_timer_status = OPT_STATUS_CHANGED;
-                request_send_quick(URL_HEAT_ON);
-                logger_write_changes("heat schedule - duration: %d\n", info->schedules[i].duration);
-            }
+            if (!s->valid) continue;
+            if (s->last_yday == today) continue;
+            if (!today_seconds_in_window(sec_today, s->from, s->to)) continue;
+
+            s->last_yday = today;
+            info->opt_auto_timer_seconds = s->duration;
+            info->opt_auto_timer_status = OPT_STATUS_CHANGED;
+            request_send_quick(URL_HEAT_ON);
+            logger_write_changes("heat schedule - duration: %d\n", s->duration);
         }
     }
 

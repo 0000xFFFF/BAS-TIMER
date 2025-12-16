@@ -185,23 +185,35 @@ const char* istrstr(const char* haystack, const char* needle)
     return NULL;
 }
 
-int hms_to_seconds(int hour, int min, int sec)
+int hms_to_today_seconds(int hour, int min, int sec)
 {
     return hour * 3600 + min * 60 + sec;
 }
 
-int hms_to_seconds_str(const char* str)
+
+
+int hms_to_today_seconds_str(const char* str)
 {
     int h, m, s;
     sscanf(str, "%d:%d:%d", &h, &m, &s);
-    return hms_to_seconds(h, m, s);
+    return hms_to_today_seconds(h, m, s);
 }
 
-int now_seconds(void)
+int now_to_today_seconds(void)
 {
     time_t t = time(NULL);
     struct tm* tm = localtime(&t);
-    return hms_to_seconds(tm->tm_hour, tm->tm_min, tm->tm_sec);
+    return hms_to_today_seconds(tm->tm_hour, tm->tm_min, tm->tm_sec);
+}
+
+bool today_seconds_in_window(int sec_today, int from, int to)
+{
+    if (from <= to) {
+        return sec_today >= from && sec_today <= to; // Normal window (same day)
+    }
+    else {
+        return sec_today >= from || sec_today <= to; // Crosses midnight
+    }
 }
 
 size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds)
