@@ -17,7 +17,7 @@ static void update_history(struct BasInfo* info)
 
         if (info->mod_rada) {
             info->history_mode_time_on = info->history_mode_time_changed;
-            logger_changes_write("mod_rada = %d\n", info->mod_rada);
+            logger_write_changes("mod_rada = %d\n", info->mod_rada);
             info->opt_auto_timer_status = OPT_STATUS_STARTED;
             info->opt_auto_timer_status_changed = info->history_mode_time_changed;
         }
@@ -30,7 +30,7 @@ static void update_history(struct BasInfo* info)
                 snprintf(e, sizeof(e), " -- %s\n", elap);
             }
 
-            logger_changes_write("mod_rada = %d%s", info->mod_rada, e);
+            logger_write_changes("mod_rada = %d%s", info->mod_rada, e);
             info->opt_auto_timer_status = OPT_STATUS_STOPPED;
             if (info->opt_auto_timer_started) {
                 info->opt_auto_timer_started = false;
@@ -46,7 +46,7 @@ static void update_history(struct BasInfo* info)
 
         if (info->StatusPumpe4) {
             info->history_gas_time_on = info->history_gas_time_changed;
-            logger_changes_write("StatusPumpe4 = %d\n", info->StatusPumpe4);
+            logger_write_changes("StatusPumpe4 = %d\n", info->StatusPumpe4);
             info->opt_auto_gas_status = OPT_STATUS_STARTED;
             info->opt_auto_gas_status_changed = info->history_gas_time_changed;
         }
@@ -58,7 +58,7 @@ static void update_history(struct BasInfo* info)
                 elapsed_str(elap, sizeof(elap), info->history_gas_time_off, info->history_gas_time_on);
                 snprintf(e, sizeof(e), " -- %s\n", elap);
             }
-            logger_changes_write("StatusPumpe4 = %d%s", info->StatusPumpe4, e);
+            logger_write_changes("StatusPumpe4 = %d%s", info->StatusPumpe4, e);
             info->opt_auto_gas_status = OPT_STATUS_STOPPED;
             info->opt_auto_gas_status_changed = info->history_gas_time_changed;
         }
@@ -89,7 +89,7 @@ static void do_logic_timer(struct BasInfo* info)
                 info->opt_auto_timer_seconds = info->schedules[i].duration;
                 info->opt_auto_timer_status = OPT_STATUS_CHANGED;
                 request_send_quick(URL_HEAT_ON);
-                logger_changes_write("heat schedule - duration: %d\n", info->schedules[i].duration);
+                logger_write_changes("heat schedule - duration: %d\n", info->schedules[i].duration);
             }
         }
     }

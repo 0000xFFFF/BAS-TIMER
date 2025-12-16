@@ -16,7 +16,7 @@ static void if_unhealthy_restart(void)
     // if everything is failing restart
     if ((!is_connection_healthy() || !can_get_local_ips()) && request_status_failed(bas_status)) {
         printf("Rebooting system...\n");
-        logger_changes_write("system - reboot\n");
+        logger_write_changes("system - reboot\n");
 
         sync(); // Sync filesystems before reboot
 

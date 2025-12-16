@@ -33,7 +33,7 @@ static void logger_write(const char* filename, const char* fmt, va_list args)
 
 #pragma GCC diagnostic pop
 
-void logger_errors_write(const char* fmt, ...)
+void logger_write_errors(const char* fmt, ...)
 {
 
     pthread_mutex_lock(&s_mutex_file_errors);
@@ -44,7 +44,7 @@ void logger_errors_write(const char* fmt, ...)
     pthread_mutex_unlock(&s_mutex_file_errors);
 }
 
-void logger_requests_write(const char* fmt, ...)
+void logger_write_requests(const char* fmt, ...)
 {
     pthread_mutex_lock(&s_mutex_file_requests);
     va_list args;
@@ -54,7 +54,7 @@ void logger_requests_write(const char* fmt, ...)
     pthread_mutex_unlock(&s_mutex_file_requests);
 }
 
-void logger_changes_write(const char* fmt, ...)
+void logger_write_changes(const char* fmt, ...)
 {
     pthread_mutex_lock(&s_mutex_file_changes);
     va_list args;

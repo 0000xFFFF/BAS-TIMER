@@ -47,7 +47,7 @@ int main(void)
 
     init_thread_data();
 
-    logger_changes_write("system - program start\n");
+    logger_write_changes("system - program start\n");
 
     pthread_t t_serve;
     assert(!pthread_create(&t_serve, NULL, th_serve, NULL));

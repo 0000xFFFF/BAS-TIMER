@@ -54,7 +54,7 @@ extern atomic_bool g_running;
 
 enum RequestStatus request_send(struct Request* request)
 {
-    if (request->log) { logger_requests_write("%s\n", request->url); }
+    if (request->log) { logger_write_requests("%s\n", request->url); }
 
     struct mg_mgr mgr;
     mg_mgr_init(&mgr);
@@ -72,7 +72,7 @@ enum RequestStatus request_send(struct Request* request)
     }
     mg_mgr_free(&mgr);
 
-    if (request_status_failed(request->status)) { logger_errors_write("%s -- %s\n", request->url, request_status_to_str(request->status)); }
+    if (request_status_failed(request->status)) { logger_write_errors("%s -- %s\n", request->url, request_status_to_str(request->status)); }
     return request->status;
 }
 
