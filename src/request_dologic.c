@@ -80,11 +80,11 @@ static void do_logic_timer(struct BasInfo* info)
             }
             info->schedules_last_yday = local.tm_yday;
         }
-        int seconds_today = local.tm_hour * 3600 + local.tm_min * 60 + local.tm_sec;
+        int sec_today = seconds_today(local.tm_hour, local.tm_min, local.tm_sec);
         for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
             if (!info->schedules[i].valid) continue;
 
-            if (!info->schedules[i].switched && seconds_today >= info->schedules[i].time) {
+            if (!info->schedules[i].switched && sec_today >= info->schedules[i].time) {
                 info->schedules[i].switched = true;
                 info->opt_auto_timer_seconds = info->schedules[i].duration;
                 info->opt_auto_timer_status = OPT_STATUS_CHANGED;

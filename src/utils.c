@@ -185,18 +185,23 @@ const char* istrstr(const char* haystack, const char* needle)
     return NULL;
 }
 
+int seconds_today(int hour, int min, int sec)
+{
+    return hour * 3600 + min * 60 + sec;
+}
+
 int hms_to_seconds(const char* str)
 {
     int h, m, s;
     sscanf(str, "%d:%d:%d", &h, &m, &s);
-    return h * 3600 + m * 60 + s;
+    return seconds_today(h, m, s);
 }
 
 int now_seconds(void)
 {
     time_t t = time(NULL);
     struct tm* tm = localtime(&t);
-    return tm->tm_hour * 3600 + tm->tm_min * 60 + tm->tm_sec;
+    return seconds_today(tm->tm_hour, tm->tm_min, tm->tm_sec);
 }
 
 size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds)

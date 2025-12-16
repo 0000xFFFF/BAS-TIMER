@@ -20,6 +20,7 @@ extern bool can_get_local_ips();
 extern double min_dv(int count, ...);
 extern double max_dv(int count, ...);
 extern const char* istrstr(const char* haystack, const char* needle);
+extern int seconds_today(int hour, int min, int sec);
 extern int hms_to_seconds(const char* str);
 extern int now_seconds(void);
 extern size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds);
