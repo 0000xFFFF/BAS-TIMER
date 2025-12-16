@@ -53,7 +53,7 @@ void print_bas_info(const struct BasInfo* b)
 {
     if (!b) return;
 
-    int clm_len = 30;
+    int clm_len = 33;
     printf("===[ info.bas ]=============================\n");
     printf("%*s : %s\n", clm_len, "valid", b->valid ? "true" : "false");
     printf("%*s : %d\n", clm_len, "status", (int)b->status);
