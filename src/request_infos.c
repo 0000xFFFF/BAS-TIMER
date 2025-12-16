@@ -67,7 +67,15 @@ void infos_bas_init(void)
 
         g_infos.bas.schedules_t_min = 10.0; // 10 󰔄
         g_infos.bas.schedules_last_yday = -1;
-     }
+
+        g_infos.bas.schedules[0].valid = true;
+        g_infos.bas.schedules[0].time = hms_to_seconds(1, 0, 0);     // 01:00:00
+        g_infos.bas.schedules[0].duration = hms_to_seconds(0, 5, 0); // 5 min
+
+        g_infos.bas.schedules[1].valid = true;
+        g_infos.bas.schedules[1].time = hms_to_seconds(5, 0, 0);     // 05:00:00
+        g_infos.bas.schedules[1].duration = hms_to_seconds(0, 5, 0); // 5 min
+    }
 
     pthread_mutex_unlock(&s_infos_bas_mutex);
 }
@@ -285,12 +293,12 @@ enum RequestStatus infos_wttrin_update(void)
 
 
         // parse seconds for wttrin_to_timeofday
-        g_infos.wttrin.dawn = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_D]);
-        g_infos.wttrin.sunrise = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_S]);
-        g_infos.wttrin.zenith = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_z]);
+        g_infos.wttrin.dawn = hms_to_seconds_str(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_D]);
+        g_infos.wttrin.sunrise = hms_to_seconds_str(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_S]);
+        g_infos.wttrin.zenith = hms_to_seconds_str(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_z]);
         g_infos.wttrin.zenith_duration = g_infos.wttrin.zenith + 1 * 3600; // duration 1 hour
-        g_infos.wttrin.sunset = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s]);
-        g_infos.wttrin.dusk = hms_to_seconds(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d]);
+        g_infos.wttrin.sunset = hms_to_seconds_str(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_s]);
+        g_infos.wttrin.dusk = hms_to_seconds_str(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_d]);
 
         trim_spaces(g_infos.wttrin.csv[WTTRIN_CSV_FIELD_c]); // trim spaces from emoji
 

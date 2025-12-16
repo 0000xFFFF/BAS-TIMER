@@ -80,7 +80,7 @@ static void do_logic_timer(struct BasInfo* info)
             }
             info->schedules_last_yday = local.tm_yday;
         }
-        int sec_today = seconds_today(local.tm_hour, local.tm_min, local.tm_sec);
+        int sec_today = hms_to_seconds(local.tm_hour, local.tm_min, local.tm_sec);
         for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
             if (!info->schedules[i].valid) continue;
 
