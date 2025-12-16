@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <ctype.h>
 #include <float.h>
+#include <inttypes.h>
 #include <libgen.h>
 #include <limits.h>
 #include <stdarg.h>
@@ -261,24 +262,33 @@ size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seco
     return wanted; // total characters that would have been produced
 }
 
-void human_readable_time(char* buffer, size_t buffer_size, size_t seconds)
+void human_readable_time(char* buffer, size_t buffer_size, uint64_t seconds)
 {
+    if (buffer_size == 0)
+        return;
+
     if (seconds < 10) {
         snprintf(buffer, buffer_size, "now");
     }
     else if (seconds < 60) {
-        // Round seconds down to nearest multiple of 5
-        size_t display_sec = (seconds / 5) * 5;
-        snprintf(buffer, buffer_size, "%zus ago", display_sec);
+        // Round down to nearest multiple of 5
+        uint64_t display_sec = (seconds / 5) * 5;
+        snprintf(buffer, buffer_size, "%" PRIu64 "s ago", display_sec);
     }
     else if (seconds < 3600) {
-        int minutes = seconds / 60;
-        snprintf(buffer, buffer_size, "%dm ago", minutes);
+        uint64_t minutes = seconds / 60;
+        snprintf(buffer, buffer_size, "%" PRIu64 "m ago", minutes);
     }
     else {
-        int hours = seconds / 3600;
-        int minutes = (seconds % 3600) / 60;
-        snprintf(buffer, buffer_size, "%dh %dm ago", hours, minutes);
+        uint64_t hours = seconds / 3600;
+        uint64_t minutes = (seconds % 3600) / 60;
+
+        if (minutes > 0) {
+            snprintf(buffer, buffer_size, "%" PRIu64 "h %" PRIu64 "m ago", hours, minutes);
+        }
+        else {
+            snprintf(buffer, buffer_size, "%" PRIu64 "h ago", hours);
+        }
     }
 }
 

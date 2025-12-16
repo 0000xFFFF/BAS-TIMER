@@ -110,8 +110,10 @@ int radiator_color_update(struct BasInfo* info)
     // Initialize on first call
     if (info->radiator_color_last_update == 0) { info->radiator_color_last_update = now; }
 
-    double delta_time = difftime(now, info->radiator_color_last_update);
+    int64_t delta_seconds = 0;
+    if (now >= info->radiator_color_last_update) { delta_seconds = (int64_t)(now - info->radiator_color_last_update); }
     info->radiator_color_last_update = now;
+    double delta_time = (double)delta_seconds;
 
     // HEATING
     if (info->mod_rada) {

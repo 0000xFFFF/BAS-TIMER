@@ -612,7 +612,7 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
     char time_str[64] = {0};
     time_t past_timestamp = mktime(timeinfo);
     time_t now = time(NULL);
-    size_t diff_seconds = (size_t)difftime(now, past_timestamp);  // now - past
+    uint64_t diff_seconds = now - past_timestamp;  // now - past
     human_readable_time(time_str, sizeof(time_str), diff_seconds);
 
     char p[TINYBUFF] = "";
@@ -642,7 +642,7 @@ static const char* dut_opt_status_gas(struct BasInfo* info)
     char time_str[64] = {0};
     time_t past_timestamp = mktime(timeinfo);
     time_t now = time(NULL);
-    size_t diff_seconds = (size_t)difftime(now, past_timestamp);  // now - past
+    uint64_t diff_seconds = now - past_timestamp;  // now - past
     human_readable_time(time_str, sizeof(time_str), diff_seconds);
 
     char p[TINYBUFF] = "";
