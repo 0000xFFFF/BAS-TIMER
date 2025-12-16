@@ -70,6 +70,28 @@ static void do_logic_timer(struct BasInfo* info)
     time_t current_time;
     time(&current_time);
 
+    // scheduled heat to turn on
+    struct tm local;
+    localtime_r(&current_time, &local);
+    if (local.tm_yday != info->schedules_last_yday) { // new day -> reset all schedules
+        for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
+            info->schedules[i].switched = false;
+        }
+        info->schedules_last_yday = local.tm_yday;
+    }
+    int seconds_today = local.tm_hour * 3600 + local.tm_min * 60 + local.tm_sec;
+    for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
+        if (!info->schedules[i].valid) continue;
+
+        if (!info->schedules[i].switched && seconds_today >= info->schedules[i].time) {
+            info->schedules[i].switched = true;
+            info->opt_auto_timer_seconds = info->schedules[i].duration;
+            info->opt_auto_timer_status = OPT_STATUS_CHANGED;
+            request_send_quick(URL_HEAT_ON);
+            logger_changes_write("schedule - duration: %d\n", info->schedules[i].duration);
+        }
+    }
+
     if (info->opt_auto_timer && info->mod_rada) {
         if (info->opt_auto_timer_started) {
             info->opt_auto_timer_seconds_elapsed = (int)difftime(current_time, info->history_mode_time_on);

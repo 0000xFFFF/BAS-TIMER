@@ -78,6 +78,15 @@ enum OptStatus {
     OPT_STATUS_CANCELLED
 };
 
+struct HeatSchedule {
+    bool valid;
+    int time;      // seconds since midnight (0–86399)
+    int duration;  // timer duration that turns heat off
+    bool switched; // schedule flipped for today
+};
+
+#define HEAT_SCHEDULES_COUNT 12
+
 struct BasInfo {
 
     bool valid; // is not empty
@@ -140,6 +149,9 @@ struct BasInfo {
     int radiator_color_index;
     time_t radiator_color_last_update;
     double radiator_color_current_temp_ratio; // 0.0 = cold, 1.0 = fully hot
+
+    struct HeatSchedule schedules[HEAT_SCHEDULES_COUNT];
+    int schedules_last_yday; // day of year [0–365], to reset schedules each day
 };
 
 enum Weather {
