@@ -1,4 +1,6 @@
 # top:
+- do more grouping in structs (BasInfo), we can group stuff up
+- add endpoint to get /values (need an endpoint like /c to see current values)
 - ? for unint values
 - min max temp from wttr.in --- BRUH ... i can get min/max temp but I can't get other values in j1 j2 formats
 
