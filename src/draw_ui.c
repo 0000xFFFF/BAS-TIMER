@@ -543,7 +543,7 @@ static const char* dut_progressbar(void)
 {
     time_t current_time;
     time(&current_time);
-    s_du_infos.bas.opt_auto_timer_seconds_elapsed = (int)difftime(current_time, s_du_infos.bas.history_mode_time_on);
+    s_du_infos.bas.opt_auto_timer_seconds_elapsed = (int64_t)(current_time - s_du_infos.bas.history_mode_time_on);
     double percent = s_du_infos.bas.opt_auto_timer_seconds >= 0 ? (s_du_infos.bas.opt_auto_timer_seconds_elapsed / (double)s_du_infos.bas.opt_auto_timer_seconds) * 100
                                                                 : 0;
 

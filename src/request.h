@@ -120,7 +120,7 @@ struct BasInfo {
     int opt_auto_timer_seconds;
     int opt_auto_timer_seconds_old;
     bool opt_auto_timer_started;
-    int opt_auto_timer_seconds_elapsed;
+    uint64_t opt_auto_timer_seconds_elapsed;
     enum OptStatus opt_auto_timer_status;
     time_t opt_auto_timer_status_changed;
     bool opt_auto_gas;
