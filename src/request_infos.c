@@ -64,7 +64,10 @@ void infos_bas_init(void)
         g_infos.bas.history_gas_time_changed = 0;
         g_infos.bas.history_gas_time_on = 0;
         g_infos.bas.history_gas_time_off = 0;
-    }
+
+        g_infos.bas.schedules_t_min = 10.0; // 10 󰔄
+        g_infos.bas.schedules_last_yday = -1;
+     }
 
     pthread_mutex_unlock(&s_infos_bas_mutex);
 }

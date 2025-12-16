@@ -151,6 +151,7 @@ struct BasInfo {
     double radiator_color_current_temp_ratio; // 0.0 = cold, 1.0 = fully hot
 
     struct HeatSchedule schedules[HEAT_SCHEDULES_COUNT];
+    double schedules_t_min;  // must be under this temperature to run
     int schedules_last_yday; // day of year [0–365], to reset schedules each day
 };
 

@@ -199,9 +199,6 @@ int now_seconds(void)
     return tm->tm_hour * 3600 + tm->tm_min * 60 + tm->tm_sec;
 }
 
-#include <stdbool.h>
-#include <stdio.h>
-
 size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds)
 {
     if (!buffer || buffer_size == 0) {
