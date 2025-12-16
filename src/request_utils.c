@@ -3,6 +3,8 @@
 #include "request.h"
 #include "utils.h"
 #include <float.h>
+#include <inttypes.h>
+#include <stdio.h>
 
 double extract_json_label(struct mg_str json_body, const char* label, double fallback)
 {
@@ -52,16 +54,16 @@ void print_bas_info(const struct BasInfo* b)
     if (!b) return;
 
     int clm_len = 30;
-    printf("===[ info.bas\n");
+    printf("===[ info.bas ]=============================\n");
     printf("%*s : %s\n", clm_len, "valid", b->valid ? "true" : "false");
     printf("%*s : %d\n", clm_len, "status", (int)b->status);
     printf("%*s : %d\n", clm_len, "mod_rada", b->mod_rada);
     printf("%*s : %d\n", clm_len, "mod_rezim", b->mod_rezim);
-    printf("%*s : %d\n", clm_len, "StatusPumpe3", b->StatusPumpe3);
-    printf("%*s : %d\n", clm_len, "StatusPumpe4", b->StatusPumpe4);
-    printf("%*s : %d\n", clm_len, "StatusPumpe5", b->StatusPumpe5);
-    printf("%*s : %d\n", clm_len, "StatusPumpe6", b->StatusPumpe6);
-    printf("%*s : %d\n", clm_len, "StatusPumpe7", b->StatusPumpe7);
+    printf("%*s : %d\n", clm_len, "StatusPumpe3", (int)b->StatusPumpe3);
+    printf("%*s : %d\n", clm_len, "StatusPumpe4", (int)b->StatusPumpe4);
+    printf("%*s : %d\n", clm_len, "StatusPumpe5", (int)b->StatusPumpe5);
+    printf("%*s : %d\n", clm_len, "StatusPumpe6", (int)b->StatusPumpe6);
+    printf("%*s : %d\n", clm_len, "StatusPumpe7", (int)b->StatusPumpe7);
     printf("%*s : %.2f\n", clm_len, "Tspv", b->Tspv);
     printf("%*s : %.2f\n", clm_len, "Tsolar", b->Tsolar);
     printf("%*s : %.2f\n", clm_len, "Tzadata", b->Tzadata);
@@ -70,8 +72,9 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %.2f\n", clm_len, "Tmin", b->Tmin);
     printf("%*s : %.2f\n", clm_len, "Tsobna", b->Tsobna);
     printf("%*s : %.2f\n", clm_len, "Tmid", b->Tmid);
-    printf("%*s : %d\n", clm_len, "TmidGE", b->TmidGE);
     printf("%*s : %d\n", clm_len, "TminLT", b->TminLT);
+    printf("%*s : %d\n", clm_len, "TmidGE", b->TmidGE);
+    printf("%*s : %d\n", clm_len, "TmaxGE", b->TmaxGE);
     printf("%*s : %.2f\n", clm_len, "peak_min_solar", b->peak_min_solar);
     printf("%*s : %.2f\n", clm_len, "peak_max_solar", b->peak_max_solar);
     printf("%*s : %.2f\n", clm_len, "peak_min_human", b->peak_min_human);
@@ -80,22 +83,31 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %.2f\n", clm_len, "peak_max_buf", b->peak_max_buf);
     printf("%*s : %.2f\n", clm_len, "peak_min_circ", b->peak_min_circ);
     printf("%*s : %.2f\n", clm_len, "peak_max_circ", b->peak_max_circ);
-    printf("%*s : %d\n", clm_len, "opt_auto_timer", b->opt_auto_timer);
+    printf("%*s : %s\n", clm_len, "opt_auto_timer", b->opt_auto_timer ? "true" : "false");
     printf("%*s : %d\n", clm_len, "opt_auto_timer_seconds", b->opt_auto_timer_seconds);
     printf("%*s : %d\n", clm_len, "opt_auto_timer_seconds_old", b->opt_auto_timer_seconds_old);
-    printf("%*s : %d\n", clm_len, "opt_auto_timer_started", b->opt_auto_timer_started);
-    printf("%*s : %d\n", clm_len, "opt_auto_timer_seconds_elapsed", b->opt_auto_timer_seconds_elapsed);
-    printf("%*s : %d\n", clm_len, "opt_auto_timer_status", b->opt_auto_timer_status);
-    printf("%*s : %d\n", clm_len, "opt_auto_gas", b->opt_auto_gas);
-    printf("%*s : %d\n", clm_len, "opt_auto_gas_status", b->opt_auto_gas_status);
+    printf("%*s : %s\n", clm_len, "opt_auto_timer_started", b->opt_auto_timer_started ? "true" : "false");
+    printf("%*s : %" PRIu64 "\n", clm_len, "opt_auto_timer_seconds_elapsed", b->opt_auto_timer_seconds_elapsed);
+    printf("%*s : %d\n", clm_len, "opt_auto_timer_status", (int)b->opt_auto_timer_status);
+    printf("%*s : %" PRId64 "\n", clm_len, "opt_auto_timer_status_changed", (int64_t)b->opt_auto_timer_status_changed);
+    printf("%*s : %s\n", clm_len, "opt_auto_gas", b->opt_auto_gas ? "true" : "false");
+    printf("%*s : %d\n", clm_len, "opt_auto_gas_status", (int)b->opt_auto_gas_status);
+    printf("%*s : %" PRId64 "\n", clm_len, "opt_auto_gas_status_changed", (int64_t)b->opt_auto_gas_status_changed);
     printf("%*s : %d\n", clm_len, "history_mode", b->history_mode);
-    printf("%*s : %ld\n", clm_len, "history_mode_time_changed", b->history_mode_time_changed);
-    printf("%*s : %ld\n", clm_len, "history_mode_time_on", b->history_mode_time_on);
-    printf("%*s : %ld\n", clm_len, "history_mode_time_off", b->history_mode_time_off);
-    printf("%*s : %d\n", clm_len, "history_gas", b->history_gas);
-    printf("%*s : %ld\n", clm_len, "history_gas_time_changed", b->history_gas_time_changed);
-    printf("%*s : %ld\n", clm_len, "history_gas_time_on", b->history_gas_time_on);
-    printf("%*s : %ld\n", clm_len, "history_gas_time_off", b->history_gas_time_off);
+    printf("%*s : %" PRId64 "\n", clm_len, "history_mode_time_changed", (int64_t)b->history_mode_time_changed);
+    printf("%*s : %" PRId64 "\n", clm_len, "history_mode_time_on", (int64_t)b->history_mode_time_on);
+    printf("%*s : %" PRId64 "\n", clm_len, "history_mode_time_off", (int64_t)b->history_mode_time_off);
+    printf("%*s : %d\n", clm_len, "history_gas", (int)b->history_gas);
+    printf("%*s : %" PRId64 "\n", clm_len, "history_gas_time_changed", (int64_t)b->history_gas_time_changed);
+    printf("%*s : %" PRId64 "\n", clm_len, "history_gas_time_on", (int64_t)b->history_gas_time_on);
+    printf("%*s : %" PRId64 "\n", clm_len, "history_gas_time_off", (int64_t)b->history_gas_time_off);
+    printf("%*s : %d\n", clm_len, "radiator_color", b->radiator_color);
+    printf("%*s : %d\n", clm_len, "radiator_color_index", b->radiator_color_index);
+    printf("%*s : %" PRId64 "\n", clm_len, "radiator_color_last_update", (int64_t)b->radiator_color_last_update);
+    printf("%*s : %.3f\n", clm_len, "radiator_color_current_temp_ratio", b->radiator_color_current_temp_ratio);
+    printf("%*s : %.2f\n", clm_len, "schedules_t_min", b->schedules_t_min);
+    printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
+    printf("============================================\n");
 }
 
 void print_wttrin_info(const struct WttrinInfo* info)
@@ -112,6 +124,7 @@ void print_wttrin_info(const struct WttrinInfo* info)
     printf("%*s : %s\n", cl1, "marquee_times.text", info->marquee_times.text);
 
     int cl2 = 18;
+    // clang-format off
     printf("%*s : %s\n", cl2, "Weather",            info->csv[WTTRIN_CSV_FIELD_c]);
     printf("%*s : %s\n", cl2, "WC textual name",    info->csv[WTTRIN_CSV_FIELD_C]);
     printf("%*s : %s\n", cl2, "WC text symbol",     info->csv[WTTRIN_CSV_FIELD_x]);
@@ -133,6 +146,7 @@ void print_wttrin_info(const struct WttrinInfo* info)
     printf("%*s : %s\n", cl2, "Time",               info->csv[WTTRIN_CSV_FIELD_T]);
     printf("%*s : %s\n", cl2, "Local timezone.",    info->csv[WTTRIN_CSV_FIELD_Z]);
     printf("csv_parsed: %d\n",                      info->csv_parsed);
+    // clang-format on
 }
 
 void print_infos(const struct Infos* info)
