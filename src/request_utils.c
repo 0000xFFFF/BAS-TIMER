@@ -107,6 +107,12 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %.3f\n", clm_len, "radiator_color_current_temp_ratio", b->radiator_color_current_temp_ratio);
     printf("%*s : %.2f\n", clm_len, "schedules_t_min", b->schedules_t_min);
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
+    for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
+        if (!b->schedules[i].valid) continue;
+        printf("%*s : i: %d, time: %d, dur: %d\n", clm_len, "schedules", i, b->schedules[i].time, b->schedules[i].duration);
+    }
+    printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
+
     printf("============================================\n");
 }
 
