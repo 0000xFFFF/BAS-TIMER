@@ -88,7 +88,7 @@ static void do_logic_timer(struct BasInfo* info)
             info->opt_auto_timer_seconds = info->schedules[i].duration;
             info->opt_auto_timer_status = OPT_STATUS_CHANGED;
             request_send_quick(URL_HEAT_ON);
-            logger_changes_write("schedule - duration: %d\n", info->schedules[i].duration);
+            logger_changes_write("heat schedule - duration: %d\n", info->schedules[i].duration);
         }
     }
 
