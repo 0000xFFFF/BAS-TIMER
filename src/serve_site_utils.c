@@ -65,7 +65,7 @@ static void get_api_schedules(struct mg_connection* c, struct mg_http_message* h
         if (!first) len += (size_t)snprintf(buf + len, sizeof(buf) - len, ",");
         first = false;
 
-        len += (size_t)snprintf(buf + len, sizeof(buf) - len, "{ \"id\": %lu, \"from\": %d, \"to\": %d, \"duration\": %lu }", node->id, s->from, s->to, s->duration);
+        len += (size_t)snprintf(buf + len, sizeof(buf) - len, "{ \"id\": %" PRIu64 ", \"from\": %d, \"to\": %d, \"duration\": %" PRIu64 " }", node->id, s->from, s->to, s->duration);
 
         node = node->next;
     }
