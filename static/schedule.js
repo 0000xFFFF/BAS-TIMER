@@ -102,20 +102,30 @@ function hideOverlay() {
 const schedules_edit = document.getElementById("schedules_edit");
 schedules_edit.addEventListener("click", showOverlay);
 
-
-function CreateNew() {
-    const from = getTimePickerValue("schedules-timer-picker-1");
-    const to = getTimePickerValue("schedules-timer-picker-2");
-    const duration = getTimePickerValue("schedules-timer-picker-3");
+function create_new_schedule() {
+    const from = getTimePickerValue("schedules-time-picker-from");
+    const to = getTimePickerValue("schedules-time-picker-to");
+    const duration = getTimePickerValue("schedules-time-picker-duration");
     console.log(from, to, duration);
     fetch_schedules_post(from, to, duration);
 }
 
 const schedules_add = document.getElementById("schedules_add");
-schedules_add.addEventListener("click", CreateNew);
+schedules_add.addEventListener("click", create_new_schedule);
 
 overlay.addEventListener("click", (e) => {
     if (e.target !== e.currentTarget) return;
     hideOverlay();
 });
 
+
+const picker_from = document.getElementById('schedules-time-picker-from');
+
+picker_from.addEventListener('timechange', e => {
+    const newTime = e.detail + 15 * 60; // add 15 minutes
+    setTimePickerFromSeconds('schedules-time-picker-to', newTime);
+});
+
+setTimePickerToNow("schedules-time-picker-from");
+
+setTimePickerFromSeconds('schedules-time-picker-duration', 5 * 60); // 5 min duration
