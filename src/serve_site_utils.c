@@ -93,7 +93,6 @@ static void delete_api_schedules(struct mg_connection* c, struct mg_http_message
 
     int index = (int)value;
 
-    // TODO: make thread safe
     schedules_delete(index);
 
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"deleted\": %d}", index); 
