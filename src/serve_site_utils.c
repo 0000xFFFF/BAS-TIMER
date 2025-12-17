@@ -73,7 +73,7 @@ static void post_api_set_timer_seconds(struct mg_connection* c, struct mg_http_m
     return;
 }
 
-static void get_api_toggle_auto_timer(struct mg_connection* c, struct mg_http_message* hm)
+static void post_api_toggle_auto_timer(struct mg_connection* c, struct mg_http_message* hm)
 {
     UNUSED(hm);
 
@@ -90,7 +90,7 @@ static void get_api_toggle_auto_timer(struct mg_connection* c, struct mg_http_me
     draw_ui_and_front();
 }
 
-static void get_api_toggle_auto_gas(struct mg_connection* c, struct mg_http_message* hm)
+static void post_api_toggle_auto_gas(struct mg_connection* c, struct mg_http_message* hm)
 {
     UNUSED(hm);
 
@@ -242,23 +242,26 @@ struct Route {
     route_handler_t handler;
 };
 
+// clang-format off
 static struct Route routes[] = {
-    { "GET",  "/api/state",             get_api_state },
-    { "GET",  "/api/toggle_auto_timer", get_api_toggle_auto_timer },
-    { "GET",  "/api/toggle_auto_gas",   get_api_toggle_auto_gas },
-    { "GET",  "/api/bas_heat_on",       get_api_bas_heat_on },
-    { "GET",  "/api/bas_heat_off",      get_api_bas_heat_off },
-    { "GET",  "/api/bas_gas_on",        get_api_bas_gas_on },
-    { "GET",  "/api/bas_gas_off",       get_api_bas_gas_off },
-    { "GET",  "/errors",                get_errors },
-    { "GET",  "/requests",              get_requests },
-    { "GET",  "/changes",               get_changes },
-    { "GET",  "/wttrin",                get_wttrin },
-    { "GET",  "/c",                     get_c },
-    { "GET",  "/api/sumtime",           get_sumtime },
-    { "GET",  "/api/schedules",         get_api_schedules },
-    { "POST", "/api/set_timer_seconds", post_api_set_timer_seconds },
+    { "GET",   "/api/state",             get_api_state },
+    { "GET",   "/api/bas_heat_on",       get_api_bas_heat_on },
+    { "GET",   "/api/bas_heat_off",      get_api_bas_heat_off },
+    { "GET",   "/api/bas_gas_on",        get_api_bas_gas_on },
+    { "GET",   "/api/bas_gas_off",       get_api_bas_gas_off },
+    { "GET",   "/errors",                get_errors },
+    { "GET",   "/requests",              get_requests },
+    { "GET",   "/changes",               get_changes },
+    { "GET",   "/wttrin",                get_wttrin },
+    { "GET",   "/c",                     get_c },
+    { "GET",   "/api/sumtime",           get_sumtime },
+    { "GET",   "/api/schedules",         get_api_schedules },
+    { "POST",  "/api/set_timer_seconds", post_api_set_timer_seconds },
+    { "POST",  "/api/toggle_auto_timer", post_api_toggle_auto_timer },
+    { "POST",  "/api/toggle_auto_gas",   post_api_toggle_auto_gas },
 };
+// clang-format on
+//
 static const size_t routes_count = sizeof(routes) / sizeof(routes[0]);
 
 int serve_site_handle_route(struct mg_connection* c, struct mg_http_message* hm)
