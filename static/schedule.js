@@ -14,6 +14,24 @@ function secondsToHHMMSS(totalSeconds) {
 
 const schedules = document.getElementById("schedules");
 
+function remove_schedule(e) {
+
+}
+
+function createScheduleElement(e) {
+    const d1 = document.createElement("div");
+
+    const s1 = document.createElement("span");
+    s1.innerHTML = `${secondsToHHMMSS(e.from)} &rarr; ${secondsToHHMMSS(e.to)}`
+
+    const b1 = document.createElement("button");
+    b1.addEventListener("click", () => remove_schedule(e));
+
+    d1.appendChild(s1);
+    d1.appendChild(b1);
+    return d1;
+}
+
 async function fetch_schedules() {
     try {
         const response = await fetch('/api/schedules');
@@ -27,9 +45,9 @@ async function fetch_schedules() {
         for (let i = 0; i < data_schedules.length; i++) {
             const e = data_schedules[i];
             console.log(e);
-            const data_div = document.createElement("div");
-            data_div.innerHTML = `${secondsToHHMMSS(e.from)} &rarr; ${secondsToHHMMSS(e.to)}`
-            schedules.appendChild(data_div);
+
+
+            schedules.appendChild(div);
         }
 
     } catch (error) {

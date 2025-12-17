@@ -24,6 +24,37 @@ static char* bool_to_str(bool value)
     return value ? "true" : "false";
 }
 
+static void get_api_schedules(struct mg_connection* c)
+{
+
+    struct BasInfo info = {0};
+    infos_bas_safe_io(&g_infos.bas, &info);
+
+    char buf[HEAT_SCHEDULES_COUNT * (64 + 10)];
+    size_t len = 0;
+
+    len += snprintf(buf + len, sizeof(buf) - len, "{ \"schedules\": [");
+
+    bool first = true;
+
+    struct HeatScheduleNode* node = gl_schedules;
+    while (node != NULL) {
+        struct HeatSchedule* s = &node->data;
+
+        if (!first) len += snprintf(buf + len, sizeof(buf) - len, ",");
+        first = false;
+
+        len += snprintf(buf + len, sizeof(buf) - len, "{ \"from\": %d, \"to\": %d, \"duration\": %d }", s->from, s->to, s->duration);
+
+        node = node->next;
+    }
+
+    len += snprintf(buf + len, sizeof(buf) - len, "] }");
+
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%.*s", (int)len, buf);
+    return;
+}
+
 void serve_site(struct mg_connection* c, int ev, void* ev_data)
 {
 
@@ -201,31 +232,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
     }
 
     if (mg_match(hm->uri, mg_str("/api/schedules"), NULL)) {
-        struct BasInfo info = {0};
-        infos_bas_safe_io(&g_infos.bas, &info);
-
-        char buf[HEAT_SCHEDULES_COUNT * (64 + 10)];
-        size_t len = 0;
-
-        len += snprintf(buf + len, sizeof(buf) - len, "{ \"schedules\": [");
-
-        bool first = true;
-
-        struct HeatScheduleNode* node = gl_schedules;
-        while (node != NULL) {
-            struct HeatSchedule* s = &node->data;
-
-            if (!first) len += snprintf(buf + len, sizeof(buf) - len, ",");
-            first = false;
-
-            len += snprintf(buf + len, sizeof(buf) - len, "{ \"from\": %d, \"to\": %d, \"duration\": %d }", s->from, s->to, s->duration);
-
-            node = node->next;
-        }
-
-        len += snprintf(buf + len, sizeof(buf) - len, "] }");
-
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%.*s", (int)len, buf);
+        get_api_schedules(c);
         return;
     }
 
