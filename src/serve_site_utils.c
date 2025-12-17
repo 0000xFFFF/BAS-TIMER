@@ -65,7 +65,7 @@ static void get_api_schedules(struct mg_connection* c, struct mg_http_message* h
         if (!first) len += (size_t)snprintf(buf + len, sizeof(buf) - len, ",");
         first = false;
 
-        len += (size_t)snprintf(buf + len, sizeof(buf) - len, "{ \"id\": %d, \"from\": %d, \"to\": %d, \"duration\": %lu }", node->id, s->from, s->to, s->duration);
+        len += (size_t)snprintf(buf + len, sizeof(buf) - len, "{ \"id\": %lu, \"from\": %d, \"to\": %d, \"duration\": %lu }", node->id, s->from, s->to, s->duration);
 
         node = node->next;
     }
@@ -119,7 +119,7 @@ static void delete_api_schedules(struct mg_connection* c, struct mg_http_message
     double id_ = get_double(c, hm, "$.id");
     if (id_ < 0) { return; }
 
-    int id = (int)id_;
+    uint64_t id = (uint64_t)id_;
     schedules_delete(id);
 
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"deleted\": %d}", id);

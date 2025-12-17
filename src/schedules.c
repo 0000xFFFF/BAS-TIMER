@@ -2,11 +2,14 @@
 #include "globals.h"
 #include "request.h"
 #include "utils.h"
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
 pthread_mutex_t g_mutex_schedules = PTHREAD_MUTEX_INITIALIZER;
+struct HeatScheduleNode* g_schedules = NULL; // Global linked list of schedules
+static uint64_t s_next_schedule_id = 0;
 
 static int file_exists(const char* path)
 {
@@ -14,12 +17,14 @@ static int file_exists(const char* path)
     return stat(path, &st) == 0;
 }
 
-// Global linked list of schedules
-struct HeatScheduleNode* g_schedules = NULL;
-
 // Create a new node
-static struct HeatScheduleNode* createNode(struct HeatSchedule value, int id)
+static struct HeatScheduleNode* createNode(struct HeatSchedule value, uint64_t id)
 {
+    if (s_next_schedule_id == UINT64_MAX) {
+        fprintf(stderr, "Schedule ID exhausted\n");
+        abort();
+    }
+
     struct HeatScheduleNode* newNode = (struct HeatScheduleNode*)malloc(sizeof(struct HeatScheduleNode));
     if (!newNode) {
         perror("Failed to allocate memory for new node");
@@ -34,38 +39,32 @@ static struct HeatScheduleNode* createNode(struct HeatSchedule value, int id)
 // Insert at end (helper)
 static void insertAtEnd(struct HeatScheduleNode** head, struct HeatSchedule value)
 {
-    struct HeatScheduleNode* temp = *head;
+    struct HeatScheduleNode* cur = *head;
+    struct HeatScheduleNode* tail = NULL;
 
-    // Check for duplicate
-    while (temp) {
-        if (temp->data.from == value.from &&
-            temp->data.to == value.to &&
-            temp->data.duration == value.duration) {
-            return; // Duplicate, do not insert
+    // Check for duplicate and track tail
+    while (cur) {
+        if (cur->data.from == value.from &&
+            cur->data.to == value.to &&
+            cur->data.duration == value.duration) {
+            return; // Duplicate
         }
-        temp = temp->next;
+        tail = cur;
+        cur = cur->next;
     }
 
-    // Compute new index
-    int new_index = 0;
-    temp = *head;
-    while (temp && temp->next != NULL) {
-        temp = temp->next;
-        new_index = temp->id + 1;
-    }
-
-    struct HeatScheduleNode* newNode = createNode(value, new_index);
+    struct HeatScheduleNode* newNode = createNode(value, s_next_schedule_id++);
 
     if (*head == NULL) {
         *head = newNode;
-        return;
     }
-
-    temp->next = newNode;
+    else {
+        tail->next = newNode;
+    }
 }
 
 // Delete node (helper)
-static void deleteNode(struct HeatScheduleNode** head, int id)
+static void deleteNode(struct HeatScheduleNode** head, uint64_t id)
 {
     struct HeatScheduleNode* temp = *head;
     struct HeatScheduleNode* prev = NULL;
@@ -179,7 +178,7 @@ void schedules_create(int from, int to, uint64_t duration)
 }
 
 // Delete a schedule
-void schedules_delete(int id)
+void schedules_delete(uint64_t id)
 {
     pthread_mutex_lock(&g_mutex_schedules);
     deleteNode(&g_schedules, id);
