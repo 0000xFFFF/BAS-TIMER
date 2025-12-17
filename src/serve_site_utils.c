@@ -58,14 +58,14 @@ static void get_api_schedules(struct mg_connection* c, struct mg_http_message* h
 
     bool first = true;
 
-    struct HeatScheduleNode* node = gl_schedules;
+    struct HeatScheduleNode* node = g_schedules;
     while (node != NULL) {
         struct HeatSchedule* s = &node->data;
 
         if (!first) len += (size_t)snprintf(buf + len, sizeof(buf) - len, ",");
         first = false;
 
-        len += (size_t)snprintf(buf + len, sizeof(buf) - len, "{ \"from\": %d, \"to\": %d, \"duration\": %lu }", s->from, s->to, s->duration);
+        len += (size_t)snprintf(buf + len, sizeof(buf) - len, "{ \"id\": %d, \"from\": %d, \"to\": %d, \"duration\": %lu }", node->id, s->from, s->to, s->duration);
 
         node = node->next;
     }
@@ -81,7 +81,7 @@ static void delete_api_schedules(struct mg_connection* c, struct mg_http_message
     UNUSED(hm);
 
     double value;
-    if (!mg_json_get_num(hm->body, "$.index", &value)) {
+    if (!mg_json_get_num(hm->body, "$.id", &value)) {
         mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}");
         return;
     }

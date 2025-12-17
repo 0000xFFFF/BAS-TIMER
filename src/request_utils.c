@@ -108,12 +108,14 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %.3f\n", clm_len, "radiator_color_current_temp_ratio", b->radiator_color_current_temp_ratio);
     printf("%*s : %.2f\n", clm_len, "schedules_t_min", b->schedules_t_min);
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
-    struct HeatScheduleNode* node = gl_schedules;
+    pthread_mutex_lock(&g_mutex_schedules);
+    struct HeatScheduleNode* node = g_schedules;
     while (node != NULL) {
         struct HeatSchedule* s = &node->data;
         printf("%*s : %d -> %d = %lu, yday: %d\n", clm_len, "schedules", s->from, s->to, s->duration, s->last_yday);
         node = node->next;
     }
+    pthread_mutex_unlock(&g_mutex_schedules);
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
 
     printf("============================================\n");

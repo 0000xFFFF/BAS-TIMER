@@ -14,12 +14,12 @@ function secondsToHHMMSS(totalSeconds) {
 
 const schedules = document.getElementById("schedules");
 
-async function delete_schedule(index) {
+async function delete_schedule(id) {
 
     const response = await fetch('/api/schedules', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ index: parseInt(index) })
+        body: JSON.stringify({ id: parseInt(id) })
     });
     if (!response.ok) {
         console.log(`HTTP error! status: ${response.status}`);
@@ -28,7 +28,7 @@ async function delete_schedule(index) {
     return true;
 }
 
-function createScheduleElement(index, e) {
+function createScheduleElement(e) {
     const d1 = document.createElement("div");
     d1.className = "schedules-item";
 
@@ -38,7 +38,7 @@ function createScheduleElement(index, e) {
     const b1 = document.createElement("button");
     b1.innerHTML = "remove";
     b1.addEventListener("click", () => {
-        if (delete_schedule(index)) {
+        if (delete_schedule(e.id)) {
             d1.remove();
         }
     });
@@ -59,9 +59,7 @@ async function fetch_schedules() {
 
         schedules.innerHTML = ""; // clear elements
         for (let i = 0; i < data_schedules.length; i++) {
-            const e = data_schedules[i];
-            console.log(e);
-            schedules.appendChild(createScheduleElement(i, e));
+            schedules.appendChild(createScheduleElement(data_schedules[i]));
         }
 
     } catch (error) {

@@ -78,7 +78,8 @@ static void do_logic_timer(struct BasInfo* info)
         int today = local.tm_yday;
         int sec_today = hms_to_today_seconds(local.tm_hour, local.tm_min, local.tm_sec);
 
-        struct HeatScheduleNode* node = gl_schedules;
+        pthread_mutex_lock(&g_mutex_schedules);
+        struct HeatScheduleNode* node = g_schedules;
         while (node != NULL) {
             struct HeatSchedule* s = &node->data;
 
@@ -94,6 +95,7 @@ static void do_logic_timer(struct BasInfo* info)
 
             node = node->next;
         }
+        pthread_mutex_unlock(&g_mutex_schedules);
     }
 
     if (info->opt_auto_timer && info->mod_rada) {
