@@ -43,69 +43,6 @@ static void get_api_state(struct mg_connection* c, struct mg_http_message* hm)
                   bool_to_str(info.opt_auto_gas));
 }
 
-static void post_api_set_timer_seconds(struct mg_connection* c, struct mg_http_message* hm)
-{
-
-    double value;
-    if (!mg_json_get_num(hm->body, "$.seconds", &value)) {
-        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}");
-        return;
-    }
-    if (value <= 0) {
-        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}");
-        return;
-    }
-
-    struct BasInfo info = {0};
-    infos_bas_safe_io(&g_infos.bas, &info);
-    if (!info.valid) {
-        mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}");
-        return;
-    }
-
-    info.opt_auto_timer_seconds = (uint64_t)value;
-    info.opt_auto_timer_status = OPT_STATUS_CHANGED;
-
-    infos_bas_safe_io(&info, &g_infos.bas);
-
-    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", info.opt_auto_timer_seconds);
-    draw_ui_and_front();
-    return;
-}
-
-static void post_api_toggle_auto_timer(struct mg_connection* c, struct mg_http_message* hm)
-{
-    UNUSED(hm);
-
-    struct BasInfo info = {0};
-    infos_bas_safe_io(&g_infos.bas, &info);
-    if (!info.valid) {
-        mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}");
-        return;
-    }
-
-    info.opt_auto_timer = !info.opt_auto_timer;
-    infos_bas_safe_io(&info, &g_infos.bas);
-    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"value\": %s}", bool_to_str(info.opt_auto_timer));
-    draw_ui_and_front();
-}
-
-static void post_api_toggle_auto_gas(struct mg_connection* c, struct mg_http_message* hm)
-{
-    UNUSED(hm);
-
-    struct BasInfo info = {0};
-    infos_bas_safe_io(&g_infos.bas, &info);
-    if (!info.valid) {
-        mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}");
-        return;
-    }
-
-    info.opt_auto_gas = !info.opt_auto_gas;
-    infos_bas_safe_io(&info, &g_infos.bas);
-    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"value\": %s}", bool_to_str(info.opt_auto_gas));
-    draw_ui_and_front();
-}
 
 static void get_api_schedules(struct mg_connection* c, struct mg_http_message* hm)
 {
@@ -232,6 +169,70 @@ static void get_sumtime(struct mg_connection* c, struct mg_http_message* hm)
                   sumtime2);
 
     return;
+}
+
+static void post_api_set_timer_seconds(struct mg_connection* c, struct mg_http_message* hm)
+{
+
+    double value;
+    if (!mg_json_get_num(hm->body, "$.seconds", &value)) {
+        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}");
+        return;
+    }
+    if (value <= 0) {
+        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}");
+        return;
+    }
+
+    struct BasInfo info = {0};
+    infos_bas_safe_io(&g_infos.bas, &info);
+    if (!info.valid) {
+        mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}");
+        return;
+    }
+
+    info.opt_auto_timer_seconds = (uint64_t)value;
+    info.opt_auto_timer_status = OPT_STATUS_CHANGED;
+
+    infos_bas_safe_io(&info, &g_infos.bas);
+
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", info.opt_auto_timer_seconds);
+    draw_ui_and_front();
+    return;
+}
+
+static void post_api_toggle_auto_timer(struct mg_connection* c, struct mg_http_message* hm)
+{
+    UNUSED(hm);
+
+    struct BasInfo info = {0};
+    infos_bas_safe_io(&g_infos.bas, &info);
+    if (!info.valid) {
+        mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}");
+        return;
+    }
+
+    info.opt_auto_timer = !info.opt_auto_timer;
+    infos_bas_safe_io(&info, &g_infos.bas);
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"value\": %s}", bool_to_str(info.opt_auto_timer));
+    draw_ui_and_front();
+}
+
+static void post_api_toggle_auto_gas(struct mg_connection* c, struct mg_http_message* hm)
+{
+    UNUSED(hm);
+
+    struct BasInfo info = {0};
+    infos_bas_safe_io(&g_infos.bas, &info);
+    if (!info.valid) {
+        mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\": \"Can't get state\"}");
+        return;
+    }
+
+    info.opt_auto_gas = !info.opt_auto_gas;
+    infos_bas_safe_io(&info, &g_infos.bas);
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"value\": %s}", bool_to_str(info.opt_auto_gas));
+    draw_ui_and_front();
 }
 
 typedef void (*route_handler_t)(struct mg_connection*, struct mg_http_message*);
