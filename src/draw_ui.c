@@ -176,8 +176,9 @@ static size_t dut_weather_to_spinner(char* buffer, size_t size, int color, enum 
 static const char* dut_status_to_emoji(enum RequestStatus status)
 {
     switch (status) {
+        case REQUEST_STATUS_DISABLED:      return CTEXT_FG(255, "󰌙"); break;
         case REQUEST_STATUS_RUNNING:       return CTEXT_FG(211, ""); break;
-        case REQUEST_STATUS_DONE:          return CTEXT_FG(82, "󰌘"); break;
+        case REQUEST_STATUS_DONE:          return CTEXT_FG(82,  "󰌘"); break;
         case REQUEST_STATUS_ERROR_TIMEOUT: return CTEXT_FG(197, "󱫎"); break;
         case REQUEST_STATUS_ERROR_CONN:    return CTEXT_FG(196, "󰌙"); break;
     }
