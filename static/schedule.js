@@ -14,11 +14,21 @@ function secondsToHHMMSS(totalSeconds) {
 
 const schedules = document.getElementById("schedules");
 
-function remove_schedule(e) {
+async function delete_schedule(index) {
 
+    const response = await fetch('/api/schedules', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ index: parseInt(index) })
+    });
+    if (!response.ok) {
+        console.log(`HTTP error! status: ${response.status}`);
+        return false;
+    }
+    return true;
 }
 
-function createScheduleElement(e) {
+function createScheduleElement(index, e) {
     const d1 = document.createElement("div");
     d1.className = "schedules-item";
 
@@ -27,7 +37,11 @@ function createScheduleElement(e) {
 
     const b1 = document.createElement("button");
     b1.innerHTML = "remove";
-    b1.addEventListener("click", () => remove_schedule(e));
+    b1.addEventListener("click", () => {
+        if (delete_schedule(index)) {
+            d1.remove();
+        }
+    });
 
     d1.appendChild(s1);
     d1.appendChild(b1);
@@ -47,7 +61,7 @@ async function fetch_schedules() {
         for (let i = 0; i < data_schedules.length; i++) {
             const e = data_schedules[i];
             console.log(e);
-            schedules.appendChild(createScheduleElement(e));
+            schedules.appendChild(createScheduleElement(i, e));
         }
 
     } catch (error) {

@@ -4,6 +4,13 @@
 #include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+
+static int file_exists(const char* path)
+{
+    struct stat st;
+    return stat(path, &st) == 0;
+}
 
 // Global linked list of schedules
 struct HeatScheduleNode* gl_schedules = NULL;
@@ -144,14 +151,16 @@ static struct HeatSchedule create_default(int from)
 // Initialize schedules
 void schedules_init(void)
 {
-    gl_schedules = loadSchedulesBinary(VAR_DIR_FILE_SCHEDULES_BIN);
-    if (gl_schedules == NULL) {
+    if (!file_exists(VAR_DIR_FILE_SCHEDULES_BIN)) {
         insertAtEnd(&gl_schedules, create_default(hms_to_today_seconds(1, 0, 0)));
         insertAtEnd(&gl_schedules, create_default(hms_to_today_seconds(5, 0, 0)));
         insertAtEnd(&gl_schedules, create_default(hms_to_today_seconds(9, 0, 0)));
 
         saveSchedulesBinary(gl_schedules, VAR_DIR_FILE_SCHEDULES_BIN);
+        return;
     }
+
+    gl_schedules = loadSchedulesBinary(VAR_DIR_FILE_SCHEDULES_BIN);
 }
 
 // Create a schedule (prevents duplicates)

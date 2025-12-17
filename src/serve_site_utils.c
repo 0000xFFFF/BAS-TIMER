@@ -7,6 +7,7 @@
 #include "schedules.h"
 #include "serve_websocket.h"
 #include "utils.h"
+#include <float.h>
 
 int mg_str_contains(struct mg_str haystack, const char* needle)
 {
@@ -78,6 +79,25 @@ static void get_api_schedules(struct mg_connection* c, struct mg_http_message* h
 static void delete_api_schedules(struct mg_connection* c, struct mg_http_message* hm)
 {
     UNUSED(hm);
+
+    double value;
+    if (!mg_json_get_num(hm->body, "$.index", &value)) {
+        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}");
+        return;
+    }
+
+    if (!(value >= 0 && value <= DBL_MAX)) {
+        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid index value\"}");
+        return;
+    }
+
+    int index = (int)value;
+
+    // TODO: make thread safe
+    schedules_delete(index);
+
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"deleted\": %d}", index); 
+    draw_ui_and_front();
 
 }
 

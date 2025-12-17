@@ -15,7 +15,7 @@ const char* VAR_DIR_FILE_INFOS_BIN = VAR_DIR_ SEP_ "infos.bin";
 const char* VAR_DIR_FILE_SCHEDULES_BIN = VAR_DIR_ SEP_ "schedules.bin";
 
 const bool ENABLE_REQUEST_BAS = true;
-const bool ENABLE_REQUEST_WTTRIN = true;
+const bool ENABLE_REQUEST_WTTRIN = false;
 const bool ENABLE_SAVE_INFOS =
 #ifdef DEBUG
     false;
