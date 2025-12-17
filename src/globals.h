@@ -17,7 +17,7 @@ extern const char* VAR_DIR_FILE_REQUESTS_LOG;
 extern const char* VAR_DIR_FILE_ERRORS_LOG;
 extern const char* VAR_DIR_FILE_WTTRIN_LOG;
 extern const char* VAR_DIR_FILE_INFOS_BIN;
-extern const char* VAR_DIR_FILE_SCHEDULES_BIN;
+extern const char* VAR_DIR_FILE_SCHEDULES_TXT;
 
 extern bool ENABLE_REQUEST_BAS;
 extern bool ENABLE_REQUEST_WTTRIN;

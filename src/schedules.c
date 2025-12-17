@@ -86,32 +86,43 @@ static void deleteNode(struct HeatScheduleNode** head, uint64_t id)
     free(temp);
 }
 
-// Save/load binary
-static void saveSchedulesBinary(struct HeatScheduleNode* head, const char* filename)
+// Save schedules as text file (portable)
+static void saveSchedulesText(struct HeatScheduleNode* head, const char* filename)
 {
-    FILE* file = fopen(filename, "wb");
+    FILE* file = fopen(filename, "w");
     if (!file) {
-        perror("Failed to open file for writing binary");
+        perror("Failed to open file for writing text");
         return;
     }
 
     struct HeatScheduleNode* temp = head;
     while (temp != NULL) {
-        fwrite(&temp->data, sizeof(struct HeatSchedule), 1, file);
+        // Format: from to duration last_yday
+        fprintf(file, "%" PRId32 " %" PRId32 " %" PRIu64 " %" PRId32 "\n",
+                temp->data.from,
+                temp->data.to,
+                temp->data.duration,
+                temp->data.last_yday);
         temp = temp->next;
     }
+
     fclose(file);
 }
 
-static struct HeatScheduleNode* loadSchedulesBinary(const char* filename)
+// Load schedules from text file
+static struct HeatScheduleNode* loadSchedulesText(const char* filename)
 {
-    FILE* file = fopen(filename, "rb");
+    FILE* file = fopen(filename, "r");
     if (!file) return NULL;
 
     struct HeatScheduleNode* head = NULL;
-    struct HeatSchedule hs = {0};
+    struct HeatSchedule hs;
 
-    while (fread(&hs, sizeof(struct HeatSchedule), 1, file) == 1) {
+    while (fscanf(file, "%" SCNd32 " %" SCNd32 " %" SCNu64 " %" SCNd32 "\n",
+                  &hs.from,
+                  &hs.to,
+                  &hs.duration,
+                  &hs.last_yday) == 4) {
         insertAtEnd(&head, hs);
     }
 
@@ -154,15 +165,15 @@ void schedules_init(void)
 {
     pthread_mutex_lock(&g_mutex_schedules);
 
-    if (file_exists(VAR_DIR_FILE_SCHEDULES_BIN)) {
-        g_schedules = loadSchedulesBinary(VAR_DIR_FILE_SCHEDULES_BIN);
+    if (file_exists(VAR_DIR_FILE_SCHEDULES_TXT)) {
+        g_schedules = loadSchedulesText(VAR_DIR_FILE_SCHEDULES_TXT);
     }
     else {
         insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(1, 0, 0)));
         insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(5, 0, 0)));
         insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(9, 0, 0)));
 
-        saveSchedulesBinary(g_schedules, VAR_DIR_FILE_SCHEDULES_BIN);
+        saveSchedulesText(g_schedules, VAR_DIR_FILE_SCHEDULES_TXT);
     }
 
     pthread_mutex_unlock(&g_mutex_schedules);
@@ -173,7 +184,7 @@ void schedules_create(int from, int to, uint64_t duration)
 {
     pthread_mutex_lock(&g_mutex_schedules);
     insertAtEnd(&g_schedules, create_heat_schedule(from, to, duration));
-    saveSchedulesBinary(g_schedules, VAR_DIR_FILE_SCHEDULES_BIN);
+    saveSchedulesText(g_schedules, VAR_DIR_FILE_SCHEDULES_TXT);
     pthread_mutex_unlock(&g_mutex_schedules);
 }
 
@@ -182,7 +193,7 @@ void schedules_delete(uint64_t id)
 {
     pthread_mutex_lock(&g_mutex_schedules);
     deleteNode(&g_schedules, id);
-    saveSchedulesBinary(g_schedules, VAR_DIR_FILE_SCHEDULES_BIN);
+    saveSchedulesText(g_schedules, VAR_DIR_FILE_SCHEDULES_TXT);
     pthread_mutex_unlock(&g_mutex_schedules);
 }
 
