@@ -76,28 +76,53 @@ static void get_api_schedules(struct mg_connection* c, struct mg_http_message* h
     return;
 }
 
+static double get_double(struct mg_connection* c, struct mg_http_message* hm, const char* label)
+{
+    double from = -1.0;
+    if (!mg_json_get_num(hm->body, label, &from)) {
+        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}");
+        return -1;
+    }
+
+    if (!(from >= 0 && from <= DBL_MAX)) {
+        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid value must be positive & under DBL_MAX\"}");
+        return -2;
+    }
+
+    return from;
+}
+
+static void post_api_schedules(struct mg_connection* c, struct mg_http_message* hm)
+{
+    UNUSED(hm);
+
+    double from_ = get_double(c, hm, "$.from");
+    if (from_ < 0) { return; }
+    double to_ = get_double(c, hm, "$.to");
+    if (to_ < 0) { return; }
+    double duration_ = get_double(c, hm, "$.duration");
+    if (duration_ < 0) { return; }
+
+    int from = (int)from_;
+    int to = (int)to_;
+    uint64_t duration = (uint64_t)duration_;
+
+    schedules_create(from, to, duration);
+
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true }");
+}
+
 static void delete_api_schedules(struct mg_connection* c, struct mg_http_message* hm)
 {
     UNUSED(hm);
 
-    double value;
-    if (!mg_json_get_num(hm->body, "$.id", &value)) {
-        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}");
-        return;
-    }
+    double id_ = get_double(c, hm, "$.id");
+    if (id_ < 0) { return; }
 
-    if (!(value >= 0 && value <= DBL_MAX)) {
-        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid index value\"}");
-        return;
-    }
+    int id = (int)id_;
+    schedules_delete(id);
 
-    int index = (int)value;
-
-    schedules_delete(index);
-
-    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"deleted\": %d}", index); 
-    draw_ui_and_front();
-
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"deleted\": %d}", id);
 }
 
 static void get_api_bas_heat_on(struct mg_connection* c, struct mg_http_message* hm)
@@ -106,7 +131,6 @@ static void get_api_bas_heat_on(struct mg_connection* c, struct mg_http_message*
 
     enum RequestStatus r = request_send_quick(URL_HEAT_ON);
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_heat_on\": \"%s\"}", request_status_to_str(r));
-    draw_ui_and_front();
 }
 
 static void get_api_bas_heat_off(struct mg_connection* c, struct mg_http_message* hm)
@@ -115,7 +139,6 @@ static void get_api_bas_heat_off(struct mg_connection* c, struct mg_http_message
 
     enum RequestStatus r = request_send_quick(URL_HEAT_OFF);
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_heat_off\": \"%s\"}", request_status_to_str(r));
-    draw_ui_and_front();
 }
 
 static void get_api_bas_gas_on(struct mg_connection* c, struct mg_http_message* hm)
@@ -124,7 +147,6 @@ static void get_api_bas_gas_on(struct mg_connection* c, struct mg_http_message* 
 
     enum RequestStatus r = request_send_quick(URL_GAS_ON);
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_gas_on\": \"%s\"}", request_status_to_str(r));
-    draw_ui_and_front();
 }
 
 static void get_api_bas_gas_off(struct mg_connection* c, struct mg_http_message* hm)
@@ -133,7 +155,6 @@ static void get_api_bas_gas_off(struct mg_connection* c, struct mg_http_message*
 
     enum RequestStatus r = request_send_quick(URL_GAS_OFF);
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_gas_off\": \"%s\"}", request_status_to_str(r));
-    draw_ui_and_front();
 }
 
 static void get_errors(struct mg_connection* c, struct mg_http_message* hm)
@@ -198,15 +219,8 @@ static void get_sumtime(struct mg_connection* c, struct mg_http_message* hm)
 static void post_api_set_timer_seconds(struct mg_connection* c, struct mg_http_message* hm)
 {
 
-    double value;
-    if (!mg_json_get_num(hm->body, "$.seconds", &value)) {
-        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid JSON format\"}");
-        return;
-    }
-    if (value <= 0) {
-        mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\": \"Invalid timer value\"}");
-        return;
-    }
+    double seconds_ = get_double(c, hm, "$.seconds");
+    if (seconds_ < 0) { return; }
 
     struct BasInfo info = {0};
     infos_bas_safe_io(&g_infos.bas, &info);
@@ -215,7 +229,7 @@ static void post_api_set_timer_seconds(struct mg_connection* c, struct mg_http_m
         return;
     }
 
-    info.opt_auto_timer_seconds = (uint64_t)value;
+    info.opt_auto_timer_seconds = (uint64_t)seconds_;
     info.opt_auto_timer_status = OPT_STATUS_CHANGED;
 
     infos_bas_safe_io(&info, &g_infos.bas);
@@ -280,7 +294,8 @@ static struct Route routes[] = {
     { "GET",      "/wttrin",                   get_wttrin },
     { "GET",      "/c",                        get_c },
     { "GET",      "/api/sumtime",              get_sumtime },
-    { "GET",      "/api/schedules",            get_api_schedules },
+    { "DELETE",   "/api/schedules",            delete_api_schedules },
+    { "POST",     "/api/schedules",            post_api_schedules },
     { "DELETE",   "/api/schedules",            delete_api_schedules },
     { "POST",     "/api/set_timer_seconds",    post_api_set_timer_seconds },
     { "POST",     "/api/toggle_auto_timer",    post_api_toggle_auto_timer },
