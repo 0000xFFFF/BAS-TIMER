@@ -20,11 +20,13 @@ function remove_schedule(e) {
 
 function createScheduleElement(e) {
     const d1 = document.createElement("div");
+    d1.className = "schedules-item";
 
     const s1 = document.createElement("span");
     s1.innerHTML = `${secondsToHHMMSS(e.from)} &rarr; ${secondsToHHMMSS(e.to)}`
 
     const b1 = document.createElement("button");
+    b1.innerHTML = "remove";
     b1.addEventListener("click", () => remove_schedule(e));
 
     d1.appendChild(s1);
@@ -45,9 +47,7 @@ async function fetch_schedules() {
         for (let i = 0; i < data_schedules.length; i++) {
             const e = data_schedules[i];
             console.log(e);
-
-
-            schedules.appendChild(div);
+            schedules.appendChild(createScheduleElement(e));
         }
 
     } catch (error) {
@@ -55,7 +55,7 @@ async function fetch_schedules() {
     }
 }
 
-const overlay = document.querySelector('.tp-overlay');
+const overlay = document.getElementById('schedules-overlay');
 
 function showOverlay() {
     overlay.classList.add('active');

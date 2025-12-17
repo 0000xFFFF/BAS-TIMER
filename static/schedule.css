@@ -2,7 +2,7 @@
     cursor: pointer;
 }
 
-.tp-overlay {
+#schedules-overlay {
     position: fixed;
     inset: 0;
     z-index: 999;
@@ -19,7 +19,7 @@
 }
 
 /* Active / visible */
-.tp-overlay.active {
+#schedules-overlay.active {
     opacity: 1;
     pointer-events: auto;
 }
@@ -40,7 +40,7 @@
     padding: 10px;
 }
 
-.time-picker-container {
+#schedules-time-pickers {
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -49,6 +49,12 @@
     align-items: center; /* vertical */
 }
 
-.time-picker-arrow {
+#schedules-time-pickers-arrow {
     font-size: 40px;
+}
+
+.schedules-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
