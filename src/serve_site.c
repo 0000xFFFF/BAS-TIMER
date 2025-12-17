@@ -211,7 +211,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
 
         bool first = true;
 
-        struct Node* node = gl_schedules;
+        struct HeatScheduleNode* node = gl_schedules;
         while (node != NULL) {
             struct HeatSchedule* s = &node->data;
 

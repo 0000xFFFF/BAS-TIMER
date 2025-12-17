@@ -78,7 +78,7 @@ static void do_logic_timer(struct BasInfo* info)
         int today = local.tm_yday;
         int sec_today = hms_to_today_seconds(local.tm_hour, local.tm_min, local.tm_sec);
 
-        struct Node* node = gl_schedules;
+        struct HeatScheduleNode* node = gl_schedules;
         while (node != NULL) {
             struct HeatSchedule* s = &node->data;
 

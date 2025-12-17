@@ -108,7 +108,7 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %.3f\n", clm_len, "radiator_color_current_temp_ratio", b->radiator_color_current_temp_ratio);
     printf("%*s : %.2f\n", clm_len, "schedules_t_min", b->schedules_t_min);
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
-    struct Node* node = gl_schedules;
+    struct HeatScheduleNode* node = gl_schedules;
     while (node != NULL) {
         struct HeatSchedule* s = &node->data;
         printf("%*s : %d -> %d = %d, yday: %d\n", clm_len, "schedules", s->from, s->to, s->duration, s->last_yday);

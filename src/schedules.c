@@ -6,12 +6,12 @@
 #include <stdlib.h>
 
 // Global linked list of schedules
-struct Node* gl_schedules = NULL;
+struct HeatScheduleNode* gl_schedules = NULL;
 
 // Create a new node
-struct Node* createNode(struct HeatSchedule value)
+static struct HeatScheduleNode* createNode(struct HeatSchedule value)
 {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    struct HeatScheduleNode* newNode = (struct HeatScheduleNode*)malloc(sizeof(struct HeatScheduleNode));
     if (!newNode) {
         perror("Failed to allocate memory for new node");
         exit(EXIT_FAILURE);
@@ -21,31 +21,37 @@ struct Node* createNode(struct HeatSchedule value)
     return newNode;
 }
 
-// Insert at beginning of the list
-void insertAtBeginning(struct Node** head, struct HeatSchedule value)
+// Insert at end (helper)
+static void insertAtEnd(struct HeatScheduleNode** head, struct HeatSchedule value)
 {
-    struct Node* newNode = createNode(value);
-    newNode->next = *head;
-    *head = newNode;
-}
+    struct HeatScheduleNode* temp = *head;
 
-// Insert at end of the list
-void insertAtEnd(struct Node** head, struct HeatSchedule value)
-{
-    struct Node* newNode = createNode(value);
+    // Check for duplicate
+    while (temp) {
+        if (temp->data.from == value.from &&
+            temp->data.to == value.to &&
+            temp->data.duration == value.duration) {
+            return; // Duplicate, do not insert
+        }
+        temp = temp->next;
+    }
+
+    struct HeatScheduleNode* newNode = createNode(value);
+
     if (*head == NULL) {
         *head = newNode;
         return;
     }
-    struct Node* temp = *head;
+
+    temp = *head;
     while (temp->next != NULL) {
         temp = temp->next;
     }
     temp->next = newNode;
 }
 
-// Compare two schedules (fixed: removed valid, now compares actual data fields)
-int schedulesEqual(struct HeatSchedule a, struct HeatSchedule b)
+// Compare two schedules
+static int schedulesEqual(struct HeatSchedule a, struct HeatSchedule b)
 {
     return (a.from == b.from) &&
            (a.to == b.to) &&
@@ -53,11 +59,11 @@ int schedulesEqual(struct HeatSchedule a, struct HeatSchedule b)
            (a.last_yday == b.last_yday);
 }
 
-// Delete a schedule from the list
-void deleteNode(struct Node** head, struct HeatSchedule key)
+// Delete node (helper)
+static void deleteNode(struct HeatScheduleNode** head, struct HeatSchedule key)
 {
-    struct Node* temp = *head;
-    struct Node* prev = NULL;
+    struct HeatScheduleNode* temp = *head;
+    struct HeatScheduleNode* prev = NULL;
 
     while (temp != NULL && !schedulesEqual(temp->data, key)) {
         prev = temp;
@@ -66,7 +72,7 @@ void deleteNode(struct Node** head, struct HeatSchedule key)
 
     if (temp == NULL) return;
 
-    if (prev == NULL) { // node is head
+    if (prev == NULL) { // head
         *head = temp->next;
     }
     else {
@@ -76,55 +82,8 @@ void deleteNode(struct Node** head, struct HeatSchedule key)
     free(temp);
 }
 
-// Save schedules as text file
-void saveSchedulesText(struct Node* head, const char* filename)
-{
-    FILE* file = fopen(filename, "w");
-    if (!file) {
-        perror("Failed to open file for writing text");
-        return;
-    }
-
-    struct Node* temp = head;
-    while (temp != NULL) {
-        // Removed valid field
-        fprintf(file, "%d %d %d %d\n",
-                temp->data.from,
-                temp->data.to,
-                temp->data.duration,
-                temp->data.last_yday);
-        temp = temp->next;
-    }
-
-    fclose(file);
-}
-
-// Load schedules from text file
-struct Node* loadSchedulesText(const char* filename)
-{
-    FILE* file = fopen(filename, "r");
-    if (!file) {
-        // Not an error, just means no file exists yet
-        return NULL;
-    }
-
-    struct Node* head = NULL;
-    struct HeatSchedule hs;
-
-    while (fscanf(file, "%d %d %d %d",
-                  &hs.from,
-                  &hs.to,
-                  &hs.duration,
-                  &hs.last_yday) == 4) {
-        insertAtEnd(&head, hs);
-    }
-
-    fclose(file);
-    return head;
-}
-
-// Save schedules as binary file
-void saveSchedulesBinary(struct Node* head, const char* filename)
+// Save/load binary
+static void saveSchedulesBinary(struct HeatScheduleNode* head, const char* filename)
 {
     FILE* file = fopen(filename, "wb");
     if (!file) {
@@ -132,25 +91,21 @@ void saveSchedulesBinary(struct Node* head, const char* filename)
         return;
     }
 
-    struct Node* temp = head;
+    struct HeatScheduleNode* temp = head;
     while (temp != NULL) {
         fwrite(&temp->data, sizeof(struct HeatSchedule), 1, file);
         temp = temp->next;
     }
-
     fclose(file);
 }
 
-// Load schedules from binary file
-struct Node* loadSchedulesBinary(const char* filename)
+static struct HeatScheduleNode* loadSchedulesBinary(const char* filename)
 {
     FILE* file = fopen(filename, "rb");
-    if (!file) {
-        return NULL; // File may not exist yet
-    }
+    if (!file) return NULL;
 
-    struct Node* head = NULL;
-    struct HeatSchedule hs;
+    struct HeatScheduleNode* head = NULL;
+    struct HeatSchedule hs = {0};
 
     while (fread(&hs, sizeof(struct HeatSchedule), 1, file) == 1) {
         insertAtEnd(&head, hs);
@@ -160,11 +115,10 @@ struct Node* loadSchedulesBinary(const char* filename)
     return head;
 }
 
-
-// Free all nodes in linked list
-void freeSchedules(struct Node* head)
+// Free list
+static void freeSchedules(struct HeatScheduleNode* head)
 {
-    struct Node* temp;
+    struct HeatScheduleNode* temp;
     while (head != NULL) {
         temp = head;
         head = head->next;
@@ -172,54 +126,56 @@ void freeSchedules(struct Node* head)
     }
 }
 
-
-
-
-
-
-
-// Create a HeatSchedule
-struct HeatSchedule create_heat_schedule(int from, int to, int dur)
+// Create a schedule
+static struct HeatSchedule create_heat_schedule(int from, int to, int dur)
 {
-    struct HeatSchedule schedule;
-    schedule.from = from;
-    schedule.to = to;
-    schedule.duration = dur;
-    schedule.last_yday = -1;
-    return schedule;
+    struct HeatSchedule s;
+    s.from = from;
+    s.to = to;
+    s.duration = dur;
+    s.last_yday = -1;
+    return s;
 }
 
-// Quick schedule creation with default +15min window, 5min duration
+// Quick default schedule
 static struct HeatSchedule create_default(int from)
 {
-    int to = from + hms_to_today_seconds(0, 15, 0); // +15 min
-    int dur = hms_to_today_seconds(0, 5, 0);        // 5 min
+    int to = from + hms_to_today_seconds(0, 15, 0);
+    int dur = hms_to_today_seconds(0, 5, 0);
     return create_heat_schedule(from, to, dur);
 }
 
-// Initialize schedules: try to load binary, else create defaults and save both binary & text
+// Initialize schedules
 void schedules_init()
 {
     gl_schedules = loadSchedulesBinary(VAR_DIR_FILE_SCHEDULES_BIN);
-    // gl_schedules = loadSchedulesText(VAR_DIR_FILE_SCHEDULES_TXT);
-
-    if (gl_schedules == NULL) { // No file, create default schedules
+    if (gl_schedules == NULL) {
         insertAtEnd(&gl_schedules, create_default(hms_to_today_seconds(1, 0, 0)));
         insertAtEnd(&gl_schedules, create_default(hms_to_today_seconds(5, 0, 0)));
         insertAtEnd(&gl_schedules, create_default(hms_to_today_seconds(9, 0, 0)));
 
         saveSchedulesBinary(gl_schedules, VAR_DIR_FILE_SCHEDULES_BIN);
-        // saveSchedulesText(gl_schedules, VAR_DIR_FILE_SCHEDULES_TXT); // TEXT file is separate
     }
 }
 
+// Create a schedule (prevents duplicates)
 void schedules_create(int from, int to, int duration)
 {
     insertAtEnd(&gl_schedules, create_heat_schedule(from, to, duration));
+    saveSchedulesBinary(gl_schedules, VAR_DIR_FILE_SCHEDULES_BIN);
 }
 
-// Free all nodes in linked list
+// Delete a schedule
+void schedules_delete(int from, int to, int duration)
+{
+    struct HeatSchedule temp = create_heat_schedule(from, to, duration);
+    deleteNode(&gl_schedules, temp);
+    saveSchedulesBinary(gl_schedules, VAR_DIR_FILE_SCHEDULES_BIN);
+}
+
+// Free all schedules
 void schedules_free()
 {
     freeSchedules(gl_schedules);
+    gl_schedules = NULL;
 }

@@ -4,12 +4,12 @@
 // Linked list node definition
 #include "request.h"
 
-struct Node {
+struct HeatScheduleNode {
     struct HeatSchedule data;
-    struct Node* next; // Pointer to next node
+    struct HeatScheduleNode* next; // Pointer to next node
 };
 
-extern struct Node* gl_schedules;
+extern struct HeatScheduleNode* gl_schedules;
 void schedules_init();
 void schedules_create(int from, int to, int duration);
 void schedules_free();
