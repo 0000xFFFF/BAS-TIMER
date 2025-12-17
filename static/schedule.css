@@ -34,6 +34,12 @@
     font-size: 30px;
 }
 
+#schedules-list-container {
+    background: #020617;
+    border-radius: 16px;
+    padding: 10px;
+}
+
 .time-picker-container {
     display: flex;
     justify-content: center;
