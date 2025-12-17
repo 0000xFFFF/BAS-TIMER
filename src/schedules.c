@@ -127,7 +127,7 @@ static void freeSchedules(struct HeatScheduleNode* head)
 }
 
 // Create a schedule
-static struct HeatSchedule create_heat_schedule(int from, int to, int dur)
+static struct HeatSchedule create_heat_schedule(int from, int to, uint64_t dur)
 {
     struct HeatSchedule s;
     s.from = from;
@@ -141,12 +141,12 @@ static struct HeatSchedule create_heat_schedule(int from, int to, int dur)
 static struct HeatSchedule create_default(int from)
 {
     int to = from + hms_to_today_seconds(0, 15, 0);
-    int dur = hms_to_today_seconds(0, 5, 0);
+    uint64_t dur = (uint64_t)hms_to_today_seconds(0, 5, 0);
     return create_heat_schedule(from, to, dur);
 }
 
 // Initialize schedules
-void schedules_init()
+void schedules_init(void)
 {
     gl_schedules = loadSchedulesBinary(VAR_DIR_FILE_SCHEDULES_BIN);
     if (gl_schedules == NULL) {
@@ -159,14 +159,14 @@ void schedules_init()
 }
 
 // Create a schedule (prevents duplicates)
-void schedules_create(int from, int to, int duration)
+void schedules_create(int from, int to, uint64_t duration)
 {
     insertAtEnd(&gl_schedules, create_heat_schedule(from, to, duration));
     saveSchedulesBinary(gl_schedules, VAR_DIR_FILE_SCHEDULES_BIN);
 }
 
 // Delete a schedule
-void schedules_delete(int from, int to, int duration)
+void schedules_delete(int from, int to, uint64_t duration)
 {
     struct HeatSchedule temp = create_heat_schedule(from, to, duration);
     deleteNode(&gl_schedules, temp);
@@ -174,7 +174,7 @@ void schedules_delete(int from, int to, int duration)
 }
 
 // Free all schedules
-void schedules_free()
+void schedules_free(void)
 {
     freeSchedules(gl_schedules);
     gl_schedules = NULL;

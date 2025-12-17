@@ -10,8 +10,9 @@ struct HeatScheduleNode {
 };
 
 extern struct HeatScheduleNode* gl_schedules;
-void schedules_init();
-void schedules_create(int from, int to, int duration);
-void schedules_free();
+extern void schedules_init(void);
+extern void schedules_create(int from, int to, uint64_t duration);
+extern void schedules_delete(int from, int to, uint64_t duration);
+extern void schedules_free(void);
 
 #endif // SCHEDULES_H

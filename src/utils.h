@@ -25,7 +25,7 @@ extern int hms_to_today_seconds(int hour, int min, int sec);
 extern int hms_to_today_seconds_str(const char* str);
 extern int now_to_today_seconds(void);
 extern bool today_seconds_in_window(int sec_today, int from, int to);
-extern size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds);
+extern size_t total_seconds_to_string(char* buffer, size_t buffer_size, uint64_t total_seconds, bool append_total_seconds);
 extern void human_readable_time(char* buffer, size_t buffer_size, uint64_t seconds);
 extern void trim_spaces(char* buffer);
 extern void trim_left(char* buffer, size_t n);

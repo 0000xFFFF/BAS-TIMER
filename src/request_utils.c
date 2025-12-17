@@ -85,8 +85,8 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %.2f\n", clm_len, "peak_min_circ", b->peak_min_circ);
     printf("%*s : %.2f\n", clm_len, "peak_max_circ", b->peak_max_circ);
     printf("%*s : %s\n", clm_len, "opt_auto_timer", b->opt_auto_timer ? "true" : "false");
-    printf("%*s : %d\n", clm_len, "opt_auto_timer_seconds", b->opt_auto_timer_seconds);
-    printf("%*s : %d\n", clm_len, "opt_auto_timer_seconds_old", b->opt_auto_timer_seconds_old);
+    printf("%*s : %lu\n", clm_len, "opt_auto_timer_seconds", b->opt_auto_timer_seconds);
+    printf("%*s : %lu\n", clm_len, "opt_auto_timer_seconds_old", b->opt_auto_timer_seconds_old);
     printf("%*s : %s\n", clm_len, "opt_auto_timer_started", b->opt_auto_timer_started ? "true" : "false");
     printf("%*s : %" PRIu64 "\n", clm_len, "opt_auto_timer_seconds_elapsed", b->opt_auto_timer_seconds_elapsed);
     printf("%*s : %d\n", clm_len, "opt_auto_timer_status", (int)b->opt_auto_timer_status);
@@ -111,7 +111,7 @@ void print_bas_info(const struct BasInfo* b)
     struct HeatScheduleNode* node = gl_schedules;
     while (node != NULL) {
         struct HeatSchedule* s = &node->data;
-        printf("%*s : %d -> %d = %d, yday: %d\n", clm_len, "schedules", s->from, s->to, s->duration, s->last_yday);
+        printf("%*s : %d -> %d = %lu, yday: %d\n", clm_len, "schedules", s->from, s->to, s->duration, s->last_yday);
         node = node->next;
     }
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);

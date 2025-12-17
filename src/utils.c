@@ -216,7 +216,7 @@ bool today_seconds_in_window(int sec_today, int from, int to)
     }
 }
 
-size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seconds, bool append_total_seconds)
+size_t total_seconds_to_string(char* buffer, size_t buffer_size, uint64_t total_seconds, bool append_total_seconds)
 {
     if (!buffer || buffer_size == 0) {
         return 0;
@@ -224,16 +224,16 @@ size_t total_seconds_to_string(char* buffer, size_t buffer_size, long total_seco
 
     buffer[0] = '\0';
 
-    long total_minutes = total_seconds / 60;
-    long total_hours = total_minutes / 60;
-    long total_days = total_hours / 24;
-    long total_years = total_days / 365;
+    uint64_t total_minutes = total_seconds / 60;
+    uint64_t total_hours = total_minutes / 60;
+    uint64_t total_days = total_hours / 24;
+    uint64_t total_years = total_days / 365;
 
-    long seconds = total_seconds % 60;
-    long minutes = total_minutes % 60;
-    long hours = total_hours % 24;
-    long days = total_days % 30;
-    long months = (total_days / 30) % 12;
+    uint64_t seconds = total_seconds % 60;
+    uint64_t minutes = total_minutes % 60;
+    uint64_t hours = total_hours % 24;
+    uint64_t days = total_days % 30;
+    uint64_t months = (total_days / 30) % 12;
 
     size_t written = 0; // characters actually placed in buffer
     size_t wanted = 0;  // characters that *would* have been written

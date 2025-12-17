@@ -85,7 +85,7 @@ size_t logger_changes_sumtime(char* buffer, size_t buffer_size, const char* patt
     }
 
     char line[1024 * 4] = {0};
-    long total_seconds = 0;
+    uint64_t total_seconds = 0;
 
     while (fgets(line, sizeof(line), f)) {
         if (strstr(line, pattern)) {
@@ -97,7 +97,7 @@ size_t logger_changes_sumtime(char* buffer, size_t buffer_size, const char* patt
 
                 int h, m, s;
                 if (sscanf(sep, "%d:%d:%d", &h, &m, &s) == 3) {
-                    total_seconds += h * 3600 + m * 60 + s;
+                    total_seconds += (uint64_t)hms_to_today_seconds(h, m, s);
                 }
             }
         }

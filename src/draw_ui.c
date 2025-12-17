@@ -1,7 +1,7 @@
 #include "thread_request_doctor.h"
 #define _XOPEN_SOURCE 700 // needed for wcwidth
-#include "draw_ui.h"
 #include "colors.h"
+#include "draw_ui.h"
 #include "globals.h"
 #include "marquee.h"
 #include "request.h"
@@ -543,9 +543,8 @@ static const char* dut_progressbar(void)
 {
     time_t current_time;
     time(&current_time);
-    s_du_infos.bas.opt_auto_timer_seconds_elapsed = (int64_t)(current_time - s_du_infos.bas.history_mode_time_on);
-    double percent = s_du_infos.bas.opt_auto_timer_seconds >= 0 ? (s_du_infos.bas.opt_auto_timer_seconds_elapsed / (double)s_du_infos.bas.opt_auto_timer_seconds) * 100
-                                                                : 0;
+    s_du_infos.bas.opt_auto_timer_seconds_elapsed = (uint64_t)(current_time - s_du_infos.bas.history_mode_time_on);
+    double percent = s_du_infos.bas.opt_auto_timer_seconds > (uint64_t)0 ? (double)((double)s_du_infos.bas.opt_auto_timer_seconds_elapsed / (double)s_du_infos.bas.opt_auto_timer_seconds) * 100 : 0;
 
     // Progress bar configuration
     const size_t bar_width = 24;
@@ -612,7 +611,7 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
     char time_str[64] = {0};
     time_t past_timestamp = mktime(timeinfo);
     time_t now = time(NULL);
-    uint64_t diff_seconds = now - past_timestamp;  // now - past
+    uint64_t diff_seconds = (uint64_t)(now - past_timestamp); // now - past
     human_readable_time(time_str, sizeof(time_str), diff_seconds);
 
     char p[TINYBUFF] = "";
@@ -642,7 +641,7 @@ static const char* dut_opt_status_gas(struct BasInfo* info)
     char time_str[64] = {0};
     time_t past_timestamp = mktime(timeinfo);
     time_t now = time(NULL);
-    uint64_t diff_seconds = now - past_timestamp;  // now - past
+    uint64_t diff_seconds = (uint64_t)(now - past_timestamp); // now - past
     human_readable_time(time_str, sizeof(time_str), diff_seconds);
 
     char p[TINYBUFF] = "";

@@ -79,10 +79,10 @@ enum OptStatus {
 };
 
 struct HeatSchedule {
-    int from;      // seconds since midnight (0–86399)
-    int to;        // same as above, use hms_to_seconds
-    int duration;  // timer duration that turns heat off
-    int last_yday; // day-of-year when this schedule last ran
+    int from;          // seconds since midnight (0–86399)
+    int to;            // same as above, use hms_to_seconds
+    uint64_t duration; // timer duration that turns heat off
+    int last_yday;     // day-of-year when this schedule last ran
 };
 
 #define HEAT_SCHEDULES_COUNT 12
@@ -126,8 +126,8 @@ struct BasInfo {
     double peak_max_circ;
 
     bool opt_auto_timer;
-    int opt_auto_timer_seconds;
-    int opt_auto_timer_seconds_old;
+    uint64_t opt_auto_timer_seconds;
+    uint64_t opt_auto_timer_seconds_old;
     bool opt_auto_timer_started;
     uint64_t opt_auto_timer_seconds_elapsed;
     enum OptStatus opt_auto_timer_status;
