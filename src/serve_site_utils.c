@@ -8,7 +8,18 @@
 #include "serve_websocket.h"
 #include "utils.h"
 
-void get_api_state(struct mg_connection* c, struct mg_http_message* hm)
+int mg_str_contains(struct mg_str haystack, const char* needle)
+{
+    if (haystack.len == 0 || !needle) return 0;
+    for (size_t i = 0; i + strlen(needle) <= haystack.len; i++) {
+        if (strncmp(haystack.buf + i, needle, strlen(needle)) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static void get_api_state(struct mg_connection* c, struct mg_http_message* hm)
 {
     struct BasInfo info = {0};
     infos_bas_safe_io(&g_infos.bas, &info);
@@ -30,18 +41,7 @@ void get_api_state(struct mg_connection* c, struct mg_http_message* hm)
                   bool_to_str(info.opt_auto_gas));
 }
 
-int mg_str_contains(struct mg_str haystack, const char* needle)
-{
-    if (haystack.len == 0 || !needle) return 0;
-    for (size_t i = 0; i + strlen(needle) <= haystack.len; i++) {
-        if (strncmp(haystack.buf + i, needle, strlen(needle)) == 0) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-void post_api_set_timer_seconds(struct mg_connection* c, struct mg_http_message* hm)
+static void post_api_set_timer_seconds(struct mg_connection* c, struct mg_http_message* hm)
 {
 
     double value;
@@ -71,7 +71,7 @@ void post_api_set_timer_seconds(struct mg_connection* c, struct mg_http_message*
     return;
 }
 
-void get_api_toggle_auto_timer(struct mg_connection* c, struct mg_http_message* hm)
+static void get_api_toggle_auto_timer(struct mg_connection* c, struct mg_http_message* hm)
 {
     struct BasInfo info = {0};
     infos_bas_safe_io(&g_infos.bas, &info);
@@ -86,7 +86,7 @@ void get_api_toggle_auto_timer(struct mg_connection* c, struct mg_http_message* 
     draw_ui_and_front();
 }
 
-void get_api_toggle_auto_gas(struct mg_connection* c, struct mg_http_message* hm)
+static void get_api_toggle_auto_gas(struct mg_connection* c, struct mg_http_message* hm)
 {
     struct BasInfo info = {0};
     infos_bas_safe_io(&g_infos.bas, &info);
@@ -101,7 +101,7 @@ void get_api_toggle_auto_gas(struct mg_connection* c, struct mg_http_message* hm
     draw_ui_and_front();
 }
 
-void get_api_schedules(struct mg_connection* c, struct mg_http_message* hm)
+static void get_api_schedules(struct mg_connection* c, struct mg_http_message* hm)
 {
 
     struct BasInfo info = {0};
@@ -132,59 +132,59 @@ void get_api_schedules(struct mg_connection* c, struct mg_http_message* hm)
     return;
 }
 
-void get_api_bas_heat_on(struct mg_connection* c, struct mg_http_message* hm)
+static void get_api_bas_heat_on(struct mg_connection* c, struct mg_http_message* hm)
 {
     enum RequestStatus r = request_send_quick(URL_HEAT_ON);
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_heat_on\": \"%s\"}", request_status_to_str(r));
     draw_ui_and_front();
 }
 
-void get_api_bas_heat_off(struct mg_connection* c, struct mg_http_message* hm)
+static void get_api_bas_heat_off(struct mg_connection* c, struct mg_http_message* hm)
 {
     enum RequestStatus r = request_send_quick(URL_HEAT_OFF);
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_heat_off\": \"%s\"}", request_status_to_str(r));
     draw_ui_and_front();
 }
 
-void get_api_bas_gas_on(struct mg_connection* c, struct mg_http_message* hm)
+static void get_api_bas_gas_on(struct mg_connection* c, struct mg_http_message* hm)
 {
     enum RequestStatus r = request_send_quick(URL_GAS_ON);
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_gas_on\": \"%s\"}", request_status_to_str(r));
     draw_ui_and_front();
 }
 
-void get_api_bas_gas_off(struct mg_connection* c, struct mg_http_message* hm)
+static void get_api_bas_gas_off(struct mg_connection* c, struct mg_http_message* hm)
 {
     enum RequestStatus r = request_send_quick(URL_GAS_OFF);
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"bas_gas_off\": \"%s\"}", request_status_to_str(r));
     draw_ui_and_front();
 }
 
-void get_errors(struct mg_connection* c, struct mg_http_message* hm)
+static void get_errors(struct mg_connection* c, struct mg_http_message* hm)
 {
     struct mg_http_serve_opts opts = {.mime_types = "text/plain"};
     mg_http_serve_file(c, hm, VAR_DIR_FILE_ERRORS_LOG, &opts);
 }
 
-void get_requests(struct mg_connection* c, struct mg_http_message* hm)
+static void get_requests(struct mg_connection* c, struct mg_http_message* hm)
 {
     struct mg_http_serve_opts opts = {.mime_types = "text/plain"};
     mg_http_serve_file(c, hm, VAR_DIR_FILE_REQUESTS_LOG, &opts);
 }
 
-void get_changes(struct mg_connection* c, struct mg_http_message* hm)
+static void get_changes(struct mg_connection* c, struct mg_http_message* hm)
 {
     struct mg_http_serve_opts opts = {.mime_types = "text/plain"};
     mg_http_serve_file(c, hm, VAR_DIR_FILE_CHANGES_LOG, &opts);
 }
 
-void get_wttrin(struct mg_connection* c, struct mg_http_message* hm)
+static void get_wttrin(struct mg_connection* c, struct mg_http_message* hm)
 {
     struct mg_http_serve_opts opts = {.mime_types = "text/plain"};
     mg_http_serve_file(c, hm, VAR_DIR_FILE_WTTRIN_LOG, &opts);
 }
 
-void get_c(struct mg_connection* c, struct mg_http_message* hm)
+static void get_c(struct mg_connection* c, struct mg_http_message* hm)
 {
     DPL("SERVER c");
     char buffer[WS_MAX_CONN * 32] = {0};
@@ -192,7 +192,7 @@ void get_c(struct mg_connection* c, struct mg_http_message* hm)
     mg_http_reply(c, 200, "Content-Type: text/plain\r\n", "%s", buffer);
 }
 
-void get_sumtime(struct mg_connection* c, struct mg_http_message* hm)
+static void get_sumtime(struct mg_connection* c, struct mg_http_message* hm)
 {
     char sumtime1[BIGBUFF] = {0};
     char sumtime2[BIGBUFF] = {0};
@@ -214,4 +214,41 @@ void get_sumtime(struct mg_connection* c, struct mg_http_message* hm)
                   sumtime2);
 
     return;
+}
+
+struct Route {
+    const char* method; // "GET", "POST", etc.
+    const char* path;   // URI string
+    void (*handler)(struct mg_connection*, struct mg_http_message*); // function pointer
+};
+
+static struct Route routes[] = {
+    { "GET",  "/api/state",             (void*)get_api_state },
+    { "GET",  "/api/toggle_auto_timer", (void*)get_api_toggle_auto_timer },
+    { "GET",  "/api/toggle_auto_gas",   (void*)get_api_toggle_auto_gas },
+    { "GET",  "/api/bas_heat_on",       (void*)get_api_bas_heat_on },
+    { "GET",  "/api/bas_heat_off",      (void*)get_api_bas_heat_off },
+    { "GET",  "/api/bas_gas_on",        (void*)get_api_bas_gas_on },
+    { "GET",  "/api/bas_gas_off",       (void*)get_api_bas_gas_off },
+    { "GET",  "/errors",                (void*)get_errors },
+    { "GET",  "/requests",              (void*)get_requests },
+    { "GET",  "/changes",               (void*)get_changes },
+    { "GET",  "/wttrin",                (void*)get_wttrin },
+    { "GET",  "/c",                     (void*)get_c },
+    { "GET",  "/api/sumtime",           (void*)get_sumtime },
+    { "GET",  "/api/schedules",         (void*)get_api_schedules },
+    { "POST", "/api/set_timer_seconds", (void*)post_api_set_timer_seconds },
+};
+static const size_t routes_count = sizeof(routes) / sizeof(routes[0]);
+
+int serve_site_handle_route(struct mg_connection* c, struct mg_http_message* hm)
+{
+    for (size_t i = 0; i < routes_count; i++) {
+        if (mg_strcmp(hm->method, mg_str(routes[i].method)) == 0 &&
+            mg_match(hm->uri, mg_str(routes[i].path), NULL)) {
+            routes[i].handler(c, hm);
+            return 1; // handled
+        }
+    }
+    return 0; // not handled
 }
