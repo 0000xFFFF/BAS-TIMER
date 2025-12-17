@@ -92,3 +92,12 @@ int load_env(const char* filename)
     fclose(file);
     return 1;
 }
+
+bool env_str_to_bool(const char* s)
+{
+    if (s == NULL) { return true; }
+
+    if (strcmp(s, "false") == 0 || strcmp(s, "0") == 0 || strcmp(s, "no") == 0) { return false; }
+
+    return true;
+}
