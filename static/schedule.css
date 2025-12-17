@@ -1,0 +1,39 @@
+#edit_schedules {
+    cursor: pointer;
+}
+
+.tp-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+
+    /* Glass / blur effect */
+    background: rgba(2, 6, 23, 0.55);
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+
+    /* Fade animation */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+/* Active / visible */
+.tp-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+.time-picker-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    padding: 100px;
+    gap: 10px;
+    align-items: center; /* vertical */
+}
+
+.time-picker-arrow {
+    font-size: 40px;
+}

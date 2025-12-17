@@ -13,6 +13,12 @@
     <link rel="stylesheet" href="/ButtonSlider.css">
     <link rel="stylesheet" href="/ClockRadio.css">
     <script defer type="text/javascript" src="/index.js"></script>
+
+    <link rel="stylesheet" href="/schedule.css">
+    <script defer src="/schedule.js"></script>
+
+    <link rel="stylesheet" href="/time-picker.css">
+    <script defer src="/time-picker.js"></script>
 </head>
 
 <body>
@@ -39,14 +45,22 @@
                                     <label for="crs_7"><span>10</span></label>
                                     <label for="crs_8"><span>15</span></label>
 
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="*" id="crs_1">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="4" id="crs_2">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="5" id="crs_3">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="6" id="crs_4">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="7" id="crs_5" checked>
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="8" id="crs_6">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="10" id="crs_7">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="15" id="crs_8">
+                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="*"
+                                        id="crs_1">
+                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="4"
+                                        id="crs_2">
+                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="5"
+                                        id="crs_3">
+                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="6"
+                                        id="crs_4">
+                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="7"
+                                        id="crs_5" checked>
+                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="8"
+                                        id="crs_6">
+                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="10"
+                                        id="crs_7">
+                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="15"
+                                        id="crs_8">
 
                                     <div class="light"><span></span></div>
                                     <div class="dot"><span></span></div>
@@ -92,6 +106,7 @@
                                 Auto
                             </label>
                         </div>
+                        <div id="edit_schedules">Schedule...</div>
                     </div>
 
                     <!-- 󰈸󰙇 -->
@@ -144,6 +159,54 @@
                 <a href="/requests">requests.log</a>
                 <a href="/changes">changes.log</a>
                 <a href="/wttrin">wttrin.log</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="tp-overlay">
+        <div class="time-picker-container">
+            <div id="time-picker-1" class="time-picker">
+                <div class="tp-unit" data-max="23">
+                    <div class="tp-value">00</div>
+                    <div class="tp-label">HRS</div>
+                </div>
+
+                <div class="tp-divider">:</div>
+
+                <div class="tp-unit" data-max="59">
+                    <div class="tp-value">00</div>
+                    <div class="tp-label">MIN</div>
+                </div>
+
+                <div class="tp-divider">:</div>
+
+                <div class="tp-unit" data-max="59">
+                    <div class="tp-value">00</div>
+                    <div class="tp-label">SEC</div>
+                </div>
+            </div>
+
+            <div class="time-picker-arrow">&rarr;</div>
+
+            <div id="time-picker-2" class="time-picker">
+                <div class="tp-unit" data-max="23">
+                    <div class="tp-value">00</div>
+                    <div class="tp-label">HRS</div>
+                </div>
+
+                <div class="tp-divider">:</div>
+
+                <div class="tp-unit" data-max="59">
+                    <div class="tp-value">00</div>
+                    <div class="tp-label">MIN</div>
+                </div>
+
+                <div class="tp-divider">:</div>
+
+                <div class="tp-unit" data-max="59">
+                    <div class="tp-value">00</div>
+                    <div class="tp-label">SEC</div>
+                </div>
             </div>
         </div>
     </div>
