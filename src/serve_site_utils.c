@@ -234,7 +234,7 @@ static void post_api_set_timer_seconds(struct mg_connection* c, struct mg_http_m
 
     infos_bas_safe_io(&info, &g_infos.bas);
 
-    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %d}", info.opt_auto_timer_seconds);
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true, \"seconds\": %ld}", info.opt_auto_timer_seconds);
     draw_ui_and_front();
     return;
 }
