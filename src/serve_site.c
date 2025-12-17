@@ -216,9 +216,7 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
             if (!first) len += snprintf(buf + len, sizeof(buf) - len, ",");
             first = false;
 
-            len += snprintf(buf + len, sizeof(buf) - len,
-                            "{ \"i\": %d, \"from\": %d, \"to\": %d, \"duration\": %d }",
-                            i, s->from, s->to, s->duration);
+            len += snprintf(buf + len, sizeof(buf) - len, "{ \"i\": %d, \"from\": %d, \"to\": %d, \"duration\": %d }", i, s->from, s->to, s->duration);
         }
 
         len += snprintf(buf + len, sizeof(buf) - len, "] }");

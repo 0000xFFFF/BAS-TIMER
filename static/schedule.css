@@ -24,12 +24,21 @@
     pointer-events: auto;
 }
 
+#schedules-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    width: fit-content;
+    margin: 0 auto;
+    font-size: 30px;
+}
 
 .time-picker-container {
     display: flex;
     justify-content: center;
     flex-direction: row;
-    padding: 100px;
+    margin: 100px 0 20px 0;
     gap: 10px;
     align-items: center; /* vertical */
 }
