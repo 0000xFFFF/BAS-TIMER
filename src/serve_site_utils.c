@@ -294,7 +294,7 @@ static struct Route routes[] = {
     { "GET",      "/wttrin",                   get_wttrin },
     { "GET",      "/c",                        get_c },
     { "GET",      "/api/sumtime",              get_sumtime },
-    { "DELETE",   "/api/schedules",            delete_api_schedules },
+    { "GET",      "/api/schedules",            get_api_schedules },
     { "POST",     "/api/schedules",            post_api_schedules },
     { "DELETE",   "/api/schedules",            delete_api_schedules },
     { "POST",     "/api/set_timer_seconds",    post_api_set_timer_seconds },

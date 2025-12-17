@@ -14,7 +14,28 @@ function secondsToHHMMSS(totalSeconds) {
 
 const schedules = document.getElementById("schedules");
 
-async function delete_schedule(id) {
+async function fetch_schedules_post(from, to, duration) {
+
+    const response = await fetch('/api/schedules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            from: parseInt(from),
+            to: parseInt(to),
+            duration: parseInt(duration)
+        })
+    });
+    if (!response.ok) {
+        console.log(`HTTP error! status: ${response.status}`);
+        return false;
+    }
+
+
+    fetch_schedules_get();
+    return true;
+}
+
+async function fetch_schedules_delete(id) {
 
     const response = await fetch('/api/schedules', {
         method: 'DELETE',
@@ -33,12 +54,12 @@ function createScheduleElement(e) {
     d1.className = "schedules-item";
 
     const s1 = document.createElement("span");
-    s1.innerHTML = `${secondsToHHMMSS(e.from)} &rarr; ${secondsToHHMMSS(e.to)}`
+    s1.innerHTML = `${secondsToHHMMSS(e.from)} &rarr; ${secondsToHHMMSS(e.to)} = ${secondsToHHMMSS(e.duration)}`
 
     const b1 = document.createElement("button");
     b1.innerHTML = "remove";
     b1.addEventListener("click", () => {
-        if (delete_schedule(e.id)) {
+        if (fetch_schedules_delete(e.id)) {
             d1.remove();
         }
     });
@@ -48,7 +69,7 @@ function createScheduleElement(e) {
     return d1;
 }
 
-async function fetch_schedules() {
+async function fetch_schedules_get() {
     try {
         const response = await fetch('/api/schedules');
         if (!response.ok) {
@@ -71,15 +92,27 @@ const overlay = document.getElementById('schedules-overlay');
 
 function showOverlay() {
     overlay.classList.add('active');
-    fetch_schedules();
+    fetch_schedules_get();
 }
 
 function hideOverlay() {
     overlay.classList.remove('active');
 }
 
-const edit_schedules = document.getElementById("edit_schedules");
-edit_schedules.addEventListener("click", showOverlay);
+const schedules_edit = document.getElementById("schedules_edit");
+schedules_edit.addEventListener("click", showOverlay);
+
+
+function CreateNew() {
+    const from = getTimePickerValue("schedules-timer-picker-1");
+    const to = getTimePickerValue("schedules-timer-picker-2");
+    const duration = getTimePickerValue("schedules-timer-picker-3");
+    console.log(from, to, duration);
+    fetch_schedules_post(from, to, duration);
+}
+
+const schedules_add = document.getElementById("schedules_add");
+schedules_add.addEventListener("click", CreateNew);
 
 overlay.addEventListener("click", (e) => {
     if (e.target !== e.currentTarget) return;

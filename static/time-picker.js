@@ -46,7 +46,7 @@
             .forEach(initTimePicker);
     });
 
-    window.getTimePickerValue = function(pickerId) {
+    window.getTimePickerValueStr = function(pickerId) {
         const picker = document.getElementById(pickerId);
         if (!picker) return null;
 
@@ -54,6 +54,15 @@
             .map(v => v.textContent)
             .join(':');
     };
+
+    window.getTimePickerValue = function(pickerId) {
+        const picker = document.getElementById(pickerId);
+        if (!picker) return null;
+
+        const values = picker.querySelectorAll('.tp-value')
+        return parseInt(values[0].textContent) * 3600 + parseInt(values[1].textContent) * 60 + parseInt(values[2].textContent);
+    };
+
 
 
     // getTimePickerValue("time-picker-1"); // "08:15:30"
