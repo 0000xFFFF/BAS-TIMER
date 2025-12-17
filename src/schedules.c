@@ -9,7 +9,7 @@
 struct HeatScheduleNode* gl_schedules = NULL;
 
 // Create a new node
-static struct HeatScheduleNode* createNode(struct HeatSchedule value)
+static struct HeatScheduleNode* createNode(struct HeatSchedule value, int index)
 {
     struct HeatScheduleNode* newNode = (struct HeatScheduleNode*)malloc(sizeof(struct HeatScheduleNode));
     if (!newNode) {
@@ -18,6 +18,7 @@ static struct HeatScheduleNode* createNode(struct HeatSchedule value)
     }
     newNode->data = value;
     newNode->next = NULL;
+    newNode->index = index;
     return newNode;
 }
 
@@ -36,36 +37,31 @@ static void insertAtEnd(struct HeatScheduleNode** head, struct HeatSchedule valu
         temp = temp->next;
     }
 
-    struct HeatScheduleNode* newNode = createNode(value);
+    // Compute new index
+    int new_index = 0;
+    temp = *head;
+    while (temp && temp->next != NULL) {
+        temp = temp->next;
+        new_index = temp->index + 1;
+    }
+
+    struct HeatScheduleNode* newNode = createNode(value, new_index);
 
     if (*head == NULL) {
         *head = newNode;
         return;
     }
 
-    temp = *head;
-    while (temp->next != NULL) {
-        temp = temp->next;
-    }
     temp->next = newNode;
 }
 
-// Compare two schedules
-static int schedulesEqual(struct HeatSchedule a, struct HeatSchedule b)
-{
-    return (a.from == b.from) &&
-           (a.to == b.to) &&
-           (a.duration == b.duration) &&
-           (a.last_yday == b.last_yday);
-}
-
 // Delete node (helper)
-static void deleteNode(struct HeatScheduleNode** head, struct HeatSchedule key)
+static void deleteNode(struct HeatScheduleNode** head, int index)
 {
     struct HeatScheduleNode* temp = *head;
     struct HeatScheduleNode* prev = NULL;
 
-    while (temp != NULL && !schedulesEqual(temp->data, key)) {
+    while (temp != NULL && temp->index != index) {
         prev = temp;
         temp = temp->next;
     }
@@ -166,10 +162,9 @@ void schedules_create(int from, int to, uint64_t duration)
 }
 
 // Delete a schedule
-void schedules_delete(int from, int to, uint64_t duration)
+void schedules_delete(int index)
 {
-    struct HeatSchedule temp = create_heat_schedule(from, to, duration);
-    deleteNode(&gl_schedules, temp);
+    deleteNode(&gl_schedules, index);
     saveSchedulesBinary(gl_schedules, VAR_DIR_FILE_SCHEDULES_BIN);
 }
 

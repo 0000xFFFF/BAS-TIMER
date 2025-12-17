@@ -53,17 +53,9 @@ void infos_bas_init(void)
         g_infos.bas.opt_auto_timer = ENABLE_AUTO_TIMER;
         g_infos.bas.opt_auto_gas = ENABLE_AUTO_GAS;
         g_infos.bas.opt_auto_timer_seconds = (uint64_t)AUTO_TIMER_SECONDS;
-        g_infos.bas.opt_auto_timer_started = 0;
-        g_infos.bas.opt_auto_timer_seconds_elapsed = 0;
 
         g_infos.bas.history_mode = -1;
-        g_infos.bas.history_mode_time_changed = 0;
-        g_infos.bas.history_mode_time_on = 0;
-        g_infos.bas.history_mode_time_off = 0;
-        g_infos.bas.history_gas = -1;
-        g_infos.bas.history_gas_time_changed = 0;
-        g_infos.bas.history_gas_time_on = 0;
-        g_infos.bas.history_gas_time_off = 0;
+        g_infos.bas.history_gas = PUMP_STATUS_UNKNOWN;
 
         g_infos.bas.schedules_t_min = 10.0; // 10 󰔄
         g_infos.bas.schedules_last_yday = -1;
