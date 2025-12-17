@@ -199,6 +199,34 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         return;
     }
 
+    if (mg_match(hm->uri, mg_str("/api/schedules"), NULL)) {
+        struct BasInfo info = {0};
+        infos_bas_safe_io(&g_infos.bas, &info);
+
+        char buf[HEAT_SCHEDULES_COUNT * (64 + 10)];
+        size_t len = 0;
+
+        len += snprintf(buf + len, sizeof(buf) - len, "{ \"schedules\": [");
+
+        bool first = true;
+        for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
+            struct HeatSchedule* s = &info.schedules[i];
+            if (!s->valid) continue;
+
+            if (!first) len += snprintf(buf + len, sizeof(buf) - len, ",");
+            first = false;
+
+            len += snprintf(buf + len, sizeof(buf) - len,
+                            "{ \"i\": %d, \"from\": %d, \"to\": %d, \"duration\": %d }",
+                            i, s->from, s->to, s->duration);
+        }
+
+        len += snprintf(buf + len, sizeof(buf) - len, "] }");
+
+        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%.*s", (int)len, buf);
+        return;
+    }
+
     // if on mobile serve diff index
     if (mg_match(hm->uri, mg_str("/"), NULL)) {
         struct mg_str* ua = mg_http_get_header(hm, "User-Agent");
