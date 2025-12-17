@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "mongoose.h"
 #include "request.h"
+#include "schedules.h"
 #include "serve_websocket.h"
 #include <stdatomic.h>
 
@@ -209,14 +210,17 @@ void serve_site(struct mg_connection* c, int ev, void* ev_data)
         len += snprintf(buf + len, sizeof(buf) - len, "{ \"schedules\": [");
 
         bool first = true;
-        for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
-            struct HeatSchedule* s = &info.schedules[i];
-            if (!s->valid) continue;
+
+        struct Node* node = gl_schedules;
+        while (node != NULL) {
+            struct HeatSchedule* s = &node->data;
 
             if (!first) len += snprintf(buf + len, sizeof(buf) - len, ",");
             first = false;
 
-            len += snprintf(buf + len, sizeof(buf) - len, "{ \"i\": %d, \"from\": %d, \"to\": %d, \"duration\": %d }", i, s->from, s->to, s->duration);
+            len += snprintf(buf + len, sizeof(buf) - len, "{ \"from\": %d, \"to\": %d, \"duration\": %d }", s->from, s->to, s->duration);
+
+            node = node->next;
         }
 
         len += snprintf(buf + len, sizeof(buf) - len, "] }");

@@ -79,7 +79,6 @@ enum OptStatus {
 };
 
 struct HeatSchedule {
-    bool valid;
     int from;      // seconds since midnight (0–86399)
     int to;        // same as above, use hms_to_seconds
     int duration;  // timer duration that turns heat off
@@ -151,7 +150,6 @@ struct BasInfo {
     time_t radiator_color_last_update;
     double radiator_color_current_temp_ratio; // 0.0 = cold, 1.0 = fully hot
 
-    struct HeatSchedule schedules[HEAT_SCHEDULES_COUNT];
     double schedules_t_min;  // must be under this temperature to run
     int schedules_last_yday; // day of year [0–365], to reset schedules each day
 };

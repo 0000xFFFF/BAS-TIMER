@@ -1,6 +1,7 @@
 #include "debug.h"
 #include "logger.h"
 #include "request.h"
+#include "schedules.h"
 #include "utils.h"
 #include <stdio.h>
 #include <time.h>
@@ -65,7 +66,6 @@ static void update_history(struct BasInfo* info)
     }
 }
 
-
 static void do_logic_timer(struct BasInfo* info)
 {
     time_t current_time;
@@ -77,18 +77,22 @@ static void do_logic_timer(struct BasInfo* info)
         localtime_r(&current_time, &local);
         int today = local.tm_yday;
         int sec_today = hms_to_today_seconds(local.tm_hour, local.tm_min, local.tm_sec);
-        for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
-            struct HeatSchedule* s = &info->schedules[i];
 
-            if (!s->valid) continue;
-            if (s->last_yday == today) continue;
-            if (!today_seconds_in_window(sec_today, s->from, s->to)) continue;
+        struct Node* node = gl_schedules;
+        while (node != NULL) {
+            struct HeatSchedule* s = &node->data;
 
-            s->last_yday = today;
-            info->opt_auto_timer_seconds = s->duration;
-            info->opt_auto_timer_status = OPT_STATUS_CHANGED;
-            request_send_quick(URL_HEAT_ON);
-            logger_write_changes("heat schedule - duration: %d\n", s->duration);
+            // Skip if already processed today
+            if (s->last_yday != today && today_seconds_in_window(sec_today, s->from, s->to)) {
+                s->last_yday = today;
+                info->opt_auto_timer_seconds = s->duration;
+                info->opt_auto_timer_status = OPT_STATUS_CHANGED;
+
+                request_send_quick(URL_HEAT_ON);
+                logger_write_changes("heat schedule - duration: %d\n", s->duration);
+            }
+
+            node = node->next;
         }
     }
 

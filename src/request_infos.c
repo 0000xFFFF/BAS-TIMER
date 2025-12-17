@@ -68,27 +68,6 @@ void infos_bas_init(void)
         g_infos.bas.schedules_t_min = 10.0; // 10 󰔄
         g_infos.bas.schedules_last_yday = -1;
 
-        int i = 0;
-        g_infos.bas.schedules[i].valid = true;
-        g_infos.bas.schedules[i].from = hms_to_today_seconds(1, 0, 0);     // 01:00:00
-        g_infos.bas.schedules[i].to = g_infos.bas.schedules[i].from + hms_to_today_seconds(0, 15, 0); // + 15min
-        g_infos.bas.schedules[i].duration = hms_to_today_seconds(0, 5, 0); // 5 min
-        g_infos.bas.schedules[i].last_yday = -1;
-        i++;
-
-        g_infos.bas.schedules[i].valid = true;
-        g_infos.bas.schedules[i].from = hms_to_today_seconds(5, 0, 0);     // 05:00:00
-        g_infos.bas.schedules[i].to = g_infos.bas.schedules[i].from + hms_to_today_seconds(0, 15, 0); // + 15min
-        g_infos.bas.schedules[i].duration = hms_to_today_seconds(0, 5, 0); // 5 min
-        g_infos.bas.schedules[i].last_yday = -1;
-        i++;
-
-        g_infos.bas.schedules[i].valid = true;
-        g_infos.bas.schedules[i].from = hms_to_today_seconds(9, 0, 0);     // 09:00:00
-        g_infos.bas.schedules[i].to = g_infos.bas.schedules[i].from + hms_to_today_seconds(0, 15, 0); // + 15min
-        g_infos.bas.schedules[i].duration = hms_to_today_seconds(0, 5, 0); // 5 min
-        g_infos.bas.schedules[i].last_yday = -1;
-        i++;
     }
 
     pthread_mutex_unlock(&s_infos_bas_mutex);

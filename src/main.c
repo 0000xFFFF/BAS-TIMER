@@ -4,6 +4,7 @@
 #include "main_utils.h"
 #include "mongoose.h"
 #include "request.h"
+#include "schedules.h"
 #include "signals.h"
 #include "term.h"
 #include "thread_print_loop.h"
@@ -30,6 +31,8 @@ int main(void)
     load_env(".env");
     signal(SIGINT, signals_sigint);
     if (ENABLE_SAVE_INFOS) { load_infos(VAR_DIR_FILE_INFOS_BIN, &g_infos); }
+
+    schedules_init();
 
     // set needed .env vars to globals here
     // ...
@@ -79,6 +82,9 @@ int main(void)
     pthread_join(t_request_bas, NULL);
     pthread_join(t_save_infos, NULL);
     pthread_join(t_restarter, NULL);
+
+
+    schedules_free();
 
     DPL("MAIN STOP");
     return 0;

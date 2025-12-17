@@ -1,6 +1,7 @@
 #include "debug.h"
 #include "mongoose.h"
 #include "request.h"
+#include "schedules.h"
 #include "utils.h"
 #include <float.h>
 #include <inttypes.h>
@@ -107,9 +108,11 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %.3f\n", clm_len, "radiator_color_current_temp_ratio", b->radiator_color_current_temp_ratio);
     printf("%*s : %.2f\n", clm_len, "schedules_t_min", b->schedules_t_min);
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
-    for (int i = 0; i < HEAT_SCHEDULES_COUNT; i++) {
-        if (!b->schedules[i].valid) continue;
-        printf("%*s : %d - %d -> %d, dur: %d\n", clm_len, "schedules", i, b->schedules[i].from, b->schedules[i].to, b->schedules[i].duration);
+    struct Node* node = gl_schedules;
+    while (node != NULL) {
+        struct HeatSchedule* s = &node->data;
+        printf("%*s : %d -> %d = %d, yday: %d\n", clm_len, "schedules", s->from, s->to, s->duration, s->last_yday);
+        node = node->next;
     }
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
 
