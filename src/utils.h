@@ -16,8 +16,8 @@ extern int localtime_hour(void);
 extern size_t elapsed_str(char* buffer, size_t size, time_t end, time_t start);
 extern size_t get_local_ip(char* buffer, size_t size);
 extern size_t get_local_ips(char* buffer, size_t size);
-extern bool is_connection_healthy();
-extern bool can_get_local_ips();
+extern bool is_connection_healthy(void);
+extern bool can_get_local_ips(void);
 extern double min_dv(int count, ...);
 extern double max_dv(int count, ...);
 extern const char* istrstr(const char* haystack, const char* needle);
@@ -31,5 +31,6 @@ extern void trim_spaces(char* buffer);
 extern void trim_left(char* buffer, size_t n);
 extern void trim_right(char* buffer, size_t n);
 extern char* bool_to_str(bool value);
+extern bool str_to_bool(const char* s);
 
 #endif // UTILS_HPP

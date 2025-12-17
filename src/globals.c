@@ -14,19 +14,20 @@ const char* VAR_DIR_FILE_WTTRIN_LOG = VAR_DIR_ SEP_ "wttrin.log";
 const char* VAR_DIR_FILE_INFOS_BIN = VAR_DIR_ SEP_ "infos.bin";
 const char* VAR_DIR_FILE_SCHEDULES_BIN = VAR_DIR_ SEP_ "schedules.bin";
 
-const bool ENABLE_REQUEST_BAS = true;
-const bool ENABLE_REQUEST_WTTRIN = true;
-const bool ENABLE_SAVE_INFOS =
+bool ENABLE_REQUEST_BAS = true;
+bool ENABLE_REQUEST_WTTRIN = true;
+bool ENABLE_SAVE_INFOS =
 #ifdef DEBUG
     false;
 #else
     true;
 #endif
-const bool ENABLE_RESTARTER = true;
-const bool ENABLE_DOCTOR = true;
+bool ENABLE_RESTARTER = true;
+bool ENABLE_DOCTOR = true;
 
-const bool ENABLE_AUTO_TIMER = true;
-const bool ENABLE_AUTO_GAS = true;
+bool ENABLE_AUTO_TIMER = true;
+bool ENABLE_AUTO_GAS = true;
+
 const int AUTO_TIMER_SECONDS = 8 * 60;
 
 const int POLL_TIME =

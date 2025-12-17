@@ -15,6 +15,7 @@
 #include "thread_save_infos.h"
 #include "thread_serve.h"
 #include "thread_utils.h"
+#include "utils.h"
 #include <assert.h>
 #include <pthread.h>
 #include <signal.h>
@@ -38,6 +39,13 @@ int main(void)
     // ...
     // const char* url_wttrin = getenv("URL_WTTRIN"); // this is removed since we are parsing csv
     // if (url_wttrin != NULL) { URL_WTTRIN = url_wttrin; }
+    ENABLE_REQUEST_BAS = str_to_bool(getenv("ENABLE_REQUEST_BAS"));
+    ENABLE_REQUEST_WTTRIN = str_to_bool(getenv("ENABLE_REQUEST_WTTRIN"));
+    ENABLE_SAVE_INFOS = str_to_bool(getenv("ENABLE_SAVE_INFOS"));
+    ENABLE_RESTARTER = str_to_bool(getenv("ENABLE_RESTARTER"));
+    ENABLE_DOCTOR = str_to_bool(getenv("ENABLE_DOCTOR"));
+    ENABLE_AUTO_TIMER = str_to_bool(getenv("ENABLE_AUTO_TIMER"));
+    ENABLE_AUTO_GAS = str_to_bool(getenv("ENABLE_AUTO_GAS"));
 
 #ifdef DEBUG
     const char* log_level = getenv("LOG_LEVEL");
@@ -82,7 +90,6 @@ int main(void)
     pthread_join(t_request_bas, NULL);
     pthread_join(t_save_infos, NULL);
     pthread_join(t_restarter, NULL);
-
 
     schedules_free();
 

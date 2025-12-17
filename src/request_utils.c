@@ -18,6 +18,7 @@ double extract_json_label(struct mg_str json_body, const char* label, double fal
 char* request_status_to_str(enum RequestStatus status)
 {
     switch (status) {
+        case REQUEST_STATUS_DISABLED:      return "disabled"; break;
         case REQUEST_STATUS_RUNNING:       return "running"; break;
         case REQUEST_STATUS_DONE:          return "done"; break;
         case REQUEST_STATUS_ERROR_TIMEOUT: return "timeout"; break;
@@ -29,6 +30,7 @@ char* request_status_to_str(enum RequestStatus status)
 char* request_status_to_smallstr(enum RequestStatus status)
 {
     switch (status) {
+        case REQUEST_STATUS_DISABLED:      return "x"; break;
         case REQUEST_STATUS_RUNNING:       return ">"; break;
         case REQUEST_STATUS_DONE:          return "."; break;
         case REQUEST_STATUS_ERROR_TIMEOUT: return "t/o"; break;
@@ -41,6 +43,7 @@ bool request_status_failed(enum RequestStatus status)
 {
     switch (status) {
         default:
+        case REQUEST_STATUS_DISABLED:
         case REQUEST_STATUS_RUNNING:
         case REQUEST_STATUS_DONE:          return false;
 

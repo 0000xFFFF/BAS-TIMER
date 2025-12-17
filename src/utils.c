@@ -2,6 +2,7 @@
 #include "globals.h"
 #include <arpa/inet.h>
 #include <ctype.h>
+#include <ctype.h> // for tolower
 #include <float.h>
 #include <inttypes.h>
 #include <libgen.h>
@@ -190,8 +191,6 @@ int hms_to_today_seconds(int hour, int min, int sec)
     return hour * 3600 + min * 60 + sec;
 }
 
-
-
 int hms_to_today_seconds_str(const char* str)
 {
     int h, m, s;
@@ -354,4 +353,25 @@ void trim_right(char* buffer, size_t n)
 char* bool_to_str(bool value)
 {
     return value ? "true" : "false";
+}
+
+bool str_to_bool(const char* s)
+{
+    if (s == NULL) { return false; }
+
+    size_t len = strlen(s);
+    char* s_copy = malloc(len + 1);
+    if (s_copy == NULL) { return false; }
+    strcpy(s_copy, s);
+
+    for (int i = 0; s_copy[i]; i++) { s_copy[i] = (char)tolower((unsigned char)s_copy[i]); }
+
+    bool result = false;
+    if (strcmp(s_copy, "false") == 0 || strcmp(s_copy, "0") == 0 || strcmp(s_copy, "no") == 0) { result = false; }
+    else {
+        result = true;
+    }
+
+    free(s_copy);
+    return result;
 }

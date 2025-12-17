@@ -19,14 +19,15 @@ extern const char* VAR_DIR_FILE_WTTRIN_LOG;
 extern const char* VAR_DIR_FILE_INFOS_BIN;
 extern const char* VAR_DIR_FILE_SCHEDULES_BIN;
 
-extern const bool ENABLE_REQUEST_BAS;
-extern const bool ENABLE_REQUEST_WTTRIN;
-extern const bool ENABLE_SAVE_INFOS;
-extern const bool ENABLE_RESTARTER;
-extern const bool ENABLE_DOCTOR;
+extern bool ENABLE_REQUEST_BAS;
+extern bool ENABLE_REQUEST_WTTRIN;
+extern bool ENABLE_SAVE_INFOS;
+extern bool ENABLE_RESTARTER;
+extern bool ENABLE_DOCTOR;
 
-extern const bool ENABLE_AUTO_TIMER;
-extern const bool ENABLE_AUTO_GAS;
+extern bool ENABLE_AUTO_TIMER;
+extern bool ENABLE_AUTO_GAS;
+
 extern const int AUTO_TIMER_SECONDS;
 
 extern const int POLL_TIME;
