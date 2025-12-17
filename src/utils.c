@@ -350,7 +350,7 @@ void trim_right(char* buffer, size_t n)
     buffer[len - n] = '\0';
 }
 
-char* bool_to_str(bool value)
+const char* bool_to_str(bool value)
 {
     return value ? "true" : "false";
 }

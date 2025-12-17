@@ -33,7 +33,7 @@ static void get_api_state(struct mg_connection* c, struct mg_http_message* hm)
 
     mg_http_reply(c, 200, "Content-Type: application/json\r\n",
                   "{"
-                  "\"seconds\": %ld"
+                  "\"seconds\": %" PRIu64
                   ","
                   "\"auto_timer\": %s"
                   ","
