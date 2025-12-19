@@ -90,7 +90,7 @@ static void do_logic_timer(struct BasInfo* info)
                 info->opt_auto_timer_status = OPT_STATUS_CHANGED;
 
                 request_send_quick(URL_HEAT_ON);
-                logger_write_changes("heat schedule - duration: %d\n", s->duration);
+                logger_write_changes("heat schedule - Tspv: %f, duration: %d\n", info->Tspv, s->duration);
             }
 
             node = node->next;
