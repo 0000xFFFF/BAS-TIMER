@@ -87,14 +87,14 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %.2f\n", clm_len, "peak_max_buf", b->peak_max_buf);
     printf("%*s : %.2f\n", clm_len, "peak_min_circ", b->peak_min_circ);
     printf("%*s : %.2f\n", clm_len, "peak_max_circ", b->peak_max_circ);
-    printf("%*s : %s\n", clm_len, "opt_auto_timer", b->opt_auto_timer ? "true" : "false");
-    printf("%*s : %lu\n", clm_len, "opt_auto_timer_seconds", b->opt_auto_timer_seconds);
-    printf("%*s : %lu\n", clm_len, "opt_auto_timer_seconds_old", b->opt_auto_timer_seconds_old);
-    printf("%*s : %s\n", clm_len, "opt_auto_timer_started", b->opt_auto_timer_started ? "true" : "false");
+    printf("%*s : %s\n", clm_len, "opt_auto_timer", bool_to_str(b->opt_auto_timer));
+    printf("%*s : %" PRIu64 "\n", clm_len, "opt_auto_timer_seconds", b->opt_auto_timer_seconds);
+    printf("%*s : %" PRIu64 "\n", clm_len, "opt_auto_timer_seconds_old", b->opt_auto_timer_seconds_old);
+    printf("%*s : %s\n", clm_len, "opt_auto_timer_started", bool_to_str(b->opt_auto_timer_started));
     printf("%*s : %" PRIu64 "\n", clm_len, "opt_auto_timer_seconds_elapsed", b->opt_auto_timer_seconds_elapsed);
     printf("%*s : %d\n", clm_len, "opt_auto_timer_status", (int)b->opt_auto_timer_status);
     printf("%*s : %" PRId64 "\n", clm_len, "opt_auto_timer_status_changed", (int64_t)b->opt_auto_timer_status_changed);
-    printf("%*s : %s\n", clm_len, "opt_auto_gas", b->opt_auto_gas ? "true" : "false");
+    printf("%*s : %s\n", clm_len, "opt_auto_gas", bool_to_str(b->opt_auto_gas));
     printf("%*s : %d\n", clm_len, "opt_auto_gas_status", (int)b->opt_auto_gas_status);
     printf("%*s : %" PRId64 "\n", clm_len, "opt_auto_gas_status_changed", (int64_t)b->opt_auto_gas_status_changed);
     printf("%*s : %d\n", clm_len, "history_mode", b->history_mode);
@@ -115,7 +115,7 @@ void print_bas_info(const struct BasInfo* b)
     struct HeatScheduleNode* node = g_schedules;
     while (node != NULL) {
         struct HeatSchedule* s = &node->data;
-        printf("%*s : %d -> %d = %lu, yday: %d\n", clm_len, "schedules", s->from, s->to, s->duration, s->last_yday);
+        printf("%*s : %" PRIu64 ": %d -> %d = %" PRIu64 ", yday: %d\n", clm_len, "schedules", node->id, s->from, s->to, s->duration, s->last_yday);
         node = node->next;
     }
     pthread_mutex_unlock(&g_mutex_schedules);
