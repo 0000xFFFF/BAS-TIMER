@@ -51,10 +51,21 @@ static void get_api_schedules(struct mg_connection* c, struct mg_http_message* h
     struct BasInfo info = {0};
     infos_bas_safe_io(&g_infos.bas, &info);
 
-    char buf[HEAT_SCHEDULES_COUNT * (64 + 10)];
+    pthread_mutex_lock(&g_mutex_schedules);
+
+    const int START_TEXT_LEN = 16;
+    const int TEXT_LEN = 64;
+    const int MAX_INT32_LEN = 10;
+    const int MAX_INT64_LEN = 19;
+    const int ELEMENT_LEN = TEXT_LEN + MAX_INT32_LEN * 2 + MAX_INT64_LEN * 2;
+    const int ELEMENTS_LEN = g_schedules_count * ELEMENT_LEN;
+    const int END_TEXT_LEN = 3;
+    const int PADDING = 8;
+    const int TOTAL_TEXT_SIZE = START_TEXT_LEN + ELEMENTS_LEN + END_TEXT_LEN + PADDING;
+    char* buf = (char*)calloc((size_t)sizeof(char), (size_t)TOTAL_TEXT_SIZE);
     size_t len = 0;
 
-    len += (size_t)snprintf(buf + len, sizeof(buf) - len, "{ \"schedules\": [");
+    len += (size_t)snprintf(buf + len, (size_t)TOTAL_TEXT_SIZE - len, "{ \"schedules\": [");
 
     bool first = true;
 
@@ -62,17 +73,21 @@ static void get_api_schedules(struct mg_connection* c, struct mg_http_message* h
     while (node != NULL) {
         struct HeatSchedule* s = &node->data;
 
-        if (!first) len += (size_t)snprintf(buf + len, sizeof(buf) - len, ",");
+        if (!first) len += (size_t)snprintf(buf + len, (size_t)TOTAL_TEXT_SIZE - len, ",");
         first = false;
 
-        len += (size_t)snprintf(buf + len, sizeof(buf) - len, "{ \"id\": %" PRIu64 ", \"from\": %d, \"to\": %d, \"duration\": %" PRIu64 " }", node->id, s->from, s->to, s->duration);
+        len += (size_t)snprintf(buf + len, (size_t)TOTAL_TEXT_SIZE - len, "{ \"id\": %" PRIu64 ", \"from\": %d, \"to\": %d, \"duration\": %" PRIu64 " }", node->id, s->from, s->to, s->duration);
 
         node = node->next;
     }
 
-    len += (size_t)snprintf(buf + len, sizeof(buf) - len, "] }");
+    len += (size_t)snprintf(buf + len, (size_t)TOTAL_TEXT_SIZE - len, "] }");
+
+    pthread_mutex_unlock(&g_mutex_schedules);
 
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%.*s", (int)len, buf);
+
+    free(buf);
     return;
 }
 

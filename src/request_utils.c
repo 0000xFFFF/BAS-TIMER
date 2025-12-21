@@ -113,6 +113,7 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %d\n", clm_len, "schedules_last_yday", b->schedules_last_yday);
     pthread_mutex_lock(&g_mutex_schedules);
     struct HeatScheduleNode* node = g_schedules;
+    printf("%*s : %" PRIu64 "\n", clm_len, "g_schedules_count", g_schedules_count);
     while (node != NULL) {
         struct HeatSchedule* s = &node->data;
         printf("%*s : %" PRIu64 ": %d -> %d = %" PRIu64 ", yday: %d\n", clm_len, "schedules", node->id, s->from, s->to, s->duration, s->last_yday);

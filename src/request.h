@@ -86,8 +86,6 @@ struct HeatSchedule {
     int last_yday;     // day-of-year when this schedule last ran
 };
 
-#define HEAT_SCHEDULES_COUNT 12
-
 struct BasInfo {
 
     bool valid; // is not empty

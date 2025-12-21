@@ -9,6 +9,7 @@
 
 pthread_mutex_t g_mutex_schedules = PTHREAD_MUTEX_INITIALIZER;
 struct HeatScheduleNode* g_schedules = NULL; // Global linked list of schedules
+uint64_t g_schedules_count = 0;
 static uint64_t s_next_schedule_id = 0;
 
 static int file_exists(const char* path)
@@ -33,6 +34,7 @@ static struct HeatScheduleNode* createNode(struct HeatSchedule value, uint64_t i
     newNode->data = value;
     newNode->next = NULL;
     newNode->id = id;
+    g_schedules_count++;
     return newNode;
 }
 
@@ -83,6 +85,7 @@ static void deleteNode(struct HeatScheduleNode** head, uint64_t id)
         prev->next = temp->next;
     }
 
+    g_schedules_count--;
     free(temp);
 }
 

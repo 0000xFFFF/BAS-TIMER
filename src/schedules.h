@@ -12,6 +12,7 @@ struct HeatScheduleNode {
 };
 
 extern struct HeatScheduleNode* g_schedules;
+extern uint64_t g_schedules_count;
 extern void schedules_init(void);
 extern void schedules_create(int from, int to, uint64_t duration);
 extern void schedules_delete(uint64_t id);
