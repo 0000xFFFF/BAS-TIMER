@@ -111,7 +111,7 @@ enum RequestStatus infos_bas_update(void)
         info.Tmid = (info.Tmax + info.Tmin) / 2;
         info.TminLT = info.Tmin < (double)45.0;
         info.TmidGE = info.Tmid >= (double)60.0;
-        info.TmaxGE = info.Tmax >= (double)70.0;
+        info.TmaxGE = info.Tmax >= (double)65.0;
         info.peak_min_solar = min_dv(2, info.peak_min_solar, info.Tsolar);
         info.peak_max_solar = max_dv(2, info.peak_max_solar, info.Tsolar);
         info.peak_min_human = min_dv(4, info.peak_min_human, info.Tsobna, info.Tzadata, info.Tspv);
