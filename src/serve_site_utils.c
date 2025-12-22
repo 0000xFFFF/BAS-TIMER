@@ -53,15 +53,15 @@ static void get_api_schedules(struct mg_connection* c, struct mg_http_message* h
 
     pthread_mutex_lock(&g_mutex_schedules);
 
-    const int START_TEXT_LEN = 16;
-    const int TEXT_LEN = 64;
-    const int MAX_INT32_LEN = 10;
-    const int MAX_INT64_LEN = 19;
-    const int ELEMENT_LEN = TEXT_LEN + MAX_INT32_LEN * 2 + MAX_INT64_LEN * 2;
-    const int ELEMENTS_LEN = g_schedules_count * ELEMENT_LEN;
-    const int END_TEXT_LEN = 3;
-    const int PADDING = 8;
-    const int TOTAL_TEXT_SIZE = START_TEXT_LEN + ELEMENTS_LEN + END_TEXT_LEN + PADDING;
+    const uint64_t START_TEXT_LEN = 16;
+    const uint64_t TEXT_LEN = 64;
+    const uint64_t MAX_INT32_LEN = 10;
+    const uint64_t MAX_INT64_LEN = 19;
+    const uint64_t ELEMENT_LEN = TEXT_LEN + MAX_INT32_LEN * 2 + MAX_INT64_LEN * 2;
+    const uint64_t ELEMENTS_LEN = g_schedules_count * ELEMENT_LEN;
+    const uint64_t END_TEXT_LEN = 3;
+    const uint64_t PADDING = 8;
+    const uint64_t TOTAL_TEXT_SIZE = START_TEXT_LEN + ELEMENTS_LEN + END_TEXT_LEN + PADDING;
     char* buf = (char*)calloc((size_t)sizeof(char), (size_t)TOTAL_TEXT_SIZE);
     size_t len = 0;
 
