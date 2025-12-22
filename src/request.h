@@ -113,7 +113,8 @@ struct BasInfo {
     double Tmid;
     int TminLT;
     int TmidGE;
-    int TmaxGE;
+    int TmaxGE_OK;
+    int TmaxGE_BOUND;
 
     double peak_min_solar;
     double peak_max_solar;

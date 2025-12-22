@@ -231,7 +231,7 @@ static char* dut_wttrin_temp_to_color(char* s, double max, double min)
 static char* dut_max_check(void)
 {
     s_temp_b = 0;
-    ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, 82, s_du_infos.bas.valid && s_du_infos.bas.TmaxGE ? get_frame(&spinner_check, 1) : " ");
+    ctext_fg(s_temp + s_temp_b, sizeof(s_temp) - s_temp_b, 82, s_du_infos.bas.valid && s_du_infos.bas.TmaxGE_OK ? get_frame(&spinner_check, 1) : " ");
     return s_temp;
 }
 

@@ -78,7 +78,8 @@ void print_bas_info(const struct BasInfo* b)
     printf("%*s : %f\n", clm_len, "Tmid", b->Tmid);
     printf("%*s : %d\n", clm_len, "TminLT", b->TminLT);
     printf("%*s : %d\n", clm_len, "TmidGE", b->TmidGE);
-    printf("%*s : %d\n", clm_len, "TmaxGE", b->TmaxGE);
+    printf("%*s : %d\n", clm_len, "TmaxGE_OK", b->TmaxGE_OK);
+    printf("%*s : %d\n", clm_len, "TmaxGE_BOUND", b->TmaxGE_BOUND);
     printf("%*s : %f\n", clm_len, "peak_min_solar", b->peak_min_solar);
     printf("%*s : %f\n", clm_len, "peak_max_solar", b->peak_max_solar);
     printf("%*s : %f\n", clm_len, "peak_min_human", b->peak_min_human);

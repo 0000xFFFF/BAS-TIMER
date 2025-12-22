@@ -125,13 +125,13 @@ static void do_logic_gas(struct BasInfo* info)
     time_t current_time;
     time(&current_time);
 
-    if (info->opt_auto_gas && info->StatusPumpe4 == 0 && info->TminLT && !info->TmidGE && !info->TmaxGE) {
+    if (info->opt_auto_gas && info->StatusPumpe4 == 0 && info->TminLT && !info->TmidGE && !info->TmaxGE_OK) {
         info->opt_auto_gas_status = OPT_STATUS_STARTING;
         info->opt_auto_gas_status_changed = current_time;
         request_send_quick(URL_GAS_ON);
     }
 
-    if (info->opt_auto_gas && info->StatusPumpe4 == 3 && (info->TmidGE || info->TmaxGE)) {
+    if (info->opt_auto_gas && info->StatusPumpe4 == 3 && (info->TmidGE || info->TmaxGE_BOUND)) {
         info->opt_auto_gas_status = OPT_STATUS_STOPPING;
         info->opt_auto_gas_status_changed = current_time;
         request_send_quick(URL_GAS_OFF);
