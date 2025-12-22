@@ -71,48 +71,51 @@ static void do_logic_timer(struct BasInfo* info)
     time_t current_time;
     time(&current_time);
 
-    // scheduled heat to turn on
-    if (info->Tspv < info->schedules_t_min) {
-        struct tm local;
-        localtime_r(&current_time, &local);
-        int today = local.tm_yday;
-        int sec_today = hms_to_today_seconds(local.tm_hour, local.tm_min, local.tm_sec);
+    if (info->opt_auto_timer) {
 
-        pthread_mutex_lock(&g_mutex_schedules);
-        struct HeatScheduleNode* node = g_schedules;
-        while (node != NULL) {
-            struct HeatSchedule* s = &node->data;
+        // scheduled heat to turn on
+        if (info->Tspv < info->schedules_t_min) {
+            struct tm local;
+            localtime_r(&current_time, &local);
+            int today = local.tm_yday;
+            int sec_today = hms_to_today_seconds(local.tm_hour, local.tm_min, local.tm_sec);
 
-            // Skip if already processed today
-            if (s->last_yday != today && today_seconds_in_window(sec_today, s->from, s->to)) {
-                s->last_yday = today;
-                info->opt_auto_timer_seconds = s->duration;
-                info->opt_auto_timer_status = OPT_STATUS_CHANGED;
+            pthread_mutex_lock(&g_mutex_schedules);
+            struct HeatScheduleNode* node = g_schedules;
+            while (node != NULL) {
+                struct HeatSchedule* s = &node->data;
 
-                request_send_quick(URL_HEAT_ON);
-                logger_write_changes("heat schedule - Tspv: %f, duration: %d\n", info->Tspv, s->duration);
+                // Skip if already processed today
+                if (s->last_yday != today && today_seconds_in_window(sec_today, s->from, s->to)) {
+                    s->last_yday = today;
+                    info->opt_auto_timer_seconds = s->duration;
+                    info->opt_auto_timer_status = OPT_STATUS_CHANGED;
+
+                    request_send_quick(URL_HEAT_ON);
+                    logger_write_changes("heat schedule - Tspv: %f, duration: %d\n", info->Tspv, s->duration);
+                }
+
+                node = node->next;
             }
-
-            node = node->next;
+            pthread_mutex_unlock(&g_mutex_schedules);
         }
-        pthread_mutex_unlock(&g_mutex_schedules);
-    }
 
-    if (info->opt_auto_timer && info->mod_rada) {
-        if (info->opt_auto_timer_started) {
-            info->opt_auto_timer_seconds_elapsed = (uint64_t)(current_time - info->history_mode_time_on);
+        if (info->mod_rada) {
+            if (info->opt_auto_timer_started) {
+                info->opt_auto_timer_seconds_elapsed = (uint64_t)(current_time - info->history_mode_time_on);
 
-            if (info->opt_auto_timer_seconds_elapsed >= info->opt_auto_timer_seconds) {
-                info->opt_auto_timer_started = false;
-                info->opt_auto_timer_status = OPT_STATUS_STOPPING;
+                if (info->opt_auto_timer_seconds_elapsed >= info->opt_auto_timer_seconds) {
+                    info->opt_auto_timer_started = false;
+                    info->opt_auto_timer_status = OPT_STATUS_STOPPING;
+                    info->opt_auto_timer_status_changed = current_time;
+                    request_send_quick(URL_HEAT_OFF);
+                }
+            }
+            else {
+                info->opt_auto_timer_started = true;
+                info->opt_auto_timer_status = OPT_STATUS_STARTING;
                 info->opt_auto_timer_status_changed = current_time;
-                request_send_quick(URL_HEAT_OFF);
             }
-        }
-        else {
-            info->opt_auto_timer_started = true;
-            info->opt_auto_timer_status = OPT_STATUS_STARTING;
-            info->opt_auto_timer_status_changed = current_time;
         }
     }
 }
