@@ -14,6 +14,14 @@
     <link rel="stylesheet" href="/mobile.css">
     <script defer type="text/javascript" src="/index.js"></script>
     <script defer type="text/javascript" src="/mobile.js"></script>
+
+    ;
+    <link rel="stylesheet" href="/time-picker.css">
+    <script defer src="/time-picker.js"></script>
+
+    <link rel="stylesheet" href="/schedule.css">
+    <script defer src="/schedule.js"></script>
+
 </head>
 
 <body>
@@ -139,10 +147,94 @@
                             Auto
                         </label>
                     </div>
+
+                    <div id="schedules_edit">Schedule...</div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div id="schedules-overlay">
+        <div id="schedules-container">
+            <div id="schedules-time-pickers">
+                <div id="schedules-time-picker-from" class="time-picker">
+                    <div class="tp-unit" data-max="23">
+                        <div class="tp-value">00</div>
+                        <div class="tp-label">HRS</div>
+                    </div>
+
+                    <div class="tp-divider">:</div>
+
+                    <div class="tp-unit" data-max="59">
+                        <div class="tp-value">00</div>
+                        <div class="tp-label">MIN</div>
+                    </div>
+
+                    <div class="tp-divider">:</div>
+
+                    <div class="tp-unit" data-max="59">
+                        <div class="tp-value">00</div>
+                        <div class="tp-label">SEC</div>
+                    </div>
+                </div>
+
+                <div id="schedules-time-pickers-arrow">&rarr;</div>
+
+                <div id="schedules-time-picker-to" class="time-picker">
+                    <div class="tp-unit" data-max="23">
+                        <div class="tp-value">00</div>
+                        <div class="tp-label">HRS</div>
+                    </div>
+
+                    <div class="tp-divider">:</div>
+
+                    <div class="tp-unit" data-max="59">
+                        <div class="tp-value">00</div>
+                        <div class="tp-label">MIN</div>
+                    </div>
+
+                    <div class="tp-divider">:</div>
+
+                    <div class="tp-unit" data-max="59">
+                        <div class="tp-value">00</div>
+                        <div class="tp-label">SEC</div>
+                    </div>
+                </div>
+
+                <div id="schedules-time-pickers-arrow">=</div>
+
+                <div id="schedules-time-picker-duration" class="time-picker">
+                    <div class="tp-unit" data-max="23">
+                        <div class="tp-value">00</div>
+                        <div class="tp-label">HRS</div>
+                    </div>
+
+                    <div class="tp-divider">:</div>
+
+                    <div class="tp-unit" data-max="59">
+                        <div class="tp-value">00</div>
+                        <div class="tp-label">MIN</div>
+                    </div>
+
+                    <div class="tp-divider">:</div>
+
+                    <div class="tp-unit" data-max="59">
+                        <div class="tp-value">00</div>
+                        <div class="tp-label">SEC</div>
+                    </div>
+                </div>
+
+                <button id="schedules_add">Add</button>
+            </div>
+
+            <div id="schedules-list-container">
+                <div>Schedules:</div>
+                <div id="schedules">
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>

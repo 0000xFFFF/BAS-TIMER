@@ -95,3 +95,11 @@ input,
     transform-origin: center;
     zoom: 0.5;
 }
+
+#schedules-overlay {
+    zoom: 0.3;
+}
+
+#schedules {
+    font-size: 2rem;
+}
