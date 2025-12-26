@@ -4,6 +4,11 @@ const RADIUS_CLOCK = 400;
 const RADIUS_OUTER = 360;
 const RADIUS_INNER = 330;
 
+const COLOR_PM_BEFORE = "#D1BE45";
+const COLOR_PM_AFTER = "#FF7850";
+
+const COLOR_NOW = "#FF5050";
+
 function preload() {
     fetch('/api/times')
         .then(res => res.json())
@@ -104,7 +109,7 @@ function drawHeatTimes() {
         const startAngle = map(start % 43200, 0, 43200, 0, 360);
         const endAngle = map(end % 43200, 0, 43200, 0, 360);
         const isPM = start >= 43200;
-        const r = (isPM ? RADIUS_INNER : RADIUS_OUTER) + wo;
+        const r = (isPM ? RADIUS_INNER : RADIUS_OUTER) + wo*2;
 
         // background arc
         stroke(255, 200, 180, 40);
@@ -113,10 +118,10 @@ function drawHeatTimes() {
 
         // main arc color
         if (active) {
-            stroke(255, 0, 0, 220); // bright red
-            strokeWeight(wi+2);
+            stroke(COLOR_NOW + "DC");
+            strokeWeight(wi + 2);
         } else {
-            stroke(255, 120, 80, 180); // orangy for past
+            stroke((isPM ? COLOR_PM_AFTER : COLOR_PM_BEFORE) + "B4"); // orangy for past
             strokeWeight(wi);
         }
         arc(0, 0, r, r, startAngle, endAngle);
@@ -141,45 +146,42 @@ function drawClockBorder() {
 function drawHeatBackground() {
     noStroke();
 
-    // AM background (outer ring)
-    fill(255, 120, 80, 8);
-    ellipse(0, 0, RADIUS_OUTER, RADIUS_OUTER);
+    fill(COLOR_PM_BEFORE + "10");
+    ellipse(0, 0, RADIUS_CLOCK, RADIUS_CLOCK);
 
-    // PM background (inner ring)
-    fill(255, 120, 80, 5);
-    ellipse(0, 0, RADIUS_INNER, RADIUS_INNER);
+    fill(COLOR_PM_AFTER + "10");
+    ellipse(0, 0, RADIUS_OUTER, RADIUS_OUTER);
 }
 
 function drawClockNumbers() {
     push();
 
-    // undo clock rotation so text stays upright
-    rotate(90);
+    rotate(90); // undo clock rotation so text is upright
 
     textAlign(CENTER, CENTER);
-    textSize(14);
-    fill(255, 80, 80, 160);
     noStroke();
 
-    let r = 120; // radius for numbers
+    const r = 120; // radius for numbers
+    const hrNow = hour(); // current hour in 24h format
+
+    // offset numbers if current hour > 12
+    const isPM = hrNow > 12;
+    const offset = isPM ? 12 : 0;
 
     for (let i = 1; i <= 12; i++) {
-        if (i % 3 === 0) {
-            textSize(25);
-        } else {
-            textSize(20);
-        }
+        textSize(i % 3 === 0 ? 25 : 20);
 
         let angle = map(i, 0, 12, 0, 360) - 90;
-
         let x = cos(angle) * r;
         let y = sin(angle) * r;
 
-        text(i.toString(), x, y);
+        fill((isPM ? COLOR_PM_AFTER : COLOR_PM_BEFORE) + "A0");
+        text(i + offset, x, y);
     }
 
     pop();
 }
+
 
 function drawClockTicks() {
     stroke(0);
@@ -209,7 +211,7 @@ function draw() {
     drawClockTicks();
     drawClockNumbers();
     drawHands();
-    drawHeatBackground();
+    //drawHeatBackground();
     drawHeatTimes();
     drawCenterDot();
 }
