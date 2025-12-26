@@ -1,13 +1,14 @@
-# top:
-- clean up html with templating
+# heat clock
+- clock tool tip on hover?
 - add gas to clock or nah?
-- do more grouping in structs (BasInfo), we can group stuff up
-- add endpoint to get /values (need an endpoint like /c to see current values)
-- ? for unint values
-- min max temp from wttr.in --- BRUH ... i can get min/max temp but I can't get other values in j1 j2 formats
 
-# find in files:
-// TODO: request_send_quick can fail --> print/handle that
-
-# not important:
+# code cleanup:
 - js web ui code is ugly clean it up
+    - clean up html with templating or js
+- do more grouping in structs (BasInfo), we can group stuff up
+
+# would be nice / debug
+- add endpoint to get /values (need an endpoint like /c to see current values)
+
+# DON'T CARE:
+// TODO: request_send_quick can fail --> print/handle that
