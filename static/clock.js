@@ -59,39 +59,67 @@ function drawHands() {
     pop();
 }
 
-function drawHeatTimes() {
-    if (!heatTimes || heatTimes.length === 0) return;
+let ongoingHeatStart = null; // tracks frontend checkbox heat start
 
-    let outerRadius = RADIUS_OUTER; // AM
-    let innerRadius = RADIUS_INNER; // PM
+function drawHeatTimes() {
+    if (!heatTimes) heatTimes = [];
+    const nowSec = hour() * 3600 + minute() * 60 + second();
 
     strokeCap(ROUND);
     noFill();
 
-    for (let t of heatTimes) {
-        let start = constrain(t.start, 0, 86400);
-        let end = constrain(t.end, 0, 86400);
+    // Find if there’s already an ongoing heat (-1)
+    let ongoingIndex = heatTimes.findIndex(t => t.end === -1);
 
-        // Map 24h -> 12h
-        let startAngle = map(start % 43200, 0, 43200, 0, 360);
-        let endAngle = map(end % 43200, 0, 43200, 0, 360);
+    // If checkbox is checked and no ongoing heat exists, create one
+    if (btn_heat_cb.checked && ongoingIndex === -1) {
+        heatTimes.push({ start: ongoingHeatStart ?? nowSec, end: -1 });
+        ongoingIndex = heatTimes.length - 1;
+        ongoingHeatStart = heatTimes[ongoingIndex].start;
+    }
 
-        let isPM = start >= 43200;
-        let r = isPM ? innerRadius : outerRadius;
+    // If checkbox is unchecked and ongoing exists, close it
+    if (!btn_heat_cb.checked && ongoingIndex !== -1) {
+        heatTimes[ongoingIndex].end = nowSec;
+        ongoingHeatStart = null;
+        ongoingIndex = -1;
+    }
 
-        // glow
-        stroke(255, 120, 80, 40);
+    // Draw all heat periods
+    for (let i = 0; i < heatTimes.length; i++) {
+        let t = heatTimes[i];
+        let start = t.start;
+        let end = t.end;
+
+        // If ongoing, extend to now
+        let active = false;
+        if (end === -1) {
+            end = nowSec;
+            active = true;
+        }
+
+        const startAngle = map(start % 43200, 0, 43200, 0, 360);
+        const endAngle = map(end % 43200, 0, 43200, 0, 360);
+        const isPM = start >= 43200;
+        const r = isPM ? RADIUS_INNER : RADIUS_OUTER;
+
+        // background arc
+        stroke(255, 200, 180, 40);
         strokeWeight(18);
         arc(0, 0, r, r, startAngle, endAngle);
 
-        // main arc
-        stroke(255, 120, 80, 180);
-        strokeWeight(10);
+        // main arc color
+        if (active) {
+            stroke(255, 0, 0, 220); // bright red
+            strokeWeight(14);
+        } else {
+            stroke(255, 120, 80, 180); // orangy for past
+            strokeWeight(10);
+        }
         arc(0, 0, r, r, startAngle, endAngle);
     }
-
-    // TODO: draw current heat
 }
+
 
 function drawCenterDot() {
     stroke(80);
@@ -161,7 +189,7 @@ function drawClockTicks() {
         rotate(angle);
         const is_hour = (i % 5 === 0);
         let len = is_hour ? 20 : 7; // longer tick for hours
-        let a = 320/2 + (is_hour ? len/4 : 0);
+        let a = 320 / 2 + (is_hour ? len / 4 : 0);
         let b = 0;
         line(a, b, a - len, b);
         pop();
