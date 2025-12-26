@@ -1,8 +1,8 @@
 let heatTimes = [];
 
 const RADIUS_CLOCK = 400;
-const RADIUS_OUTER = 360;
-const RADIUS_INNER = 330;
+const RADIUS_OUTER = 350;
+const RADIUS_INNER = 320;
 
 const COLOR_PM_BEFORE = "#D1BE45";
 const COLOR_PM_AFTER = "#FF7850";
@@ -21,7 +21,7 @@ function preload() {
 }
 
 function setup() {
-    let cnv = createCanvas(500, 500);
+    let cnv = createCanvas(400, 400);
     cnv.id('aclock');
     cnv.style('display', 'block');
     cnv.parent('clock_box');
