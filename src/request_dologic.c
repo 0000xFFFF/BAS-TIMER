@@ -118,6 +118,12 @@ static void do_logic_timer(struct BasInfo* info)
             }
         }
     }
+    else {
+        if (info->opt_auto_timer_started) {
+            info->opt_auto_timer_started = false;
+            info->opt_auto_timer_status = OPT_STATUS_CANCELLED;
+        }
+    }
 }
 
 static void do_logic_gas(struct BasInfo* info)
