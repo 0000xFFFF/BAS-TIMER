@@ -1,5 +1,5 @@
 # top:
-- add web ui to set heat schedule
+- add gas to clock or nah?
 - do more grouping in structs (BasInfo), we can group stuff up
 - add endpoint to get /values (need an endpoint like /c to see current values)
 - ? for unint values
