@@ -1,8 +1,8 @@
 let heatTimes = [];
 
 const RADIUS_CLOCK = 400;
-const RADIUS_OUTER = 380;
-const RADIUS_INNER = 350;
+const RADIUS_OUTER = 360;
+const RADIUS_INNER = 330;
 
 function preload() {
     fetch('/api/times')
@@ -98,23 +98,26 @@ function drawHeatTimes() {
             active = true;
         }
 
+        const wi = 10;
+        const wo = 15;
+
         const startAngle = map(start % 43200, 0, 43200, 0, 360);
         const endAngle = map(end % 43200, 0, 43200, 0, 360);
         const isPM = start >= 43200;
-        const r = isPM ? RADIUS_INNER : RADIUS_OUTER;
+        const r = (isPM ? RADIUS_INNER : RADIUS_OUTER) + wo;
 
         // background arc
         stroke(255, 200, 180, 40);
-        strokeWeight(18);
+        strokeWeight(wo);
         arc(0, 0, r, r, startAngle, endAngle);
 
         // main arc color
         if (active) {
             stroke(255, 0, 0, 220); // bright red
-            strokeWeight(14);
+            strokeWeight(wi+2);
         } else {
             stroke(255, 120, 80, 180); // orangy for past
-            strokeWeight(10);
+            strokeWeight(wi);
         }
         arc(0, 0, r, r, startAngle, endAngle);
     }
