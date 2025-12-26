@@ -1,13 +1,14 @@
-let heatTimes = [
-    { "start": 28800, "end": 32400 },
-    { "start": 61200, "end": 64800 }
-];
+let heatTimes = [];
+
 
 function preload() {
     fetch('/api/times')
-        .then(r => r.json())
+        .then(res => res.json())
+        .then(data => {
+            heatTimes = data;
+        })
         .catch(err => {
-            console.error('Failed to load /api/times', err);
+            console.error('Failed to load /times', err);
         });
 }
 
