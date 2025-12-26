@@ -1,5 +1,8 @@
 let heatTimes = [];
 
+const RADIUS_CLOCK = 400;
+const RADIUS_OUTER = 380;
+const RADIUS_INNER = 350;
 
 function preload() {
     fetch('/api/times')
@@ -13,7 +16,7 @@ function preload() {
 }
 
 function setup() {
-    let cnv = createCanvas(400, 400);
+    let cnv = createCanvas(500, 500);
     cnv.id('aclock');
     cnv.style('display', 'block');
     cnv.parent('clock_box');
@@ -59,8 +62,8 @@ function drawHands() {
 function drawHeatTimes() {
     if (!heatTimes || heatTimes.length === 0) return;
 
-    let outerRadius = 320; // AM
-    let innerRadius = 250; // PM
+    let outerRadius = RADIUS_OUTER; // AM
+    let innerRadius = RADIUS_INNER; // PM
 
     strokeCap(ROUND);
     noFill();
@@ -86,6 +89,8 @@ function drawHeatTimes() {
         strokeWeight(10);
         arc(0, 0, r, r, startAngle, endAngle);
     }
+
+    // TODO: draw current heat
 }
 
 function drawCenterDot() {
@@ -99,19 +104,19 @@ function drawClockBorder() {
     noFill();
     stroke(80, 80, 80, 120);
     strokeWeight(1);
-    ellipse(0, 0, 360, 360);
+    ellipse(0, 0, RADIUS_CLOCK, RADIUS_CLOCK);
 }
 
 function drawHeatBackground() {
     noStroke();
 
     // AM background (outer ring)
-    fill(255, 120, 80, 20);
-    ellipse(0, 0, 320, 320);
+    fill(255, 120, 80, 8);
+    ellipse(0, 0, RADIUS_OUTER, RADIUS_OUTER);
 
     // PM background (inner ring)
-    fill(255, 120, 80, 12);
-    ellipse(0, 0, 250, 250);
+    fill(255, 120, 80, 5);
+    ellipse(0, 0, RADIUS_INNER, RADIUS_INNER);
 }
 
 function drawClockNumbers() {
@@ -125,7 +130,7 @@ function drawClockNumbers() {
     fill(255, 80, 80, 160);
     noStroke();
 
-    let r = 165; // radius for numbers
+    let r = 120; // radius for numbers
 
     for (let i = 1; i <= 12; i++) {
         if (i % 3 === 0) {
@@ -152,11 +157,11 @@ function drawClockTicks() {
     for (let i = 0; i < 60; i++) {
         let angle = map(i, 0, 60, 0, 360);
         push();
-        stroke(150, 150, 150, 20);
+        stroke(150, 150, 150, 40);
         rotate(angle);
         const is_hour = (i % 5 === 0);
         let len = is_hour ? 20 : 7; // longer tick for hours
-        let a = 170 + (is_hour ? len/4 : 0);
+        let a = 320/2 + (is_hour ? len/4 : 0);
         let b = 0;
         line(a, b, a - len, b);
         pop();
