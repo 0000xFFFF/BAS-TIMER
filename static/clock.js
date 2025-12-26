@@ -114,6 +114,55 @@ function drawHeatBackground() {
     ellipse(0, 0, 250, 250);
 }
 
+function drawClockNumbers() {
+    push();
+
+    // undo clock rotation so text stays upright
+    rotate(90);
+
+    textAlign(CENTER, CENTER);
+    textSize(14);
+    fill(255, 80, 80, 160);
+    noStroke();
+
+    let r = 165; // radius for numbers
+
+    for (let i = 1; i <= 12; i++) {
+        if (i % 3 === 0) {
+            textSize(25);
+        } else {
+            textSize(20);
+        }
+
+        let angle = map(i, 0, 12, 0, 360) - 90;
+
+        let x = cos(angle) * r;
+        let y = sin(angle) * r;
+
+        text(i.toString(), x, y);
+    }
+
+    pop();
+}
+
+function drawClockTicks() {
+    stroke(0);
+    strokeWeight(2);
+
+    for (let i = 0; i < 60; i++) {
+        let angle = map(i, 0, 60, 0, 360);
+        push();
+        stroke(150, 150, 150, 20);
+        rotate(angle);
+        const is_hour = (i % 5 === 0);
+        let len = is_hour ? 20 : 7; // longer tick for hours
+        let a = 170 + (is_hour ? len/4 : 0);
+        let b = 0;
+        line(a, b, a - len, b);
+        pop();
+    }
+}
+
 
 function draw() {
     clear();
@@ -121,6 +170,8 @@ function draw() {
     rotate(-90);
 
     drawClockBorder();
+    drawClockTicks();
+    drawClockNumbers();
     drawHands();
     drawHeatBackground();
     drawHeatTimes();
