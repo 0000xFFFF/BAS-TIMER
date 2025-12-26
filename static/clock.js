@@ -7,7 +7,7 @@ const RADIUS_INNER = 320;
 const COLOR_PM_BEFORE = "#D1BE45";
 const COLOR_PM_AFTER = "#FF7850";
 
-const COLOR_NOW = "#FF5050";
+const COLOR_NOW = "#FF0000";
 
 function preload() {
     fetch('/api/times')
@@ -118,7 +118,7 @@ function drawHeatTimes() {
 
         // main arc color
         if (active) {
-            stroke(COLOR_NOW + "DC");
+            stroke(COLOR_NOW);
             strokeWeight(wi + 2);
         } else {
             stroke((isPM ? COLOR_PM_AFTER : COLOR_PM_BEFORE) + "B4"); // orangy for past
