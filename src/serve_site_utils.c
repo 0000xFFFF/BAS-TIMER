@@ -288,6 +288,15 @@ static void post_api_toggle_auto_gas(struct mg_connection* c, struct mg_http_mes
     draw_ui_and_front();
 }
 
+static void get_api_times(struct mg_connection* c, struct mg_http_message* hm)
+{
+    UNUSED(hm);
+
+    char* times = logger_get_mod_rada_intervals_today_json();
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s", times);
+    free(times);
+}
+
 typedef void (*route_handler_t)(struct mg_connection*, struct mg_http_message*);
 
 struct Route {
@@ -315,9 +324,10 @@ static struct Route routes[] = {
     { "POST",     "/api/set_timer_seconds",    post_api_set_timer_seconds },
     { "POST",     "/api/toggle_auto_timer",    post_api_toggle_auto_timer },
     { "POST",     "/api/toggle_auto_gas",      post_api_toggle_auto_gas },
+    { "GET",      "/api/times",                get_api_times },
 };
 // clang-format on
-//
+
 static const size_t routes_count = sizeof(routes) / sizeof(routes[0]);
 
 int serve_site_handle_route(struct mg_connection* c, struct mg_http_message* hm)

@@ -186,6 +186,7 @@ const char* istrstr(const char* haystack, const char* needle)
     return NULL;
 }
 
+// seconds since midnight (0–86399)
 int hms_to_today_seconds(int hour, int min, int sec)
 {
     return hour * 3600 + min * 60 + sec;

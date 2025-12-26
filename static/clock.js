@@ -4,13 +4,10 @@ let heatTimes = [
 ];
 
 function preload() {
-    fetch('/times')
-        .then(res => res.json())
-        .then(data => {
-            heatTimes = data;
-        })
+    fetch('/api/times')
+        .then(r => r.json())
         .catch(err => {
-            console.error('Failed to load /times', err);
+            console.error('Failed to load /api/times', err);
         });
 }
 
