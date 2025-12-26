@@ -199,9 +199,9 @@ char* logger_get_mod_rada_intervals_today_json(void)
 
             char entry[128];
             size_t n = (size_t)snprintf(entry, sizeof(entry),
-                                "%s{ \"start\": %u, \"end\": %u }",
-                                first ? "" : ",",
-                                start_sec, sec);
+                                        "%s{ \"start\": %u, \"end\": %u }",
+                                        first ? "" : ",",
+                                        start_sec, sec);
 
             if (len + n + 2 >= cap) {
                 cap *= 2;
@@ -222,13 +222,14 @@ char* logger_get_mod_rada_intervals_today_json(void)
         }
     }
 
-    /* Still ON at end of day */
+    /* Still ON at end of file or day */
     if (heating_on) {
+        uint32_t end_sec = (uint32_t)now_to_today_seconds();
         char entry[128];
         size_t n = (size_t)snprintf(entry, sizeof(entry),
-                            "%s{ \"start\": %u, \"end\": %u }",
-                            first ? "" : ",",
-                            start_sec, 86400);
+                                    "%s{ \"start\": %u, \"end\": %u }",
+                                    first ? "" : ",",
+                                    start_sec, end_sec);
 
         if (len + n + 2 >= cap) {
             cap *= 2;
