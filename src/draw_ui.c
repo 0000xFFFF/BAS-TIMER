@@ -616,7 +616,7 @@ static const char* dut_opt_status_timer(struct BasInfo* info)
     human_readable_time(time_str, sizeof(time_str), diff_seconds);
 
     char p[TINYBUFF] = "";
-    if (info->history_mode_time_on && info->history_mode_time_off) {
+    if (info->history_mode_time_on && info->history_mode_time_off && info->history_mode_time_off > info->history_mode_time_on) {
         char elap[10];
         elapsed_str(elap, sizeof(elap), info->history_mode_time_off, info->history_mode_time_on);
         snprintf(p, sizeof(p), " 󱫐 %s", elap);
@@ -646,7 +646,7 @@ static const char* dut_opt_status_gas(struct BasInfo* info)
     human_readable_time(time_str, sizeof(time_str), diff_seconds);
 
     char p[TINYBUFF] = "";
-    if (info->history_gas_time_on && info->history_gas_time_off) {
+    if (info->history_gas_time_on && info->history_gas_time_off && info->history_gas_time_off > info->history_gas_time_on) {
         char elap[10];
         elapsed_str(elap, sizeof(elap), info->history_gas_time_off, info->history_gas_time_on);
         snprintf(p, sizeof(p), " 󱫐 %s", elap);
