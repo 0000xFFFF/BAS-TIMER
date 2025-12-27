@@ -2,7 +2,7 @@
 #include "debug.h"
 #include "globals.h"
 #include "mongoose.h"
-#include "serve_site_utils.h"
+#include "serve_site_endpoints.h"
 #include <stdatomic.h>
 
 void serve_site(struct mg_connection* c, int ev, void* ev_data)
