@@ -12,7 +12,7 @@ function secondsToHHMMSS(totalSeconds) {
     return `${hh}:${mm}:${ss}`;
 }
 
-async function fetch_schedules_delete(id) {
+async function fetch_delete_schedules(id) {
 
     const response = await fetch('/api/schedules', {
         method: 'DELETE',
@@ -26,7 +26,7 @@ async function fetch_schedules_delete(id) {
     return true;
 }
 
-async function fetch_schedules_get() {
+async function fetch_get_schedules() {
 
     function createScheduleElement(e) {
         const d1 = document.createElement("div");
@@ -38,7 +38,7 @@ async function fetch_schedules_get() {
         const b1 = document.createElement("button");
         b1.innerHTML = "remove";
         b1.addEventListener("click", () => {
-            if (fetch_schedules_delete(e.id)) {
+            if (fetch_delete_schedules(e.id)) {
                 d1.remove();
             }
         });
@@ -67,7 +67,7 @@ async function fetch_schedules_get() {
     }
 }
 
-async function fetch_schedules_post(from, to, duration) {
+async function fetch_post_schedules(from, to, duration) {
 
     const response = await fetch('/api/schedules', {
         method: 'POST',
@@ -84,7 +84,19 @@ async function fetch_schedules_post(from, to, duration) {
     }
 
 
-    fetch_schedules_get();
+    fetch_get_schedules();
+    return true;
+}
+
+async function fetch_post_schedules_defaults(from, to, duration) {
+
+    const response = await fetch('/api/schedules/defaults', { method: 'POST' });
+    if (!response.ok) {
+        console.log(`HTTP error! status: ${response.status}`);
+        return false;
+    }
+
+    fetch_get_schedules();
     return true;
 }
 
@@ -92,7 +104,7 @@ async function fetch_schedules_post(from, to, duration) {
 function showOverlay() {
     const schedules_overlay = document.getElementById('schedules_overlay');
     schedules_overlay.classList.add('active');
-    fetch_schedules_get();
+    fetch_get_schedules();
 }
 
 function hideOverlay() {
@@ -112,9 +124,12 @@ function setup_schedules() {
         const to = getTimePickerValue("schedules_time_picker_to");
         const duration = getTimePickerValue("schedules_time_picker_duration");
         console.log(from, to, duration);
-        fetch_schedules_post(from, to, duration);
+        fetch_post_schedules(from, to, duration);
     }
     schedules_add.addEventListener("click", create_new_schedule);
+
+    const schedules_defaults = document.getElementById("schedules_defaults");
+    schedules_defaults.addEventListener("click", fetch_post_schedules_defaults);
 
     schedules_overlay.addEventListener("click", (e) => {
         if (e.target !== e.currentTarget) return;
@@ -132,4 +147,5 @@ function setup_schedules() {
 
     setTimePickerFromSeconds('schedules_time_picker_duration', 5 * 60); // 5 min duration
 }
+
 
