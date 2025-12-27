@@ -77,14 +77,17 @@ function drawHeatTimes() {
     let ongoingIndex = heatTimes.findIndex(t => t.end === -1);
 
     // If checkbox is checked and no ongoing heat exists, create one
-    if (btn_heat_cb.checked && ongoingIndex === -1) {
+    const btn_heat_cb = document.getElementById("btn_heat_cb");
+    const btn_heat_cb_checked = btn_heat_cb && btn_heat_cb.checked;
+
+    if (btn_heat_cb_checked && ongoingIndex === -1) {
         heatTimes.push({ start: ongoingHeatStart ?? nowSec, end: -1 });
         ongoingIndex = heatTimes.length - 1;
         ongoingHeatStart = heatTimes[ongoingIndex].start;
     }
 
     // If checkbox is unchecked and ongoing exists, close it
-    if (!btn_heat_cb.checked && ongoingIndex !== -1) {
+    if (!btn_heat_cb_checked && ongoingIndex !== -1) {
         heatTimes[ongoingIndex].end = nowSec;
         ongoingHeatStart = null;
         ongoingIndex = -1;
@@ -109,7 +112,7 @@ function drawHeatTimes() {
         const startAngle = map(start % 43200, 0, 43200, 0, 360);
         const endAngle = map(end % 43200, 0, 43200, 0, 360);
         const isPM = start >= 43200;
-        const r = (isPM ? RADIUS_INNER : RADIUS_OUTER) + wo*2;
+        const r = (isPM ? RADIUS_INNER : RADIUS_OUTER) + wo * 2;
 
         // background arc
         stroke(255, 200, 180, 40);
