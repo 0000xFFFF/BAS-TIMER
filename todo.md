@@ -1,10 +1,13 @@
+# prior
+- fix mobile html
+- clean up html with templating or js
+- js web ui code is ugly clean it up
+
 # heat clock
 - clock tool tip on hover?
 - add gas to clock or nah?
 
 # code cleanup:
-- js web ui code is ugly clean it up
-    - clean up html with templating or js
 - do more grouping in structs (BasInfo), we can group stuff up
 
 # would be nice / debug
