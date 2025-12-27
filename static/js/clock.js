@@ -1,4 +1,5 @@
 let heatTimes = [];
+let hoveredHeat = null; // track which heat period is hovered
 
 const RADIUS_CLOCK = 400;
 const RADIUS_OUTER = 350;
@@ -10,25 +11,24 @@ const COLOR_PM_AFTER = "#FF7850";
 const COLOR_NOW = "#FF0000";
 
 function preload() {
-    fetch('/api/times')
-        .then(res => res.json())
-        .then(data => {
+    fetch("/api/times")
+        .then((res) => res.json())
+        .then((data) => {
             heatTimes = data;
         })
-        .catch(err => {
-            console.error('Failed to load /times', err);
+        .catch((err) => {
+            console.error("Failed to load /times", err);
         });
 }
 
 function setup() {
     let cnv = createCanvas(400, 400);
-    cnv.id('aclock');
-    cnv.style('display', 'block');
-    cnv.parent('clock_box');
+    cnv.id("aclock");
+    cnv.style("display", "block");
+    cnv.parent("clock_box");
 
     angleMode(DEGREES);
 }
-
 
 function drawHands() {
     let hr = hour();
@@ -66,6 +66,26 @@ function drawHands() {
 
 let ongoingHeatStart = null; // tracks frontend checkbox heat start
 
+function formatSeconds(sec) {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    let parts = [];
+    if (h > 0) parts.push(h + "h");
+    if (m > 0) parts.push(m + "m");
+    if (s > 0 || parts.length === 0) parts.push(s + "s");
+    return parts.join(" ");
+}
+
+function formatTimeOfDay(sec) {
+    const h = Math.floor((sec % 86400) / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s
+        .toString()
+        .padStart(2, "0")}`;
+}
+
 function drawHeatTimes() {
     if (!heatTimes) heatTimes = [];
     const nowSec = hour() * 3600 + minute() * 60 + second();
@@ -73,8 +93,8 @@ function drawHeatTimes() {
     strokeCap(ROUND);
     noFill();
 
-    // Find if there’s already an ongoing heat (-1)
-    let ongoingIndex = heatTimes.findIndex(t => t.end === -1);
+    // Find if there's already an ongoing heat (-1)
+    let ongoingIndex = heatTimes.findIndex((t) => t.end === -1);
 
     // If checkbox is checked and no ongoing heat exists, create one
     const btn_heat_cb = document.getElementById("btn_heat_cb");
@@ -92,6 +112,15 @@ function drawHeatTimes() {
         ongoingHeatStart = null;
         ongoingIndex = -1;
     }
+
+    // Mouse position relative to center (accounting for -90 rotation)
+    const mx = mouseX - width / 2;
+    const my = mouseY - height / 2;
+    const mouseDist = sqrt(mx * mx + my * my);
+    let mouseAngle = atan2(my, mx) + 90; // +90 to undo the -90 rotation
+    if (mouseAngle < 0) mouseAngle += 360;
+
+    hoveredHeat = null;
 
     // Draw all heat periods
     for (let i = 0; i < heatTimes.length; i++) {
@@ -114,6 +143,21 @@ function drawHeatTimes() {
         const isPM = start >= 43200;
         const r = (isPM ? RADIUS_INNER : RADIUS_OUTER) + wo * 2;
 
+        // Check hover
+        const arcRadius = r / 2;
+        const hitMargin = wo;
+        const inRadius =
+            mouseDist > arcRadius - hitMargin && mouseDist < arcRadius + hitMargin;
+        let inAngle = false;
+        if (endAngle >= startAngle) {
+            inAngle = mouseAngle >= startAngle && mouseAngle <= endAngle;
+        } else {
+            inAngle = mouseAngle >= startAngle || mouseAngle <= endAngle;
+        }
+        if (inRadius && inAngle) {
+            hoveredHeat = { start, end, duration: end - start, active };
+        }
+
         // background arc
         stroke(255, 200, 180, 40);
         strokeWeight(wo);
@@ -124,20 +168,56 @@ function drawHeatTimes() {
             stroke(COLOR_NOW);
             strokeWeight(wi + 2);
         } else {
-            stroke((isPM ? COLOR_PM_AFTER : COLOR_PM_BEFORE) + "B4"); // orangy for past
+            stroke((isPM ? COLOR_PM_AFTER : COLOR_PM_BEFORE) + "B4");
             strokeWeight(wi);
         }
         arc(0, 0, r, r, startAngle, endAngle);
     }
 }
 
+function drawTooltip() {
+    if (!hoveredHeat) return;
+
+    resetMatrix();
+
+    const padding = 8;
+    const lineHeight = 16;
+
+    const lines = [
+        `Start: ${formatTimeOfDay(hoveredHeat.start)}`,
+        `End: ${hoveredHeat.active ? "ongoing" : formatTimeOfDay(hoveredHeat.end)}`,
+        `Duration: ${formatSeconds(hoveredHeat.duration)}`,
+    ];
+
+    textSize(12);
+    textAlign(LEFT, TOP);
+
+    const maxW = Math.max(...lines.map((l) => textWidth(l)));
+    const boxW = maxW + padding * 2;
+    const boxH = lines.length * lineHeight + padding * 2;
+
+    let tx = mouseX + 15;
+    let ty = mouseY + 15;
+    if (tx + boxW > width) tx = mouseX - boxW - 5;
+    if (ty + boxH > height) ty = mouseY - boxH - 5;
+
+    fill(40, 40, 40, 230);
+    stroke(100);
+    strokeWeight(1);
+    rect(tx, ty, boxW, boxH, 4);
+
+    noStroke();
+    fill(255);
+    for (let i = 0; i < lines.length; i++) {
+        text(lines[i], tx + padding, ty + padding + i * lineHeight);
+    }
+}
 
 function drawCenterDot() {
     stroke(80);
     strokeWeight(18);
     point(0, 0);
 }
-
 
 function drawClockBorder() {
     noFill();
@@ -185,7 +265,6 @@ function drawClockNumbers() {
     pop();
 }
 
-
 function drawClockTicks() {
     stroke(0);
     strokeWeight(2);
@@ -195,7 +274,7 @@ function drawClockTicks() {
         push();
         stroke(150, 150, 150, 40);
         rotate(angle);
-        const is_hour = (i % 5 === 0);
+        const is_hour = i % 5 === 0;
         let len = is_hour ? 20 : 7; // longer tick for hours
         let a = 320 / 2 + (is_hour ? len / 4 : 0);
         let b = 0;
@@ -203,7 +282,6 @@ function drawClockTicks() {
         pop();
     }
 }
-
 
 function draw() {
     clear();
@@ -217,4 +295,6 @@ function draw() {
     //drawHeatBackground();
     drawHeatTimes();
     drawCenterDot();
+
+    drawTooltip();
 }
