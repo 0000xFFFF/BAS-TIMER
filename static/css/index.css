@@ -65,7 +65,7 @@ button:active {
     box-shadow: none;
 }
 
-#status {
+#status_term {
     display: flex;
     flex-direction: row;
     justify-content: center;

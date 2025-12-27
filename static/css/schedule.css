@@ -2,7 +2,7 @@
     cursor: pointer;
 }
 
-#schedules-overlay {
+#schedules_overlay {
     position: fixed;
     inset: 0;
     z-index: 999;
@@ -19,12 +19,12 @@
 }
 
 /* Active / visible */
-#schedules-overlay.active {
+#schedules_overlay.active {
     opacity: 1;
     pointer-events: auto;
 }
 
-#schedules-container {
+#schedules_container {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -34,13 +34,13 @@
     font-size: 30px;
 }
 
-#schedules-list-container {
+#schedules_list_container {
     background: #020617;
     border-radius: 16px;
     padding: 10px;
 }
 
-#schedules-time-pickers {
+#schedules_time_pickers {
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -49,11 +49,11 @@
     align-items: center; /* vertical */
 }
 
-#schedules-time-pickers-arrow {
+#schedules_time_pickers_arrow {
     font-size: 40px;
 }
 
-.schedules-item {
+.schedules_item {
     display: flex;
     gap: 10px;
     align-items: center;

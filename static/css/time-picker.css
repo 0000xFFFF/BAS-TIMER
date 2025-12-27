@@ -1,4 +1,4 @@
-.time-picker {
+.time_picker {
     display: flex;
     gap: 10px;
     padding: 16px;
@@ -8,7 +8,7 @@
     user-select: none;
 }
 
-.tp-unit {
+.tp_unit {
     width: 80px;
     height: 160px;
     position: relative;
@@ -19,8 +19,8 @@
     cursor: pointer;
 }
 
-.tp-unit::before,
-.tp-unit::after {
+.tp_unit::before,
+.tp_unit::after {
     content: '';
     position: absolute;
     width: 100%;
@@ -29,15 +29,15 @@
     z-index: 2;
 }
 
-.tp-unit::before {
+.tp_unit::before {
     top: 0;
 }
 
-.tp-unit::after {
+.tp_unit::after {
     bottom: 0;
 }
 
-.tp-value {
+.tp_value {
     position: absolute;
     inset: 0;
     display: flex;
@@ -48,7 +48,7 @@
     color: #e5e7eb;
 }
 
-.tp-label {
+.tp_label {
     position: absolute;
     bottom: 6px;
     right: 8px;
@@ -56,7 +56,7 @@
     color: #64748b;
 }
 
-.tp-divider {
+.tp_divider {
     display: flex;
     align-items: center;
     font-size: 28px;

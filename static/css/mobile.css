@@ -43,7 +43,7 @@ input,
     font-size: 10px;
 }
 
-#status {
+#status_term {
     gap: 3px;
     margin-bottom: 15px;
 }
@@ -96,7 +96,7 @@ input,
     zoom: 0.5;
 }
 
-#schedules-overlay {
+#schedules_overlay {
     zoom: 0.3;
 }
 

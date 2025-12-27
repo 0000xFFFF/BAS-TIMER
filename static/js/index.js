@@ -7,7 +7,6 @@ function bas_gas_off() { fetch('/api/bas_gas_off').then(response => response.jso
 
 function update_ClockRadio() {
     document.querySelectorAll('.ClockRadio input').forEach(btn => {
-
         const txt_input = document.getElementById('txt_input');
         const txt_m = parseInt(txt_input.value);
         const btn_m = parseInt(btn.dataset.minutes) * 60;
@@ -18,7 +17,12 @@ function update_ClockRadio() {
 function toggle_auto_timer() {
     fetch('/api/toggle_auto_timer', { method: 'POST' })
         .then(response => response.json())
-        .then(data => { document.getElementById("btn_auto_timer_cb").checked = data.value; });
+        .then(data => {
+            const btn_auto_timer_cb = document.getElementById("btn_auto_timer_cb");
+            if (btn_auto_timer_cb) {
+                btn_auto_timer_cb.checked = data.value;
+            }
+        });
 }
 
 function toggle_auto_gas() {
@@ -27,8 +31,9 @@ function toggle_auto_gas() {
         .then(data => { document.getElementById("btn_auto_gas_cb").checked = data.value; });
 }
 
+let btn_heat_pause_updating = false;
+
 function setup_button_heat() {
-    let btn_heat_pause_updating = false;
     const btn_heat = document.getElementById("btn_heat");
     const btn_heat_cb = document.getElementById("btn_heat_cb");
 
@@ -46,8 +51,9 @@ function setup_button_heat() {
     });
 }
 
+let btn_gas_pause_updating = false;
+
 function setup_button_gas() {
-    let btn_gas_pause_updating = false;
     const btn_gas = document.getElementById("btn_gas");
     const btn_gas_cb = document.getElementById("btn_gas_cb");
 
@@ -80,8 +86,11 @@ function fetch_state() {
             document.getElementById("txt_input").value = data.seconds;
             update_ClockRadio();
 
-            document.getElementById("btn_auto_timer_cb").checked = data.auto_timer;
-            document.getElementById("btn_auto_gas_cb").checked = data.auto_gas;
+            const btn_auto_timer_cb = document.getElementById("btn_auto_timer_cb");
+            if (btn_auto_timer_cb) { btn_auto_timer_cb.checked = data.auto_timer; }
+
+            const btn_auto_gas_cb = document.getElementById("btn_auto_gas_cb");
+            if (btn_auto_gas_cb) { btn_auto_gas_cb.checked = data.auto_gas; }
         });
 }
 
@@ -94,14 +103,11 @@ function fetch_sumtime() {
         });
 }
 
-fetch_sumtime();
-
 function fetch_all() {
     fetch_state();
     fetch_sumtime();
 }
 
-setInterval(fetch_all, 3600000); // 1000 * 60 * 60 -- every hour fetch all
 
 function updateTime() {
 
@@ -205,8 +211,12 @@ function setup_term() {
                 const json = JSON.parse(event.data);
                 term.innerHTML = json.term;
                 drawTemperatureGradient(json.Tmin, json.Tmax);
-                if (!btn_heat_pause_updating) btn_heat_cb.checked = json.mod_rada == 1;
-                if (!btn_gas_pause_updating) btn_gas_cb.checked = json.StatusPumpe4 == 1 || json.StatusPumpe4 == 3;
+
+                const btn_heat_cb = document.getElementById("btn_heat_cb");
+                if (!btn_heat_pause_updating && btn_heat_cb) btn_heat_cb.checked = json.mod_rada == 1;
+
+                const btn_gas_cb = document.getElementById("btn_gas_cb");
+                if (!btn_gas_pause_updating && btn_gas_cb) btn_gas_cb.checked = json.StatusPumpe4 == 1 || json.StatusPumpe4 == 3;
             };
 
             ws.onerror = function(error) { perror(error); };
@@ -231,9 +241,18 @@ function setup_settings_time() {
         }
     });
 
-    fetch_state();
-
 }
 
-embed_innerHTML("settings_time", "/fragments/settings_time.html").then(setup_settings_time);
-embed_innerHTML("term", "/fragments/settings_time.html").then(setup_term);
+Promise.all([
+    embed_innerHTML("urls", "/fragments/urls.html"),
+    embed_innerHTML("settings_time", "/fragments/settings_time.html"),
+    embed_innerHTML("settings_time_btn_heat", "/fragments/settings_time_btn_heat.html"),
+    embed_innerHTML("settings_time_btn_gas", "/fragments/settings_time_btn_gas.html"),
+    embed_innerHTML("status_term", "/fragments/status_term.html"),
+    embed_innerHTML("schedules_overlay", "/fragments/schedules_overlay.html"),
+]).then(() => {
+    setup_settings_time()
+    setup_term()
+    setInterval(fetch_all, 3600000); // 1000 * 60 * 60 -- every hour fetch all
+    setup_schedules();
+});

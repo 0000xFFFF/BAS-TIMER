@@ -12,7 +12,60 @@ function secondsToHHMMSS(totalSeconds) {
     return `${hh}:${mm}:${ss}`;
 }
 
-const schedules = document.getElementById("schedules");
+async function fetch_schedules_delete(id) {
+
+    const response = await fetch('/api/schedules', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: parseInt(id) })
+    });
+    if (!response.ok) {
+        console.log(`HTTP error! status: ${response.status}`);
+        return false;
+    }
+    return true;
+}
+
+async function fetch_schedules_get() {
+
+    function createScheduleElement(e) {
+        const d1 = document.createElement("div");
+        d1.className = "schedules_item";
+
+        const s1 = document.createElement("span");
+        s1.innerHTML = `${secondsToHHMMSS(e.from)} &rarr; ${secondsToHHMMSS(e.to)} = ${secondsToHHMMSS(e.duration)}`
+
+        const b1 = document.createElement("button");
+        b1.innerHTML = "remove";
+        b1.addEventListener("click", () => {
+            if (fetch_schedules_delete(e.id)) {
+                d1.remove();
+            }
+        });
+
+        d1.appendChild(s1);
+        d1.appendChild(b1);
+        return d1;
+    }
+
+    try {
+        const response = await fetch('/api/schedules');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const data_schedules = data.schedules;
+
+        const schedules = document.getElementById("schedules");
+        schedules.innerHTML = ""; // clear elements
+        for (let i = 0; i < data_schedules.length; i++) {
+            schedules.appendChild(createScheduleElement(data_schedules[i]));
+        }
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
 
 async function fetch_schedules_post(from, to, duration) {
 
@@ -35,97 +88,48 @@ async function fetch_schedules_post(from, to, duration) {
     return true;
 }
 
-async function fetch_schedules_delete(id) {
-
-    const response = await fetch('/api/schedules', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: parseInt(id) })
-    });
-    if (!response.ok) {
-        console.log(`HTTP error! status: ${response.status}`);
-        return false;
-    }
-    return true;
-}
-
-function createScheduleElement(e) {
-    const d1 = document.createElement("div");
-    d1.className = "schedules-item";
-
-    const s1 = document.createElement("span");
-    s1.innerHTML = `${secondsToHHMMSS(e.from)} &rarr; ${secondsToHHMMSS(e.to)} = ${secondsToHHMMSS(e.duration)}`
-
-    const b1 = document.createElement("button");
-    b1.innerHTML = "remove";
-    b1.addEventListener("click", () => {
-        if (fetch_schedules_delete(e.id)) {
-            d1.remove();
-        }
-    });
-
-    d1.appendChild(s1);
-    d1.appendChild(b1);
-    return d1;
-}
-
-async function fetch_schedules_get() {
-    try {
-        const response = await fetch('/api/schedules');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        const data_schedules = data.schedules;
-
-        schedules.innerHTML = ""; // clear elements
-        for (let i = 0; i < data_schedules.length; i++) {
-            schedules.appendChild(createScheduleElement(data_schedules[i]));
-        }
-
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-}
-
-const overlay = document.getElementById('schedules-overlay');
 
 function showOverlay() {
-    overlay.classList.add('active');
+    const schedules_overlay = document.getElementById('schedules_overlay');
+    schedules_overlay.classList.add('active');
     fetch_schedules_get();
 }
 
 function hideOverlay() {
-    overlay.classList.remove('active');
+    const schedules_overlay = document.getElementById('schedules_overlay');
+    schedules_overlay.classList.remove('active');
 }
 
-const schedules_edit = document.getElementById("schedules_edit");
-schedules_edit.addEventListener("click", showOverlay);
+function setup_schedules() {
 
-function create_new_schedule() {
-    const from = getTimePickerValue("schedules-time-picker-from");
-    const to = getTimePickerValue("schedules-time-picker-to");
-    const duration = getTimePickerValue("schedules-time-picker-duration");
-    console.log(from, to, duration);
-    fetch_schedules_post(from, to, duration);
+    const schedules_edit = document.getElementById("schedules_edit");
+    schedules_edit.addEventListener("click", showOverlay);
+
+    const schedules_add = document.getElementById("schedules_add");
+
+    function create_new_schedule() {
+        const from = getTimePickerValue("schedules_time_picker_from");
+        const to = getTimePickerValue("schedules_time_picker_to");
+        const duration = getTimePickerValue("schedules_time_picker_duration");
+        console.log(from, to, duration);
+        fetch_schedules_post(from, to, duration);
+    }
+    schedules_add.addEventListener("click", create_new_schedule);
+
+    schedules_overlay.addEventListener("click", (e) => {
+        if (e.target !== e.currentTarget) return;
+        hideOverlay();
+    });
+
+    const picker_from = document.getElementById('schedules_time_picker_from');
+
+    picker_from.addEventListener('timechange', e => {
+        const newTime = e.detail + 15 * 60; // add 15 minutes
+        setTimePickerFromSeconds('schedules_time_picker_to', newTime);
+    });
+
+    setTimePickerToNow("schedules_time_picker_from");
+
+    setTimePickerFromSeconds('schedules_time_picker_duration', 5 * 60); // 5 min duration
 }
 
-const schedules_add = document.getElementById("schedules_add");
-schedules_add.addEventListener("click", create_new_schedule);
-
-overlay.addEventListener("click", (e) => {
-    if (e.target !== e.currentTarget) return;
-    hideOverlay();
-});
-
-
-const picker_from = document.getElementById('schedules-time-picker-from');
-
-picker_from.addEventListener('timechange', e => {
-    const newTime = e.detail + 15 * 60; // add 15 minutes
-    setTimePickerFromSeconds('schedules-time-picker-to', newTime);
-});
-
-setTimePickerToNow("schedules-time-picker-from");
-
-setTimePickerFromSeconds('schedules-time-picker-duration', 5 * 60); // 5 min duration

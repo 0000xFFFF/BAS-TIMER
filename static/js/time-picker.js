@@ -1,7 +1,7 @@
 (function() {
     function initTimePicker(picker) {
-        picker.querySelectorAll('.tp-unit').forEach(unit => {
-            const valueEl = unit.querySelector('.tp-value');
+        picker.querySelectorAll('.tp_unit').forEach(unit => {
+            const valueEl = unit.querySelector('.tp_value');
             const max = parseInt(unit.dataset.max, 10);
             let value = parseInt(valueEl.textContent, 10) || 0;
 
@@ -48,7 +48,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         document
-            .querySelectorAll('.time-picker')
+            .querySelectorAll('.time_picker')
             .forEach(initTimePicker);
     });
 
@@ -56,7 +56,7 @@
         const picker = document.getElementById(pickerId);
         if (!picker) return null;
 
-        return [...picker.querySelectorAll('.tp-value')]
+        return [...picker.querySelectorAll('.tp_value')]
             .map(v => v.textContent)
             .join(':');
     };
@@ -65,11 +65,11 @@
         const picker = document.getElementById(pickerId);
         if (!picker) return null;
 
-        const values = picker.querySelectorAll('.tp-value')
+        const values = picker.querySelectorAll('.tp_value')
         return parseInt(values[0].textContent) * 3600 + parseInt(values[1].textContent) * 60 + parseInt(values[2].textContent);
     };
-    // getTimePickerValue("time-picker-1"); // "08:15:30"
-    // getTimePickerValue("time-picker-2"); // "22:00:00"
+    // getTimePickerValue("time_picker_1"); // "08:15:30"
+    // getTimePickerValue("time_picker_2"); // "22:00:00"
 
 
     window.setTimePickerFromSeconds = function(pickerId, totalSeconds) {
@@ -83,7 +83,7 @@
         const s = totalSeconds % 60;
 
         const values = [h, m, s];
-        picker.querySelectorAll('.tp-value').forEach((el, i) => {
+        picker.querySelectorAll('.tp_value').forEach((el, i) => {
             el.textContent = String(values[i]).padStart(2, '0');
         });
     };
@@ -99,10 +99,10 @@
             now.getSeconds()
         ];
 
-        const units = picker.querySelectorAll('.tp-unit');
+        const units = picker.querySelectorAll('.tp_unit');
 
         units.forEach((unit, i) => {
-            const valueEl = unit.querySelector('.tp-value');
+            const valueEl = unit.querySelector('.tp_value');
             if (!valueEl) return;
 
             valueEl.textContent = String(values[i]).padStart(2, '0');
@@ -111,7 +111,7 @@
         return true;
     };
 
-    // setTimePickerToNow("schedules-timer-picker-3");
+    // setTimePickerToNow("schedules_timer_picker_3");
 
 
 })();

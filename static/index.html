@@ -16,14 +16,14 @@
     <link rel="stylesheet" href="/css/ButtonSlider.css">
     <link rel="stylesheet" href="/css/ClockRadio.css">
 
-    <script defer type="text/javascript" src="/js/index-embed.js"></script>
+    <link rel="stylesheet" href="/css/schedule.css">
+    <script defer src="/js/schedule.js"></script>
+
     <script defer type="text/javascript" src="/js/index.js"></script>
 
     <link rel="stylesheet" href="/css/time-picker.css">
     <script defer src="/js/time-picker.js"></script>
 
-    <link rel="stylesheet" href="/css/schedule.css">
-    <script defer src="/js/schedule.js"></script>
 
     <script defer type="text/javascript" src="/js/p5.min.js"></script>
     <script defer type="text/javascript" src="/js/clock.js"></script>
@@ -36,81 +36,17 @@
             <div id="settings">
                 <div id="settings_time"></div>
 
-
                 <div class="fr" id="coolbuttons">
-                    <!-- 󰐸󰫗  -->
-                    <div class="fc">
-                        <div class="switch_header">󰐸 Heat</div>
-                        <label id="btn_heat" class="switch">
-                            <input id="btn_heat_cb" type="checkbox">
-                            <div class="button">
-                                <div class="light"></div>
-                                <div class="dots"></div>
-                                <div class="characters"></div>
-                                <div class="shine"></div>
-                                <div class="shadow"></div>
-                            </div>
-                        </label>
-                        <div id="btn_auto_timer" class="switch_slider">
-                            <input id="btn_auto_timer_cb" type="checkbox" />
-                            <label class="toggle" for="btn_auto_timer">
-                                Auto
-                            </label>
-                        </div>
-                        <div id="schedules_edit">Schedule...</div>
-                    </div>
-
-                    <!-- 󰈸󰙇 -->
-                    <div class="fc">
-                        <div class="switch_header">󰈸 Gas</div>
-                        <label id="btn_gas" class="switch">
-                            <input id="btn_gas_cb" type="checkbox">
-                            <div class="button">
-                                <div class="light"></div>
-                                <div class="dots"></div>
-                                <div class="characters"></div>
-                                <div class="shine"></div>
-                                <div class="shadow"></div>
-                            </div>
-                        </label>
-
-                        <div id="btn_auto_gas" class="switch_slider">
-                            <input id="btn_auto_gas_cb" type="checkbox" />
-                            <label class="toggle" for="btn_auto_gas">
-                                Auto
-                            </label>
-                        </div>
-                    </div>
+                    <div id="settings_time_btn_heat" class="fc"></div>
+                    <div id="settings_time_btn_gas" class="fc"></div>
                 </div>
             </div>
         </div>
 
 
         <div class="frr">
-            <div id="status">
-                <div id="termcont">
-                    <div id="term"></div>
-                    <div id="sumtime">
-                        <div>
-                            <span>Mode: </span>
-                            <span id="sumtime_mod_rada"></span>
-                        </div>
-
-                        <div>
-                            <span>Gas.: </span>
-                            <span id="sumtime_StatusPumpe4"></span>
-                        </div>
-                    </div>
-                </div>
-                <canvas id="canv"></canvas>
-            </div>
-
-            <div class="frc">
-                <a href="/errors">errors.log</a>
-                <a href="/requests">requests.log</a>
-                <a href="/changes">changes.log</a>
-                <a href="/wttrin">wttrin.log</a>
-            </div>
+            <div id="status_term"></div>
+            <div id="urls" class="frc"></div>
         </div>
 
         <span id="clock_cont">
@@ -118,86 +54,7 @@
         </span>
     </div>
 
-    <div id="schedules-overlay">
-        <div id="schedules-container">
-            <div id="schedules-time-pickers">
-                <div id="schedules-time-picker-from" class="time-picker">
-                    <div class="tp-unit" data-max="23">
-                        <div class="tp-value">00</div>
-                        <div class="tp-label">HRS</div>
-                    </div>
-
-                    <div class="tp-divider">:</div>
-
-                    <div class="tp-unit" data-max="59">
-                        <div class="tp-value">00</div>
-                        <div class="tp-label">MIN</div>
-                    </div>
-
-                    <div class="tp-divider">:</div>
-
-                    <div class="tp-unit" data-max="59">
-                        <div class="tp-value">00</div>
-                        <div class="tp-label">SEC</div>
-                    </div>
-                </div>
-
-                <div id="schedules-time-pickers-arrow">&rarr;</div>
-
-                <div id="schedules-time-picker-to" class="time-picker">
-                    <div class="tp-unit" data-max="23">
-                        <div class="tp-value">00</div>
-                        <div class="tp-label">HRS</div>
-                    </div>
-
-                    <div class="tp-divider">:</div>
-
-                    <div class="tp-unit" data-max="59">
-                        <div class="tp-value">00</div>
-                        <div class="tp-label">MIN</div>
-                    </div>
-
-                    <div class="tp-divider">:</div>
-
-                    <div class="tp-unit" data-max="59">
-                        <div class="tp-value">00</div>
-                        <div class="tp-label">SEC</div>
-                    </div>
-                </div>
-
-                <div id="schedules-time-pickers-arrow">=</div>
-
-                <div id="schedules-time-picker-duration" class="time-picker">
-                    <div class="tp-unit" data-max="23">
-                        <div class="tp-value">00</div>
-                        <div class="tp-label">HRS</div>
-                    </div>
-
-                    <div class="tp-divider">:</div>
-
-                    <div class="tp-unit" data-max="59">
-                        <div class="tp-value">00</div>
-                        <div class="tp-label">MIN</div>
-                    </div>
-
-                    <div class="tp-divider">:</div>
-
-                    <div class="tp-unit" data-max="59">
-                        <div class="tp-value">00</div>
-                        <div class="tp-label">SEC</div>
-                    </div>
-                </div>
-
-                <button id="schedules_add">Add</button>
-            </div>
-
-            <div id="schedules-list-container">
-                <div>Schedules:</div>
-                <div id="schedules">
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="schedules_overlay"></div>
 </body>
 
 </html>
