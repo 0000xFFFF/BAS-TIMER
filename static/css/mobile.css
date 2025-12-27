@@ -100,6 +100,11 @@ input,
     zoom: 0.3;
 }
 
+#clock_cont {
+    zoom: 0.3;
+    margin: 0 auto;
+}
+
 #schedules {
     font-size: 2rem;
 }
