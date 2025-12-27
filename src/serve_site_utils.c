@@ -127,6 +127,15 @@ static void post_api_schedules(struct mg_connection* c, struct mg_http_message* 
     mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true }");
 }
 
+static void post_api_schedules_defaults(struct mg_connection* c, struct mg_http_message* hm)
+{
+    UNUSED(hm);
+
+    schedules_defaults();
+
+    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"success\": true }");
+}
+
 static void delete_api_schedules(struct mg_connection* c, struct mg_http_message* hm)
 {
     UNUSED(hm);
@@ -320,6 +329,8 @@ static struct Route routes[] = {
     { "GET",      "/api/sumtime",              get_sumtime },
     { "GET",      "/api/schedules",            get_api_schedules },
     { "POST",     "/api/schedules",            post_api_schedules },
+    { "GET",      "/api/schedules/defaults",   post_api_schedules_defaults },
+    { "POST",     "/api/schedules/defaults",   post_api_schedules_defaults },
     { "DELETE",   "/api/schedules",            delete_api_schedules },
     { "POST",     "/api/set_timer_seconds",    post_api_set_timer_seconds },
     { "POST",     "/api/toggle_auto_timer",    post_api_toggle_auto_timer },

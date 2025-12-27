@@ -163,6 +163,19 @@ static struct HeatSchedule create_default(int from)
     return create_heat_schedule(from, to, dur);
 }
 
+static void schedules_save_defualts(void)
+{
+    insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(20, 0, 0)));
+    insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(0, 0, 0)));
+    insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(2, 30, 0)));
+    insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(5, 0, 0)));
+    insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(7, 30, 0)));
+    insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(10, 0, 0)));
+    insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(12, 30, 0)));
+
+    saveSchedulesText(g_schedules, VAR_DIR_FILE_SCHEDULES_TXT);
+}
+
 // Initialize schedules
 void schedules_init(void)
 {
@@ -172,16 +185,21 @@ void schedules_init(void)
         g_schedules = loadSchedulesText(VAR_DIR_FILE_SCHEDULES_TXT);
     }
     else {
-        insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(20, 0, 0)));
-        insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(0, 0, 0)));
-        insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(2, 30, 0)));
-        insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(5, 0, 0)));
-        insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(7, 30, 0)));
-        insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(10, 0, 0)));
-        insertAtEnd(&g_schedules, create_default(hms_to_today_seconds(12, 30, 0)));
-
-        saveSchedulesText(g_schedules, VAR_DIR_FILE_SCHEDULES_TXT);
+        schedules_save_defualts();
     }
+
+    pthread_mutex_unlock(&g_mutex_schedules);
+}
+
+void schedules_defaults(void)
+{
+    pthread_mutex_lock(&g_mutex_schedules);
+
+    freeSchedules(g_schedules);
+    g_schedules = NULL;
+
+    if (file_exists(VAR_DIR_FILE_SCHEDULES_TXT)) { remove(VAR_DIR_FILE_SCHEDULES_TXT); }
+    schedules_save_defualts();
 
     pthread_mutex_unlock(&g_mutex_schedules);
 }
