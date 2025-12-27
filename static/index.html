@@ -4,24 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <title>BAS CTRL SERVER</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <link rel="stylesheet" href="/index.css">
-    <link rel="stylesheet" href="/desktop.css">
-    <link rel="stylesheet" href="/ButtonSwitch.css">
-    <link rel="stylesheet" href="/ButtonSlider.css">
-    <link rel="stylesheet" href="/ClockRadio.css">
-    <script defer type="text/javascript" src="/index.js"></script>
 
-    <link rel="stylesheet" href="/time-picker.css">
-    <script defer src="/time-picker.js"></script>
+    <script type="text/javascript" src="/js/socket.io.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
 
-    <link rel="stylesheet" href="/schedule.css">
-    <script defer src="/schedule.js"></script>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/desktop.css">
+    <link rel="stylesheet" href="/css/ButtonSwitch.css">
+    <link rel="stylesheet" href="/css/ButtonSlider.css">
+    <link rel="stylesheet" href="/css/ClockRadio.css">
 
-    <script defer type="text/javascript" src="/p5.min.js"></script>
-    <script defer type="text/javascript" src="/clock.js"></script>
+    <script defer type="text/javascript" src="/js/index-embed.js"></script>
+    <script defer type="text/javascript" src="/js/index.js"></script>
+
+    <link rel="stylesheet" href="/css/time-picker.css">
+    <script defer src="/js/time-picker.js"></script>
+
+    <link rel="stylesheet" href="/css/schedule.css">
+    <script defer src="/js/schedule.js"></script>
+
+    <script defer type="text/javascript" src="/js/p5.min.js"></script>
+    <script defer type="text/javascript" src="/js/clock.js"></script>
 </head>
 
 <body>
@@ -29,65 +34,8 @@
         <div id="controls">
 
             <div id="settings">
-                <div id="settings_time">
-                    <div class="ClockRadioContainer">
-                        <div class="de">
-                            <div class="den">
-                                <hr class="line">
-                                <hr class="line">
-                                <hr class="line">
-                                <hr class="line">
+                <div id="settings_time"></div>
 
-                                <div class="ClockRadio">
-                                    <label for="crs_1"><span>*</span></label>
-                                    <label for="crs_2"><span>4</span></label>
-                                    <label for="crs_3"><span>5</span></label>
-                                    <label for="crs_4"><span>6</span></label>
-                                    <label for="crs_5"><span>7</span></label>
-                                    <label for="crs_6"><span>8</span></label>
-                                    <label for="crs_7"><span>10</span></label>
-                                    <label for="crs_8"><span>15</span></label>
-
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="*"
-                                        id="crs_1">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="4"
-                                        id="crs_2">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="5"
-                                        id="crs_3">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="6"
-                                        id="crs_4">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="7"
-                                        id="crs_5" checked>
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="8"
-                                        id="crs_6">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="10"
-                                        id="crs_7">
-                                    <input onclick="setTime(this)" type="radio" name="switch" data-minutes="15"
-                                        id="crs_8">
-
-                                    <div class="light"><span></span></div>
-                                    <div class="dot"><span></span></div>
-
-                                    <div class="dene">
-                                        <div class="denem">
-                                            <div class="deneme"></div>
-                                        </div>
-                                    </div>
-
-                                    <span class="ClockRadio_label">Min<span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="ClockRadio_extra" class="hidden">
-                        <div class="ClockRadio_extra_label">Seconds:</div>
-                        <input type="text" id="txt_input">
-                        <div class="ClockRadio_extra_buttons">
-                            <button id="button_update" onclick="updateTime()">Update</button>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="fr" id="coolbuttons">
                     <!-- 󰐸󰫗  -->
