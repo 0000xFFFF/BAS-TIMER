@@ -4,9 +4,9 @@ PACK = ./pack
 OUT = -o $(PROG)
 SOURCES = src/*.c
 RELEASE_SOURCES = $(filter-out src/mongoose.c, $(wildcard src/*.c))
-CFLAGS += -DMG_ENABLE_LINES=1 -DMG_ENABLE_PACKED_FS=1 -D MG_TLS=MG_TLS_OPENSSL -D MG_ENABLE_OPENSSL=1 -lssl -lcrypto
+CFLAGS += -DMG_ENABLE_LINES=1 -DMG_ENABLE_PACKED_FS=1 -DMG_TLS=MG_TLS_OPENSSL -DMG_ENABLE_OPENSSL=1 -lssl -lcrypto
 
-DEBUG_ARGS   = -g -D DEBUG
+DEBUG_ARGS   = -g -DDEBUG
 RELEASE_ARGS = -Wall -Wextra -Wpedantic -Wformat=2 -Wcast-qual -Wcast-align \
 				-Wconversion -Wsign-conversion -Wshadow -Wpointer-arith \
 				-Wstrict-prototypes -Wmissing-prototypes -Wstringop-overflow \
