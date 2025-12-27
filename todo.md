@@ -1,8 +1,3 @@
-# prior
-- fix mobile html
-- clean up html with templating or js
-- js web ui code is ugly clean it up
-
 # heat clock
 - clock tool tip on hover?
 - add gas to clock or nah?
