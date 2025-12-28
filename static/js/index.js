@@ -253,6 +253,10 @@ Promise.all([
 ]).then(() => {
     setup_settings_time()
     setup_term()
+    setup_button_heat();
+    setup_button_gas();
+    setup_button_auto_timer();
+    setup_button_auto_gas();
     setInterval(fetch_all, 3600000); // 1000 * 60 * 60 -- every hour fetch all
     setup_schedules();
 });
