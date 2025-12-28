@@ -136,9 +136,11 @@ function setup_schedules() {
         hideOverlay();
     });
 
-    const picker_from = document.getElementById('schedules_time_picker_from');
+    const schedules_time_picker_from = document.getElementById('schedules_time_picker_from');
 
-    picker_from.addEventListener('timechange', e => {
+    initAllTimePickers();
+
+    schedules_time_picker_from.addEventListener('timechange', e => {
         const newTime = e.detail + 15 * 60; // add 15 minutes
         setTimePickerFromSeconds('schedules_time_picker_to', newTime);
     });

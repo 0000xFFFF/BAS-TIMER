@@ -46,11 +46,9 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        document
-            .querySelectorAll('.time_picker')
-            .forEach(initTimePicker);
-    });
+    window.initAllTimePickers = function() {
+        document.querySelectorAll('.time_picker').forEach(initTimePicker);
+    }
 
     window.getTimePickerValueStr = function(pickerId) {
         const picker = document.getElementById(pickerId);
