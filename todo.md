@@ -1,8 +1,8 @@
 # heat clock
-- clock tool tip on hover?
 - add gas to clock or nah?
 
 # code cleanup:
+- make all .js files like time-picker.js (only register functions used outside of scope with window.nameOfFunc = function() { ...)
 - do more grouping in structs (BasInfo), we can group stuff up
 
 # would be nice / debug
