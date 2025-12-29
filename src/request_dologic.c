@@ -73,8 +73,8 @@ static void do_logic_timer(struct BasInfo* info)
 
     if (info->opt_auto_timer) {
 
-        // scheduled heat to turn on
-        if (info->Tspv < info->schedules_t_min) {
+        // scheduled heat to turn on (must be Tspv < 10 󰔄 and radiator cold)
+        if (info->Tspv < info->schedules_t_min && info->radiator_color_current_temp_ratio == 0.0) {
             struct tm local;
             localtime_r(&current_time, &local);
             int today = local.tm_yday;
