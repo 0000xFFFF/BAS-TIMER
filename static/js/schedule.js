@@ -36,7 +36,7 @@ async function fetch_get_schedules() {
         s1.innerHTML = `${secondsToHHMMSS(e.from)} &rarr; ${secondsToHHMMSS(e.to)} = ${secondsToHHMMSS(e.duration)}`
 
         const b1 = document.createElement("button");
-        b1.innerHTML = "remove";
+        b1.innerHTML = " Remove";
         b1.addEventListener("click", () => {
             if (fetch_delete_schedules(e.id)) {
                 d1.remove();
