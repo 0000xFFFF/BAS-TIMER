@@ -54,18 +54,13 @@ button {
     flex: 0 0 auto;
 }
 
-button:hover {
-    color: white;
-    transform: scaleX(1.09) scaleY(1.09) translateY(-2px);
-}
-
-
 button:active {
-    transform: translateX(5px) translateY(5px);
+    transform: translateX(2px) translateY(2px);
     box-shadow: none;
 }
 
 #status_term {
+    gap: 3px;
     display: flex;
     flex-direction: row;
     justify-content: center;
