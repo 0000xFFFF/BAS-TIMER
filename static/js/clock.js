@@ -248,7 +248,8 @@ function drawClockNumbers() {
     const hrNow = hour(); // current hour in 24h format
 
     // offset numbers if current hour > 12
-    const isPM = hrNow > 12;
+    const nowSec = hour() * 3600 + minute() * 60 + second();
+    const isPM = nowSec >= (12 * 3600)
     const offset = isPM ? 12 : 0;
 
     for (let i = 1; i <= 12; i++) {
