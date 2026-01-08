@@ -32,6 +32,7 @@ extern const int AUTO_TIMER_SECONDS;
 
 extern const int POLL_TIME;
 extern const int SLEEP_MS_DRAW;
+extern const int SLEEP_MS_DRAW_CLEAR;
 extern const int SLEEP_MS_BAS;
 extern const int SLEEP_MS_WTTRIN;
 extern const int SLEEP_MS_SAVE_INFOS;

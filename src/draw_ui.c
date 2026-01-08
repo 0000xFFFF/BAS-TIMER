@@ -175,6 +175,7 @@ static size_t dut_weather_to_spinner(char* buffer, size_t size, int color, enum 
 
 static const char* dut_status_to_emoji(enum RequestStatus status)
 {
+    // clang-format off
     switch (status) {
         case REQUEST_STATUS_DISABLED:      return CTEXT_FG(255, "󰌙"); break;
         case REQUEST_STATUS_RUNNING:       return CTEXT_FG(211, ""); break;
@@ -182,6 +183,7 @@ static const char* dut_status_to_emoji(enum RequestStatus status)
         case REQUEST_STATUS_ERROR_TIMEOUT: return CTEXT_FG(197, "󱫎"); break;
         case REQUEST_STATUS_ERROR_CONN:    return CTEXT_FG(196, "󰌙"); break;
     }
+    // clang-format on
     return "";
 }
 
@@ -666,8 +668,16 @@ static const char* dut_opt_status_gas(struct BasInfo* info)
     return s_temp;
 }
 
+static uint64_t s_draw_ui_counter = 0;
+
 static size_t draw_ui_unsafe(void)
 {
+    s_draw_ui_counter++;
+    if (s_draw_ui_counter >= (uint64_t)(SLEEP_MS_DRAW_CLEAR / SLEEP_MS_DRAW)) {
+        s_draw_ui_counter = 0;
+        term_clear();
+    }
+
     clear_screen();
 
     int term_w = term_width();
