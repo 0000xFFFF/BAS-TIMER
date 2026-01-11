@@ -10,7 +10,7 @@ const COLOR_PM_AFTER = "#FF7850";
 
 const COLOR_NOW = "#FF0000";
 
-function preload() {
+function fetch_times() {
     fetch("/api/times")
         .then((res) => res.json())
         .then((data) => {
@@ -19,6 +19,13 @@ function preload() {
         .catch((err) => {
             console.error("Failed to load /times", err);
         });
+
+}
+
+setInterval(fetch_times, 1000 * 60 * 10); // fetch every 10 min
+
+function preload() {
+    fetch_times();
 }
 
 function setup() {
